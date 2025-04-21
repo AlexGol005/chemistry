@@ -4300,8 +4300,9 @@ def BulkDownload(request):
             try:
                 uploading_file = Delete_Attestationequipment({'file': Attestationequipment_file_del})
             except:
-                messages.success(request, "Неверно заполнен файл 'Аттестация ИО' (вероятно проблема в названиях или в порядке столбцов)")
-                return redirect('bulkdownload')
+                raise
+                # messages.success(request, "Неверно заполнен файл 'Аттестация ИО' (вероятно проблема в названиях или в порядке столбцов)")
+                # return redirect('bulkdownload')
 
 
         elif ServiceEquipment_MeasurEquipment_file_del:
