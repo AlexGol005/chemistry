@@ -3707,7 +3707,7 @@ def export_verificlabel_xls(request):
 def export_exvercard_xls(request, pk):
     '''представление для выгрузки протокола верификации СИ в ексель'''
     note = MeasurEquipment.objects.get(pk=pk)
-    company = Company.objects.get(userid=request.user.profile.short_name)
+    company = Company.objects.get(userid=request.user.profile.userid)
     try:
         room = Roomschange.objects.filter(equipment__exnumber=note.equipment.exnumber)
         room = room.last().roomnumber
