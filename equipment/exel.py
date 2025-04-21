@@ -3710,12 +3710,14 @@ def export_exvercard_xls(request, pk):
     company = Company.objects.get(userid=request.user.profile.userid)
     try:
         room = Roomschange.objects.filter(equipment__exnumber=note.equipment.exnumber)
-        room = room.last().roomnumber
+        # room = room.last().roomnumber
+        room = note.equipment.newroom
     except:
         room = 'не указано'
     try:
         q = Personchange.objects.filter(equipment__exnumber=note.equipment.exnumber)
-        usere = q.last().person.profile.short_name
+        # usere = q.last().person.profile.short_name
+        usere = note.equipment.newperson
         position = q.last().person.position
         
         
