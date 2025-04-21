@@ -4,6 +4,7 @@
 После 2050 года обратить внимание на функцию  get_dateformat_django :)
 """
 from datetime import date
+import pandas as pd
 import re
 from decimal import *
 now = date.today()
