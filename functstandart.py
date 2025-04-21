@@ -15,8 +15,7 @@ def get_dateformat_django(date):
     pattern = re.compile(r'\d\d\d\d-\d\d-\d\d')
     if str(date).isalpha():
         date = None
-    else:
-        
+    else:        
         try:
             if not pattern.match(date):
                 dateformat = str(date)
