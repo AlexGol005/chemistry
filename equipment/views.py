@@ -3443,8 +3443,8 @@ class UploadingMetrologyForEquipment(object):
             related_model = model._meta.get_field(field_name).related_model
             return related_model
         except:
-            # pass
-            raise Exception(f'проблема с производителем {field_name}')
+            pass
+            # raise Exception(f'проблема с производителем {field_name}')
 
     def getting_headers_model_metrology(self):
         l_verbose_name = []
@@ -3546,8 +3546,8 @@ class UploadingMetrologyForEquipment(object):
                 find_charakters_bool = True
             except:
                 find_charakters_bool = False
-                # pass
-                raise Exception(f"проблема в нахождении характеристик {self.kategory_e}: {row_dict_characters}")
+                pass
+                # raise Exception(f"проблема в нахождении характеристик {self.kategory_e}: {row_dict_characters}")
 
             for column in range(self.num_hc, self.num_e):                  
                 value = s.cell(row, column).value
@@ -3567,8 +3567,8 @@ class UploadingMetrologyForEquipment(object):
                 find_equipment_bool = True
             except:
                 find_equipment_bool = False
-                # pass
-                raise Exception(f"проблема в нахождении единицы ЛО: {row_dict_equipment}")
+                pass
+                # raise Exception(f"проблема в нахождении единицы ЛО: {row_dict_equipment}")
 
             if find_equipment_bool and find_charakters_bool:
                 try:
@@ -3576,8 +3576,8 @@ class UploadingMetrologyForEquipment(object):
                     equipmentSM_bool = True
                 except:
                     equipmentSM_bool = False
-                    # pass
-                    raise Exception(f"проблема в нахождении единицы {self.kategory_e}: {row_dict_METEHE}")
+                    pass
+                    # raise Exception(f"проблема в нахождении единицы {self.kategory_e}: {row_dict_METEHE}")
             
             if find_equipment_bool and find_charakters_bool and equipmentSM_bool:
                 for column in range(self.num_e, s.ncols):                  
@@ -3605,8 +3605,8 @@ class UploadingMetrologyForEquipment(object):
                     if m_created:
                         self.number_objects+=1
                 except:
-                    # pass
-                    raise Exception(f"проблема в добавлении сведений о поверке/калибровке/аттестации: {row_dict_metrology}")
+                    pass
+                    # raise Exception(f"проблема в добавлении сведений о поверке/калибровке/аттестации: {row_dict_metrology}")
                                         
         self.number_rows = s.nrows - 1
         return True
