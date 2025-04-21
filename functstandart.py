@@ -14,6 +14,7 @@ def get_dateformat_django(date):
     """переводит дату из формата дд.мм.гггг в гггг-мм-дд"""
     pattern = re.compile(r'\d\d\d\d-\d\d-\d\d')
     if date:
+        date=str(date)
 
         if not pattern.match(date):
             dateformat = str(date)
