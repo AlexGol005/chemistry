@@ -13,33 +13,53 @@ K = 2  #(двойка из правила округления двойки)
 def get_dateformat_django(date):
     """переводит дату из формата дд.мм.гггг в гггг-мм-дд"""
     pattern = re.compile(r'\d\d\d\d-\d\d-\d\d')
-    if str(date).isalpha():
-        date = None
-    else:        
-        try:
-            if not pattern.match(date):
-                dateformat = str(date)
-                y = dateformat[1]
-                if not y.isdigit():
-                    dateformat = "0" + dateformat
-                day = dateformat[:2]
-                month = dateformat[3:5]
-                year = dateformat[6:]
-                a = int(str(now.year)[:2]) + 10
-                if len(year) == 2 and int(year) <= a:
-                    year = f'20{year}'
-                elif len(year) == 2 and int(year) >= a:
-                    year = f'19{year}'            
-                date = f'{year}-{month}-{day}'
-    
-            # dates = ['09-31', '02-30', '02-31', '04-31', '06-31', '11-31']
-            # if date[5:] in dates:
-            #     dyy = str(int(date[:-2]) - 1)
-            #     date = f'{year}-{month}-{dyy}'
-
-        except:
-            date = None
+    if not pattern.match(date):
+        dateformat = str(date)
+        day = dateformat[:2]
+        month = dateformat[3:5]
+        year = dateformat[6:]
+        a = int(str(now.year)[:2]) + 10
+        if len(year) == 2 and int(year) <= a:
+            year = f'20{year}'
+        elif len(year) == 2 and int(year) >= a:
+            year = f'19{year}'            
+        date = f'{year}-{month}-{day}'
     return date
+
+
+
+
+
+# def get_dateformat_django(date):
+#     """переводит дату из формата дд.мм.гггг в гггг-мм-дд"""
+#     pattern = re.compile(r'\d\d\d\d-\d\d-\d\d')
+#     if str(date).isalpha():
+#         date = None
+#     else:        
+#         try:
+#             if not pattern.match(date):
+#                 dateformat = str(date)
+#                 y = dateformat[1]
+#                 if not y.isdigit():
+#                     dateformat = "0" + dateformat
+#                 day = dateformat[:2]
+#                 month = dateformat[3:5]
+#                 year = dateformat[6:]
+#                 a = int(str(now.year)[:2]) + 10
+#                 if len(year) == 2 and int(year) <= a:
+#                     year = f'20{year}'
+#                 elif len(year) == 2 and int(year) >= a:
+#                     year = f'19{year}'            
+#                 date = f'{year}-{month}-{day}'
+    
+#             # dates = ['09-31', '02-30', '02-31', '04-31', '06-31', '11-31']
+#             # if date[5:] in dates:
+#             #     dyy = str(int(date[:-2]) - 1)
+#             #     date = f'{year}-{month}-{dyy}'
+
+#         except:
+#             date = None
+#     return date
 
 def rounder(value: Decimal, m: str) -> Decimal:
     '''каскадно округляет числа с неизвестным количесвом знаков после точки(запятой)(value)
