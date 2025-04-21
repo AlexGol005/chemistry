@@ -3707,7 +3707,7 @@ def export_verificlabel_xls(request):
 def export_exvercard_xls(request, pk):
     '''представление для выгрузки протокола верификации СИ в ексель'''
     note = MeasurEquipment.objects.get(pk=pk)
-    company = Company.objects.get(userid=request.user.profile.userid)
+    company = Company.objects.get(userid=request.user.profile.short_name)
     try:
         room = Roomschange.objects.filter(equipment__exnumber=note.equipment.exnumber)
         room = room.last().roomnumber
@@ -3715,7 +3715,7 @@ def export_exvercard_xls(request, pk):
         room = 'не указано'
     try:
         q = Personchange.objects.filter(equipment__exnumber=note.equipment.exnumber)
-        usere = q.last().person.name
+        usere = q.last().person.profile.short_name
         position = q.last().person.position
         
         
@@ -4504,7 +4504,7 @@ def export_exvercardteste_xls(request, pk):
         room = 'не указано'
     try:
         usere = Personchange.objects.filter(equipment__exnumber=note.equipment.exnumber)
-        usere = usere.last().person
+        usere = usere.last().person.profile.short_name
         usere = str(usere)
         a = User.objects.get(username=usere)
         b = Profile.objects.get(user=a)
