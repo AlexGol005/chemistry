@@ -932,8 +932,9 @@ class CommentsEquipment(models.Model):
         return reverse('measureequipmentcomm', kwargs={'str': self.forNote.exnumber})
 
     def save(self, *args, **kwargs):
-        super().save()
         self.author = self.created_by.profile.short_name
+        super().save()
+        
         if self.img:
                 image = Image.open(self.img.path)
                 if image.height > 1000 or image.width > 1000:
