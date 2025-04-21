@@ -3719,6 +3719,8 @@ def export_exvercard_xls(request, pk):
         # usere = q.last().person.profile.short_name
         usere = note.equipment.newperson
         # position = q.last().person.position
+    except:
+        usere = ''
     try:
         p = Profile.objects.get(name=usere)
         position = p.userposition
@@ -3733,9 +3735,8 @@ def export_exvercard_xls(request, pk):
        
         
         
-    except:
-        usere = ''
-        position = ''
+
+
     userelat = pytils.translit.translify(usere)
     cardname = pytils.translit.translify(str(note.equipment.exnumber)[:5]) + ' ' + pytils.translit.translify(note.equipment.lot)
     response = HttpResponse(content_type='application/ms-excel')
