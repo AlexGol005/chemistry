@@ -13,17 +13,20 @@ K = 2  #(двойка из правила округления двойки)
 def get_dateformat_django(date):
     """переводит дату из формата дд.мм.гггг в гггг-мм-дд"""
     pattern = re.compile(r'\d\d\d\d-\d\d-\d\d')
-    if not pattern.match(date):
-        dateformat = str(date)
-        day = dateformat[:2]
-        month = dateformat[3:5]
-        year = dateformat[6:]
-        a = int(str(now.year)[:2]) + 10
-        if len(year) == 2 and int(year) <= a:
-            year = f'20{year}'
-        elif len(year) == 2 and int(year) >= a:
-            year = f'19{year}'            
-        date = f'{year}-{month}-{day}'
+    try:
+        if not pattern.match(date):
+            dateformat = str(date)
+            day = dateformat[:2]
+            month = dateformat[3:5]
+            year = dateformat[6:]
+            a = int(str(now.year)[:2]) + 10
+            if len(year) == 2 and int(year) <= a:
+                year = f'20{year}'
+            elif len(year) == 2 and int(year) >= a:
+                year = f'19{year}'            
+            date = f'{year}-{month}-{day}'
+    except:
+       date = None 
     return date
 
 
