@@ -3711,7 +3711,7 @@ def export_exvercard_xls(request, pk):
     try:
         # room = Roomschange.objects.filter(equipment__exnumber=note.equipment.exnumber)
         # room = room.last().roomnumber
-        room = note.equipment.newroom
+        room = note.equipment.newroomnumber
     except:
         room = 'не указано'
     try:
@@ -3727,16 +3727,7 @@ def export_exvercard_xls(request, pk):
     except:
         position = ''
         
-  
-           
-
-
-           
-       
-        
-        
-
-
+ 
     userelat = pytils.translit.translify(usere)
     cardname = pytils.translit.translify(str(note.equipment.exnumber)[:5]) + ' ' + pytils.translit.translify(note.equipment.lot)
     response = HttpResponse(content_type='application/ms-excel')
@@ -4512,21 +4503,25 @@ def export_exvercardteste_xls(request, pk):
     '''представление для выгрузки протокола верификации ИО в ексель'''
     company = Company.objects.get(userid=request.user.profile.userid)
     note = TestingEquipment.objects.get(pk=pk)
+
     try:
-        room = Roomschange.objects.filter(equipment__exnumber=note.equipment.exnumber)
-        room = room.last().roomnumber
+        # room = Roomschange.objects.filter(equipment__exnumber=note.equipment.exnumber)
+        # room = room.last().roomnumber
+        room = note.equipment.newroomnumber
     except:
         room = 'не указано'
     try:
-        usere = Personchange.objects.filter(equipment__exnumber=note.equipment.exnumber)
-        usere = usere.last().person.profile.short_name
-        usere = str(usere)
-        a = User.objects.get(username=usere)
-        b = Profile.objects.get(user=a)
-        position = b.userposition
+        # q = Personchange.objects.filter(equipment__exnumber=note.equipment.exnumber)
+        # usere = q.last().person.profile.short_name
+        usere = note.equipment.newperson
+        # position = q.last().person.position
     except:
-        usere = 'не указано'
-        position = 'не указано'
+        usere = ''
+    try:
+        p = Profile.objects.get(name=usere)
+        position = p.userposition
+    except:
+        position = ''
     userelat = pytils.translit.translify(usere)
     cardname = pytils.translit.translify(note.equipment.exnumber[:5]) + ' ' + pytils.translit.translify(note.equipment.lot)
     response = HttpResponse(content_type='application/ms-excel')
