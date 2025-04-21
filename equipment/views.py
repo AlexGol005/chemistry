@@ -3546,8 +3546,8 @@ class UploadingMetrologyForEquipment(object):
                 find_charakters_bool = True
             except:
                 find_charakters_bool = False
-                pass
-                # raise Exception(f"проблема в нахождении характеристик {self.kategory_e}: {row_dict_characters}")
+                # pass
+                raise Exception(f"проблема в нахождении характеристик {self.kategory_e}: {row_dict_characters}")
 
             for column in range(self.num_hc, self.num_e):                  
                 value = s.cell(row, column).value
