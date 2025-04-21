@@ -3719,7 +3719,18 @@ def export_exvercard_xls(request, pk):
         # usere = q.last().person.profile.short_name
         usere = note.equipment.newperson
         # position = q.last().person.position
-        position = ""
+    try:
+        p = Profile.objects.get(name=usere)
+        position = p.userposition
+    except:
+        position = ''
+        
+  
+           
+
+
+           
+       
         
         
     except:
