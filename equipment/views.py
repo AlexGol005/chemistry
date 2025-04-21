@@ -3454,8 +3454,8 @@ class UploadingMetrologyForEquipment(object):
                 l_verbose_name.append(f.verbose_name)
                 m_name.append(f.name)
             except:
-                raise
-                # pass
+                # raise
+                pass
         s = self.s
         headers_model_metrology = dict()
         for column in range(self.num_e, s.ncols):
@@ -3546,8 +3546,8 @@ class UploadingMetrologyForEquipment(object):
                 find_charakters_bool = True
             except:
                 find_charakters_bool = False
-                # pass
-                raise Exception(f"проблема в нахождении характеристик {self.kategory_e}: {row_dict_characters}")
+                pass
+                # raise Exception(f"проблема в нахождении характеристик {self.kategory_e}: {row_dict_characters}")
 
             for column in range(self.num_hc, self.num_e):                  
                 value = s.cell(row, column).value
@@ -3671,8 +3671,8 @@ class DeleteMetrologyForEquipment(UploadingMetrologyForEquipment):
                 find_charakters_bool = True
             except:
                 find_charakters_bool = False
-                # pass
-                raise Exception(f"проблема в нахождении характеристик {self.kategory_e}: {row_dict_characters}")
+                pass
+                # raise Exception(f"проблема в нахождении характеристик {self.kategory_e}: {row_dict_characters}")
 
             for column in range(self.num_hc, self.num_e):                  
                 value = s.cell(row, column).value
@@ -3692,8 +3692,8 @@ class DeleteMetrologyForEquipment(UploadingMetrologyForEquipment):
                 find_equipment_bool = True
             except:
                 find_equipment_bool = False
-                # pass
-                raise Exception(f"проблема в нахождении единицы ЛО: {row_dict_equipment}")
+                pass
+                # raise Exception(f"проблема в нахождении единицы ЛО: {row_dict_equipment}")
 
             if find_equipment_bool and find_charakters_bool:
                 try:
@@ -3701,8 +3701,8 @@ class DeleteMetrologyForEquipment(UploadingMetrologyForEquipment):
                     equipmentSM_bool = True
                 except:
                     equipmentSM_bool = False
-                    # pass
-                raise Exception(f"проблема в нахождении единицы {self.kategory_e}: {row_dict_METEHE}")
+                    pass
+                # raise Exception(f"проблема в нахождении единицы {self.kategory_e}: {row_dict_METEHE}")
                     
             
             if find_equipment_bool and find_charakters_bool and equipmentSM_bool:
@@ -3750,8 +3750,8 @@ class DeleteMetrologyForEquipment(UploadingMetrologyForEquipment):
                         equipmentSM.newhaveorder = False    
                         equipmentSM.save()
                 except:
-                    raise
-                    # pass
+                    # raise
+                    pass
 
         self.number_rows = s.nrows - 1
         return True
