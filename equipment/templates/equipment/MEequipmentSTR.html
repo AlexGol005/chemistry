@@ -350,14 +350,12 @@
         </thead>
         <tbody>
         <tr>
-            {% if obj.charakters.serviceequipmentme and POINTER == obj.charakters.serviceequipmentme.pointer and USER_HAVE_RIGHTS %}
+            {% if obj.charakters.serviceequipmentme and POINTER == obj.charakters.serviceequipmentme.pointer %}
               <td> <a href="{% url 'toreg' obj.charakters.pk %}" target="blank" class="btn btn-outline-primary mt-3">редактировать</a></td>  
             {% elif obj.charakters.serviceequipmentme and POINTER != obj.charakters.serviceequipmentme.pointer %}
              <td> <a href="{% url 'tome' obj.charakters.serviceequipmentme.pk %}" target="blank" class="btn btn-outline-primary mt-3">смотреть</a></td>  
-            {% elif not obj.charakters.serviceequipmentme and POINTER == obj.charakters.serviceequipmentme.pointer and USER_HAVE_RIGHTS %}
-            <td> <a href="{% url 'toreg' obj.charakters.pk %}" target="blank" class="btn btn-outline-primary mt-3">добавить</a></td>
             {% else %}
-            <td> не указано </td>
+            <td> <a href="{% url 'toreg' obj.charakters.pk %}" target="blank" class="btn btn-outline-primary mt-3">добавить</a></td>
             {% endif %}
 
             
