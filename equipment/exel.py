@@ -1392,7 +1392,7 @@ def export_meteo_xls(request, pk):
     company = Company.objects.get(userid=request.user.profile.userid)
     note = MeteorologicalParameters.objects.filter(roomnumber_id=pk).filter(date__year=serdate)
     try:
-        roomname = note.last().roomnumber
+        roomname = note.latest('id').roomnumber
     except:
         roomname = '0'
 
