@@ -3318,6 +3318,7 @@ class UploadingTwoModels(object):
                     e_created = 0
                 except:
                     pass
+                    e_created = 0
                     # raise Exception(f"проблема в создании ЛО: {row_dict}")
                     
 
