@@ -13,13 +13,13 @@
 <div class="col-8">  
 {#заголовок#}
     <a href="{% url 'service' %}">
-    <center><h4> ТО-2 ежеквартальное техобслуживание для оборудования вн.№ {{obj.equipment.exnumber|slice:":5"}} за {{year}} год</h4></center> </a>
+    <center><h4> ТО-2 ежеквартальное техобслуживание для оборудования вн.№ {{obj.equipment.exnumber|slice:":5"}} за {{year}} год</h4></center> </a> <br>
         {% if obj.equipment.measurequipment %}
-        <center><h5> Характеристики оборудования: название: {{obj.equipment.measurequipment.charakters.name}}; тип/модификация: {{obj.equipment.measurequipment.charakters.typename}}; госреестр: {{obj.equipment.measurequipment.charakters.reestr}} </h5></center>
+        <center><h5> Характеристики оборудования: <br> название: {{obj.equipment.measurequipment.charakters.name}};  <br>тип/модификация: {{obj.equipment.measurequipment.charakters.typename}};  <br>госреестр: {{obj.equipment.measurequipment.charakters.reestr}} </h5></center>
 {% elif obj.equipment.testingequipment %}
-        <center><h5> Характеристики оборудования: название: {{obj.equipment.testingequipment.charakters.name}}; тип/модификация: {{obj.equipment.testingequipment.charakters.typename}} </h5></center>
+        <center><h5> Характеристики оборудования: <br> название: {{obj.equipment.testingequipment.charakters.name}};  <br>тип/модификация: {{obj.equipment.testingequipment.charakters.typename}} </h5></center>
 {% elif obj.equipment.helpingequipment %}
-        <center><h5> Характеристики оборудования: название: {{obj.equipment.helpingequipment.charakters.name}}; тип/модификация: {{obj.equipment.helpingequipment.charakters.typename}} </h5></center>
+        <center><h5> Характеристики оборудования: <br> название: {{obj.equipment.helpingequipment.charakters.name}};  <br>тип/модификация: {{obj.equipment.helpingequipment.charakters.typename}} </h5></center>
         {% endif %}
    
     <br>
