@@ -13,7 +13,7 @@
 <div class="col-8">  
 {#заголовок#}
     <a href="{% url 'service' %}">
-    <center><h4> ТО-2 ежеквартальное техобслуживание для оборудования вн.№ {{obj.equipment.exnumber|slice:":5"}} за {{year}} год</h4></center>
+    <center><h4> ТО-2 ежеквартальное техобслуживание для оборудования вн.№ {{obj.equipment.exnumber|slice:":5"}} за {{year}} год</h4></center> </a>
         {% if obj.equipment.measurequipment %}
         <center><h4> Характеристики оборудования: название: {{obj.equipment.measurequipment.charakters.name}}; тип/модификация: {{obj.equipment.measurequipment.charakters.typename}}; госреестр: {{obj.equipment.measurequipment.charakters.reestr}} </h4></center>
 {% elif obj.equipment.testingequipment %}
@@ -21,7 +21,7 @@
 {% elif obj.equipment.helpingequipment %}
         <center><h4> Характеристики оборудования: название: {{obj.equipment.helpingequipment.charakters.name}}; тип/модификация: {{obj.equipment.helpingequipment.charakters.typename}} </h4></center>
         {% endif %}
-    </a>
+   
     <br>
 
 {#конец заголовка #}
