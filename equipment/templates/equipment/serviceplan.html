@@ -14,6 +14,7 @@
 {#заголовок#}
     <a href="{% url 'service' %}">
     <center><h4> ТО-2 ежеквартальное техобслуживание для оборудования вн.№ {{obj.equipment.exnumber|slice:":5"}} за {{year}} год</h4></center>
+        <center><h4> Характеристики оборудования: название: {{obj.charakters.name}}; тип/модификация {{obj.charakters.typename}} </h4></center>
     </a>
     <br>
 
