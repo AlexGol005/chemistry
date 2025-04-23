@@ -15,11 +15,11 @@
     <a href="{% url 'service' %}">
     <center><h4> ТО-2 ежеквартальное техобслуживание для оборудования вн.№ {{obj.equipment.exnumber|slice:":5"}} за {{year}} год</h4></center> </a>
         {% if obj.equipment.measurequipment %}
-        <center><h4> Характеристики оборудования: название: {{obj.equipment.measurequipment.charakters.name}}; тип/модификация: {{obj.equipment.measurequipment.charakters.typename}}; госреестр: {{obj.equipment.measurequipment.charakters.reestr}} </h4></center>
+        <center><h5> Характеристики оборудования: название: {{obj.equipment.measurequipment.charakters.name}}; тип/модификация: {{obj.equipment.measurequipment.charakters.typename}}; госреестр: {{obj.equipment.measurequipment.charakters.reestr}} </h5></center>
 {% elif obj.equipment.testingequipment %}
-        <center><h4> Характеристики оборудования: название: {{obj.equipment.testingequipment.charakters.name}}; тип/модификация: {{obj.equipment.testingequipment.charakters.typename}} </h4></center>
+        <center><h5> Характеристики оборудования: название: {{obj.equipment.testingequipment.charakters.name}}; тип/модификация: {{obj.equipment.testingequipment.charakters.typename}} </h5></center>
 {% elif obj.equipment.helpingequipment %}
-        <center><h4> Характеристики оборудования: название: {{obj.equipment.helpingequipment.charakters.name}}; тип/модификация: {{obj.equipment.helpingequipment.charakters.typename}} </h4></center>
+        <center><h5> Характеристики оборудования: название: {{obj.equipment.helpingequipment.charakters.name}}; тип/модификация: {{obj.equipment.helpingequipment.charakters.typename}} </h5></center>
         {% endif %}
    
     <br>
