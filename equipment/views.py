@@ -1394,19 +1394,20 @@ class ReestrsearresView(LoginRequiredMixin, TemplateView):
         if self.request.GET['name']:
             name1 = self.request.GET['name'][0].upper() + self.request.GET['name'][1:]
         if name and not reestr:
-            objects = MeasurEquipmentCharakters.objects.\
+            objects = MeasurEquipmentCharakters.objects.filter(pointer=self.request.user.profile.userid).\
             filter(Q(name__icontains=name)|Q(name__icontains=name1)).order_by('name')
             context['objects'] = objects
         if reestr and not name:
-            objects = MeasurEquipmentCharakters.objects.filter(reestr__icontains=reestr)
+            objects = MeasurEquipmentCharakters.objects.filter(pointer=self.request.user.profile.userid).filter(reestr__icontains=reestr)
             context['objects'] = objects
         if reestr and  name:
-            objects = MeasurEquipmentCharakters.objects.filter(reestr__icontains=reestr).\
+            objects = MeasurEquipmentCharakters.objects.filter(pointer=self.request.user.profile.userid).filter(reestr__icontains=reestr).\
                 filter(Q(name__icontains=name)|Q(name__icontains=name1)).order_by('name')
             context['objects'] = objects
         context['form'] = Searchreestrform(initial={'name': name, 'reestr': reestr})
         context['URL'] = URL
         context['title'] = 'Госреестры, типы, модификации средств измерений'
+        context['POINTER'] = self.request.user.profile.userid
         return context
 
 
@@ -1422,12 +1423,13 @@ class TEcharacterssearresView(LoginRequiredMixin, TemplateView):
         if self.request.GET['name']:
             name1 = self.request.GET['name'][0].upper() + self.request.GET['name'][1:]
         if name:
-            objects = TestingEquipmentCharakters.objects.\
+            objects = TestingEquipmentCharakters.objects.filter(pointer=self.request.user.profile.userid).\
             filter(Q(name__icontains=name)|Q(name__icontains=name1)).order_by('name')
             context['objects'] = objects
         context['form'] = Searchtestingform(initial={'name': name})
         context['URL'] = URL
         context['title'] = 'Характеристики, типы, испытательного оборудования'
+        context['POINTER'] = self.request.user.profile.userid
         return context
 
 
@@ -1443,12 +1445,13 @@ class HEcharacterssearresView(LoginRequiredMixin, TemplateView):
         if self.request.GET['name']:
             name1 = self.request.GET['name'][0].upper() + self.request.GET['name'][1:]
         if name:
-            objects = HelpingEquipmentCharakters.objects.\
+            objects = HelpingEquipmentCharakters.objects.filter(pointer=self.request.user.profile.userid).\
             filter(Q(name__icontains=name)|Q(name__icontains=name1)).order_by('name')
             context['objects'] = objects
         context['form'] = Searchtestingform(initial={'name': name})
         context['URL'] = URL
         context['title'] = 'Характеристики, типы, вспомогательного оборудования'
+        context['POINTER'] = self.request.user.profile.userid
         return context
 
 
