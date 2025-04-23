@@ -5302,7 +5302,7 @@ size = 11
 
 def get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search):
     """создает и пересчитывает строки графика для класса выгрузки поверки(ниже):  MODEL = тип ЛО (СИ, ИО, ВО); MODEL2 = ServiceEquipment...; """
-    """MODEL3 = поверка/аттестация; MODEL4 = ServiceEquipmentU...MODEL5 = ServiceEquipmentUFact... и MODEL5 это план ТО добавлена на перспективу"""
+    """MODEL3 = поверка/аттестация; MODEL4 = ServiceEquipmentU...MODEL5 = ServiceEquipmentUFact... и MODEL6 это план ТО добавлена на перспективу"""
 
     company = Company.objects.get(userid=request.user.profile.userid) 
     affirmation = f'УТВЕРЖДАЮ \n{company.direktor_position}\n{company.name}\n____________/{company.direktor_name}/\n«__» ________20__ г.'     
@@ -5499,95 +5499,96 @@ def get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, M
         t3month12f = ''
 
         # подставляем месяц плана поверки/аттестации/проверки
-        try:
-            note3 = MODEL3.objects.filter(equipmentSM__equipment__pk=note.equipment.pk).exclude(
+        if to3:
+            try:
+                note3 = MODEL3.objects.filter(equipmentSM__equipment__pk=note.equipment.pk).exclude(
                 dateorder__isnull=True)
 
-            q = note3.get(dateorder__year=year_search)
-            t3month = int(q.dateorder.month)
+                q = note3.get(dateorder__year=year_search)
+                t3month = int(q.dateorder.month)
 
-            if t3month == 1:
-                t3month1 = 'V'
-            if t3month == 2:
-                t3month2 = 'V'
-            if t3month == 3:
-                t3month3 = 'V'
-            if t3month == 4:
-                t3month4 = 'V'
-            if t3month == 5:
-                t3month5 = 'V'
-            if t3month == 6:
-                t3month6 = 'V'
-            if t3month == 7:
-                t3month7 = 'V'
-            if t3month == 8:
-                t3month8 = 'V'
-            if t3month == 9:
-                t3month9 = 'V'
-            if t3month == 10:
-                t3month10 = 'V'
-            if t3month == 11:
-                t3month11 = 'V'
-            if t3month == 12:
-                t3month12 = 'V'
-        except:
-            t3month1 = ''
-            t3month2 = ''
-            t3month3 = ''
-            t3month4 = ''
-            t3month5 = ''
-            t3month6 = ''
-            t3month7 = ''
-            t3month8 = ''
-            t3month9 = ''
-            t3month10 = ''
-            t3month11 = ''
-            t3month12 = ''
+                if t3month == 1:
+                    t3month1 = 'V'
+                if t3month == 2:
+                    t3month2 = 'V'
+                if t3month == 3:
+                    t3month3 = 'V'
+                if t3month == 4:
+                    t3month4 = 'V'
+                if t3month == 5:
+                    t3month5 = 'V'
+                if t3month == 6:
+                    t3month6 = 'V'
+                if t3month == 7:
+                    t3month7 = 'V'
+                if t3month == 8:
+                    t3month8 = 'V'
+                if t3month == 9:
+                    t3month9 = 'V'
+                if t3month == 10:
+                    t3month10 = 'V'
+                if t3month == 11:
+                    t3month11 = 'V'
+                if t3month == 12:
+                    t3month12 = 'V'
+            except:
+                t3month1 = ''
+                t3month2 = ''
+                t3month3 = ''
+                t3month4 = ''
+                t3month5 = ''
+                t3month6 = ''
+                t3month7 = ''
+                t3month8 = ''
+                t3month9 = ''
+                t3month10 = ''
+                t3month11 = ''
+                t3month12 = ''
 
         #  подставляем месяц факта поверки/аттестации/проверки
-        try:
-            note3 = MODEL3.objects.filter(equipmentSM__equipment__pk=note.equipment.pk).exclude(
-                date__isnull=True)
-            q = note3.get(date__year=year_search)
-            t3monthf = int(q.date.month)
+            try:
+                note3 = MODEL3.objects.filter(equipmentSM__equipment__pk=note.equipment.pk).exclude(
+                    date__isnull=True)
+                q = note3.get(date__year=year_search)
+                t3monthf = int(q.date.month)
 
-            if t3monthf == 1:
-                t3month1f = 'V'
-            if t3monthf == 2:
-                t3month2f = 'V'
-            if t3monthf == 3:
-                t3month3f = 'V'
-            if t3monthf == 4:
-                t3month4f = 'V'
-            if t3monthf == 5:
-                t3month5f = 'V'
-            if t3monthf == 6:
-                t3month6f = 'V'
-            if t3monthf == 7:
-                t3month7f = 'V'
-            if t3monthf == 8:
-                t3month8f = 'V'
-            if t3monthf == 9:
-                t3month9f = 'V'
-            if t3monthf == 10:
-                t3month10f = 'V'
-            if t3monthf == 11:
-                t3month11f = 'V'
-            if t3monthf == 12:
-                t3month12f = 'V'
-        except:
-            t3month1f = ''
-            t3month2f = ''
-            t3month3f = ''
-            t3month4f = ''
-            t3month5f = ''
-            t3month6f = ''
-            t3month7f = ''
-            t3month8f = ''
-            t3month9f = ''
-            t3month10f = ''
-            t3month11f = ''
-            t3month12f = ''
+                if t3monthf == 1:
+                    t3month1f = 'V'
+                if t3monthf == 2:
+                    t3month2f = 'V'
+                if t3monthf == 3:
+                    t3month3f = 'V'
+                if t3monthf == 4:
+                    t3month4f = 'V'
+                if t3monthf == 5:
+                    t3month5f = 'V'
+                if t3monthf == 6:
+                    t3month6f = 'V'
+                if t3monthf == 7:
+                    t3month7f = 'V'
+                if t3monthf == 8:
+                    t3month8f = 'V'
+                if t3monthf == 9:
+                    t3month9f = 'V'
+                if t3monthf == 10:
+                    t3month10f = 'V'
+                if t3monthf == 11:
+                    t3month11f = 'V'
+                if t3monthf == 12:
+                    t3month12f = 'V'
+            except:
+                t3month1f = ''
+                t3month2f = ''
+                t3month3f = ''
+                t3month4f = ''
+                t3month5f = ''
+                t3month6f = ''
+                t3month7f = ''
+                t3month8f = ''
+                t3month9f = ''
+                t3month10f = ''
+                t3month11f = ''
+                t3month12f = ''
 
         row_num += 1
         columns = [
@@ -5786,66 +5787,67 @@ def get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, M
             ws.row(row_num).height_mismatch = True
             ws.row(row_num).height = 1300
 
-        row_num += 1
-        columns = [
-            '',
-            f'ТО 3',
-            f'{to3}',
-            f'{to3}',
-            f'{to3}',
-            'план',
-            t3month1,
-            t3month2,
-            t3month3,
-            t3month4,
-            t3month5,
-            t3month6,
-            t3month7,
-            t3month8,
-            t3month9,
-            t3month10,
-            t3month11,
-            t3month12,
-            f'Ответственный за метрологическое обеспечение',
-            f'{commentservice}',
-        ]
-        for col_num in range(len(columns)):
-            ws.write(row_num, col_num, columns[col_num], style_plain)
-            ws.merge(row_num, row_num, 2, 4, style_plain)
-            ws.merge(row_num, row_num + 1, 1, 1, style_plain)
-            ws.merge(row_num, row_num + 1, 2, 4, style_plain)
-            ws.merge(row_num, row_num + 1, 18, 18, style_plain)
-            ws.row(row_num).height_mismatch = True
-            ws.row(row_num).height = 1300
+        if to3:
+            row_num += 1
+            columns = [
+                '',
+                f'ТО 3',
+                f'{to3}',
+                f'{to3}',
+                f'{to3}',
+                'план',
+                t3month1,
+                t3month2,
+                t3month3,
+                t3month4,
+                t3month5,
+                t3month6,
+                t3month7,
+                t3month8,
+                t3month9,
+                t3month10,
+                t3month11,
+                t3month12,
+                f'Ответственный за метрологическое обеспечение',
+                f'{commentservice}',
+                ]
+            for col_num in range(len(columns)):
+                ws.write(row_num, col_num, columns[col_num], style_plain)
+                ws.merge(row_num, row_num, 2, 4, style_plain)
+                ws.merge(row_num, row_num + 1, 1, 1, style_plain)
+                ws.merge(row_num, row_num + 1, 2, 4, style_plain)
+                ws.merge(row_num, row_num + 1, 18, 18, style_plain)
+                ws.row(row_num).height_mismatch = True
+                ws.row(row_num).height = 1300
 
-        row_num += 1
-        columns = [
-            '',
-            f'ТО 3',
-            f'{to3}',
-            f'{to3}',
-            f'{to3}',
-            'факт',
-            t3month1f,
-            t3month2f,
-            t3month3f,
-            t3month4f,
-            t3month5f,
-            t3month6f,
-            t3month7f,
-            t3month8f,
-            t3month9f,
-            t3month10f,
-            t3month11f,
-            t3month12f,
-            f'Ответственный за метрологическое обеспечение',
-            f'{commentservice}',
-        ]
-        for col_num in range(len(columns)):
-            ws.write(row_num, col_num, columns[col_num], style_plain)
-            ws.merge(row_num, row_num, 2, 4, style_plain)
-            ws.row(row_num).height_mismatch = True
-            ws.row(row_num).height = 1300
+            row_num += 1
+            columns = [
+                '',
+                f'ТО 3',
+                f'{to3}',
+                f'{to3}',
+                f'{to3}',
+                'факт',
+                t3month1f,
+                t3month2f,
+                t3month3f,
+                t3month4f,
+                t3month5f,
+                t3month6f,
+                t3month7f,
+                t3month8f,
+                t3month9f,
+                t3month10f,
+                t3month11f,
+                t3month12f,
+                f'Ответственный за метрологическое обеспечение',
+                f'{commentservice}',
+                ]
+            for col_num in range(len(columns)):
+                ws.write(row_num, col_num, columns[col_num], style_plain)
+                ws.merge(row_num, row_num, 2, 4, style_plain)
+                ws.row(row_num).height_mismatch = True
+                ws.row(row_num).height = 1300
 
         row_num += 1
         columns = [
@@ -5980,7 +5982,7 @@ def export_maintenance_schedule_xls(request):
     MODEL = MeasurEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5))
     MODEL2 = ServiceEquipmentME
     MODEL3 = Verificationequipment
-    MODEL4 = ServiceEquipmentU
+    MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
     MODEL5 = ServiceEquipmentUFact
     to3 = 'Поверка'
 
@@ -5988,26 +5990,27 @@ def export_maintenance_schedule_xls(request):
 
     row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search) + 1
 
-    # equipment_type = 'ИО'
-    # MODEL = TestingEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5))
-    # MODEL2 = ServiceEquipmentTE
-    # MODEL3 = Attestationequipment
-    # to3 = 'Аттестация'
+    equipment_type = 'ИО'
+    MODEL = TestingEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5))
+    MODEL2 = ServiceEquipmentTE
+    MODEL3 = Attestationequipment
+    MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
+    to3 = 'Аттестация'
 
 
-    # get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, year_search)
+    get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, year_search)
 
-    # row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, year_search) + 1
+    row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, year_search) + 1
 
-    # equipment_type = 'ВО'
-    # MODEL = HelpingEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5))
-    # MODEL2 = ServiceEquipmentHE
-    # MODEL3 = Checkequipment
-    # to3 = 'Проверка технических характеристик'
+    equipment_type = 'ВО'
+    MODEL = HelpingEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5))
+    MODEL2 = ServiceEquipmentHE
+    MODEL3 = None
+    to3 = None
 
-    # get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, year_search)
+    get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, year_search)
 
-    # row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, year_search) + 1
+    row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, year_search) + 1
 
     row_num += 2
     columns = [
