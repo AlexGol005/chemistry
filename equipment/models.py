@@ -999,7 +999,7 @@ class MeteorologicalParameters(models.Model):
     pressure = models.CharField('Давление, кПа', max_length=90, blank=True, null=True)
     temperature = models.CharField('Температура, °С', max_length=90, blank=True, null=True)
     humidity = models.CharField('Влажность, %', max_length=90, blank=True, null=True)
-    equipments = models.CharField('СИ', max_length=190, blank=True, null=True)
+    equipments = models.CharField('СИ', max_length=10000, blank=True, null=True)
     person = models.CharField('Исполнитель ФИО', max_length=190, blank=True, null=True)
     
 
