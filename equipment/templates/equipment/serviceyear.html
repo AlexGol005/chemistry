@@ -55,7 +55,7 @@
             {% elif obj.equipment.testingequipment  %}
             <td> <a href="{% url 'testequipment' obj.equipment.exnumber %}"  class="btn btn-outline-primary">{{obj.equipment.exnumber| slice:":5"}}</a></td> 
             {% elif obj.equipment.helpingequipment %}
-            <td> <a href="{% url 'helpingequipment' obj.equipment.exnumber %}"  class="btn btn-outline-primary">{{obj.equipment.exnumber| slice:":5"}}</a></td>
+            <td> <a href="{% url 'helpequipment' obj.equipment.exnumber %}"  class="btn btn-outline-primary">{{obj.equipment.exnumber| slice:":5"}}</a></td>
             {% else %}
             <td> {{obj.equipment.exnumber| slice:":5"}}</td>            
             {% endif %}
