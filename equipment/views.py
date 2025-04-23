@@ -845,7 +845,7 @@ class MeteorologicalParametersCreateView(LoginRequiredMixin, SuccessMessageMixin
                     messages.success(request, f'Условия уже добавлены ранее')
                     return redirect(f'/equipment/meteoreg/')
             except:
-                raise
+                # raise
                 messages.success(request, f'Сначала добавьте барометр, гигрометр и ответственное лицо для комнаты')
                 return redirect(f'/equipment/meteoreg/')
                 
