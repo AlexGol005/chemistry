@@ -1665,7 +1665,7 @@ def VerificationReg(request, str):
                 order.save()
                 return redirect(order)
         else:
-            messages.success(request, 'Раздел доступен только продвинутому пользователю')
+            messages.success(request, 'Раздел доступен только продвинутому пользователю или не добавлен поверитель')
             return redirect(reverse('measureequipmentver', kwargs={'str': str}))
     else:
         form = VerificationRegForm()
@@ -1701,7 +1701,7 @@ def VerUpdateView(request, str):
         return render(request, 'equipment/MEverificationreg.html', data)
         
     if not request.user.has_perm('equipment.add_equipment') or not request.user.is_superuser:
-        messages.success(request, 'Раздел доступен только продвинутому пользователю')
+        messages.success(request, 'Раздел доступен только продвинутому пользователю или не добавлен поверитель')
         return redirect('verificationupdate')
 
 
@@ -1721,7 +1721,7 @@ def CalibrationReg(request, str):
                 order.save()
                 return redirect(order)
         else:
-            messages.success(request, 'Раздел доступен только продвинутому пользователю')
+            messages.success(request, 'Раздел доступен только продвинутому пользователю или не добавлен поверитель')
             return redirect(reverse('measureequipmentcal', kwargs={'str': str}))
     else:
         form = CalibrationRegForm()
@@ -1757,7 +1757,7 @@ def CalibrationUpdateView(request, str):
         return render(request, 'equipment/MEcalibrationreg.html', data)
         
     if not request.user.has_perm('equipment.add_equipment') or not request.user.is_superuser:
-        messages.success(request, 'Раздел доступен только продвинутому пользователю')
+        messages.success(request, 'Раздел доступен только продвинутому пользователю или не добавлен поверитель')
         return redirect('сalibrationupdate')
         
 
@@ -1778,7 +1778,7 @@ def AttestationReg(request, str):
                 order.save()
                 return redirect(order)
         else:
-            messages.success(request, 'Раздел доступен только продвинутому пользователю')
+            messages.success(request, 'Раздел доступен только продвинутому пользователю или не добавлен поверитель')
             return redirect(reverse('testingequipmentatt', kwargs={'str': str}))
     else:
         form = AttestationRegForm()
@@ -1814,7 +1814,7 @@ def AttestationUpdateView(request, str):
         return render(request, 'equipment/TEattestationreg.html', data)
         
     if not request.user.has_perm('equipment.add_equipment') or not request.user.is_superuser:
-        messages.success(request, 'Раздел доступен только продвинутому пользователю')
+        messages.success(request, 'Раздел доступен только продвинутому пользователю или не добавлен поверитель')
         return redirect('attestationupdate')
         
 
