@@ -623,7 +623,7 @@ class Verificationequipment(models.Model):
     statusver = models.CharField(max_length=300, choices=CHOICESVERIFIC, default='Поверен', null=True,
                                  verbose_name='Статус поверки: выберите "Поверен", "Признан непригодным", "Спорный"')
     verificator = models.ForeignKey(Verificators, on_delete=models.PROTECT,
-                                    verbose_name='Название компании поверителя', blank=True, null=True)
+                                    verbose_name='Название компании поверителя', blank=False, null=False)
     place = models.CharField(max_length=300, choices=CHOICESPLACE, default='У поверителя', null=True,
                              verbose_name='Место поверки: выберите "У поверителя", "На месте эксплуатации"')
     note = models.CharField('Примечание', max_length=900, blank=True, null=True)
@@ -712,7 +712,7 @@ class Calibrationequipment(models.Model):
     statusver = models.CharField(max_length=300, choices=CHOICESCAL, default='Калиброван', null=True,
                                  verbose_name='Статус калибровки: выберите "Калиброван", "Признан непригодным", "Спорный"')
     verificator = models.ForeignKey(Verificators, on_delete=models.PROTECT,
-                                    verbose_name='Название компании поверителя', blank=True, null=True)
+                                    verbose_name='Название компании поверителя', blank=False, null=False)
     place = models.CharField(max_length=300, choices=CHOICESPLACE, default='У поверителя', null=True,
                              verbose_name='Место калибровки: выберите "У поверителя", "На месте эксплуатации"')
     note = models.CharField('Примечание', max_length=900, blank=True, null=True)
@@ -800,7 +800,7 @@ class Attestationequipment(models.Model):
     statusver = models.CharField(max_length=300, choices=CHOICESATT, default='Аттестован', null=True,
                                  verbose_name='Статус аттестации: выберите "Аттестован", "Признан непригодным", "Спорный"')
     verificator = models.ForeignKey(Verificators, on_delete=models.PROTECT,
-                                    verbose_name='Название компании поверителя', blank=True, null=True)
+                                    verbose_name='Название компании поверителя', blank=False, null=False)
     place = models.CharField(max_length=300, choices=CHOICESPLACE, default='У поверителя', null=True,
                              verbose_name='Место аттестации: выберите "У поверителя", "На месте эксплуатации"')
     note = models.CharField('Примечание', max_length=900, blank=True, null=True)
