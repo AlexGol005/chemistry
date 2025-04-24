@@ -827,9 +827,9 @@ class Attestationequipment(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pointer:
-                self.pointer = self.created_by.profile.userid
+            self.pointer = self.created_by.profile.userid
         super().save()
-        # добавляем последнюю аттестацию к оборудованию
+        # добавляем последнюю поверку к оборудованию
         try:
             note = TestingEquipment.objects.get(pk=self.equipmentSM.pk)
         except:
@@ -866,43 +866,6 @@ class Attestationequipment(models.Model):
                 note.newdateordernew = '-' 
             note.save()
 
-
-
-    def save(self, *args, **kwargs):
-        super().save()
-        # добавляем последнюю аттестацию к оборудованию
-        try:
-            note = TestingEquipment.objects.get(pk=self.equipmentSM.pk)
-        except:
-            pass
-        if note:       
-            note.newcertnumber = self.certnumber
-            note.newarshin = self.arshin
-            note.newprice = self.price
-            note.newstatusver = self.statusver
-            note.newverificator = self.verificator.companyName
-            note.newplace = self.place
-            note.newnote = self.note
-            note.newyear = self.year
-            note.newhaveorder = self.haveorder
-            note.newcust = self.cust
-            note.newextra = self.extra 
-            newdatedead = get_dateformat(self.datedead)
-            note.newdatedead = newdatedead 
-            note.newdatedead_date = self.datedead
-            if self.dateorder:
-                newdateorder = get_dateformat(self.dateorder)
-                note.newdateorder = newdateorder
-                note.newdateorder_date = self.dateorder
-            else:
-                note.newdateorder = '-' 
-            if self.dateordernew:
-                newdateordernew = get_dateformat(self.dateordernew)
-                note.newdateordernew = newdateordernew  
-                note.newdateordernew_date = self.dateordernew
-            else:
-                note.newdateordernew = '-' 
-            note.save()    
     class Meta:
         verbose_name = 'ИО метрология аттестация'
         verbose_name_plural = 'ИО метрология аттестация'
