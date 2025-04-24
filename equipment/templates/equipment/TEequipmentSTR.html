@@ -298,14 +298,21 @@
         </thead>
         <tbody>
         <tr>
-            {% if obj.charakters.serviceequipmentte and POINTER == obj.charakters.serviceequipmentte.pointer %}
+
+
+            {% if obj.charakters.serviceequipmentte and POINTER == obj.charakters.serviceequipmentte.pointer and USER_HAVE_RIGHTS %}
               <td> <a href="{% url 'toregte' obj.charakters.pk %}" target="blank" class="btn btn-outline-primary mt-3">редактировать</a></td>  
             {% elif obj.charakters.serviceequipmentte and POINTER != obj.charakters.serviceequipmentte.pointer %}
              <td> <a href="{% url 'tote' obj.charakters.serviceequipmentte.pk %}" target="blank" class="btn btn-outline-primary mt-3">смотреть</a></td>  
-            {% else %}
+            {% elif obj.charakters.serviceequipmentte and not USER_HAVE_RIGHTS %}
+             <td> <a href="{% url 'tote' obj.charakters.serviceequipmentte.pk %}" target="blank" class="btn btn-outline-primary mt-3">смотреть</a></td>  
+            {% elif USER_HAVE_RIGHTS and  not obj.charakters.serviceequipmentte %}
             <td> <a href="{% url 'toregte' obj.charakters.pk %}" target="blank" class="btn btn-outline-primary mt-3">добавить</a></td>
+            {% else %}
+            <td> не указано </td>
             {% endif %}
 
+            
             
              <td>         
             <form action="{% url 'serviceplan' obj.equipment.pk %}" method="GET">
