@@ -6001,9 +6001,9 @@ def export_maintenance_schedule_xls(request):
     year_search = str(serdate)[0:4]
 
 
-    get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, year_search)
+    get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search)
 
-    row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, year_search) + 1
+    row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search) + 1
 
     equipment_type = 'ВО'
     MODEL = HelpingEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5))
@@ -6014,9 +6014,9 @@ def export_maintenance_schedule_xls(request):
     MODEL5 = ServiceEquipmentUFact.objects.filter(year=year_search)
     year_search = str(serdate)[0:4]
 
-    get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, year_search)
+    get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search)
 
-    row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, year_search) + 1
+    row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search) + 1
 
     row_num += 2
     columns = [
