@@ -354,6 +354,8 @@
               <td> <a href="{% url 'toreg' obj.charakters.pk %}" target="blank" class="btn btn-outline-primary mt-3">редактировать</a></td>  
             {% elif obj.charakters.serviceequipmentme and POINTER != obj.charakters.serviceequipmentme.pointer %}
              <td> <a href="{% url 'tome' obj.charakters.serviceequipmentme.pk %}" target="blank" class="btn btn-outline-primary mt-3">смотреть</a></td>  
+            {% elif obj.charakters.serviceequipmentme and not USER_HAVE_RIGHTS %}
+             <td> <a href="{% url 'tome' obj.charakters.serviceequipmentme.pk %}" target="blank" class="btn btn-outline-primary mt-3">смотреть</a></td>  
             {% elif USER_HAVE_RIGHTS and  not obj.charakters.serviceequipmentme %}
             <td> <a href="{% url 'toreg' obj.charakters.pk %}" target="blank" class="btn btn-outline-primary mt-3">добавить</a></td>
             {% else %}
