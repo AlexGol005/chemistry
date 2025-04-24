@@ -5979,7 +5979,7 @@ def export_maintenance_schedule_xls(request):
 
 
     equipment_type = 'СИ'
-    MODEL = MeasurEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5))
+    MODEL = MeasurEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).filter(serviceequipmentu_set.year=year_search)
     MODEL2 = ServiceEquipmentME
     MODEL3 = Verificationequipment
     MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
@@ -5992,7 +5992,7 @@ def export_maintenance_schedule_xls(request):
     row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search) + 1
 
     equipment_type = 'ИО'
-    MODEL = TestingEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5))
+    MODEL = TestingEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).filter(serviceequipmentu_set.year=year_search)
     MODEL2 = ServiceEquipmentTE
     MODEL3 = Attestationequipment
     MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
@@ -6006,7 +6006,7 @@ def export_maintenance_schedule_xls(request):
     row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search) + 1
 
     equipment_type = 'ВО'
-    MODEL = HelpingEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5))
+    MODEL = HelpingEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).filter(serviceequipmentu_set.year=year_search)
     MODEL2 = ServiceEquipmentHE
     MODEL3 = None
     to3 = None
