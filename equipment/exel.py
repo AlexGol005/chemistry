@@ -5343,7 +5343,7 @@ def get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, M
             to1_shed = ''
 
         try:
-            note4 = MODEL4.objects.get(equipment__pk=note.equipment.pk)
+            note4 = MODEL4.objects.filter(equipment__pk=note.equipment.pk, year=year_search)
             commentservice = note4.commentservice
             if note4.t2month1 == True:
                 t2month1 = 'V'
@@ -5409,7 +5409,7 @@ def get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, M
             t2month12 = ''
 
         try:
-            note5 = MODEL5.objects.get(equipment__pk=note.equipment.pk)
+            note5 = MODEL5.objects.filter(equipment__pk=note.equipment.pk, year=year_search)
             if note5.t2month1 == True:
                 t2month1f = 'V'
             else:
