@@ -5983,8 +5983,8 @@ def export_maintenance_schedule_xls(request):
     MODEL = MeasurEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).annotate(all=Exists(ServiceEquipmentU.objects.filter(year=year_search, equipment=OuterRef('equipment')))).filter(all=True)
     MODEL2 = ServiceEquipmentME
     MODEL3 = Verificationequipment
-    MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
-    MODEL5 = ServiceEquipmentUFact.objects.filter(year=year_search)
+    MODEL4 = ServiceEquipmentU
+    MODEL5 = ServiceEquipmentUFact
     to3 = 'Поверка'
 
 
