@@ -40,12 +40,14 @@
     <center>
         <a href="{% url 'contacts' %}" class="btn btn-primary  mr-2 ml-2 mt-2 " style="width: 80%"> Написать администрации сайта</a>
     </center>
+   {% if not user.is_authenticated %}
     <br>
        <center>
         <a href="{% url 'heademployeereg' %}" class="btn btn-success  mr-2 ml-2 mt-2 " style="width: 80%"> Попробовать бесплатно</a>
     </center>
     <br>
    <center>30 дней бесплатно. Без обязательств.</center>
+   {% endif %}
     <br>
   
 </div>
