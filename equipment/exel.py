@@ -21,7 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse, request
-from django.db.models import Max, Q, Value, CharField, Count, Sum, Exists
+from django.db.models import Max, Q, Value, CharField, Count, Sum, Exists, OuterRef
 from django.db.models.functions import Concat, Substr 
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import View
@@ -5980,7 +5980,7 @@ def export_maintenance_schedule_xls(request):
 
     equipment_type = 'СИ'
     
-    MODEL = MeasurEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).annotate(all=Exists(ServiceEquipmentU.objects.filter(year=year_search, equipment=equipment))).filter(all=True)
+    MODEL = MeasurEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).annotate(all=Exists(ServiceEquipmentU.objects.filter(year=year_search, equipment=OuterRef('equipment')))).filter(all=True)
     MODEL2 = ServiceEquipmentME
     MODEL3 = Verificationequipment
     MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
