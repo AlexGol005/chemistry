@@ -850,7 +850,7 @@ class Attestationequipment(models.Model):
             note.newdatedead = newdatedead 
             note.newdatedead_date = self.datedead
             newdate = get_dateformat(self.date)
-            note.newdate = newdate 
+            note.newdate = newdate
             note.newdate_date = self.date
             if self.dateorder:
                 newdateorder = get_dateformat(self.dateorder)
