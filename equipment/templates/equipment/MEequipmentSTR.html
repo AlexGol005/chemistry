@@ -357,7 +357,7 @@
             {% elif USER_HAVE_RIGHTS and  not obj.charakters.serviceequipmentme %}
             <td> <a href="{% url 'toreg' obj.charakters.pk %}" target="blank" class="btn btn-outline-primary mt-3">добавить</a></td>
             {% else %}
-            не указано
+            <td> не указано </td>
             {% endif %}
 
             
