@@ -109,7 +109,7 @@ class OrderVerificationView(LoginRequiredMixin, View):
         serdate = request.GET.get('date')
         if not serdate:
            serdate = now
-        form = ActivaqqchangeForm(ruser, instance=Activeveraqq.objects.get(pointe=ruser), initial={'ruser': ruser,})
+        form = ActivaqqchangeForm(ruser, instance=Activeveraqq.objects.get(pointer=ruser), initial={'ruser': ruser,})
         dateform = DateForm(initial={'date': serdate,})
         i=str
         if i=='0':
