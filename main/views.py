@@ -18,7 +18,6 @@ class Contacts(View):
 
 class IndexView(View):
     """выводит страницу главная страница по основному адресу"""
-    if:
     def get(self, request):
         return render(request, 'main/main.html')
 
