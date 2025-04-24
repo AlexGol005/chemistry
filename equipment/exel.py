@@ -3636,10 +3636,7 @@ def export_verificlabel_xls(request):
             b = 'поверен'
         if currentnote2.equipment.kategory == 'ИО':
             b = 'аттестован'
-        if not currentnote1.newdate:
-                raise
-        if not currentnote2.newdate:
-                raise
+                
 
         row_num = 3 + j
         columns = [
