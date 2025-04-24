@@ -5980,13 +5980,13 @@ def export_maintenance_schedule_xls(request):
 
     equipment_type = 'СИ'
     
-    MODEL = MeasurEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).annotate(all=Exists(ServiceEquipmentU.objects.filter(year=1000))).filter(all=True)
+    MODEL = MeasurEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).annotate(all=Exists(ServiceEquipmentU.objects.filter(year=year_search, equipment=equipment))).filter(all=True)
     MODEL2 = ServiceEquipmentME
     MODEL3 = Verificationequipment
     MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
     MODEL5 = ServiceEquipmentUFact.objects.filter(year=year_search)
     to3 = 'Поверка'
-    year_search = str(serdate)[0:4]
+
 
     get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search)
 
@@ -5999,7 +5999,7 @@ def export_maintenance_schedule_xls(request):
     # MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
     # MODEL5 = ServiceEquipmentUFact.objects.filter(year=year_search)
     # to3 = 'Аттестация'
-    # year_search = str(serdate)[0:4]
+
 
 
     # get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search)
@@ -6013,7 +6013,7 @@ def export_maintenance_schedule_xls(request):
     # to3 = None
     # MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
     # MODEL5 = ServiceEquipmentUFact.objects.filter(year=year_search)
-    # year_search = str(serdate)[0:4]
+
 
     # get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search)
 
