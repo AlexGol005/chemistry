@@ -5980,7 +5980,7 @@ def export_maintenance_schedule_xls(request):
 
     equipment_type = 'СИ'
     
-    MODEL = MeasurEquipment.objects.select_related('serviceequipmentu').filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).filter(serviceequipmentu__year=year_search)
+    MODEL = MeasurEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).annotate(all=Exists(serviceequipmentu.objects.filter(year=year_search).filter(all=True)
     MODEL2 = ServiceEquipmentME
     MODEL3 = Verificationequipment
     MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
@@ -5992,32 +5992,32 @@ def export_maintenance_schedule_xls(request):
 
     row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search) + 1
 
-    equipment_type = 'ИО'
-    MODEL = TestingEquipment.objects.select_related('serviceequipmentu').filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).filter(serviceequipmentu__year=year_search)
-    MODEL2 = ServiceEquipmentTE
-    MODEL3 = Attestationequipment
-    MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
-    MODEL5 = ServiceEquipmentUFact.objects.filter(year=year_search)
-    to3 = 'Аттестация'
-    year_search = str(serdate)[0:4]
+    # equipment_type = 'ИО'
+    # MODEL = TestingEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5))
+    # MODEL2 = ServiceEquipmentTE
+    # MODEL3 = Attestationequipment
+    # MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
+    # MODEL5 = ServiceEquipmentUFact.objects.filter(year=year_search)
+    # to3 = 'Аттестация'
+    # year_search = str(serdate)[0:4]
 
 
-    get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search)
+    # get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search)
 
-    row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search) + 1
+    # row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search) + 1
 
-    equipment_type = 'ВО'
-    MODEL = HelpingEquipment.objects.select_related('serviceequipmentu').filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).filter(serviceequipmentu__year=year_search)
-    MODEL2 = ServiceEquipmentHE
-    MODEL3 = None
-    to3 = None
-    MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
-    MODEL5 = ServiceEquipmentUFact.objects.filter(year=year_search)
-    year_search = str(serdate)[0:4]
+    # equipment_type = 'ВО'
+    # MODEL = HelpingEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5))
+    # MODEL2 = ServiceEquipmentHE
+    # MODEL3 = None
+    # to3 = None
+    # MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
+    # MODEL5 = ServiceEquipmentUFact.objects.filter(year=year_search)
+    # year_search = str(serdate)[0:4]
 
-    get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search)
+    # get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search)
 
-    row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search) + 1
+    # row_num = get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search) + 1
 
     row_num += 2
     columns = [
