@@ -51,6 +51,7 @@
         {# конец таблицы #}
          </center>
         </center> 
+    {% if USER_HAVE_RIGHTS %} 
         {#форма для внесения документа#}
           <br><br>
         <center>
@@ -62,6 +63,7 @@
         </form>
         {#конец формы#}
          </center>
+     {% endif %}
         <br>
 </div>
 {% endblock %}
