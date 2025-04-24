@@ -5996,8 +5996,8 @@ def export_maintenance_schedule_xls(request):
     MODEL = TestingEquipment.objects.filter(equipment__pointer=request.user.profile.userid).exclude(equipment__status='С').annotate(exnumber=Substr('equipment__exnumber',1,5)).annotate(all=Exists(ServiceEquipmentU.objects.filter(year=year_search, equipment=OuterRef('equipment')))).filter(all=True)
     MODEL2 = ServiceEquipmentTE
     MODEL3 = Attestationequipment
-    MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
-    MODEL5 = ServiceEquipmentUFact.objects.filter(year=year_search)
+    MODEL4 = ServiceEquipmentU
+    MODEL5 = ServiceEquipmentUFact
     to3 = 'Аттестация'
 
 
@@ -6011,8 +6011,8 @@ def export_maintenance_schedule_xls(request):
     MODEL2 = ServiceEquipmentHE
     MODEL3 = None
     to3 = None
-    MODEL4 = ServiceEquipmentU.objects.filter(year=year_search)
-    MODEL5 = ServiceEquipmentUFact.objects.filter(year=year_search)
+    MODEL4 = ServiceEquipmentU
+    MODEL5 = ServiceEquipmentUFact
 
 
     get_rows_service_shedule(request, row_num, ws, MODEL, to3, equipment_type, MODEL2, MODEL3, MODEL4, MODEL5, year_search)
