@@ -1,4 +1,5 @@
 from django.views.generic import ListView, TemplateView, View
+from django.shortcuts import render, redirect
 
 from Chem.models import *
 
