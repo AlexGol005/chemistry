@@ -4,11 +4,18 @@ from django.urls import reverse
 
 class Inorganiclaw(models.Model):
     date = models.DateField('Дата', auto_now_add=True)
-    title = models.CharField('Заголовок', max_length=10000)
     metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
     description = models.TextField('Метаописание страницы', blank=True, null=True)
+    
     keywords = models.TextField('Ключевые слова', blank=True, null=True)
-    text = models.TextField('Текст записи.')
+    
+    number = models.TextField('Номер закона')
+    title = models.TextField('Заголовок')
+    text = models.TextField('Описание закона')
+    formula = models.TextField('Общая формула закона')
+    examples = models.TextField('Примеры')
+    exceptions = models.TextField('Описание исключений')
+    trening = models.TextField('Тренировка')
 
 
 
