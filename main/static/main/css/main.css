@@ -6,6 +6,7 @@
 
 .main-page-body {
   background-color: rgba(123, 245, 244, 0.47);
+  white-space: nowrap !important;
 }
 
 .inner-page-body {
@@ -57,6 +58,8 @@ right: 0;
     border-color: #4d74bd !important;
     background-color: rgb(245, 245, 246) !important;
     text-align: center !important;
+    white-space: nowrap !important;
+    hyphens: none !important;
 }
 
 .flexy {
@@ -64,8 +67,10 @@ right: 0;
     background-color: rgb(245, 245, 246) !important;
     text-align: center !important;
     width:100% !important;
-    word-break: break-all !important;
+    /*word-break: break-all !important;*/
     table-layout: fixed !important;
+    white-space: nowrap !important;
+    hyphens: none !important;
 }
 
 .td600 {
@@ -117,12 +122,14 @@ td.green {
     text-align: center !important;
     border-collapse: collapse !important;
     min-width: 100px;
+    white-space: nowrap !important;
 }
 
 .nor {
   border-collapse: collapse;
   background-color: rgb(245, 245, 246);
     width: 15px;
+    white-space: nowrap !important;
 }
 
 @media print{
