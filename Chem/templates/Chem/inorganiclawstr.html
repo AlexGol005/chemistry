@@ -44,7 +44,10 @@
             </tr>
             </tbody>
                 </table>
-
+   <center>  <div class="media text-muted pt-3">
+       {% if obj.img1 %} <img class="bd-placeholder-img mr-2 rounded" width=100% height=100% src="{{ obj.img1.url }}">{% endif %}
+        <br>
+        </div></center> 
             <table class="table table-bordered flexy">
             <tbody>
             <tr>
@@ -63,7 +66,7 @@
             <td>
                 <h4>Исключения</h4>
                 <br>
-                {{ obj.examples }}
+                {{ obj.exceptions }}
             </td>
             </tr>
             </tbody>
@@ -87,17 +90,14 @@
                 {% endif %}
 
     
-     <center> <h4>Иллюстрации</h4></center> 
-   <center>  <div class="media text-muted pt-3">
-       {% if obj.img1 %} <img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img1.url }}">{% endif %}
-        <br>
-        </div></center> 
+
+
              <center>    <div class="media text-muted pt-3">
-       {% if obj.img2 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img2.url }}">{% endif %}
+       {% if obj.img2 %}<img class="bd-placeholder-img mr-2 rounded" width=100% height=100% src="{{ obj.img2.url }}">{% endif %}
         <br>
                 </div></center> 
                <center>  <div class="media text-muted pt-3">
-       {% if obj.img3 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img3.url }}">{% endif %}
+       {% if obj.img3 %}<img class="bd-placeholder-img mr-2 rounded" width=100% height=100% src="{{ obj.img3.url }}">{% endif %}
 
 </div></center> 
 
