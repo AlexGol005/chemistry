@@ -25,7 +25,7 @@ class InorganiclawAdminForm(forms.ModelForm):
     formula = forms.CharField(label="Общая формула закона", widget=CKEditorUploadingWidget())
     examples = forms.CharField(label="Примеры", widget=CKEditorUploadingWidget())
     exceptions = forms.CharField(label="Исключения", widget=CKEditorUploadingWidget())
-    trening = forms.CharField(label="Тренировка", widget=CKEditorUploadingWidget())
+
 
     class Meta:
         model = Inorganiclaw
