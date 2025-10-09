@@ -1,4 +1,4 @@
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, View
 
 from Chem.models import *
 
