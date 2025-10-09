@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'administrator',
     'qr_code',
     'pay',
+    'Chem',
     
 ]
 
@@ -214,6 +215,13 @@ REDIS_PORT = 18792
 REDIS_PASSWORD = '**'
 r = redis.Redis( host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD )
 CELERY_BROKER_URL=f'redis://{REDIS_HOST}:{REDIS_PORT}/0' 
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full'
+
+    }
+}
 
 # DEBUG = True
 DEBUG = False
