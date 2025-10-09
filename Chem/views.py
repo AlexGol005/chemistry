@@ -2,7 +2,7 @@ from django.views.generic import ListView, TemplateView, View
 
 from Chem.models import *
 
-class Chem(View):
+class ChemView(View):
     """выводит страницу химия"""
     def get(self, request):
         return render(request, 'Chem/chem.html')
