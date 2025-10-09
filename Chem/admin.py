@@ -10,27 +10,33 @@ import tablib
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
-# Блог классы для отображения в админке
+# знх классы для отображения в админке
 
-# класс для загрузки/выгрузки Блог
+# класс для загрузки/выгрузки знх
 class InorganiclawResource(resources.ModelResource):
     class Meta:
         model = Inorganiclaw
 
 
-# класс добавления стилей к окну Блог
+# класс добавления стилей к окну знх
 class InorganiclawAdminForm(forms.ModelForm):
-    text = forms.CharField(label="Текст", widget=CKEditorUploadingWidget())
+    title = forms.CharField(label="Заголовок", widget=CKEditorUploadingWidget())
+    text = forms.CharField(label="Описание закона", widget=CKEditorUploadingWidget())
+    formula = forms.CharField(label="Общая формула закона", widget=CKEditorUploadingWidget())
+    examples = forms.CharField(label="Примеры", widget=CKEditorUploadingWidget())
+    exceptions = forms.CharField(label="Исключения", widget=CKEditorUploadingWidget())
+    trening = forms.CharField(label="Тренировка", widget=CKEditorUploadingWidget())
+
     class Meta:
         model = Inorganiclaw
         fields = '__all__'
         
-# класс подробностей Блог   
+# класс подробностей знх   
 class InorganiclawAdmin(ImportExportActionModelAdmin):
     resource_class = InorganiclawResource
     list_display = ('pk', 'date', 'title',)
     search_fields = ['pk', 'title', 'text']
     form = InorganiclawAdminForm
         
-# фиксация формы в админке Блог
+# фиксация формы в админке знх
 admin.site.register(Inorganiclaw, InorganiclawAdmin)
