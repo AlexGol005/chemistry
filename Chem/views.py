@@ -1,6 +1,6 @@
 from django.views.generic import ListView, TemplateView
 
-from Chem.models import Chem
+from Chem.models import *
 
 class Chem(View):
     """выводит страницу химия"""
