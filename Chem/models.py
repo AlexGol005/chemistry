@@ -2,7 +2,7 @@ from django.db import models
 from django.urls import reverse
 
 
-class Chem(models.Model):
+class Inorganiclaw(models.Model):
     date = models.DateField('Дата', auto_now_add=True)
     title = models.CharField('Заголовок', max_length=10000)
     metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
