@@ -13,24 +13,24 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 # Блог классы для отображения в админке
 
 # класс для загрузки/выгрузки Блог
-class BlogResource(resources.ModelResource):
+class InorganiclawResource(resources.ModelResource):
     class Meta:
-        model = Chem
+        model = Inorganiclaw
 
 
 # класс добавления стилей к окну Блог
-class ChemAdminForm(forms.ModelForm):
+class InorganiclawAdminForm(forms.ModelForm):
     text = forms.CharField(label="Текст", widget=CKEditorUploadingWidget())
     class Meta:
-        model = Chem
+        model = Inorganiclaw
         fields = '__all__'
         
 # класс подробностей Блог   
-class ChemAdmin(ImportExportActionModelAdmin):
-    resource_class = ChemResource
+class InorganiclawAdmin(ImportExportActionModelAdmin):
+    resource_class = InorganiclawResource
     list_display = ('pk', 'date', 'title',)
     search_fields = ['pk', 'title', 'text']
-    form = ChemAdminForm
+    form = InorganiclawAdminForm
         
 # фиксация формы в админке Блог
-admin.site.register(Chem, ChemAdmin)
+admin.site.register(Inorganiclaw, InorganiclawAdmin)
