@@ -1,70 +1,94 @@
 {% extends 'main/superbase.html' %}
-{% load crispy_forms_filters %}
-{% load crispy_forms_tags %}
+
 
 {#название страницы#}
 {#стандартная#}
 {% block title %}
-{{ obj.metatitle |default_if_none:"статья про лабораторное оборудование"  }}
-{% endblock %}
-{% block keywords %}
-    <meta name="keywords" lang="ru" content="{{ obj.keywords }}">
-{% endblock %}
-{% block description %}
-<meta name="description" content="{{ obj.description }}">
+{{title}} 
 {% endblock %}
 {#конец названия страницы#}
 
-{% block content %}
 
-{#основная таблица#}
-{# уникальная #}
-  <div class="col-8">
     
-<table class="table table-bordered flexy">
-    <tbody>
+{% block content %}
+{% autoescape off %}
+  <div class="row">
+    <div class="col-md-10 mt-2 ml-2">
+       
+{#основная таблица#}
 
-    <tr>
-        <td>{{ obj.date }}<br><h4>{{ obj.title }}</h4>
-            <br> {% autoescape off %}{{ obj.text }}{% endautoescape %}
-        </td>
-    </tr>
 
-    </tbody>
-</table>
-{#конец основной таблицы#}
-    <div style="text-align: center;">
 
-    <a href="{% url 'contact_page' %}" class="btn btn-warning  mr-2 ml-2 mt-3 " style="width: 300px">Задать вопрос администрации сайта</a>
+ 
+ 
+            <center><h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2></center>
+        
+            <table class="table table-bordered flexy">
+            <tbody>
+            <tr>
+            <td>
+                {{ obj.text }}
+            </td>
+            </tr>
+            </tbody>
+
+            <table class="table table-bordered flexy">
+            <tbody>
+            <tr>
+            <td>
+                <h4>Общая формула закона</h4>
+                <br>
+                {{ obj.formula }}
+            </td>
+            </tr>
+            </tbody>
+
+            <table class="table table-bordered flexy">
+            <tbody>
+            <tr>
+            <td>
+                <h4>Примеры</h4>
+                <br>
+                {{ obj.examples }}
+            </td>
+            </tr>
+            </tbody>               
+                
+            <table class="table table-bordered flexy">
+            <tbody>
+            <tr>
+            <td>
+                <h4>Исключения</h4>
+                <br>
+                {{ obj.examples }}
+            </td>
+            </tr>
+            </tbody>
+
+             <p><b>Тренировка</b> 
+                {% if obj.trening %}
+                <a href="{{ obj.trening}}"  target="blank" >
+                ссылка
+                </a>
+                {% else  %}
+                отсутствует
+                {% endif %}</p>
+
+       <p><b>Иллюстрации</b></p>
+    <div class="media text-muted pt-3">
+       {% if obj.img1 %} <img class="bd-placeholder-img mr-2 rounded" width=100% height=100% src="{{ obj.img1.url }}">{% endif %}
+        <br>
+       {% if obj.img2 %}<img class="bd-placeholder-img mr-2 rounded" width=100% height=100% src="{{ obj.img2.url }}">{% endif %}
+        <br>
+       {% if obj.img3 %}<img class="bd-placeholder-img mr-2 rounded" width=100% height=100% src="{{ obj.img3.url }}">{% endif %}
+
 </div>
-<!--{#форма для комментария#}-->
-<!--<div style="text-align: center;"><h5></h5></div>-->
 
-<!--</div>-->
-<!--{#конец форма для комментария#}-->
-<!--{#комментарии#}-->
-<!--{% for comm in comments %}-->
-<!--    <div style="text-align: center; margin-top: 10px">-->
-<!--        <table class="table table-bordered">-->
-<!--            <tbody>-->
-<!--                <tr>-->
-<!--                    <td>{{ comm.date }}<h6>{{ comm.author }}</h6>-->
-<!--                        <br> {{ comm.text }}-->
-<!--                    </td>-->
-<!--                </tr>-->
-<!--            </tbody>-->
-<!--        </table>-->
-<!--    </div>-->
-<!--{% endfor %}-->
-<!--{#конецкомментарии#}-->
-<!--{#форма для комментария#}-->
-<!--<div style="text-align: center;">-->
-<!--    <form method="post" class="form-register">-->
-<!--        {% csrf_token %}-->
-<!--        {{ form.as_p }}-->
-<!--        <button class="btn btn-outline-warning" type="submit">Комментировать</button>-->
-<!--    </form>-->
-<!--</div>-->
-<!--{#конец форма для комментария#}-->
-  </div>
+{#конец основной таблицы#}
+
+
+</div>
+</div>
+</div>
+{% endautoescape %}
 {% endblock %}
