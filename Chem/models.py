@@ -10,13 +10,13 @@ class Inorganiclaw(models.Model):
     
     keywords = models.TextField('Ключевые слова', blank=True, null=True)
     
-    number = models.TextField('Номер закона')
-    title = models.TextField('Заголовок')
-    text = models.TextField('Описание закона')
-    formula = models.TextField('Общая формула закона')
-    examples = models.TextField('Примеры')
-    exceptions = models.TextField('Описание исключений')
-    trening = models.TextField('Тренировка')
+    number = models.TextField('Номер закона', blank=True, null=True)
+    title = models.TextField('Заголовок', blank=True, null=True)
+    text = models.TextField('Описание закона', blank=True, null=True)
+    formula = models.TextField('Общая формула закона', blank=True, null=True)
+    examples = models.TextField('Примеры', blank=True, null=True)
+    exceptions = models.TextField('Описание исключений', blank=True, null=True)
+    trening = models.TextField('Тренировка', blank=True, null=True)
     img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True,
                                         default='user_images/default1.png')
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True,
