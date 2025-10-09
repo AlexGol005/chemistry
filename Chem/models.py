@@ -16,6 +16,12 @@ class Inorganiclaw(models.Model):
     examples = models.TextField('Примеры')
     exceptions = models.TextField('Описание исключений')
     trening = models.TextField('Тренировка')
+    img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True,
+                                        default='user_images/default1.png')
+    img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True,
+                                        default='user_images/default1.png')
+    img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True,
+                                        default='user_images/default1.png')
 
 
 
