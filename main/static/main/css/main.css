@@ -73,6 +73,16 @@ right: 0;
     hyphens: none !important;
 }
 
+.flexy1 {
+    border-color: #4d74bd !important;
+    background-color: rgb(245, 245, 246) !important;
+    width:100% !important;
+    /*word-break: break-all !important;*/
+    table-layout: fixed !important;
+    white-space: nowrap !important;
+    hyphens: none !important;
+}
+
 .td600 {
     min-width: 250px !important;
 }
