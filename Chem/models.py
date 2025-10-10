@@ -10,7 +10,7 @@ class Inorganiclaw(models.Model):
     
     keywords = models.TextField('Ключевые слова', blank=True, null=True)
     
-    number = models.TextField('Номер закона', blank=True, null=True)
+    number = models.IntegerField('Номер закона', blank=True, null=True)
     title = models.TextField('Заголовок', blank=True, null=True)
     text = models.TextField('Описание закона', blank=True, null=True)
     formula = models.TextField('Общая формула закона', blank=True, null=True)
