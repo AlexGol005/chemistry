@@ -14,7 +14,7 @@ class InorganiclawView(ListView):
     model = Inorganiclaw
     template_name = 'Chem/inorganiclaw.html'
     context_object_name = 'objects'
-    ordering = ['-pk']
+    ordering = ['number']
     paginate_by = 6
 
 
