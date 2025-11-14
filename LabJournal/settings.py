@@ -28,7 +28,7 @@ EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'sandra.005@mail.ru'
 SERVER_EMAIL = 'sandra.005@mail.ru'
 DEFAULT_FROM_EMAIL = 'sandra.005@mail.ru'
-EMAIL_HOST_PASSWORD = '7B7YUqnEHbTgT6iDtJey'
+EMAIL_HOST_PASSWORD = 'TyI26NdY2nqNT2bmZVNo'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
