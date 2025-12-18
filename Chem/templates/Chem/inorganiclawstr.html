@@ -4,12 +4,12 @@
 {#название страницы#}
 {#стандартная#}
 {% block title %}
-{{title}} 
+{{obj.title}} 
 {% endblock %}
 {#конец названия страницы#}
 
 
-    {% block metaname %}<meta name="description" content="{{title}}" >{% endblock %}
+    {% block metaname %}<meta name="description" content="{{obj.title}}" >{% endblock %}
     {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
     {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
 
