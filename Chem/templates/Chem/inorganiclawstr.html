@@ -8,7 +8,9 @@
 {% endblock %}
 {#конец названия страницы#}
 
-
+  {% block title %}{{obj.title}}{% endblock %}
+    {% block keywords %}{{obj.keywords}}{% endblock %}
+    {% block description %}{{obj.description}}{% endblock %}
     
 {% block content %}
 {% autoescape off %}
