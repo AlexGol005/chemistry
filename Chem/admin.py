@@ -35,7 +35,7 @@ class InorganiclawAdminForm(forms.ModelForm):
 class InorganiclawAdmin(ImportExportActionModelAdmin):
     resource_class = InorganiclawResource
     list_display = ('pk', 'date', 'title',)
-    search_fields = ['pk', 'title', 'text']
+    search_fields = ['pk', 'title', 'text', 'keywords']
     form = InorganiclawAdminForm
         
 # фиксация формы в админке знх
