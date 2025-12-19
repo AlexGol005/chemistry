@@ -69,7 +69,7 @@ class InorganiclawStrView(TemplateView):
 class ChemSearchResultView(TemplateView):
     """ Представление, которое выводит результаты поиска по законам химии """
 
-    template_name = 'Chem/chem.html'
+    template_name = 'Chem/inorganiclaw.html'
 
     def get_context_data(self, **kwargs):
         context = super(ChemSearchResultView, self).get_context_data(**kwargs)
