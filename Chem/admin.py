@@ -35,6 +35,7 @@ class InorganiclawAdminForm(forms.ModelForm):
 class InorganiclawAdmin(ImportExportActionModelAdmin):
     resource_class = InorganiclawResource
     list_display = ('number', 'title', 'pk')
+    ordering = ('number',)
     search_fields = ['number', 'title', 'text', 'keywords']
     form = InorganiclawAdminForm
         
