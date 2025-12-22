@@ -40,12 +40,7 @@ class InorganicReaction(models.Model):
     keywords = models.TextField('Ключевые слова', blank=True, null=True)
     
     number = models.ForeignKey(Inorganiclaw,  on_delete=models.PROTECT,
-                                   verbose_name='Закон', blank=True, null=True, related_name='n1')
-
-    number2 = models.ForeignKey(Inorganiclaw,  on_delete=models.PROTECT,
-                                   verbose_name='Закон', blank=True, null=True, related_name='n2')
-    number3 = models.ForeignKey(Inorganiclaw,  on_delete=models.PROTECT,
-                                   verbose_name='Закон', blank=True, null=True, related_name='n3')
+                                   verbose_name='Закон', blank=True, null=True)
     
     reagent1 = models.CharField('Реагент1', blank=True, null=True)
     reagent2 = models.CharField('Реагент2', blank=True, null=True)
