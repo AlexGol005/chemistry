@@ -33,3 +33,25 @@ class Inorganiclaw(models.Model):
     class Meta:
         verbose_name = 'Закон неорганической химии'
         verbose_name_plural = 'Законы неорганической химии'
+
+
+
+class InorganicReaction(models.Model):
+    date = models.DateField('Дата', auto_now_add=True)
+    metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
+    description = models.TextField('Метаописание страницы', blank=True, null=True)    
+    keywords = models.TextField('Ключевые слова', blank=True, null=True)
+    
+    number = models.IntegerField('Номер закона', blank=True, null=True)
+    
+    reagent1 = models.CharField('Реагент1', blank=True, null=True)
+    reagent2 = models.CharField('Реагент2', blank=True, null=True)
+    reagent3 = models.CharField('Реагент3', blank=True, null=True)
+
+    product1 = models.CharField('Продукт1', blank=True, null=True)
+    product2 = models.CharField('Продукт1', blank=True, null=True)
+    product3 = models.CharField('Продукт1', blank=True, null=True)
+    product4 = models.CharField('Продукт1', blank=True, null=True)
+
+    
+
