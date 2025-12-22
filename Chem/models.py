@@ -6,8 +6,7 @@ from PIL import Image
 class Inorganiclaw(models.Model):
     date = models.DateField('Дата', auto_now_add=True)
     metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
-    description = models.TextField('Метаописание страницы', blank=True, null=True)
-    
+    description = models.TextField('Метаописание страницы', blank=True, null=True)    
     keywords = models.TextField('Ключевые слова', blank=True, null=True)
     
     number = models.IntegerField('Номер закона', blank=True, null=True)
@@ -42,7 +41,8 @@ class InorganicReaction(models.Model):
     description = models.TextField('Метаописание страницы', blank=True, null=True)    
     keywords = models.TextField('Ключевые слова', blank=True, null=True)
     
-    number = models.IntegerField('Номер закона', blank=True, null=True)
+    number = models.ForeignKey(Inorganiclaw,  on_delete=models.PROTECT,
+                                   verbose_name='Закон', blank=True, null=True)
     
     reagent1 = models.CharField('Реагент1', blank=True, null=True)
     reagent2 = models.CharField('Реагент2', blank=True, null=True)
