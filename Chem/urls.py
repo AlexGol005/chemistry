@@ -9,4 +9,5 @@ urlpatterns = [
     path('inorganiclaw', views.InorganiclawView.as_view(), name='inorganiclaw'),
     path('<int:pk>/', views.InorganiclawStrView.as_view(), name='inorganiclawstr'),
     path('inorganiclaw/searchresult/', views.ChemSearchResultView.as_view(), name='inorganiclawsearchresult'),
+    path('inorganiclaw/test/<str:str>/', views.RoomDeleteView, name='inorganiclawtest'),
     ]
