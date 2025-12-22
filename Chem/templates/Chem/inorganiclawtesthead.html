@@ -1,0 +1,34 @@
+{% extends 'main/superbase.html' %}
+
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+{{obj.title}} 
+{% endblock %}
+{#конец названия страницы#}
+
+
+    {% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
+    {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
+    {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
+
+
+{% block content %}
+{% autoescape off %}
+
+<div class="col-8">
+         
+   <center>  <h3><a href="/chem/inorganiclaw"> {{numbertitle}} </a></h3>     </center>
+
+В тесте {{count}}   реакций
+
+
+
+ </div>
+
+<div class="col-4">
+
+    </div>
+{% endautoescape %}
+{% endblock %}
