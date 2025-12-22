@@ -82,3 +82,24 @@ class ChemSearchResultView(TemplateView):
             context['objects'] = objects
             context['form'] = SearchForm(initial={'searchword': searchword})
         return context
+
+class ChemTestHeadView(ListView):
+    """ выводит заглавную страницу теста по неорганической химии для конкретного вопроса """
+    """path('inorganiclaw/test/<str:str>/', views.ChemTestHeadView.as_view(), name='inorganiclawtest'),"""
+    
+    template_name = 'Chem/inorganiclawtesthead.html'
+    context_object_name = 'objects'
+
+    def get_context_data(self, **kwargs):
+        context = super(ChemTestHeadView, self).get_context_data(**kwargs)
+        str=self.kwargs['str']
+        a = InorganicReaction.objects.filter(number__pk=str).first()
+        context['numbertitle'] = a.title
+        context['count'] = InorganicReaction.objects.filter(number__pk=str).count()
+      
+        return context
+
+    def get_queryset(self):
+        str=self.kwargs['str']
+        queryset = InorganicReaction.objects.filter(number__pk=str)
+        return queryset
