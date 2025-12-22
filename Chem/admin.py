@@ -41,3 +41,7 @@ class InorganiclawAdmin(ImportExportActionModelAdmin):
         
 # фиксация формы в админке знх
 admin.site.register(Inorganiclaw, InorganiclawAdmin)
+
+
+# тесты по неорганике
+admin.site.register(InorganicReaction) 
