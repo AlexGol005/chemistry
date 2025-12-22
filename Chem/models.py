@@ -24,10 +24,8 @@ class Inorganiclaw(models.Model):
                                         
 
 
-
-
     def __str__(self):
-        return f' {self.date} , {self.title}'
+        return f'{self.title}'
 
     class Meta:
         verbose_name = 'Закон неорганической химии'
@@ -53,5 +51,10 @@ class InorganicReaction(models.Model):
     product3 = models.CharField('Продукт1', blank=True, null=True)
     product4 = models.CharField('Продукт1', blank=True, null=True)
 
-    
+    def __str__(self):
+        return f'{self.number.title} - {self.metatitle}'
+
+    class Meta:
+        verbose_name = 'Реакция неорганической химии'
+        verbose_name_plural = 'Реакции неорганической химии' 
 
