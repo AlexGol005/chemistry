@@ -133,7 +133,10 @@ class ChemTestQuestionView(TemplateView):
         my_data = self.request.session.get('question_list', [])
         
         # Добавляем данные в контекст шаблона
-        context['reaction'] = InorganicReaction.objects.get(pk=2).reagent1
+        context['reagent1'] = InorganicReaction.objects.get(pk=str).reagent1
+        context['reagent2'] = InorganicReaction.objects.get(pk=str).reagent2
+        context['reagent3'] = InorganicReaction.objects.get(pk=str).reagent3
+        context['condition'] = InorganicReaction.objects.get(pk=str).condition
         context['items'] = my_data
         context['count'] = len(my_data)
         
