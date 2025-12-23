@@ -23,19 +23,25 @@ class SearchForm(forms.Form):
 
 class Unswer4Form(forms.Form):
     """форма для внесения ответа с четырьмя окошками"""
-    product1 = forms.CharField(max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
-    product2 = forms.CharField(max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
-    product3 = forms.CharField(max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
-    product4 = forms.CharField(max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
+    field1 = forms.CharField(max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
+    field2 = forms.CharField(max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
+    field3 = forms.CharField(max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
+    field4 = forms.CharField(max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
                            
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+
+        custom_style = "height: 60px; font-size: 44pt; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums;"
+        
         self.helper.layout = Layout(
             Row(
-                Column('product1', style="width: 100px; height: 100px; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums; font-size: 44pt;"),
-                Column('product2', style="width: 100px; height: 100px; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums; font-size: 44pt;"),
-                Column('product3', style="width: 100px; height: 100px; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums; font-size: 44pt;"),
-                Column('product4', style="width: 100px; height: 100px; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums; font-size: 44pt;"),
-              
-                Submit('submit', 'отправить ответ', css_class='btn  btn-prima col-md-6 mb-3 mt-4 ml-2 mr-2')))
+                Column(Field('field1', style=custom_style), css_class='col-md-3'),
+                Column(Field('field2', style=custom_style), css_class='col-md-3'),
+                Column(Field('field3', style=custom_style), css_class='col-md-3'),
+                Column(Field('field4', style=custom_style), css_class='col-md-3'),
+                style="max-width: 900px; margin: 0 auto;"
+            ),
+            
+            Submit('submit', 'Отправить ответ', css_class='mt-3')
+        )
