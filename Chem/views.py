@@ -7,27 +7,10 @@ from django.db.models import Q
 from Chem.models import *
 
 
-from django import forms
+
 from .models import *
+from .forms import *
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column
-
-
-class SearchForm(forms.Form):
-    """форма для поиска по полям модели"""
-    searchword = forms.CharField(label='Поиск', required=False,
-                           help_text='слово для поиска',
-                           widget=forms.TextInput(attrs={'class': 'form-control'}))
-
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            Row(
-                Column('searchword', css_class='form-group col-md-10 mb-0'),
-                Row(Submit('submit', 'Найти', css_class='btn  btn-warning col-md-9 mb-3 mt-4 ml-4'))))
 
 
 
