@@ -1,5 +1,5 @@
 {% extends 'main/superbase.html' %}
-
+{% load crispy_forms_tags %}
 
 {#название страницы#}
 {#стандартная#}
@@ -34,6 +34,13 @@
          {% endif %}
 
          =
+
+
+            <form method="post" class="form-register">
+            {% csrf_token %}
+            {% crispy form %}
+            </form>
+
 </p>
 
         </center>
