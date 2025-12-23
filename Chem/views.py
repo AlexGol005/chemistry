@@ -102,13 +102,15 @@ class ChemTestHeadView(ListView):
             question_ids = list(a.values_list('id', flat=True))
             b = random.shuffle(question_ids)
             context['q1'] = InorganicReaction.objects.get(pk=b[0]).pk
+            context['q1'] = 1
             b = b.pop(b[0])
             context['question_ids'] = b            
             self.request.session['question_list'] = b
         except:
             context['numbertitle'] = 'Пока нет реакций'
             context['count'] = ''
-            context['question_ids'] = ''      
+            context['question_ids'] = '' 
+            context['q1'] = 1
         return context
 
     def get_queryset(self):
