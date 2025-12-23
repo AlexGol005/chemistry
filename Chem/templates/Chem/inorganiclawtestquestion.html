@@ -15,9 +15,9 @@
 
 
 {% block content %}
+{% autoescape off %}
 
-
-<div class="col-8">
+<div class="col-12">
     
 
  
@@ -59,7 +59,11 @@
 
 
  </div>
+<div class="col-4">
 
 
+
+    </div>
+{% endautoescape %}
 
 {% endblock %}
