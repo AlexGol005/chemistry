@@ -93,9 +93,13 @@ class ChemTestHeadView(ListView):
     def get_context_data(self, **kwargs):
         context = super(ChemTestHeadView, self).get_context_data(**kwargs)
         str=self.kwargs['str']
-        a = InorganicReaction.objects.filter(number__pk=str).first()
-        context['numbertitle'] = a.number.title
-        context['count'] = InorganicReaction.objects.filter(number__pk=str).count()
+        try:
+            a = InorganicReaction.objects.filter(number__pk=str).first()
+            context['numbertitle'] = a.number.title
+            context['count'] = InorganicReaction.objects.filter(number__pk=str).count()
+        except:
+            context['numbertitle'] = 'Пока нет реакций'
+            context['count'] = ''
       
         return context
 
