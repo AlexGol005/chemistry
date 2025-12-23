@@ -102,12 +102,11 @@ class ChemTestHeadView(ListView):
             context['count'] = InorganicReaction.objects.filter(number__pk=str).count()
             question_ids = list(c.values_list('id', flat=True))
             random.shuffle(question_ids)
-            context['q1'] = InorganicReaction.objects.get(pk=b[0]).pk            
-            b = b.pop(b[0])
-            context['question_ids'] = b            
-            self.request.session['question_list'] = b
+            context['q1'] = InorganicReaction.objects.get(pk=question_ids[0]).pk            
+            question_ids = question_ids.pop(b[0])
+            context['question_ids'] = question_ids           
             self.request.session['question_list'] = question_ids
-            context['q1'] = 1
+
 
         except:
             context['numbertitle'] = 'Пока нет реакций'
