@@ -97,9 +97,10 @@ class ChemTestHeadView(ListView):
         str=self.kwargs['str']
         try:
             a = InorganicReaction.objects.filter(number__pk=str).first()
+            c = InorganicReaction.objects.filter(number__pk=str)
             context['numbertitle'] = a.number.title
             context['count'] = InorganicReaction.objects.filter(number__pk=str).count()
-            question_ids = list(a.values_list('id', flat=True))
+            question_ids = list(c.values_list('id', flat=True))
             # b = random.shuffle(question_ids)
             # context['q1'] = InorganicReaction.objects.get(pk=b[0]).pk            
             # b = b.pop(b[0])
