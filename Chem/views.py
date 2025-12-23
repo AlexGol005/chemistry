@@ -1,3 +1,5 @@
+import random
+
 from django.views.generic import ListView, TemplateView, View
 from django.shortcuts import render, redirect
 from django.db.models import Q
@@ -65,7 +67,6 @@ class InorganiclawStrView(TemplateView):
         return context
 
 
-
 class ChemSearchResultView(TemplateView):
     """ Представление, которое выводит результаты поиска по законам химии """
 
@@ -83,6 +84,7 @@ class ChemSearchResultView(TemplateView):
             context['form'] = SearchForm(initial={'searchword': searchword})
         return context
 
+
 class ChemTestHeadView(ListView):
     """ выводит заглавную страницу теста по неорганической химии для конкретного вопроса """
     """path('inorganiclaw/test/<str:str>/', views.ChemTestHeadView.as_view(), name='inorganiclawtest'),"""
@@ -97,15 +99,37 @@ class ChemTestHeadView(ListView):
             a = InorganicReaction.objects.filter(number__pk=str).first()
             context['numbertitle'] = a.number.title
             context['count'] = InorganicReaction.objects.filter(number__pk=str).count()
-            context['question_ids'] = list(a.values_list('id', flat=True))
+            question_ids = list(a.values_list('id', flat=True))
+            b = random.shuffle(question_ids)
+            context['q1'] = InorganicReaction.objectts.get(pk=b[0])
+            b = b.pop(b[0])
+            context['question_ids'] = b            
+            self.request.session['question_list'] = b
         except:
             context['numbertitle'] = 'Пока нет реакций'
             context['count'] = ''
-            context['question_ids'] = ''
-      
+            context['question_ids'] = ''      
         return context
 
     def get_queryset(self):
         str=self.kwargs['str']
         queryset = InorganicReaction.objects.filter(number__pk=str)
         return queryset
+
+
+class ChemTestQuestionView(TemplateView):
+    template_name = 'Chem/inorganiclawtestquestion.html'
+
+    def get_context_data(self, **kwargs):
+        # Вызываем базовый метод для получения контекста
+        context = super().get_context_data(**kwargs)
+        
+        # Получаем данные из сессии по ключу 'my_list'
+        # Если ключа нет, вернется пустой список []
+        my_data = self.request.session.get('question_list', [])
+        
+        # Добавляем данные в контекст шаблона
+        context['items'] = my_data
+        context['count'] = len(my_data)
+        
+        return context
