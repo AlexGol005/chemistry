@@ -19,11 +19,12 @@
 
 <div class="col-12">
          
-   <center>  <h3>Реакции заголовок</h3>     </center>
+   <center>  <h3>Реагенты</h3>     </center>
+    <br>
 
          <!-- <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums; font-size: 44pt;"> -->
              <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 44pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
- <div style="display: flex; flex-wrap: nowrap;">
+
                  
          {{reagent1}}
          
@@ -38,11 +39,8 @@
          =
 
 
-            <form method="post" class="form-register">
-            {% csrf_token %}
-            {% crispy form %}
-            </form>
-</div>
+
+
 </p>
 
         </center>
@@ -58,6 +56,18 @@
  </p>
 
         </center>
+
+<center>  <h4>Продукты реакции</h4>
+
+            <form method="post" class="form-register">
+            {% csrf_token %}
+            {% crispy form %}
+            </form>
+
+ </center>
+
+
+    
     
   <br>
         {{items}}
