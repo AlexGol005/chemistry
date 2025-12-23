@@ -99,13 +99,14 @@ class ChemTestHeadView(ListView):
             a = InorganicReaction.objects.filter(number__pk=str).first()
             context['numbertitle'] = a.number.title
             context['count'] = InorganicReaction.objects.filter(number__pk=str).count()
-            question_ids = list(a.values_list('id', flat=True))
-            b = random.shuffle(question_ids)
-            context['q1'] = InorganicReaction.objects.get(pk=b[0]).pk
+            # question_ids = list(a.values_list('id', flat=True))
+            # b = random.shuffle(question_ids)
+            # context['q1'] = InorganicReaction.objects.get(pk=b[0]).pk            
+            # b = b.pop(b[0])
+            # context['question_ids'] = b            
+            # self.request.session['question_list'] = b
+            self.request.session['question_list'] = [1, 2, 3]
             context['q1'] = 1
-            b = b.pop(b[0])
-            context['question_ids'] = b            
-            self.request.session['question_list'] = b
         except:
             context['numbertitle'] = 'Пока нет реакций'
             context['count'] = ''
@@ -132,7 +133,7 @@ class ChemTestQuestionView(TemplateView):
         my_data = self.request.session.get('question_list', [])
         
         # Добавляем данные в контекст шаблона
-        context['reaction'] = InorganicReaction.objectts.get(pk=str)
+        context['reaction'] = InorganicReaction.objects.get(pk=str)
         context['items'] = my_data
         context['count'] = len(my_data)
         
