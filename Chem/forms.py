@@ -23,16 +23,16 @@ class SearchForm(forms.Form):
 
 class Unswer4Form(forms.Form):
     """форма для внесения ответа с четырьмя окошками"""
-    field1 = forms.CharField(max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
-    field2 = forms.CharField(max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
-    field3 = forms.CharField(max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
-    field4 = forms.CharField(max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
+    field1 = forms.CharField(label = '', max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
+    field2 = forms.CharField(label = '', max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
+    field3 = forms.CharField(label = '', max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
+    field4 = forms.CharField(label = '', max_length=10000000, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}))
                            
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
 
-        custom_style = "height: 60px; font-size: 44pt; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums;"
+        custom_style = "height: 80px; font-size: 44pt; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums;"
         
         self.helper.layout = Layout(
             Row(
@@ -40,8 +40,8 @@ class Unswer4Form(forms.Form):
                 Column(Field('field2', style=custom_style), css_class='col-md-3'),
                 Column(Field('field3', style=custom_style), css_class='col-md-3'),
                 Column(Field('field4', style=custom_style), css_class='col-md-3'),
-                style="max-width: 900px; margin: 0 auto;"
+                style="max-width: 1400px; margin: 0 auto;"
             ),
             
-            Submit('submit', 'Отправить ответ', css_class='mt-3')
+            Submit('submit', 'Отправить ответ', css_class='mt-3 w-100', style="height: 60px;")
         )
