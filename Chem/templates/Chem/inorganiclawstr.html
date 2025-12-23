@@ -92,7 +92,7 @@
             <tbody>
             <tr>
             <td>
-                <h4>Тренировка</h4>
+                <h4>Ссылки</h4>
                 <br>
                                 <a href="{{ obj.trening}}"  target="blank" >
                 ссылка
@@ -111,6 +111,10 @@
        {% if obj.img3 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img3.url }}">{% endif %}
 
 </div></center> 
+
+   <center>   <a href="{% url 'export_exvercardteste_xls' obj.pk %}"  class="btn btn-primary  mt-2 mr-2 ml-2"> 
+       Перейти к тренировке
+   </a></center> 
 
 
  </div>
