@@ -40,7 +40,7 @@ class Unswer4Form(forms.Form):
                 Column(Field('field2', style=custom_style), css_class='col-md-3'),
                 Column(Field('field3', style=custom_style), css_class='col-md-3'),
                 Column(Field('field4', style=custom_style), css_class='col-md-3'),
-                style="max-width: 1400px; margin: 0 auto;"
+                style="max-width: 1000px; margin: 0 auto;"
             ),
             
             Submit('submit', 'Отправить ответ', css_class='mt-3 w-100', style="height: 60px;")
