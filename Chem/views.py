@@ -78,6 +78,7 @@ class ChemTestHeadView(ListView):
     def get_context_data(self, **kwargs):
         context = super(ChemTestHeadView, self).get_context_data(**kwargs)
         str=self.kwargs['str']
+        
         try:
             a = InorganicReaction.objects.filter(number__pk=str).first()
             c = InorganicReaction.objects.filter(number__pk=str)
@@ -121,6 +122,7 @@ class ChemTestQuestionView(TemplateView):
         context['reagent2'] = InorganicReaction.objects.get(pk=str).reagent2
         context['reagent3'] = InorganicReaction.objects.get(pk=str).reagent3
         context['condition'] = InorganicReaction.objects.get(pk=str).condition
+        context['form']= Unswer4Form
         context['items'] = my_data
         context['count'] = len(my_data)
         
