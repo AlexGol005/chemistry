@@ -33,9 +33,9 @@ class Unswer4Form(forms.Form):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-                Column('product1', css_class='form-group col-md-4 mb-0 ml-2 mr-2'),
-                Column('product2', css_class='form-group col-md-4 mb-0 ml-2 mr-2'),
-                Column('product3', css_class='form-group col-md-4 mb-0 ml-2 mr-2'),
-                Column('product4', css_class='form-group col-md-4 mb-0 ml-2 mr-2'),
+                Column('product1', style="width: 100px; height: 100px;"),
+                Column('product2', style="width: 100px; height: 100px;"),
+                Column('product3', style="width: 100px; height: 100px;"),
+                Column('product4', style="width: 100px; height: 100px;"'),
               
                 Submit('submit', 'отправить ответ', css_class='btn  btn-prima col-md-6 mb-3 mt-4 ml-2 mr-2')))
