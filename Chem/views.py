@@ -103,7 +103,7 @@ class ChemTestHeadView(ListView):
             question_ids = list(c.values_list('id', flat=True))
             random.shuffle(question_ids)
             context['q1'] = InorganicReaction.objects.get(pk=question_ids[0]).pk            
-            question_ids.pop(question_ids[0])
+            question_ids.pop(0)
             context['question_ids'] = question_ids           
             self.request.session['question_list'] = question_ids
 
