@@ -15,11 +15,35 @@
 
 
 {% block content %}
-{% autoescape off %}
 
-<div class="col-8">
+
+<div class="col-12">
          
-        {{reaction}}
+     <center>   
+       <font face="Georgia" size="22">  
+         {{reagent1}}
+         
+         {% if reagent2 %}
+          + {{reagent2}}
+         {% endif %}
+
+        {% if reagent3 %}
+          + {{reagent3}}
+         {% endif %}
+
+         =
+</font>
+           </center>
+
+         <br>
+
+         <center>   
+       <font face="Georgia" size="18">  
+         {% if condition %}
+                   {{condition}}
+         {% endif %}
+    </font>
+           </center>     
   <br>
         {{items}}
   <br>
@@ -30,8 +54,6 @@
 
  </div>
 
-<div class="col-4">
 
-    </div>
-{% endautoescape %}
+
 {% endblock %}
