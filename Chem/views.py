@@ -97,9 +97,11 @@ class ChemTestHeadView(ListView):
             a = InorganicReaction.objects.filter(number__pk=str).first()
             context['numbertitle'] = a.number.title
             context['count'] = InorganicReaction.objects.filter(number__pk=str).count()
+            context['question_ids'] = list(a.values_list('id', flat=True))
         except:
             context['numbertitle'] = 'Пока нет реакций'
             context['count'] = ''
+            context['question_ids'] = ''
       
         return context
 
