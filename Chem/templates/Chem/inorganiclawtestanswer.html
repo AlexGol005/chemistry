@@ -17,7 +17,7 @@
 {% block content %}
 {% autoescape off %}
 
-<div class="col-8">
+<div class="col-12">
          
 
 
@@ -81,17 +81,17 @@
    </a></center> 
  {% endif %}   
     
-  <br>  
-         
+  <br>   <br>
+        <center> 
                  {% if obj.video %}
                   <a href="{{ obj.video}}"  target="blank" >
                  <h3> Смотрите видео по ссылке </h3>
                       </a>
                  {% endif %}   
-
-<div class="col-4">
-Все реакции приведены без коэффициентов! <br>
-
-    </div>
+</center> 
+ <br> <br>
 {% endautoescape %}
 {% endblock %}
+            {% block aside %}
+<i>*Все реакции приведены без коэффициентов! </i><br>
+      {% endblock %}
