@@ -136,10 +136,10 @@ class ChemTestQuestionView(TemplateView):
         # Получение данных из POST-запроса
         ind=self.kwargs['str']
         ind=int(ind)
-        product1 = request.POST.get('product1')
-        product2 = request.POST.get('product2')
-        product3 = request.POST.get('product3')
-        product4 = request.POST.get('product4')
+        product1 = request.POST.get('field1')
+        product2 = request.POST.get('field2')
+        product3 = request.POST.get('field3')
+        product4 = request.POST.get('field4')
         self.request.session['answer_list'] = [product1, product2, product3, product4]
         return redirect('inorganiclawtestanswer', str=ind)
         
