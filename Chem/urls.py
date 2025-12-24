@@ -11,5 +11,5 @@ urlpatterns = [
     path('inorganiclaw/searchresult/', views.ChemSearchResultView.as_view(), name='inorganiclawsearchresult'),
     path('inorganiclaw/test/<str:str>/', views.ChemTestHeadView.as_view(), name='inorganiclawtest'),
     path('inorganiclaw/test/question/<str:str>/', views.ChemTestQuestionView.as_view(), name='inorganiclawtestquestion'),
-    path('inorganiclaw/test/answer/<str:str>/', views.ChemTestUnswerView.as_view(), name='inorganiclawtestanswer'),
+    path('inorganiclaw/test/answer/<str:str>/', views.ChemTestAnswerView.as_view(), name='inorganiclawtestanswer'),
     ]
