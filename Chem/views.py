@@ -139,7 +139,7 @@ class ChemTestQuestionView(TemplateView):
         product3 = request.POST.get('product3')
         product4 = request.POST.get('product4')
         self.request.session['answer_list'] = [product1, product2, product3, product4]
-        return redirect('inorganiclawtestanswer', {str: str})
+        return redirect('inorganiclawtestanswer', str=str)
         
 
 
