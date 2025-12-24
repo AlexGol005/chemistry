@@ -72,7 +72,7 @@ class InorganicReaction(models.Model):
 
     def clean(self):
         # Ищем существующую запись с такими же полями
-        duplicate = InorganicReaction.objects.filter(reagent1=self.reagent1, reagent2=self.reagent2, reagent3=self.reagent3, condition=self.condition, condition=self.number,).exclude(pk=self.pk).first()
+        duplicate = InorganicReaction.objects.filter(reagent1=self.reagent1, reagent2=self.reagent2, reagent3=self.reagent3, condition=self.condition, number=self.number,).exclude(pk=self.pk).first()
         
         if duplicate:
             # Выбрасываем ошибку с PK дубликата
