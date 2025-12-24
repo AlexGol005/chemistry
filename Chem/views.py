@@ -134,6 +134,7 @@ class ChemTestQuestionView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         # Получение данных из POST-запроса
+        ind=self.kwargs['str']
         ind=int(ind)
         product1 = request.POST.get('product1')
         product2 = request.POST.get('product2')
