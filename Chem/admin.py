@@ -50,5 +50,6 @@ admin.site.register(Inorganiclaw, InorganiclawAdmin)
 class InorganicReactionAdmin(admin.ModelAdmin):
     # Поля модели, по которым будет идти поиск
     search_fields = ['pk', 'reagent1', 'reagent2'] 
+    save_as = True
     
 
