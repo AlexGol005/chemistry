@@ -126,6 +126,7 @@ class ChemTestQuestionView(TemplateView):
         context['form']= Unswer4Form
 
         context['q1'] = ind
+        context['obj'] = qw
         
         context['items'] = my_data
         context['count'] = len(my_data)
@@ -171,6 +172,7 @@ class ChemTestAnswerView(TemplateView):
         # вывод ответа
         context = super().get_context_data(**kwargs)
         ind=self.kwargs['str']
+        qw = InorganicReaction.objects.get(pk=ind)
         context['reagent1'] = InorganicReaction.objects.get(pk=ind).reagent1
         context['reagent2'] = InorganicReaction.objects.get(pk=ind).reagent2
         context['reagent3'] = InorganicReaction.objects.get(pk=ind).reagent3
@@ -204,5 +206,6 @@ class ChemTestAnswerView(TemplateView):
         context['items'] = question_list
         context['count'] = len(question_list)
         context['last_list'] = last_list
+        context['obj'] = qw
         
         return context
