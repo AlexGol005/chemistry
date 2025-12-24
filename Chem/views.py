@@ -69,7 +69,7 @@ class ChemSearchResultView(TemplateView):
 
 
 class ChemTestHeadView(ListView):
-    """ выводит заглавную страницу теста по неорганической химии для конкретного вопроса """
+    """ выводит заглавную страницу теста по неорганической химии для конкретного закона неорганической химии """
     """path('inorganiclaw/test/<str:str>/', views.ChemTestHeadView.as_view(), name='inorganiclawtest'),"""
     
     template_name = 'Chem/inorganiclawtesthead.html'
@@ -132,6 +132,17 @@ class ChemTestQuestionView(TemplateView):
         return context
 
 
+    def post(self, request, *args, **kwargs):
+        # Получение данных из POST-запроса
+        product1 = request.POST.get('product1')
+        product2 = request.POST.get('product2')
+        product3 = request.POST.get('product3')
+        product4 = request.POST.get('product4')
+        self.request.session['answer_list'] = [product1, product2, product3, product4]
+        return redirect('inorganiclawtestanswer', {str: str})
+        
+
+
 class ChemTestAnswerView(TemplateView):
     template_name = 'Chem/inorganiclawtestanswer.html'
 
@@ -143,6 +154,7 @@ class ChemTestAnswerView(TemplateView):
         # Получаем данные из сессии по ключу 'my_list'
         # Если ключа нет, вернется пустой список []
         my_data = self.request.session.get('question_list', [])
+        my_answer = self.request.session.get('answer_list', [])
         
         # Добавляем данные в контекст шаблона
         context['reagent1'] = InorganicReaction.objects.get(pk=str).reagent1
@@ -155,6 +167,8 @@ class ChemTestAnswerView(TemplateView):
         context['product4'] = InorganicReaction.objects.get(pk=str).product4
 
         context['q1'] = str
+
+        context['my_answer'] = my_answer
 
         context['items'] = my_data
         context['count'] = len(my_data)
