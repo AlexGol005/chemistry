@@ -55,6 +55,7 @@ class InorganicReaction(models.Model):
     product4 = models.CharField('Продукт1', blank=True, null=True)
     
     video = models.CharField('Ссылка на видео', blank=True, null=True)
+    extra = models.CharField('Дополнительная информация', blank=True, null=True)
 
     def __str__(self):
         try:
