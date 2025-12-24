@@ -70,12 +70,12 @@
 
 
       <br>  
-{% if q1 != 0 %}
-       <center>   <a href="{% url 'inorganiclawtestquestion' q1 %}"  class="btn btn-primary  mt-2 mr-2 ml-2"> 
+{% if count != 0 %}
+       <center>   <a href="{% url 'inorganiclawtestquestion' next_index %}"  class="btn btn-primary  mt-2 mr-2 ml-2"> 
        Следующая химическая реакция
    </a></center> 
 
-{% elif q1 == 0 %}
+{% elif count == 0 %}
   
   <center>   <a href="/chem/inorganiclaw"  class="btn btn-primary  mt-2 mr-2 ml-2">   Тест завершен, спасибо! Перейти в тему
    </a></center> 
