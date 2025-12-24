@@ -149,21 +149,10 @@ class ChemTestAnswerView(TemplateView):
     template_name = 'Chem/inorganiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
-        # Вызываем базовый метод для получения контекста
+
+        # вывод ответа
         context = super().get_context_data(**kwargs)
         ind=self.kwargs['str']
-
-        # Получаем данные из сессии по ключу 'my_list'
-        # Если ключа нет, вернется пустой список []
-        question_list = self.request.session.get('question_list', [])
-        my_answer = self.request.session.get('answer_list', [])
-        
-        next_index =  question_list[0] 
-        question_list.pop(0)
-        self.request.session['question_list'] = question_list
-        
-        
-        # Добавляем данные в контекст шаблона
         context['reagent1'] = InorganicReaction.objects.get(pk=ind).reagent1
         context['reagent2'] = InorganicReaction.objects.get(pk=ind).reagent2
         context['reagent3'] = InorganicReaction.objects.get(pk=ind).reagent3
@@ -173,14 +162,26 @@ class ChemTestAnswerView(TemplateView):
         context['product3'] = InorganicReaction.objects.get(pk=ind).product3
         context['product4'] = InorganicReaction.objects.get(pk=ind).product4
         
-        context['next_index'] = next_index
-        context['q1'] = ind
 
+        # проверка ответа
+        my_answer = self.request.session.get('answer_list', [])
         context['my_answer'] = my_answer
 
+        # поиск следующего уравнения через индекс из списка (список сначала запомним потом перезапишем)
+        last_list = self.request.session.get('question_list', [])
+        
+        question_list = self.request.session.get('question_list', [])
+        next_index =  question_list.pop(0)
+        self.request.session['question_list'] = question_list
+
+         question_list = self.request.session.get('question_list', [])
+        
 
         
+        context['next_index'] = next_index
+       
         context['items'] = question_list
         context['count'] = len(question_list)
+        context['last_list'] = last_list
         
         return context
