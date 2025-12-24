@@ -23,9 +23,10 @@
          <!-- <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums; font-size: 44pt;"> -->
              <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 44pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
 
-                 
+           {% if reagent1 %}       
          {{reagent1}}
-         
+         {% endif %}
+                 
          {% if reagent2 %}
           + {{reagent2}}
          {% endif %}
