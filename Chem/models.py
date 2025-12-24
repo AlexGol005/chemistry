@@ -66,13 +66,13 @@ class InorganicReaction(models.Model):
                 return  f'pk={self.pk}. Не указано!'
 
     class Meta:
-        unique_together = ['reagent1', 'reagent2', 'reagent3', 'condition', ]
+        unique_together = ['reagent1', 'reagent2', 'reagent3', 'condition', 'number']
         verbose_name = 'Реакция неорганической химии'
         verbose_name_plural = 'Реакции неорганической химии'
 
     def clean(self):
         # Ищем существующую запись с такими же полями
-        duplicate = InorganicReaction.objects.filter(reagent1=self.reagent1, reagent2=self.reagent2, reagent3=self.reagent3, condition=self.condition,).exclude(pk=self.pk).first()
+        duplicate = InorganicReaction.objects.filter(reagent1=self.reagent1, reagent2=self.reagent2, reagent3=self.reagent3, condition=self.condition, condition=self.number,).exclude(pk=self.pk).first()
         
         if duplicate:
             # Выбрасываем ошибку с PK дубликата
