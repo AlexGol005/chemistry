@@ -118,10 +118,10 @@ class ChemTestQuestionView(TemplateView):
         my_data = self.request.session.get('question_list', [])
         
         # Добавляем данные в контекст шаблона
-        context['reagent1'] = InorganicReaction.objects.get(pk=str).reagent1
-        context['reagent2'] = InorganicReaction.objects.get(pk=str).reagent2
-        context['reagent3'] = InorganicReaction.objects.get(pk=str).reagent3
-        context['condition'] = InorganicReaction.objects.get(pk=str).condition
+        context['reagent1'] = InorganicReaction.objects.get(pk=ind).reagent1
+        context['reagent2'] = InorganicReaction.objects.get(pk=ind).reagent2
+        context['reagent3'] = InorganicReaction.objects.get(pk=ind).reagent3
+        context['condition'] = InorganicReaction.objects.get(pk=ind).condition
         context['form']= Unswer4Form
 
         context['q1'] = ind
@@ -158,14 +158,14 @@ class ChemTestAnswerView(TemplateView):
         my_answer = self.request.session.get('answer_list', [])
         
         # Добавляем данные в контекст шаблона
-        context['reagent1'] = InorganicReaction.objects.get(pk=str).reagent1
-        context['reagent2'] = InorganicReaction.objects.get(pk=str).reagent2
-        context['reagent3'] = InorganicReaction.objects.get(pk=str).reagent3
-        context['condition'] = InorganicReaction.objects.get(pk=str).condition
-        context['product1'] = InorganicReaction.objects.get(pk=str).product1
-        context['product2'] = InorganicReaction.objects.get(pk=str).product2
-        context['product3'] = InorganicReaction.objects.get(pk=str).product3
-        context['product4'] = InorganicReaction.objects.get(pk=str).product4
+        context['reagent1'] = InorganicReaction.objects.get(pk=ind).reagent1
+        context['reagent2'] = InorganicReaction.objects.get(pk=ind).reagent2
+        context['reagent3'] = InorganicReaction.objects.get(pk=ind).reagent3
+        context['condition'] = InorganicReaction.objects.get(pk=ind).condition
+        context['product1'] = InorganicReaction.objects.get(pk=ind).product1
+        context['product2'] = InorganicReaction.objects.get(pk=ind).product2
+        context['product3'] = InorganicReaction.objects.get(pk=ind).product3
+        context['product4'] = InorganicReaction.objects.get(pk=ind).product4
 
         context['q1'] = ind
 
