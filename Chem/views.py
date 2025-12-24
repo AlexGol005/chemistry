@@ -171,7 +171,11 @@ class ChemTestAnswerView(TemplateView):
         last_list = self.request.session.get('question_list', [])
         
         question_list = self.request.session.get('question_list', [])
-        next_index =  question_list.pop(0)
+        try:
+            next_index =  question_list.pop(0)
+        except:
+            next_index = None
+            
         self.request.session['question_list'] = question_list
 
         question_list = self.request.session.get('question_list', [])
