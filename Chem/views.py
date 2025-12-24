@@ -155,8 +155,13 @@ class ChemTestAnswerView(TemplateView):
 
         # Получаем данные из сессии по ключу 'my_list'
         # Если ключа нет, вернется пустой список []
-        my_data = self.request.session.get('question_list', [])
+        question_list = self.request.session.get('question_list', [])
         my_answer = self.request.session.get('answer_list', [])
+        
+        next_index =  question_list[0] 
+        question_list.pop(0)
+        self.request.session['question_list'] = question_list
+        
         
         # Добавляем данные в контекст шаблона
         context['reagent1'] = InorganicReaction.objects.get(pk=ind).reagent1
@@ -167,12 +172,15 @@ class ChemTestAnswerView(TemplateView):
         context['product2'] = InorganicReaction.objects.get(pk=ind).product2
         context['product3'] = InorganicReaction.objects.get(pk=ind).product3
         context['product4'] = InorganicReaction.objects.get(pk=ind).product4
-
+        
+        context['next_index'] = next_index
         context['q1'] = ind
 
         context['my_answer'] = my_answer
 
-        context['items'] = my_data
-        context['count'] = len(my_data)
+
+        
+        context['items'] = question_list
+        context['count'] = len(question_list)
         
         return context
