@@ -111,7 +111,7 @@ class ChemTestQuestionView(TemplateView):
     def get_context_data(self, **kwargs):
         # Вызываем базовый метод для получения контекста
         context = super().get_context_data(**kwargs)
-        str=self.kwargs['str']
+        q1=self.kwargs['str']
 
         # Получаем данные из сессии по ключу 'my_list'
         # Если ключа нет, вернется пустой список []
@@ -124,7 +124,7 @@ class ChemTestQuestionView(TemplateView):
         context['condition'] = InorganicReaction.objects.get(pk=str).condition
         context['form']= Unswer4Form
 
-        context['q1'] = str
+        context['q1'] = q1
         
         context['items'] = my_data
         context['count'] = len(my_data)
@@ -139,7 +139,7 @@ class ChemTestQuestionView(TemplateView):
         product3 = request.POST.get('product3')
         product4 = request.POST.get('product4')
         self.request.session['answer_list'] = [product1, product2, product3, product4]
-        return redirect('inorganiclawtestanswer', str=str)
+        return redirect('inorganiclawtestanswer', str=q1)
         
 
 
