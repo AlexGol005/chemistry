@@ -151,11 +151,12 @@ class ChemTestQuestionView(TemplateView):
         clean_answer_list_upper = [word.upper() for word in clean_answer_list]
         
         clean_correct_answer_list_upper = [word.upper() for word in clean_correct_answer_list]
+        answer = ", ".join(clean_answer_list)
 
         if sorted(clean_answer_list_upper) == sorted(clean_correct_answer_list_upper):
             messages.success(request, "Верно!")
         else:
-            messages.success(request, "Не верно :(")
+            messages.success(request, f'Не верно :( .Ваш ответ: = {answer}'")
         
         self.request.session['answer_list'] = answer_list
         return redirect('inorganiclawtestanswer', str=ind)
