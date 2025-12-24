@@ -46,7 +46,7 @@ class InorganicReaction(models.Model):
     reagent2 = models.CharField('Реагент2', blank=True, null=True)
     reagent3 = models.CharField('Реагент3', blank=True, null=True)
 
-    condition = models.CharField('Условия реакции', blank=True, null=True)
+    condition = models.CharField('Условия реакции', blank=True, null=True, default='нормальные условия')
 
     product1 = models.CharField('Продукт1', blank=True, null=True)
     product2 = models.CharField('Продукт1', blank=True, null=True)
