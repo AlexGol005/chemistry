@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from PIL import Image
+from django.core.exceptions import ValidationError
 
 
 class Inorganiclaw(models.Model):
@@ -56,7 +57,13 @@ class InorganicReaction(models.Model):
     video = models.CharField('Ссылка на видео', blank=True, null=True)
 
     def __str__(self):
-        return f'{self.number.title} - {self.metatitle}'
+        try:
+            return f'pk={self.pk}. {self.reagent1} + {self.reagent2}  (({self.number.title} - {self.metatitle})'
+        except:
+            try:
+                return f'pk={self.pk}. {self.reagent1} + {self.reagent2}  ?? - {self.metatitle})'
+            except:
+                return  f'pk={self.pk}. Не указано!'
 
     class Meta:
         unique_together = ['reagent1', 'reagent2', 'reagent3', 'condition', ]
