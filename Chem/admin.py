@@ -44,7 +44,7 @@ admin.site.register(Inorganiclaw, InorganiclawAdmin)
 
 
 # тесты по неорганике
-admin.site.register(InorganicReaction) 
+# admin.site.register(InorganicReaction) 
 
 @admin.register(InorganicReaction)
 class InorganicReactionAdmin(admin.ModelAdmin):
