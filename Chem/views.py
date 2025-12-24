@@ -116,7 +116,7 @@ class ChemTestQuestionView(TemplateView):
         # Получаем данные из сессии по ключу 'my_list'
         # Если ключа нет, вернется пустой список []
         my_data = self.request.session.get('question_list', [])
-        qw=InorganicReaction.objects.get(pk=ind)
+        qw = InorganicReaction.objects.get(pk=ind)
         
         # Добавляем данные в контекст шаблона
         context['reagent1'] = qw.reagent1
@@ -137,6 +137,7 @@ class ChemTestQuestionView(TemplateView):
         # Получение данных из POST-запроса
         ind=self.kwargs['str']
         ind=int(ind)
+        qw = InorganicReaction.objects.get(pk=ind)
         product1 = request.POST.get('field1')
         product2 = request.POST.get('field2')
         product3 = request.POST.get('field3')
