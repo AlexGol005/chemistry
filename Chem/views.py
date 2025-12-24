@@ -127,3 +127,31 @@ class ChemTestQuestionView(TemplateView):
         context['count'] = len(my_data)
         
         return context
+
+
+class ChemTestAnswerView(TemplateView):
+    template_name = 'Chem/inorganiclawtestanswer.html'
+
+    def get_context_data(self, **kwargs):
+        # Вызываем базовый метод для получения контекста
+        context = super().get_context_data(**kwargs)
+        str=self.kwargs['str']
+
+        # Получаем данные из сессии по ключу 'my_list'
+        # Если ключа нет, вернется пустой список []
+        my_data = self.request.session.get('question_list', [])
+        
+        # Добавляем данные в контекст шаблона
+        context['reagent1'] = InorganicReaction.objects.get(pk=str).reagent1
+        context['reagent2'] = InorganicReaction.objects.get(pk=str).reagent2
+        context['reagent3'] = InorganicReaction.objects.get(pk=str).reagent3
+        context['condition'] = InorganicReaction.objects.get(pk=str).condition
+        context['product1'] = InorganicReaction.objects.get(pk=str).product1
+        context['product2'] = InorganicReaction.objects.get(pk=str).product2
+        context['product3'] = InorganicReaction.objects.get(pk=str).product3
+        context['product4'] = InorganicReaction.objects.get(pk=str).product4
+
+        context['items'] = my_data
+        context['count'] = len(my_data)
+        
+        return context
