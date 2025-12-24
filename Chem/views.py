@@ -143,12 +143,16 @@ class ChemTestQuestionView(TemplateView):
         product3 = request.POST.get('field3')
         product4 = request.POST.get('field4')
         answer_list = [product1, product2, product3, product4]
-        answer_list_upper = [word.upper() for word in answer_list]
         correct_answer_list = [qw.product1, qw.product2, qw.product3, qw.product4]
-        correct_answer_list_upper = [word.upper() for word in correct_answer_list]
-        clean_answer_list_upper = list(filter(None, answer_list_upper))
-        clean_correct_answer_list_upper = list(filter(None, correct_answer_list_upper))
-        if sorted(clean_answer_list_upper) == sorted(correct_answer_list_upper):
+
+        clean_answer_list = list(filter(None, answer_list))
+        clean_correct_answer_list = list(filter(None, correct_answer_list))
+        
+        clean_answer_list_upper = [word.upper() for word in clean_answer_list]
+        
+        clean_correct_answer_list_upper = [word.upper() for word in clean_correct_answer_list]
+
+        if sorted(clean_answer_list_upper) == sorted(clean_correct_answer_list_upper):
             messages.success(request, "Верно!")
         else:
             messages.success(request, "Не верно :(")
