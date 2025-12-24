@@ -52,6 +52,8 @@ class InorganicReaction(models.Model):
     product2 = models.CharField('Продукт1', blank=True, null=True)
     product3 = models.CharField('Продукт1', blank=True, null=True)
     product4 = models.CharField('Продукт1', blank=True, null=True)
+    
+    video = models.CharField('Ссылка на видео', blank=True, null=True)
 
     def __str__(self):
         return f'{self.number.title} - {self.metatitle}'
