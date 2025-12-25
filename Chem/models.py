@@ -91,6 +91,7 @@ class NamesCompaunds(models.Model):
     date = models.DateField('Дата', auto_now_add=True)
     formula = models.CharField('Формула', max_length=10000, blank=True, null=True, unique=True)
     name = models.TextField('Все названия этого соединения', blank=True, null=True)    
+    appearance = models.TextField('Внешний вид', blank=True, null=True) 
 
     class Meta:
         verbose_name = 'Название химического вещества'
