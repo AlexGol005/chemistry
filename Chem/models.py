@@ -94,7 +94,7 @@ class NamesCompaunds(models.Model):
 
     def clean(self):
         # Ищем существующую запись с такими же полями
-        duplicate = NamesCompaunds.objects.filter(reagent1=self.formula).exclude(pk=self.pk).first()
+        duplicate = NamesCompaunds.objects.filter(formula=self.formula).exclude(pk=self.pk).first()
         
         if duplicate:
             # Выбрасываем ошибку с PK дубликата
