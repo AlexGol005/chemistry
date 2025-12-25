@@ -118,10 +118,22 @@ class ChemTestQuestionView(TemplateView):
         my_data = self.request.session.get('question_list', [])
         qw = InorganicReaction.objects.get(pk=ind)
         
+        name1 = NamesCompaunds.objects.get(formula=qw.reagent1).name
+        name2 = NamesCompaunds.objects.get(formula=qw.reagent2).name
+        name3 = NamesCompaunds.objects.get(formula=qw.reagent3).name
+        context['name1'] = name1
+        context['name2'] = name2
+        context['name3'] = name3
+        
         # Добавляем данные в контекст шаблона
         context['reagent1'] = qw.reagent1
         context['reagent2'] = qw.reagent2
         context['reagent3'] = qw.reagent3
+
+
+
+
+        
         context['condition'] = qw.condition
         context['form']= Unswer4Form
 
@@ -181,8 +193,25 @@ class ChemTestAnswerView(TemplateView):
         context['product2'] = InorganicReaction.objects.get(pk=ind).product2
         context['product3'] = InorganicReaction.objects.get(pk=ind).product3
         context['product4'] = InorganicReaction.objects.get(pk=ind).product4
-        
 
+        name1 = NamesCompaunds.objects.get(formula=qw.reagent1).name
+        name2 = NamesCompaunds.objects.get(formula=qw.reagent2).name
+        name3 = NamesCompaunds.objects.get(formula=qw.reagent3).name
+        context['name1'] = name1
+        context['name2'] = name2
+        context['name3'] = name3
+        
+        name4 = NamesCompaunds.objects.get(formula=qw.product1).name
+        name5 = NamesCompaunds.objects.get(formula=qw.product2).name
+        name6 = NamesCompaunds.objects.get(formula=qw.product3).name
+        name7 = NamesCompaunds.objects.get(formula=qw.product4).name
+        context['name4'] = name4
+        context['name5'] = name5
+        context['name6'] = name6
+        context['name7'] = name7
+
+
+        
         # проверка ответа
         my_answer = self.request.session.get('answer_list', [])
         context['my_answer'] = my_answer
