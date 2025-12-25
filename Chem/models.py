@@ -82,3 +82,24 @@ class InorganicReaction(models.Model):
             )
         super().clean()
 
+
+class NamesCompaunds(models.Model):
+    date = models.DateField('Дата', auto_now_add=True)
+    formula = models.CharField('Формула', max_length=10000, blank=True, null=True, unique=True)
+    name = models.TextField('Все названия этого соединения', blank=True, null=True)    
+
+    class Meta:
+        verbose_name = 'Название химического вещества'
+        verbose_name_plural = 'Названия химических веществ'
+
+    def clean(self):
+        # Ищем существующую запись с такими же полями
+        duplicate = NamesCompaunds.objects.filter(reagent1=self.formula).exclude(pk=self.pk).first()
+        
+        if duplicate:
+            # Выбрасываем ошибку с PK дубликата
+            raise ValidationError(
+                f"Ошибка! Место уже занято. Дублирующая запись имеет ID: {duplicate.pk}"
+            )
+        super().clean()
+
