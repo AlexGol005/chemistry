@@ -55,9 +55,21 @@ class InorganicReactionAdmin(admin.ModelAdmin):
     save_as = True
     def save_model(self, request, obj, form, change):
         # Проверяем наличие записи в другой модели
-        if not NamesCompaunds.objects.filter(formula=obj.reagent1).exists():
+        if not NamesCompaunds.objects.filter(formula=obj.reagent1).exists() and obj.reagent1 != None :
             messages.warning(request, f"Внимание: вещества '{obj.reagent1}' нет в модели названий.")
-        
+        if not NamesCompaunds.objects.filter(formula=obj.reagent2).exists() and obj.reagent2 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.reagent2}' нет в модели названий.")
+        if not NamesCompaunds.objects.filter(formula=obj.reagent3).exists() and obj.reagent3 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.reagent3}' нет в модели названий.")
+        if not NamesCompaunds.objects.filter(formula=obj.product1).exists() and obj.product1 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.product1}' нет в модели названий.")
+        if not NamesCompaunds.objects.filter(formula=obj.product2).exists() and obj.product2 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.product2}' нет в модели названий.")
+        if not NamesCompaunds.objects.filter(formula=obj.product3).exists() and obj.product3 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.product3}' нет в модели названий.")
+        if not NamesCompaunds.objects.filter(formula=obj.product4).exists() and obj.product4 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.product4}' нет в модели названий.")
+       
         # Сохранение сработает в любом случае
         super().save_model(request, obj, form, change)
 
