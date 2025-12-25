@@ -118,9 +118,9 @@ class ChemTestQuestionView(TemplateView):
         my_data = self.request.session.get('question_list', [])
         qw = InorganicReaction.objects.get(pk=ind)
         
-        name1 = NamesCompaunds.objects.get(formula=qw.reagent1).name
-        name2 = NamesCompaunds.objects.get(formula=qw.reagent2).name
-        name3 = NamesCompaunds.objects.get(formula=qw.reagent3).name
+        name1 = NamesCompaunds.objects.filter(formula=qw.reagent1).values_list('name', flat=True).first() or ""
+        name2 = NamesCompaunds.objects.filter(formula=qw.reagent2).values_list('name', flat=True).first() or ""
+        name3 = NamesCompaunds.objects.filter(formula=qw.reagent3).values_list('name', flat=True).first() or ""
         context['name1'] = name1
         context['name2'] = name2
         context['name3'] = name3
@@ -194,17 +194,19 @@ class ChemTestAnswerView(TemplateView):
         context['product3'] = InorganicReaction.objects.get(pk=ind).product3
         context['product4'] = InorganicReaction.objects.get(pk=ind).product4
 
-        name1 = NamesCompaunds.objects.get(formula=qw.reagent1).name
-        name2 = NamesCompaunds.objects.get(formula=qw.reagent2).name
-        name3 = NamesCompaunds.objects.get(formula=qw.reagent3).name
+
+        
+        name1 = NamesCompaunds.objects.filter(formula=qw.reagent1).values_list('name', flat=True).first() or ""
+        name2 = NamesCompaunds.objects.filter(formula=qw.reagent2).values_list('name', flat=True).first() or ""
+        name3 = NamesCompaunds.objects.filter(formula=qw.reagent3).values_list('name', flat=True).first() or ""
         context['name1'] = name1
         context['name2'] = name2
         context['name3'] = name3
         
-        name4 = NamesCompaunds.objects.get(formula=qw.product1).name
-        name5 = NamesCompaunds.objects.get(formula=qw.product2).name
-        name6 = NamesCompaunds.objects.get(formula=qw.product3).name
-        name7 = NamesCompaunds.objects.get(formula=qw.product4).name
+        name4 = NamesCompaunds.objects.filter(formula=qw.product1).values_list('name', flat=True).first() or ""
+        name5 = NamesCompaunds.objects.filter(formula=qw.product2).values_list('name', flat=True).first() or ""
+        name6 = NamesCompaunds.objects.filter(formula=qw.product3).values_list('name', flat=True).first() or ""
+        name7 = NamesCompaunds.objects.filter(formula=qw.product4).values_list('name', flat=True).first() or ""
         context['name4'] = name4
         context['name5'] = name5
         context['name6'] = name6
