@@ -32,7 +32,10 @@ class Inorganiclaw(models.Model):
         verbose_name = 'Закон неорганической химии'
         verbose_name_plural = 'Законы неорганической химии'
 
-
+LEVEL = [
+        ('ОГЭ', 'ОГЭ'),
+        ('ЕГЭ', 'ЕГЭ'),
+    ]
 
 class InorganicReaction(models.Model):
     date = models.DateField('Дата', auto_now_add=True)
@@ -56,6 +59,7 @@ class InorganicReaction(models.Model):
     
     video = models.CharField('Ссылка на видео', blank=True, null=True)
     extra = models.CharField('Дополнительная информация', blank=True, null=True)
+    level = models.CharField('Уровень', blank=True, null=True, default='ОГЭ', choices=LEVEL)
 
     def __str__(self):
         try:
