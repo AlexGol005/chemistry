@@ -52,7 +52,38 @@
 
 </p>
 
-        </center>
+
+           <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 18pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
+
+           {% if reagent1 %}       
+         {{name1}}
+         {% endif %}
+                 
+         {% if reagent2 %}
+          + {{name2}}
+         {% endif %}
+
+        {% if reagent3 %}
+          + {{name3}}
+         {% endif %}
+
+         =
+{% if product1 %}
+ {{name4}} 
+                  {% endif %}
+     {% if product2 %}
+          + {{name5}}
+         {% endif %}
+      {% if product3 %}
+          + {{name6}}
+         {% endif %}
+      {% if product4 %}
+          + {{name7}}
+         {% endif %}
+
+
+</p>
+    
     
 <center>     
 
@@ -64,7 +95,7 @@
 
  </p>
 
-        </center>
+
 
 </center>
 
