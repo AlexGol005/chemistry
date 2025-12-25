@@ -38,6 +38,7 @@ class InorganiclawAdmin(ImportExportActionModelAdmin):
     ordering = ('number',)
     search_fields = ['number', 'title', 'text', 'keywords']
     form = InorganiclawAdminForm
+    save_as = True
         
 # фиксация формы в админке знх
 admin.site.register(Inorganiclaw, InorganiclawAdmin)
@@ -51,5 +52,14 @@ class InorganicReactionAdmin(admin.ModelAdmin):
     # Поля модели, по которым будет идти поиск
     search_fields = ['pk', 'reagent1', 'reagent2'] 
     save_as = True
+
+# названия веществ
+
+
+@admin.register(NamesCompaunds)
+class NamesCompaundsAdmin(admin.ModelAdmin):
+    search_fields = ['pk', 'formula', 'name'] 
+    save_as = True
+    list_display = ('pk', 'formula', 'name')
     
 
