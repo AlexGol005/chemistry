@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from django.contrib import messages
 from .models import *
 
 from import_export.admin import ImportExportActionModelAdmin
@@ -52,6 +53,13 @@ class InorganicReactionAdmin(admin.ModelAdmin):
     # Поля модели, по которым будет идти поиск
     search_fields = ['pk', 'reagent1', 'reagent2'] 
     save_as = True
+    def save_model(self, request, obj, form, change):
+        # Проверяем наличие записи в другой модели
+        if not NamesCompaunds.objects.filter(formula=obj.reagent1).exists():
+            messages.warning(request, f"Внимание: вещества '{obj.reagent1}' нет в модели названий.")
+        
+        # Сохранение сработает в любом случае
+        super().save_model(request, obj, form, change)
 
 # названия веществ
 
