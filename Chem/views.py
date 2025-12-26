@@ -265,5 +265,6 @@ class CompaundStrView(TemplateView):
 
         context = super().get_context_data(**kwargs)
         ind=self.kwargs['str']
-        objcontent = NamesCompaunds.objects.get(pk=ind)     
+        objcontent = NamesCompaunds.objects.get(pk=ind)  
+        context['objcontent'] = objcontent
         return context
