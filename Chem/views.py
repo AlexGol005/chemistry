@@ -271,6 +271,6 @@ class CompaundStrView(TemplateView):
 
         qw = InorganicReaction.objects.filter(Q(reagent1__icontains=f) | Q(reagent2__icontains=f) | Q(reagent3__icontains=f) | Q(product1__icontains=f) | Q(product2__icontains=f) | Q(product3__icontains=f) | Q(product4__icontains=f) ).
 
-
+        context['qw'] = qw
         
         return context
