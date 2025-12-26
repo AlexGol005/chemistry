@@ -265,6 +265,12 @@ class CompaundStrView(TemplateView):
 
         context = super().get_context_data(**kwargs)
         ind=self.kwargs['str']
-        objcontent = NamesCompaunds.objects.get(pk=ind)  
+        objcontent = NamesCompaunds.objects.get(pk=ind) 
+        f = objcontent.formula
         context['objcontent'] = objcontent
+
+        qw = InorganicReaction.objects.filter(Q(reagent1__icontains=f) | Q(reagent2__icontains=f) | Q(reagent3__icontains=f) | Q(product1__icontains=f) | Q(product2__icontains=f) | Q(product3__icontains=f) | Q(product4__icontains=f) ).
+
+
+        
         return context
