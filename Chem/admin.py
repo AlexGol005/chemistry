@@ -75,12 +75,12 @@ class InorganicReactionAdmin(admin.ModelAdmin):
 # названия веществ
 
 
-@admin.register(NamesCompaunds)
-class NamesCompaundsAdmin(admin.ModelAdmin):
+# @admin.register(NamesCompaunds)
+# class NamesCompaundsAdmin(admin.ModelAdmin):
     
-    search_fields = ['pk', 'formula', 'name'] 
-    save_as = True
-    list_display = ('pk', 'formula', 'name')
+#     search_fields = ['pk', 'formula', 'name'] 
+#     save_as = True
+#     list_display = ('pk', 'formula', 'name')
     
 
 
