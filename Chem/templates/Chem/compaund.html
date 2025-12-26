@@ -9,24 +9,24 @@
 {% endblock %}
 {#конец названия страницы#}
 
-    {% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
-    {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
-    {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
+    {% block metaname %}<meta name="description" content="{{objcontent.metatitle}}" >{% endblock %}
+    {% block keywords %}<meta name="keywords" content="{{objcontent.keywords}}">{% endblock %}
+    {% block description %}<meta name="description" content="{{objcontent.description}}">{% endblock %}
     
 {% block content %}
 {% autoescape off %}
 <div class="col-12">
          
-   <center>  <h3><a href="/chem/"> {{obj.name}} </a></h3>     </center>
-  <center>  <h3><a href="/chem/"> {{obj.formula}} </a></h3>     </center>
+   <center>  <h3><a href="/chem/"> {{objcontent.name}} </a></h3>     </center>
+  <center>  <h3><a href="/chem/"> {{objcontent.formula}} </a></h3>     </center>
 
-                 {% if obj.extra %}
+                 {% if objcontent.appearance %}
             <center> 
 <center>  <h3>Подробности</h3>     </center>
             <table class="table table-bordered flexy1">
                 <td>
                      <p style="width: 100%; text-align: left !important; font-family: Georgia, serif; font-size: 15pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
-                  {{obj.appearance}}
+                  {{objcontent.appearance}}
                           </p>
                                  </td>
             </table>
