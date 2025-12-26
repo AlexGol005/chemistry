@@ -202,6 +202,13 @@ class ChemTestAnswerView(TemplateView):
         context['name1'] = name1
         context['name2'] = name2
         context['name3'] = name3
+
+        pkc1 = NamesCompaunds.objects.filter(formula=qw.reagent1).values_list('pk', flat=True).first() or ""
+        pkc2 = NamesCompaunds.objects.filter(formula=qw.reagent2).values_list('pk', flat=True).first() or ""
+        pkc3 = NamesCompaunds.objects.filter(formula=qw.reagent3).values_list('pk', flat=True).first() or ""
+        context['pkc1'] = pkc1
+        context['pkc2'] = pkc2
+        context['pkc3'] = pkc3
         
         name4 = NamesCompaunds.objects.filter(formula=qw.product1).values_list('name', flat=True).first() or ""
         name5 = NamesCompaunds.objects.filter(formula=qw.product2).values_list('name', flat=True).first() or ""
@@ -211,6 +218,15 @@ class ChemTestAnswerView(TemplateView):
         context['name5'] = name5
         context['name6'] = name6
         context['name7'] = name7
+
+        pkc4 = NamesCompaunds.objects.filter(formula=qw.product1).values_list('pk', flat=True).first() or ""
+        pkc5 = NamesCompaunds.objects.filter(formula=qw.product2).values_list('pk', flat=True).first() or ""
+        pkc6 = NamesCompaunds.objects.filter(formula=qw.product3).values_list('pk', flat=True).first() or ""
+        pkc7 = NamesCompaunds.objects.filter(formula=qw.product4).values_list('pk', flat=True).first() or ""
+        context['pkc4'] = pkc4
+        context['pkc5'] = pkc5
+        context['pkc6'] = pkc6
+        context['pkc7'] = pkc7
 
 
         
@@ -239,4 +255,15 @@ class ChemTestAnswerView(TemplateView):
         context['last_list'] = last_list
         context['obj'] = qw
         
+        return context
+
+
+class CompaundStrView(TemplateView):
+    template_name = 'Chem/compaund.html'
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        ind=self.kwargs['str']
+        objcontent = NamesCompaunds.objects.get(pk=ind)     
         return context
