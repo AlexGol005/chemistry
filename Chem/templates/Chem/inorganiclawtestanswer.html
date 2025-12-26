@@ -24,29 +24,29 @@
              <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 34pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
 
            {% if reagent1 %}       
-         {{reagent1}}
+<a href="{% url 'compaund' pkc1 %}" target="_blank" rel="noopener noreferrer">       {{reagent1}} </a>
          {% endif %}
                  
          {% if reagent2 %}
-          + {{reagent2}}
+          + <a href="{% url 'compaund' pkc2 %}" target="_blank" rel="noopener noreferrer"> {{reagent2}}</a>
          {% endif %}
 
         {% if reagent3 %}
-          + {{reagent3}}
+          + <a href="{% url 'compaund' pkc3 %}" target="_blank" rel="noopener noreferrer"> {{reagent3}}</a>
          {% endif %}
 
          =
 {% if product1 %}
- {{product1}} 
+<a href="{% url 'compaund' pkc4 %}" target="_blank" rel="noopener noreferrer"> {{product1}} </a>
                   {% endif %}
      {% if product2 %}
-          + {{product2}}
+          + <a href="{% url 'compaund' pkc5 %}" target="_blank" rel="noopener noreferrer">{{product2}}</a>
          {% endif %}
       {% if product3 %}
-          + {{product3}}
+          + <a href="{% url 'compaund' pkc6 %}" target="_blank" rel="noopener noreferrer">{{product3}}</a>
          {% endif %}
       {% if product4 %}
-          + {{product4}}
+          + <a href="{% url 'compaund' pkc7 %}" target="_blank" rel="noopener noreferrer">{{product4}}</a>
          {% endif %}
 
 
