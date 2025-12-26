@@ -12,4 +12,5 @@ urlpatterns = [
     path('inorganiclaw/test/<str:str>/', views.ChemTestHeadView.as_view(), name='inorganiclawtest'),
     path('inorganiclaw/test/question/<str:str>/', views.ChemTestQuestionView.as_view(), name='inorganiclawtestquestion'),
     path('inorganiclaw/test/answer/<str:str>/', views.ChemTestAnswerView.as_view(), name='inorganiclawtestanswer'),
+    path('compaund/<str:str>/', views.CompaundStrView.as_view(), name='compaund'),
     ]
