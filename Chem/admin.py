@@ -94,7 +94,7 @@ class NamesCompaundsResource(resources.ModelResource):
 
 # класс добавления стилей к окну вещества
 class NamesCompaundsAdminForm(forms.ModelForm):
-    apperance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+    appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
 
 
     class Meta:
