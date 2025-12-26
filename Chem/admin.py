@@ -49,8 +49,7 @@ admin.site.register(Inorganiclaw, InorganiclawAdmin)
 # admin.site.register(InorganicReaction) 
 
 @admin.register(InorganicReaction)
-class InorganicReactionAdmin(admin.ModelAdmin):
-    # Поля модели, по которым будет идти поиск
+class InorganicReactionAdmin(admin.ModelAdmin):    
     search_fields = ['pk', 'reagent1', 'reagent2'] 
     save_as = True
     def save_model(self, request, obj, form, change):
@@ -78,8 +77,37 @@ class InorganicReactionAdmin(admin.ModelAdmin):
 
 @admin.register(NamesCompaunds)
 class NamesCompaundsAdmin(admin.ModelAdmin):
+    
     search_fields = ['pk', 'formula', 'name'] 
     save_as = True
     list_display = ('pk', 'formula', 'name')
     
 
+
+# вещества классы для отображения в админке
+
+# класс для загрузки/выгрузки вещества
+class NamesCompaundsResource(resources.ModelResource):
+    class Meta:
+        model = NamesCompaunds
+
+
+# класс добавления стилей к окну вещества
+class NamesCompaundsAdminForm(forms.ModelForm):
+    apperance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+
+
+    class Meta:
+        model = NamesCompaunds
+        fields = '__all__'
+        
+# класс подробностей вещества   
+class NamesCompaundsAdmin(ImportExportActionModelAdmin):
+    resource_class = NamesCompaundsResource
+    form = NamesCompaundsAdminForm
+    search_fields = ['pk', 'formula', 'name'] 
+    save_as = True
+    list_display = ('pk', 'formula', 'name')
+        
+# фиксация формы в админке вещества
+admin.site.register(NamesCompaunds, NamesCompaundsAdmin)
