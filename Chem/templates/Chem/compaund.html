@@ -1,0 +1,53 @@
+{% extends 'main/superbase.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+Вещество
+{% endblock %}
+{#конец названия страницы#}
+
+    {% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
+    {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
+    {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
+    
+{% block content %}
+{% autoescape off %}
+<div class="col-12">
+         
+   <center>  <h3><a href="/chem/"> {{obj.name}} </a></h3>     </center>
+  <center>  <h3><a href="/chem/"> {{obj.formula}} </a></h3>     </center>
+
+                 {% if obj.extra %}
+            <center> 
+<center>  <h3>Подробности</h3>     </center>
+            <table class="table table-bordered flexy1">
+                <td>
+                     <p style="width: 100%; text-align: left !important; font-family: Georgia, serif; font-size: 15pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
+                  {{obj.appearance}}
+                          </p>
+                                 </td>
+            </table>
+</center>                       
+                 {% endif %}   
+
+ <br> <br>
+
+  
+{% for j in objects %}
+
+
+  
+......
+
+
+  
+ {% endfor %}
+
+
+</div>
+
+{% endautoescape %}
+{% endblock %}
