@@ -206,9 +206,7 @@ class ChemTestAnswerView(TemplateView):
         pkc1 = NamesCompaunds.objects.filter(formula=qw.reagent1).values_list('pk', flat=True).first() or ""
         pkc2 = NamesCompaunds.objects.filter(formula=qw.reagent2).values_list('pk', flat=True).first() or ""
         pkc3 = NamesCompaunds.objects.filter(formula=qw.reagent3).values_list('pk', flat=True).first() or ""
-        context['pkc1'] = pkc1
-        context['pkc2'] = pkc2
-        context['pkc3'] = pkc3
+
         
         name4 = NamesCompaunds.objects.filter(formula=qw.product1).values_list('name', flat=True).first() or ""
         name5 = NamesCompaunds.objects.filter(formula=qw.product2).values_list('name', flat=True).first() or ""
@@ -223,10 +221,17 @@ class ChemTestAnswerView(TemplateView):
         pkc5 = NamesCompaunds.objects.filter(formula=qw.product2).values_list('pk', flat=True).first() or ""
         pkc6 = NamesCompaunds.objects.filter(formula=qw.product3).values_list('pk', flat=True).first() or ""
         pkc7 = NamesCompaunds.objects.filter(formula=qw.product4).values_list('pk', flat=True).first() or ""
-        context['pkc4'] = pkc4
-        context['pkc5'] = pkc5
-        context['pkc6'] = pkc6
-        context['pkc7'] = pkc7
+
+        l = [pkc1, pkc2, pkc3, pkc4, pkc5, pkc6, pkc7]
+        new_list = [x if x is not None else 1 for x in my_list]
+
+        context['pkc1'] = new_list[0]
+        context['pkc2'] = new_list[1]
+        context['pkc3'] = new_list[2]
+        context['pkc4'] = new_list[3]
+        context['pkc5'] = new_list[4]
+        context['pkc6'] = new_list[5]
+        context['pkc7'] = new_list[6]
 
 
         
