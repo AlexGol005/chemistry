@@ -83,7 +83,7 @@ class InorganicReactionResource(resources.ModelResource):
 
 # класс добавления стилей к окну реакции
 class InorganicReactionAdminForm(forms.ModelForm):
-    appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+    extra = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
 
 
     class Meta:
@@ -94,9 +94,31 @@ class InorganicReactionAdminForm(forms.ModelForm):
 class InorganicReactionAdmin(ImportExportActionModelAdmin):
     resource_class = InorganicReactionResource
     form = InorganicReactionAdminForm
-    search_fields = ['pk', 'formula', 'name'] 
+
+    list_display = ('pk', 'metatitle')
+
+
+    search_fields = ['pk', 'reagent1', 'reagent2'] 
     save_as = True
-    list_display = ('pk', 'formula', 'name')
+    def save_model(self, request, obj, form, change):
+        # Проверяем наличие записи в другой модели
+        if not NamesCompaunds.objects.filter(formula=obj.reagent1).exists() and obj.reagent1 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.reagent1}' нет в модели названий.")
+        if not NamesCompaunds.objects.filter(formula=obj.reagent2).exists() and obj.reagent2 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.reagent2}' нет в модели названий.")
+        if not NamesCompaunds.objects.filter(formula=obj.reagent3).exists() and obj.reagent3 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.reagent3}' нет в модели названий.")
+        if not NamesCompaunds.objects.filter(formula=obj.product1).exists() and obj.product1 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.product1}' нет в модели названий.")
+        if not NamesCompaunds.objects.filter(formula=obj.product2).exists() and obj.product2 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.product2}' нет в модели названий.")
+        if not NamesCompaunds.objects.filter(formula=obj.product3).exists() and obj.product3 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.product3}' нет в модели названий.")
+        if not NamesCompaunds.objects.filter(formula=obj.product4).exists() and obj.product4 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.product4}' нет в модели названий.")
+       
+        # Сохранение сработает в любом случае
+        super().save_model(request, obj, form, change)
         
 # фиксация формы в админке реакции
 admin.site.register(InorganicReaction, InorganicReactionAdmin)
