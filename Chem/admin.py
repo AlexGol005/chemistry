@@ -72,16 +72,47 @@ class InorganicReactionAdmin(admin.ModelAdmin):
         # Сохранение сработает в любом случае
         super().save_model(request, obj, form, change)
 
-# названия веществ
+
+# реакции классы для отображения в админке
+
+# класс для загрузки/выгрузки реакции
+class InorganicReactionResource(resources.ModelResource):
+    class Meta:
+        model = InorganicReaction
 
 
-# @admin.register(NamesCompaunds)
-# class NamesCompaundsAdmin(admin.ModelAdmin):
-    
-#     search_fields = ['pk', 'formula', 'name'] 
-#     save_as = True
-#     list_display = ('pk', 'formula', 'name')
-    
+# класс добавления стилей к окну реакции
+class InorganicReactionAdminForm(forms.ModelForm):
+    appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+
+
+    class Meta:
+        model = InorganicReaction
+        fields = '__all__'
+        
+# класс подробностей реакции   
+class InorganicReactionAdmin(ImportExportActionModelAdmin):
+    resource_class = InorganicReactionResource
+    form = InorganicReactionAdminForm
+    search_fields = ['pk', 'formula', 'name'] 
+    save_as = True
+    list_display = ('pk', 'formula', 'name')
+        
+# фиксация формы в админке реакции
+admin.site.register(InorganicReaction, InorganicReactionAdmin)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # вещества классы для отображения в админке
@@ -111,3 +142,7 @@ class NamesCompaundsAdmin(ImportExportActionModelAdmin):
         
 # фиксация формы в админке вещества
 admin.site.register(NamesCompaunds, NamesCompaundsAdmin)
+
+
+
+
