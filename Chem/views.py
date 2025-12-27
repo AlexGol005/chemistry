@@ -106,6 +106,7 @@ class ChemTestHeadView(ListView):
 
 
 class ChemTestQuestionView(TemplateView):
+    """ выводит вопрос теста - реакцию  по неорганической химии """
     template_name = 'Chem/inorganiclawtestquestion.html'
 
     def get_context_data(self, **kwargs):
@@ -130,10 +131,6 @@ class ChemTestQuestionView(TemplateView):
         context['reagent2'] = qw.reagent2
         context['reagent3'] = qw.reagent3
 
-
-
-
-        
         context['condition'] = qw.condition
         context['form']= Unswer4Form
 
@@ -177,6 +174,8 @@ class ChemTestQuestionView(TemplateView):
 
 
 class ChemTestAnswerView(TemplateView):
+    """ выводит ответ теста - реакцию  по неорганической химии """
+    
     template_name = 'Chem/inorganiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
