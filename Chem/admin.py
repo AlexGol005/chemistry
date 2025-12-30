@@ -17,6 +17,7 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 class InorganiclawResource(resources.ModelResource):
     class Meta:
         model = Inorganiclaw
+        
 
 
 # класс добавления стилей к окну знх
@@ -54,6 +55,8 @@ admin.site.register(Inorganiclaw, InorganiclawAdmin)
 class InorganicReactionResource(resources.ModelResource):
     class Meta:
         model = InorganicReaction
+        skip_unchanged = True
+        report_skipped = True   
 
 
 # класс добавления стилей к окну реакции
@@ -73,7 +76,7 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
     list_display = ('pk', 'metatitle')
 
 
-    search_fields = ['pk', 'reagent1', 'reagent2'] 
+    search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
     save_as = True
     def save_model(self, request, obj, form, change):
         # Проверяем наличие записи в другой модели
@@ -99,25 +102,14 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
 admin.site.register(InorganicReaction, InorganicReactionAdmin)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 # вещества классы для отображения в админке
 
 # класс для загрузки/выгрузки вещества
 class NamesCompaundsResource(resources.ModelResource):
     class Meta:
         model = NamesCompaunds
+        skip_unchanged = True
+        report_skipped = True 
 
 
 # класс добавления стилей к окну вещества
