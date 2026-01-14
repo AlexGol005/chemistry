@@ -119,7 +119,43 @@
 
 </div></center> 
 
+<!-- {% for j in qw %} -->
 
+
+             <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
+<a href="{% url 'inorganiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
+           {% if j.reagent1 %}       
+       {{j.reagent1}} 
+         {% endif %}
+                 
+         {% if j.reagent2 %}
+          +  {{j.reagent2}}
+         {% endif %}
+
+        {% if j.reagent3 %}
+          +  {{j.reagent3}}
+         {% endif %}
+
+         =
+{% if j.product1 %}
+{{j.product1}} 
+                  {% endif %}
+     {% if j.product2 %}
+          + {{j.product2}}
+         {% endif %}
+      {% if j.product3 %}
+          + {{j.product3}}
+         {% endif %}
+      {% if j.product4 %}
+          +{{j.product4}}
+         {% endif %}
+
+</a>
+</p>
+
+
+  
+ <!-- {% endfor %} -->
 
 
  </div>
