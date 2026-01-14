@@ -90,6 +90,11 @@ class ChemTestHeadView(ListView):
             question_ids.pop(0)
             context['question_ids'] = question_ids           
             self.request.session['question_list'] = question_ids
+            self.request.session['correct_count'] = 0
+            self.request.session['incorrect_count'] = 0
+            self.request.session['all_count'] = 0
+            
+
 
 
         except:
@@ -165,8 +170,14 @@ class ChemTestQuestionView(TemplateView):
 
         if sorted(clean_answer_list_upper) == sorted(clean_correct_answer_list_upper):
             messages.success(request, "Верно!")
+            self.request.session['correct_count'] += 1
+            
         else:
             messages.success(request, f'Не верно :( .Ваш ответ: = {answer}')
+            self.request.session['incorrect_count'] += 1
+            
+        
+        self.request.session['all_count'] += 1 
         
         self.request.session['answer_list'] = answer_list
         return redirect('inorganiclawtestanswer', str=ind)
@@ -250,6 +261,12 @@ class ChemTestAnswerView(TemplateView):
         self.request.session['question_list'] = question_list
 
         question_list = self.request.session.get('question_list', [])
+
+        correct_count = self.request.session.get('correct_count')
+        incorrect_count = self.request.session.get('incorrect_count')
+        all_count = self.request.session.get('all_count')
+        percent = (correct_count / all_count) * 100
+
         
         
         context['next_index'] = next_index
@@ -258,6 +275,9 @@ class ChemTestAnswerView(TemplateView):
         context['count'] = len(question_list)
         context['last_list'] = last_list
         context['obj'] = qw
+        context['percent'] = percent
+
+        
         
         return context
 
