@@ -144,6 +144,7 @@ class ChemTestQuestionView(TemplateView):
         
         context['items'] = my_data
         context['count'] = len(my_data)
+        self.request.session['all_count'] += 1 
         
         return context
 
@@ -154,6 +155,10 @@ class ChemTestQuestionView(TemplateView):
         ind=int(ind)
         qw = InorganicReaction.objects.get(pk=ind)
         product1 = request.POST.get('field1')
+        if product1 == "not":
+            product1 = "нет"
+        if product1 == "ytn":
+            product1 = "нет"
         product2 = request.POST.get('field2')
         product3 = request.POST.get('field3')
         product4 = request.POST.get('field4')
@@ -177,7 +182,7 @@ class ChemTestQuestionView(TemplateView):
             self.request.session['incorrect_count'] += 1
             
         
-        self.request.session['all_count'] += 1 
+        # self.request.session['all_count'] += 1 
         
         self.request.session['answer_list'] = answer_list
         return redirect('inorganiclawtestanswer', str=ind)
