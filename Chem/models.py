@@ -26,7 +26,9 @@ class Inorganiclaw(models.Model):
 
 
     def __str__(self):
-        return f'{self.title}'
+        count = self.inorganicreaction_set.count()
+        return f'{self.title} - {count} реакций'
+
 
     class Meta:
         verbose_name = 'Закон неорганической химии'
