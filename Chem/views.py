@@ -46,7 +46,9 @@ class InorganiclawStrView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(InorganiclawStrView, self).get_context_data(**kwargs)
         obj = Inorganiclaw.objects.get(pk=self.kwargs.get("pk"))
+        qw = InorganicReaction.objects.filter(number=obj)
         context['obj'] = obj
+        context['qw'] = qw
         return context
 
 
