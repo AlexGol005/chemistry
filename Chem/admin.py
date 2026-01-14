@@ -36,11 +36,16 @@ class InorganiclawAdminForm(forms.ModelForm):
 # класс подробностей знх   
 class InorganiclawAdmin(ImportExportActionModelAdmin):
     resource_class = InorganiclawResource
-    list_display = ('number', 'title', 'pk')
+    list_display = ('number', 'title' , 'display_count', 'pk')
     ordering = ('number',)
     search_fields = ['number', 'title', 'text', 'keywords']
     form = InorganiclawAdminForm
     save_as = True
+
+    def display_count(self, obj):
+        return obj.inorganicreaction_set.count()
+    
+    display_count.short_description = "реакций"
         
 # фиксация формы в админке знх
 admin.site.register(Inorganiclaw, InorganiclawAdmin)
@@ -128,6 +133,7 @@ class NamesCompaundsAdmin(ImportExportActionModelAdmin):
     search_fields = ['pk', 'formula', 'name'] 
     save_as = True
     list_display = ('pk', 'formula', 'name')
+    
         
 # фиксация формы в админке вещества
 admin.site.register(NamesCompaunds, NamesCompaundsAdmin)
