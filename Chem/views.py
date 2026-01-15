@@ -161,6 +161,12 @@ class ChemTestQuestionView(TemplateView):
             product1 = "нет"
         if product1 == "ytn":
             product1 = "нет"
+        if product1 == "Ytn":
+            product1 = "нет"
+        if product1 == "Not":
+            product1 = "нет"
+        if product1 == "Нет":
+            product1 = "нет"
         product2 = request.POST.get('field2')
         product3 = request.POST.get('field3')
         product4 = request.POST.get('field4')
