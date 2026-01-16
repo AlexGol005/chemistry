@@ -35,7 +35,7 @@ class Unswer4Form(forms.Form):
         custom_style = "height: 80px; font-size: 44pt; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums;"
         
         self.helper.layout = Layout(
-            Submit('submit', 'Отправить ответ', css_class='mt-3 w-100', style="height: 60px;"),
+            Submit('submit', 'Отправить ответ', css_class='mt-3 mb-3 w-100', style="height: 60px;"),
             Row(
                 
                 Column(Field('field1', style=custom_style), css_class='col-md-3'),
