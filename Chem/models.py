@@ -134,7 +134,7 @@ class Atomlaw(models.Model):
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
 
-class InorganicReaction(models.Model):
+class AtomTest(models.Model):
     """ Законы строения атомов - вопросы """
     date = models.DateField('Дата', auto_now_add=True)
     metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
