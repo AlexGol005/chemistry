@@ -151,8 +151,7 @@ class AtomlawResource(resources.ModelResource):
 
 # класс добавления стилей к окну законы строения атомов
 class AtomlawAdminForm(forms.ModelForm):
-    appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
-
+    text = forms.CharField(label="Описание закона", widget=CKEditorUploadingWidget())
 
     class Meta:
         model = Atomlaw
@@ -182,7 +181,8 @@ class AtomTestResource(resources.ModelResource):
 
 # класс добавления стилей к окну тесты атомов
 class AtomTestAdminForm(forms.ModelForm):
-    appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+    text = forms.CharField(label="Вопрос", widget=CKEditorUploadingWidget(), required=False)
+    answer = forms.CharField(label="Ответ", widget=CKEditorUploadingWidget(), required=False)
 
 
     class Meta:
