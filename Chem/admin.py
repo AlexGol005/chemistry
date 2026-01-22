@@ -139,5 +139,68 @@ class NamesCompaundsAdmin(ImportExportActionModelAdmin):
 admin.site.register(NamesCompaunds, NamesCompaundsAdmin)
 
 
+# законы строения атомов классы для отображения в админке
+
+# класс для загрузки/выгрузки законы строения атомов
+class NamesCompaundsResource(resources.ModelResource):
+    class Meta:
+        model = Atomlaw
+        skip_unchanged = True
+        report_skipped = True 
+
+
+# класс добавления стилей к окну законы строения атомов
+class AtomlawAdminForm(forms.ModelForm):
+    appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+
+
+    class Meta:
+        model = Atomlaw
+        fields = '__all__'
+        
+# класс подробностей законы строения атомов   
+class AtomlawAdmin(ImportExportActionModelAdmin):
+    resource_class = AtomlawResource
+    form = AtomlawAdminForm
+    search_fields = ['pk', 'title', 'text'] 
+    save_as = True
+    list_display = ('pk', 'title')
+    
+        
+# фиксация формы в админке законы строения атомов
+admin.site.register(Atomlaw, AtomlawAdmin)
+
+# тесты атомов классы для отображения в админке
+
+# класс для загрузки/выгрузки тесты атомов
+class NamesCompaundsResource(resources.ModelResource):
+    class Meta:
+        model = AtomTest
+        skip_unchanged = True
+        report_skipped = True 
+
+
+# класс добавления стилей к окну тесты атомов
+class AtomTestAdminForm(forms.ModelForm):
+    appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+
+
+    class Meta:
+        model = AtomTest
+        fields = '__all__'
+        
+# класс подробностей тесты атомов   
+class AtomTestAdmin(ImportExportActionModelAdmin):
+    resource_class = AtomTestResource
+    form = AtomTestAdminForm
+    search_fields = ['pk', 'title', 'text'] 
+    save_as = True
+    list_display = ('pk', 'title')
+    
+        
+# фиксация формы в админке тесты атомов
+admin.site.register(AtomTest, AtomTestAdmin)
+
+
 
 
