@@ -193,9 +193,9 @@ class AtomTestAdminForm(forms.ModelForm):
 class AtomTestAdmin(ImportExportActionModelAdmin):
     resource_class = AtomTestResource
     form = AtomTestAdminForm
-    search_fields = ['pk', 'title', 'text'] 
+    search_fields = ['pk', 'text'] 
     save_as = True
-    list_display = ('pk', 'title')
+    list_display = ('pk', 'text')
     
         
 # фиксация формы в админке тесты атомов
