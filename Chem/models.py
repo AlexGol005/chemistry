@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 
 
 class Inorganiclaw(models.Model):
+    """ Законы неорганической химии """
     date = models.DateField('Дата', auto_now_add=True)
     metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
     description = models.TextField('Метаописание страницы', blank=True, null=True)    
@@ -40,6 +41,7 @@ LEVEL = [
     ]
 
 class InorganicReaction(models.Model):
+    """ Реакции неорганической химии """
     date = models.DateField('Дата', auto_now_add=True)
     metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
     description = models.TextField('Метаописание страницы', blank=True, null=True)    
@@ -90,6 +92,7 @@ class InorganicReaction(models.Model):
 
 
 class NamesCompaunds(models.Model):
+    """ Названия веществ """
     date = models.DateField('Дата', auto_now_add=True)
     formula = models.CharField('Формула', max_length=10000, blank=True, null=True, unique=True)
     name = models.TextField('Все названия этого соединения', blank=True, null=True)    
@@ -109,4 +112,38 @@ class NamesCompaunds(models.Model):
                 f"Ошибка! Место уже занято. Дублирующая запись имеет ID: {duplicate.pk}"
             )
         super().clean()
+
+
+class Atomlaw(models.Model):
+    """ Законы строения атомов """
+    date = models.DateField('Дата', auto_now_add=True)
+    metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
+    description = models.TextField('Метаописание страницы', blank=True, null=True)    
+    keywords = models.TextField('Ключевые слова', blank=True, null=True)
+    
+    number = models.IntegerField('Номер закона', blank=True, null=True)
+    title = models.TextField('Заголовок', blank=True, null=True)
+    text = models.TextField('Описание закона', blank=True, null=True)
+    formula = models.TextField('Общая формула закона', blank=True, null=True)
+    examples = models.TextField('Примеры', blank=True, null=True)
+    exceptions = models.TextField('Описание исключений', blank=True, null=True)
+    trening = models.TextField('Тренировка', blank=True, null=True)
+    img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
+                                        
+    img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
+                                      
+    img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+
+class InorganicReaction(models.Model):
+    """ Законы строения атомов - вопросы """
+    date = models.DateField('Дата', auto_now_add=True)
+    metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
+    description = models.TextField('Метаописание страницы', blank=True, null=True)    
+    keywords = models.TextField('Ключевые слова', blank=True, null=True)
+    
+    number = models.ForeignKey(Atomlaw,  on_delete=models.PROTECT,
+                                   verbose_name='Закон', blank=True, null=True, default=1)
+    
+    qwestion = models.CharField('Вопрос', blank=True, null=True)
+    answer = models.CharField('Ответ', blank=True, null=True)
 
