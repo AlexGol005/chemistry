@@ -146,5 +146,5 @@ class AtomTest(models.Model):
     
     text = models.CharField('Вопрос', blank=True, null=True)
     answer = models.CharField('Ответ', blank=True, null=True)
-    level = models.CharField('Уровень', blank=True, null=True, default='ОГЭ', choices=LEVEL)
+    level = models.CharField('Уровень', blank=True, null=True, default='ЕГЭ', choices=LEVEL)
 
