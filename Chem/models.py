@@ -144,7 +144,7 @@ class AtomTest(models.Model):
     number = models.ForeignKey(Atomlaw,  on_delete=models.PROTECT,
                                    verbose_name='Закон', blank=True, null=True, default=1)
     
-    text = models.CharField('Вопрос', blank=True, null=True)
-    answer = models.CharField('Ответ', blank=True, null=True)
+    text = models.TextField('Вопрос', blank=True, null=True)
+    answer = models.TextField('Ответ', blank=True, null=True)
     level = models.CharField('Уровень', blank=True, null=True, default='ЕГЭ', choices=LEVEL)
 
