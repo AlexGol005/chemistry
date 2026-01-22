@@ -173,7 +173,7 @@ admin.site.register(Atomlaw, AtomlawAdmin)
 # тесты атомов классы для отображения в админке
 
 # класс для загрузки/выгрузки тесты атомов
-class NamesCompaundsResource(resources.ModelResource):
+class AtomTestResource(resources.ModelResource):
     class Meta:
         model = AtomTest
         skip_unchanged = True
