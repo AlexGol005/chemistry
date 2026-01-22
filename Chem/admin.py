@@ -142,7 +142,7 @@ admin.site.register(NamesCompaunds, NamesCompaundsAdmin)
 # законы строения атомов классы для отображения в админке
 
 # класс для загрузки/выгрузки законы строения атомов
-class NamesCompaundsResource(resources.ModelResource):
+class AtomlawResource(resources.ModelResource):
     class Meta:
         model = Atomlaw
         skip_unchanged = True
