@@ -168,3 +168,16 @@ class AtomTest(models.Model):
         verbose_name = 'Вопросы к разделу: законы строения атомов и периодичности'
         verbose_name_plural = 'Вопрос к разделу: законы строения атомов и периодичности'
 
+
+# 4. Отображение в шаблоне (Django Template)
+# Когда вы выводите объект, используйте атрибут .url:
+# html
+# <!-- Ссылка на скачивание -->
+# <a href="{{ object.file.url }}" class="btn" download>
+#     Скачать {{ object.filename }} ({{ object.file_extension }})
+# </a>
+
+# <!-- Встроенный просмотр (если это PDF) -->
+# {% if object.file_extension == '.pdf' %}
+#     <iframe src="{{ object.file.url }}" width="100%" height="500px"></iframe>
+# {% endif %}
