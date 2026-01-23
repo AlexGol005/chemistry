@@ -133,6 +133,17 @@ class Atomlaw(models.Model):
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации")
+
+    def __str__(self):
+        if self.title:
+            return f'{self.pk} - {self.title}'
+        return f'{self.pk}'
+
+    class Meta:
+        verbose_name = 'Закон строения атомов и периодичности'
+        verbose_name_plural = 'Законы строения атомов и периодичности'
+
 
 class AtomTest(models.Model):
     """ Законы строения атомов - вопросы """
@@ -147,4 +158,13 @@ class AtomTest(models.Model):
     text = models.TextField('Вопрос', blank=True, null=True)
     answer = models.TextField('Ответ', blank=True, null=True)
     level = models.CharField('Уровень', blank=True, null=True, default='ЕГЭ', choices=LEVEL)
+
+    def __str__(self):
+        if self.metatitle:
+            return f'{self.pk} - {self.metatitle}'
+        return f'{self.pk}'
+    
+    class Meta:
+        verbose_name = 'Вопросы к разделу: законы строения атомов и периодичности'
+        verbose_name_plural = 'Вопрос к разделу: законы строения атомов и периодичности'
 
