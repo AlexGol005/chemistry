@@ -133,7 +133,7 @@ class Atomlaw(models.Model):
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
-    presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации")
+    presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
 
     def __str__(self):
         if self.title:
