@@ -15,12 +15,14 @@ urlpatterns = [
     path('compaunds/searchresult/', views.CompaundSearchResultView.as_view(), name='compaundsearchresult'),
     path('compaund/<str:str>/', views.CompaundStrView.as_view(), name='veshestvo'),
 
+    
+    path('atomlaw/test/answer/<str:str>/', views.AtomTestAnswerView.as_view(), name='atomlawtestanswer'),
     path('atomlaws', views.AtomlawView.as_view(), name='atomlaws'),
     path('atomlawstr/<int:pk>/', views.AtomlawStrView.as_view(), name='atomlawstr'),
     path('atomlaw/searchresult/', views.AtomlawSearchResultView.as_view(), name='atomlawsearchresult'),
     # path('inorganiclaw/test/<str:str>/', views.ChemTestHeadView.as_view(), name='inorganiclawtest'),
     # path('inorganiclaw/test/question/<str:str>/', views.ChemTestQuestionView.as_view(), name='inorganiclawtestquestion'),
-    path('atomlaw/test/answer/<str:str>/', views.AtomTestAnswerView.as_view(), name='atomlawtest'),
+    path('atomlaw/test/answer/<str:str>/', views.AtomTestAnswerView.as_view(), name='atomlawtestanswer'),
     
     path('compaunds', views.CompaundView.as_view(), name='compaunds'),
     
