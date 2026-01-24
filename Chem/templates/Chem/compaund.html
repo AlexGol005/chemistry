@@ -1,3 +1,4 @@
+"""страница вывода вещества"""
 {% extends 'main/superbase.html' %}
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
@@ -37,7 +38,25 @@
                  {% endif %}   
 
  <br> <br>
+   <center>  <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img1 %} <img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img1.url }}">{% endif %}         <br>
+</div></center> 
+        <br>
+                    <center>    <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img2 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img2.url }}">{% endif %}
+        <br>
+                                            <center>    <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img3 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img3.url }}">{% endif %}
+        <br>
 
+                                                
+        <center> 
+                 {% if obj.video %}
+                  <a href="{{ obj.video}}"  target="_blank" rel="noopener noreferrer" >
+                 <h3> Смотрите видео по ссылке </h3>
+                      </a>
+                 {% endif %}   
+</center> 
   
 <!-- {% for j in qw %} -->
 
