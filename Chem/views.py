@@ -358,7 +358,7 @@ class AtomlawSearchResultView(TemplateView):
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
             objects = Atomlaw.objects.\
-            filter(Q(keywords__icontains=searchword)|Q(keywords__icontains=searchword1)|Q(title__icontains=searchword)|Q(title__icontains=searchword1|Q(answer__icontains=searchword)|Q(answer__icontains=searchword1text)).order_by('pk')
+            filter(Q(keywords__icontains=searchword)|Q(keywords__icontains=searchword1)|Q(title__icontains=searchword)|Q(title__icontains=searchword1)|Q(answer__icontains=searchword)|Q(answer__icontains=searchword1text)).order_by('pk')
             context['objects'] = objects
             context['form'] = SearchForm(initial={'searchword': searchword})
         return context
