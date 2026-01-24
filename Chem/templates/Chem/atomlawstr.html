@@ -38,6 +38,8 @@
             </tbody>
             </table>
 
+
+     {% if obj.formula %}
             <table class="table table-bordered flexy">
             <tbody>
             <tr>
@@ -49,6 +51,9 @@
             </tr>
             </tbody>
                 </table>
+    {% endif %}    
+
+    
    <center>  <div class="media text-muted flex-column align-items-center pt-3">
        {% if obj.img1 %} <img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img1.url }}">{% endif %}         <br>
 </div></center> 
@@ -59,6 +64,7 @@
                 </div></center> 
 
      <br>
+    {% if obj.examples %}
             <table class="table table-bordered flexy1">
             <tbody>
             <tr>
@@ -70,7 +76,8 @@
             </tr>
             </tbody> 
                 </table>
-
+{% endif %}
+    
      {% if obj.exceptions %}
                 
             <table class="table table-bordered flexy1">
