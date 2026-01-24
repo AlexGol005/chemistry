@@ -338,7 +338,7 @@ class AtomlawStrView(TemplateView):
         return Atomlaw.objects.get(pk=self.kwargs.get("pk"))
 
     def get_context_data(self, **kwargs):
-        context = super(StrView, self).get_context_data(**kwargs)
+        context = super(AtomlawStrView, self).get_context_data(**kwargs)
         obj = Atomlaw.objects.get(pk=self.kwargs.get("pk"))
         qw = AtomTest.objects.filter(number=obj)
         context['obj'] = obj
