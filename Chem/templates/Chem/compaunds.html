@@ -1,0 +1,65 @@
+{% extends 'main/superbase.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+Химические вещества
+{% endblock %}
+{#конец названия страницы#}
+
+
+    
+{% block content %}
+{% autoescape off %}
+<div class="col-8">
+         
+   <center>  <h3><a href="/chem/"> Химические вещества </a></h3>     </center>
+{#основная таблица#}
+
+{% for obj in objects %}
+   
+    <table class="table table-bordered flexy1">
+    <tbody>
+    <tr>
+        <td class="ind1"> 
+           <h4>{{ obj.formula }}. {{ obj.name }}</h4>
+            <br>
+
+        <a href="{% url 'compaund' obj.pk %}" target="blank" class="btn btn btn-outline-primary  mt-3" style="width: 180px">читать далее</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+ {% endfor %}
+{#конец основной таблицы#}
+
+  
+{#пагинация#}
+{# стандартная #}
+{% if is_paginated %}
+    {% if page_obj.has_previous %}
+       <a href="?page=1" class="btn btn-outline-primary mt-1">Начало</a>
+       <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary mt-1">Предыдущая</a>
+  {% endif %}
+    {% if page_obj.has_next %}
+       <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary mt-1">Следующая</a>
+       <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-primary mt-1">Последняя</a>
+  {% endif %}
+  {% endif %}
+
+</div>
+<div class="col-4">
+    <center>   <h4>Поиск</h4>  </center>
+        <form action="/chem/compaund/searchresult/" method="GET">
+         {% csrf_token %}
+         {% crispy form %}
+         </form>
+<br>
+
+
+    
+    </div>
+{% endautoescape %}
+{% endblock %}
