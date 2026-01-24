@@ -323,7 +323,7 @@ class AtomlawView(ListView):
     paginate_by = 6
 
     def get_context_data(self, **kwargs):
-        context = super(View, self).get_context_data(**kwargs)
+        context = super(AtomlawView, self).get_context_data(**kwargs)
         context['form'] = SearchForm()
         return context
 
