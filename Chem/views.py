@@ -246,7 +246,7 @@ class ChemTestAnswerView(TemplateView):
         pkc7 = NamesCompaunds.objects.filter(formula=qw.product4).values_list('pk', flat=True).first() or ""
 
         my_list = [pkc1, pkc2, pkc3, pkc4, pkc5, pkc6, pkc7]
-        new_list = [x if x is not "" else 1 for x in my_list]
+        new_list = [x if x != "" else 1 for x in my_list]
 
         context['pkc1'] = new_list[0]
         context['pkc2'] = new_list[1]
