@@ -405,7 +405,7 @@ class CompaundView(ListView):
     model = NamesCompaunds
     template_name = 'Chem/compaunds.html'
     context_object_name = 'objects'
-    ordering = ['number']
+    ordering = ['pk']
     paginate_by = 6
 
     def get_context_data(self, **kwargs):
