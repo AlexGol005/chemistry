@@ -419,7 +419,7 @@ class CompaundSearchResultView(TemplateView):
     template_name = 'Chem/compaunds.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ChemSearchResultView, self).get_context_data(**kwargs)
+        context = super(CompaundSearchResultView, self).get_context_data(**kwargs)
         searchword = self.request.GET['searchword']
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
