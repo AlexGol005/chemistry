@@ -103,14 +103,19 @@
                 </table>
                 {% endif %}
 
-
-
   <br>  <br>
 
        <center>   <a href="{% url 'inorganiclawtest' obj.pk %}"  class="btn btn-primary  mt-2 mr-2 ml-2"> 
        Перейти к тренировке
    </a></center> 
+
     
+ {% if obj.link %}
+  <br>  <br>
+       <center>   <a href="{{ obj.link }}"  class="btn btn-primary  mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> 
+       Посмотрите интересное и наглядное видео с химическими экспериментами!
+   </a></center> 
+   {% endif %} 
   <br>  <br>
 
 
