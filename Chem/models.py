@@ -185,18 +185,18 @@ class AtomTest(models.Model):
     
     class Meta:
         verbose_name = 'Вопросы к разделу: законы строения атомов и периодичности'
-        verbose_name_plural = 'Вопрос к разделу: законы строения атомов и периодичности'
+        verbose_name_plural = 'Вопросы к разделу: законы строения атомов и периодичности'
 
 
-# 4. Отображение в шаблоне (Django Template)
-# Когда вы выводите объект, используйте атрибут .url:
-# html
-# <!-- Ссылка на скачивание -->
-# <a href="{{ object.file.url }}" class="btn" download>
-#     Скачать {{ object.filename }} ({{ object.file_extension }})
-# </a>
+class Table(models.Model):
+    """ Таблицы по химии """
+    img = models.ImageField('таблица', upload_to='user_images', blank=True, null=True)
 
-# <!-- Встроенный просмотр (если это PDF) -->
-# {% if object.file_extension == '.pdf' %}
-#     <iframe src="{{ object.file.url }}" width="100%" height="500px"></iframe>
-# {% endif %}
+
+
+    def __str__(self):
+        return f'{self.pk}'
+    
+    class Meta:
+        verbose_name = 'Таблица по химии'
+        verbose_name_plural = 'Таблицы по химии'
