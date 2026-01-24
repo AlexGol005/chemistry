@@ -431,3 +431,14 @@ class CompaundSearchResultView(TemplateView):
         return context
 
 
+
+class TablesView(ListView):
+    """ Выводит все таблицы """
+    model = Table
+    template_name = 'Chem/table.html'
+    context_object_name = 'objects'
+    ordering = ['number']
+
+
+
+
