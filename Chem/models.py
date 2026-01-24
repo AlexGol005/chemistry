@@ -148,6 +148,10 @@ class Atomlaw(models.Model):
     presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
 
+    @property
+    def file_extension(self):
+        return os.path.splitext(self.presentation.name)[1].lower()
+
     def __str__(self):
         if self.title:
             return f'{self.pk} - {self.title}'
@@ -159,7 +163,7 @@ class Atomlaw(models.Model):
 
 
 class AtomTest(models.Model):
-    """ Законы строения атомов - вопросы """
+    """ Законы общей химии - вопросы """
     date = models.DateField('Дата', auto_now_add=True)
     metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
     description = models.TextField('Метаописание страницы', blank=True, null=True)    
