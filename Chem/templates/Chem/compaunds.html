@@ -52,7 +52,7 @@
 </div>
 <div class="col-4">
     <center>   <h4>Поиск</h4>  </center>
-        <form action="/chem/compaunds/searchresult/" method="GET">
+        <form action="{% url 'compaundsearchresult' %}" method="GET">
          {% csrf_token %}
          {% crispy form %}
          </form>
