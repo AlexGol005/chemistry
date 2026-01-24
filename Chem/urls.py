@@ -22,7 +22,7 @@ urlpatterns = [
     path('atomlaw/test/answer/<str:str>/', views.AtomTestAnswerView.as_view(), name='atomlawtestanswer'),
     
     path('compaunds', views.CompaundView.as_view(), name='compaunds'),
-    path('compaund/searchresult/', views.CompaundSearchResultView.as_view(), name='compaundsearchresult'),
+    path('compaunds/searchresult/', views.CompaundSearchResultView.as_view(), name='compaundsearchresult'),
 
     path('tables', views.TablesView.as_view(), name='tables'),
     ]
