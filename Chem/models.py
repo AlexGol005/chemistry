@@ -127,7 +127,7 @@ class NamesCompaunds(models.Model):
 
 
 class Atomlaw(models.Model):
-    """ Законы строения атомов """
+    """ Законы общей химии """
     date = models.DateField('Дата', auto_now_add=True)
     metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
     description = models.TextField('Метаописание страницы', blank=True, null=True)    
