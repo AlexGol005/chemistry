@@ -331,7 +331,7 @@ class AtomlawView(ListView):
 class AtomlawStrView(TemplateView):
     """ выводит отдельный закон общей химии """
     model = Atomlaw
-    template_name = 'Chem/str.html'
+    template_name = 'Chem/atomlawstr.html'
 
 
     def get_object(self, queryset=None):
