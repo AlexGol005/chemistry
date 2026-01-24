@@ -435,7 +435,7 @@ class CompaundSearchResultView(TemplateView):
 class TablesView(ListView):
     """ Выводит все таблицы """
     model = Table
-    template_name = 'Chem/table.html'
+    template_name = 'Chem/tables.html'
     context_object_name = 'objects'
     ordering = ['pk']
 
