@@ -390,22 +390,44 @@ class AtomTestAnswerView(TemplateView):
 
         question_list = self.request.session.get('question_list', [])
 
-        correct_count = self.request.session.get('correct_count')
-        incorrect_count = self.request.session.get('incorrect_count')
-        all_count = self.request.session.get('all_count')
-        percent = round((correct_count / all_count) * 100)
-
-        
-        
-        context['next_index'] = next_index
-       
+        context['next_index'] = next_index       
         context['items'] = question_list
         context['count'] = len(question_list)
         context['last_list'] = last_list
-        context['obj'] = qw
-
-
-        
+        context['obj'] = qw 
         
         return context
+
+
+
+class CompaundView(ListView):
+    """ Выводит список всех всех веществ """
+    model = NamesCompaunds
+    template_name = 'Chem/compaunds.html'
+    context_object_name = 'objects'
+    ordering = ['number']
+    paginate_by = 6
+
+    def get_context_data(self, **kwargs):
+        context = super(CompaundView, self).get_context_data(**kwargs)
+        context['form'] = SearchForm()
+        return context
+
+class CompaundSearchResultView(TemplateView):
+    """ Представление, которое выводит результаты поиска по веществам """
+
+    template_name = 'Chem/compaunds.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ChemSearchResultView, self).get_context_data(**kwargs)
+        searchword = self.request.GET['searchword']
+        if self.request.GET['searchword']:
+            searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
+        if searchword:
+            objects = NamesCompaunds.objects.\
+            filter(Q(name__icontains=searchword)|Q(name__icontains=searchword1)|Q(formula__icontains=searchword)|Q(formula__icontains=searchword1)).order_by('pk')
+            context['objects'] = objects
+            context['form'] = SearchForm(initial={'searchword': searchword})
+        return context
+
 
