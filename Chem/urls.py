@@ -16,7 +16,7 @@ urlpatterns = [
     path('compaund/<str:str>/', views.CompaundStrView.as_view(), name='veshestvo'),
 
     path('atomlaws', views.AtomlawView.as_view(), name='atomlaws'),
-    path('atomlaws/<int:pk>/', views.AtomlawStrView.as_view(), name='atomlawstr'),
+    path('atomlawstr/<int:pk>/', views.AtomlawStrView.as_view(), name='atomlawstr'),
     path('atomlaw/searchresult/', views.AtomlawSearchResultView.as_view(), name='atomlawsearchresult'),
     # path('inorganiclaw/test/<str:str>/', views.ChemTestHeadView.as_view(), name='inorganiclawtest'),
     # path('inorganiclaw/test/question/<str:str>/', views.ChemTestQuestionView.as_view(), name='inorganiclawtestquestion'),
