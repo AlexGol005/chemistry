@@ -21,7 +21,7 @@ class ChemView(View):
 
 
 class InorganiclawView(ListView):
-    """ Выводит список всех постов """
+    """ Выводит список всех всех законов неорганической химии """
     model = Inorganiclaw
     template_name = 'Chem/inorganiclaw.html'
     context_object_name = 'objects'
@@ -35,7 +35,7 @@ class InorganiclawView(ListView):
 
 
 class InorganiclawStrView(TemplateView):
-    """ выводит отдельный пост """
+    """ выводит отдельный закон неорганической химии """
     model = Inorganiclaw
     template_name = 'Chem/inorganiclawstr.html'
 
@@ -296,6 +296,7 @@ class ChemTestAnswerView(TemplateView):
 
 
 class CompaundStrView(TemplateView):
+    """страница химического вещества"""
     template_name = 'Chem/compaund.html'
 
     def get_context_data(self, **kwargs):
@@ -311,3 +312,100 @@ class CompaundStrView(TemplateView):
         context['qw'] = qw
         
         return context
+
+
+class AtomlawView(ListView):
+    """ Выводит список всех всех законов общей химии """
+    model = Atomlaw
+    template_name = 'Chem/atomlaws.html'
+    context_object_name = 'objects'
+    ordering = ['number']
+    paginate_by = 6
+
+    def get_context_data(self, **kwargs):
+        context = super(AtomlawView, self).get_context_data(**kwargs)
+        context['form'] = SearchForm()
+        return context
+
+
+class AtomlawStrView(TemplateView):
+    """ выводит отдельный закон общей химии """
+    model = Atomlaw
+    template_name = 'Chem/atomlawstr.html'
+
+
+    def get_object(self, queryset=None):
+        return Atomlaw.objects.get(pk=self.kwargs.get("pk"))
+
+    def get_context_data(self, **kwargs):
+        context = super(AtomlawStrView, self).get_context_data(**kwargs)
+        obj = Atomlaw.objects.get(pk=self.kwargs.get("pk"))
+        qw = AtomTest.objects.filter(number=obj)
+        context['obj'] = obj
+        context['qw'] = qw
+        return context
+
+
+class AtomlawSearchResultView(TemplateView):
+    """ Представление, которое выводит результаты поиска по законам общей химии """
+
+    template_name = 'Chem/atomlaws.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(AtomlawSearchResultView, self).get_context_data(**kwargs)
+        searchword = self.request.GET['searchword']
+        if self.request.GET['searchword']:
+            searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
+        if searchword:
+            objects = Atomlaw.objects.\
+            filter(Q(keywords__icontains=searchword)|Q(keywords__icontains=searchword1)|Q(title__icontains=searchword)|Q(title__icontains=searchword1|Q(answer__icontains=searchword)|Q(answer__icontains=searchword1text)).order_by('pk')
+            context['objects'] = objects
+            context['form'] = SearchForm(initial={'searchword': searchword})
+        return context
+
+
+class AtomTestAnswerView(TemplateView):
+    """ выводит ответ теста - по общей химии """
+    
+    template_name = 'Chem/inorganiclawtestanswer.html'
+
+    def get_context_data(self, **kwargs):
+
+        # вывод ответа
+        context = super().get_context_data(**kwargs)
+        ind=self.kwargs['str']
+        qw = AtomTest.objects.get(pk=ind)
+  
+  
+        # поиск следующего вопроса через индекс из списка (список сначала запомним потом перезапишем)
+        last_list = self.request.session.get('question_list', [])
+        
+        question_list = self.request.session.get('question_list', [])
+        try:
+            next_index =  question_list.pop(0)
+        except:
+            next_index = None
+            
+        self.request.session['question_list'] = question_list
+
+        question_list = self.request.session.get('question_list', [])
+
+        correct_count = self.request.session.get('correct_count')
+        incorrect_count = self.request.session.get('incorrect_count')
+        all_count = self.request.session.get('all_count')
+        percent = round((correct_count / all_count) * 100)
+
+        
+        
+        context['next_index'] = next_index
+       
+        context['items'] = question_list
+        context['count'] = len(question_list)
+        context['last_list'] = last_list
+        context['obj'] = qw
+
+
+        
+        
+        return context
+
