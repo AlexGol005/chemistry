@@ -328,7 +328,7 @@ class AtomlawView(ListView):
         return context
 
 
-class StrView(TemplateView):
+class AtomlawStrView(TemplateView):
     """ выводит отдельный закон общей химии """
     model = Atomlaw
     template_name = 'Chem/str.html'
