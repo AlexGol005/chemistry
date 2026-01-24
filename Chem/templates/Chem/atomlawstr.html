@@ -125,20 +125,20 @@
     <br>  <br>
 
 {% if obj.presentation %}
-    <div style="margin-top: 20px;">
+<center>    <div style="margin-top: 20px;">
         <a href="{{ obj.presentation.url }}" target="_blank" class="btn btn-primary">
             👁 Посмотреть презентацию в новом окне
         </a>
     </div>
 {% endif %}
-
-
+</center>
+<br>  <br>
     
- <h4>Подробности</h3>
+<center> <h4>Подробности</h3></center>
 {% for j in qw %}
  <br>  <br>
    
-
+<center>
              <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
 <a href="{% url 'atomlawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
            {% if j.text %}       
@@ -147,6 +147,7 @@
 
 
 </a>
+                 </center>
 </p>
 
 
