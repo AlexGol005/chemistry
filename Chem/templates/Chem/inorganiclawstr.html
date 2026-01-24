@@ -104,9 +104,21 @@
                 {% endif %}
 
 
- {% if obj.link %}
+{% if obj.presentation and obj.file_extension == '.pdf' %}
+    <div style="margin-top: 20px;">
+        <embed src="{{ obj.presentation.url }}#toolbar=0&navpanes=0" 
+               type="application/pdf" 
+               width="100%" 
+               height="600px" />
+    </div>
+{% else %}
+    <p>Документ недоступен для просмотра или не является PDF.</p>
+{% endif %}
+
+    
+ {% if obj.video %}
   <br>  <br>
-       <center>   <a href="{{ obj.link }}"  class="btn btn-primary  mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> 
+       <center>   <a href="{{ obj.video }}"  class="btn btn-primary  mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> 
        Посмотрите интересное и наглядное видео с химическими экспериментами!
    </a></center> 
    {% endif %} 
@@ -117,13 +129,7 @@
        Перейти к тренировке
    </a></center> 
 
-    
- {% if obj.video %}
-  <br>  <br>
-       <center>   <a href="{{ obj.video }}"  class="btn btn-primary  mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> 
-       Посмотрите интересное и наглядное видео с химическими экспериментами!
-   </a></center> 
-   {% endif %} 
+     
   <br>  <br>
 
 
