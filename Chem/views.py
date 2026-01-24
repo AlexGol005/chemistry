@@ -314,10 +314,10 @@ class CompaundStrView(TemplateView):
         return context
 
 
-class View(ListView):
+class AtomlawView(ListView):
     """ Выводит список всех всех законов общей химии """
-    model = 
-    template_name = 'Chem/s.html'
+    model = Atomlaw
+    template_name = 'Chem/atomlaws.html'
     context_object_name = 'objects'
     ordering = ['number']
     paginate_by = 6
@@ -339,25 +339,25 @@ class StrView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(StrView, self).get_context_data(**kwargs)
-        obj = .objects.get(pk=self.kwargs.get("pk"))
+        obj = Atomlaw.objects.get(pk=self.kwargs.get("pk"))
         qw = AtomTest.objects.filter(number=obj)
         context['obj'] = obj
         context['qw'] = qw
         return context
 
 
-class SearchResultView(TemplateView):
+class AtomlawSearchResultView(TemplateView):
     """ Представление, которое выводит результаты поиска по законам общей химии """
 
-    template_name = 'Chem/s.html'
+    template_name = 'Chem/atomlaws.html'
 
     def get_context_data(self, **kwargs):
-        context = super(SearchResultView, self).get_context_data(**kwargs)
+        context = super(AtomlawSearchResultView, self).get_context_data(**kwargs)
         searchword = self.request.GET['searchword']
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
-            objects = .objects.\
+            objects = Atomlaw.objects.\
             filter(Q(keywords__icontains=searchword)|Q(keywords__icontains=searchword1)|Q(title__icontains=searchword)|Q(title__icontains=searchword1)|Q(answer__icontains=searchword)|Q(answer__icontains=searchword1text)).order_by('pk')
             context['objects'] = objects
             context['form'] = SearchForm(initial={'searchword': searchword})
