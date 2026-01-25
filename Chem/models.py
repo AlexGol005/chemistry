@@ -24,6 +24,7 @@ class Inorganiclaw(models.Model):
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
+    presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
                                         
 
 
