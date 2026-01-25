@@ -120,6 +120,14 @@
        Посмотрите интересное и наглядное видео с химическими экспериментами!
    </a></center> 
    {% endif %} 
+{% if obj.presentation %}
+<center>    <div style="margin-top: 20px;">
+        <a href="{{ obj.presentation.url }}" target="_blank" class="btn btn-primary">
+            👁 Посмотреть презентацию в новом окне
+        </a>
+    </div>
+    </center>
+{% endif %}
 
     
   <br>  <br>
@@ -193,7 +201,10 @@
     Red-Oxi = восстановленный окислитель <br>
     Red = восстановитель <br>
     Oxi-Red = окисленный восстановитель <br>
-
+  <br>  <br>
+       <center>   <a href="{% url 'tables' %}"  class="btn btn-primary  mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> 
+       Таблицы
+   </a></center> 
 
     </div>
 {% endautoescape %}
