@@ -367,7 +367,7 @@ class AtomlawSearchResultView(TemplateView):
 class AtomTestAnswerView(TemplateView):
     """ выводит ответ теста - по общей химии """
     
-    template_name = 'Chem/inorganiclawtestanswer.html'
+    template_name = 'Chem/atomlawtestanswer.html'
 
     def get_context_data(self, **kwargs):
 
@@ -440,5 +440,42 @@ class TablesView(ListView):
     ordering = ['pk']
 
 
+
+class AtomTestQuestionView(TemplateView):
+    """ выводит вопрос теста - законы общей химии """
+    template_name = 'Chem/atomlawtestquestion.html'
+
+    def get_context_data(self, **kwargs):
+        # Вызываем базовый метод для получения контекста
+        context = super().get_context_data(**kwargs)
+        ind=self.kwargs['str']
+
+        # Получаем данные из сессии по ключу 'my_list'
+        # Если ключа нет, вернется пустой список []
+        my_data = self.request.session.get('question_list', [])
+        qw = InorganicReaction.objects.get(pk=ind)
+        
+   
+        context['form']= Unswer4Form
+
+        context['q1'] = ind
+        context['obj'] = qw
+        
+        context['items'] = my_data
+        context['count'] = len(my_data)
+        self.request.session['all_count'] += 1 
+        
+        return context
+
+
+    def post(self, request, *args, **kwargs):
+        # Получение данных из POST-запроса
+        ind=self.kwargs['str']
+        ind=int(ind)
+        qw = InorganicReaction.objects.get(pk=ind)
+ 
+
+
+        return redirect('atomtestanswer', str=ind)
 
 
