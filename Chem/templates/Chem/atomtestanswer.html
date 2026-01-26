@@ -1,0 +1,104 @@
+<!-- """страница вывода ответы по общей химии""" -->
+
+{% extends 'main/superbase.html' %}
+{% load crispy_forms_tags %}
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+вопрос по общей химии
+{% endblock %}
+{#конец названия страницы#}
+
+
+    {% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
+    {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
+    {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
+
+
+{% block content %}
+{% autoescape off %}
+
+<div class="col-12">
+   <a href="{% url 'atomlawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer">открыть правило</a>   
+
+
+  
+   {% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
+    {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
+    {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
+  
+  
+
+        {% if obj.text %}
+  <center><h3>Вопрос</h3>  </center>
+          <center> 
+
+          <table class="table table-bordered flexy1">
+              <td>
+            <p style="width: 100%; text-align: left !important; font-family: Georgia, serif; font-size: 15pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
+                  {{ obj.text}}
+            </p>
+            </td>
+          </table>
+            </center>                       
+        {% endif %}   
+
+ <br> <br>
+
+         {% if obj.answer %}
+  <center><h3>Ответ</h3>  </center>
+          <center> 
+
+          <table class="table table-bordered flexy1">
+              <td>
+            <p style="width: 100%; text-align: left !important; font-family: Georgia, serif; font-size: 15pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
+                  {{ obj.answer}}
+            </p>
+            </td>
+          </table>
+            </center>                       
+        {% endif %}   
+
+ <br> <br>
+
+
+    
+   <center>  <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img1 %} <img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img1.url }}">{% endif %}         <br>
+</div></center> 
+        <br>
+                    <center>    <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img2 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img2.url }}">{% endif %}
+        <br>
+                                            <center>    <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img3 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img3.url }}">{% endif %}
+        <br>
+
+                                                
+        <center> 
+                 {% if obj.video %}
+                  <a href="{{ obj.video}}"  target="_blank" rel="noopener noreferrer" >
+                 <h3> Смотрите видео по ссылке </h3>
+                      </a>
+                 {% endif %}   
+</center> 
+ <br> <br>
+    {% if next_index %}
+       <center>   <a href="{% url 'atomlawtestquestion' next_index %}"  class="btn btn-primary  mt-2 mr-2 ml-2"> 
+       Следующий вопрос
+   </a></center> 
+
+{% elif not next_index %}
+  
+  <center>   <a href="/chem/inorganiclaw"  class="btn btn-primary  mt-2 mr-2 ml-2">   Тест завершен, спасибо! Перейти в тему
+   </a></center> 
+ {% endif %}   
+
+
+  <br>   <br>
+{% endautoescape %}
+{% endblock %}
+            {% block aside %}
+
+      {% endblock %}
