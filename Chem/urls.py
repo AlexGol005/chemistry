@@ -20,8 +20,8 @@ urlpatterns = [
     path('atomlaws', views.AtomlawView.as_view(), name='atomlaws'),
     path('atomlawstr/<int:pk>/', views.AtomlawStrView.as_view(), name='atomlawstr'),
     path('atomlaw/searchresult/', views.AtomlawSearchResultView.as_view(), name='atomlawsearchresult'),
-    # path('inorganiclaw/test/<str:str>/', views.ChemTestHeadView.as_view(), name='inorganiclawtest'),
-    # path('inorganiclaw/test/question/<str:str>/', views.ChemTestQuestionView.as_view(), name='inorganiclawtestquestion'),
+    path('inorganiclaw/test/<str:str>/', views.AtomTestHeadView.as_view(), name='atomlawtest'),
+    path('inorganiclaw/test/question/<str:str>/', views.AtomTestQuestionView.as_view(), name='atomlawtestquestion'),
     path('atomlaw/test/answer/<str:str>/', views.AtomTestAnswerView.as_view(), name='atomlawtestanswer'),
     
     path('compaunds', views.CompaundView.as_view(), name='compaunds'),
