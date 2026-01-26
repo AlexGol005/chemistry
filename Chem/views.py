@@ -440,6 +440,49 @@ class TablesView(ListView):
     ordering = ['pk']
 
 
+class AtomTestHeadView(ListView):
+    """ выводит заглавную страницу теста по общей химии для конкретного закона общей химии """
+
+    
+    template_name = 'Chem/inorganiclawtesthead.html'
+    context_object_name = 'objects'
+
+    def get_context_data(self, **kwargs):
+        context = super(AtomTestHeadView, self).get_context_data(**kwargs)
+        str=self.kwargs['str']
+        
+        try:
+            a = AtomTest.objects.filter(number__pk=str).first()
+            c = AtomTest.objects.filter(number__pk=str)
+            context['numbertitle'] = a.number.title
+            context['count'] = InorganicReaction.objects.filter(number__pk=str).count()
+            question_ids = list(c.values_list('id', flat=True))
+            random.shuffle(question_ids)
+            context['q1'] = InorganicReaction.objects.get(pk=question_ids[0]).pk            
+            question_ids.pop(0)
+            context['question_ids'] = question_ids           
+            self.request.session['question_list'] = question_ids
+            self.request.session['correct_count'] = 0
+            self.request.session['incorrect_count'] = 0
+            self.request.session['all_count'] = 0
+            
+
+
+
+        except:
+            context['numbertitle'] = 'Пока нет вопросов'
+            context['count'] = ''
+            context['question_ids'] = '' 
+            context['q1'] = 0
+        return context
+
+    def get_queryset(self):
+        str=self.kwargs['str']
+        queryset = AtomTest.objects.filter(number__pk=str)
+        return queryset
+
+
+
 
 class AtomTestQuestionView(TemplateView):
     """ выводит вопрос теста - законы общей химии """
@@ -453,7 +496,7 @@ class AtomTestQuestionView(TemplateView):
         # Получаем данные из сессии по ключу 'my_list'
         # Если ключа нет, вернется пустой список []
         my_data = self.request.session.get('question_list', [])
-        qw = InorganicReaction.objects.get(pk=ind)
+        qw = AtomTest.objects.get(pk=ind)
         
    
         context['form']= Unswer4Form
