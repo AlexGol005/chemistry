@@ -1,0 +1,64 @@
+<!-- """страница вывода вопросы по общей химии""" -->
+
+{% extends 'main/superbase.html' %}
+{% load crispy_forms_tags %}
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+вопрос по общей химии
+{% endblock %}
+{#конец названия страницы#}
+
+
+    {% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
+    {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
+    {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
+
+
+{% block content %}
+{% autoescape off %}
+
+<div class="col-12">
+   <a href="{% url 'atomlawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer">открыть правило</a>   
+
+
+  
+   {% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
+    {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
+    {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
+  
+  
+
+        {% if obj.text %}
+  <center><h3>Вопрос</h3>  </center>
+          <center> 
+
+          <table class="table table-bordered flexy1">
+              <td>
+            <p style="width: 100%; text-align: left !important; font-family: Georgia, serif; font-size: 15pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
+                  {{ obj.text}}
+            </p>
+            </td>
+          </table>
+            </center>                       
+        {% endif %}   
+
+ <br> <br>
+
+<center>  <h4>Ответ</h4>
+
+            <form method="post" class="form-register">
+            {% csrf_token %}
+            {% crispy form %}
+            </form>
+
+ </center>
+
+
+  <br>   <br>
+{% endautoescape %}
+{% endblock %}
+            {% block aside %}
+
+      {% endblock %}
