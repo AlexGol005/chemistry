@@ -519,6 +519,6 @@ class AtomTestQuestionView(TemplateView):
  
 
 
-        return redirect('atomtestanswer', str=ind)
+        return redirect('atomlawtestanswer', str=ind)
 
 
