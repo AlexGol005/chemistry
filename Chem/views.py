@@ -515,7 +515,7 @@ class AtomTestQuestionView(TemplateView):
         # Получение данных из POST-запроса
         ind=self.kwargs['str']
         ind=int(ind)
-        qw = InorganicReaction.objects.get(pk=ind)
+        qw = AtomTest.objects.get(pk=ind)
  
 
 
