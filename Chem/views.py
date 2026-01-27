@@ -444,7 +444,7 @@ class AtomTestHeadView(ListView):
     """ выводит заглавную страницу теста по общей химии для конкретного закона общей химии """
 
     
-    template_name = 'Chem/inorganiclawtesthead.html'
+    template_name = 'Chem/atomlawtesthead.html'
     context_object_name = 'objects'
 
     def get_context_data(self, **kwargs):
