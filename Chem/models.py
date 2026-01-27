@@ -71,6 +71,7 @@ class InorganicReaction(models.Model):
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    video = models.CharField('Видео', max_length=10000, blank=True, null=True)
 
     def __str__(self):
         try:
