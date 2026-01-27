@@ -39,27 +39,42 @@
 
 
    
+<!-- Блок для первого изображения -->
 {% if objcontent.img1 %}
-        <img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img1.url }}">{% endif %}         <br>
-</div></center> 
-        <br>
-                    <center>    <div class="media text-muted flex-column align-items-center pt-3">
-       {% if objcontent.img2 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img2.url }}">{% endif %}
-        <br>
-                                            <center>    <div class="media text-muted flex-column align-items-center pt-3">
-       {% if objcontent.img3 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img3.url }}">{% endif %}
-        <br>
-<center>  <div class="media text-muted flex-column align-items-center pt-3">
-                                                
-        <center> 
-                 {% if objcontent.video %}
-                  <a href="{{ objcontent.video}}"  target="_blank" rel="noopener noreferrer" >
-                 <h3> Смотрите видео по ссылке </h3>
-                      </a>
-            </center> 
-                 {% endif %}   
+<center>
+    <div class="media text-muted flex-column align-items-center pt-3">
+        <img class="bd-placeholder-img mr-2 rounded" style="width: 70%; height: auto;" src="{{ objcontent.img1.url }}">
+    </div>
+</center>
+{% endif %}
 
-   <br> <br>
+<!-- Блок для второго изображения -->
+{% if objcontent.img2 %}
+<center>
+    <div class="media text-muted flex-column align-items-center pt-3">
+        <img class="bd-placeholder-img mr-2 rounded" style="width: 70%; height: auto;" src="{{ objcontent.img2.url }}">
+    </div>
+</center>
+{% endif %}
+
+<!-- Блок для третьего изображения -->
+{% if objcontent.img3 %}
+<center>
+    <div class="media text-muted flex-column align-items-center pt-3">
+        <img class="bd-placeholder-img mr-2 rounded" style="width: 70%; height: auto;" src="{{ objcontent.img3.url }}">
+    </div>
+</center>
+{% endif %}
+
+<!-- Блок для видео -->
+{% if objcontent.video %}
+<br>
+<center>
+    <a href="{{ objcontent.video }}" target="_blank" rel="noopener noreferrer">
+        <h3>Смотрите видео по ссылке</h3>
+    </a>
+</center>
+{% endif %}
 <!-- {% for j in qw %} -->
 
 
