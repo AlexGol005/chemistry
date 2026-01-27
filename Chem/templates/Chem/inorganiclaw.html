@@ -37,15 +37,28 @@
 {#пагинация#}
 {# стандартная #}
 {% if is_paginated %}
-    {% if page_obj.has_previous %}
-       <a href="?page=1" class="btn btn-outline-primary mt-1">Начало</a>
-       <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary mt-1">Предыдущая</a>
-  {% endif %}
-    {% if page_obj.has_next %}
-       <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary mt-1">Следующая</a>
-       <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-primary mt-1">Последняя</a>
-  {% endif %}
-  {% endif %}
+    <div class="pagination-container">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="btn btn-outline-primary mt-1">Начало</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary mt-1">«</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <!-- Активная страница -->
+                <span class="btn btn-primary mt-1 disabled">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-10' and num < page_obj.number|add:'10' %}
+                <!-- Соседние страницы (в радиусе 2 от текущей) -->
+                <a href="?page={{ num }}" class="btn btn-outline-primary mt-1">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary mt-1">»</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-primary mt-1">Последняя</a>
+        {% endif %}
+    </div>
+{% endif %}
 
 </div>
 <div class="col-4">
