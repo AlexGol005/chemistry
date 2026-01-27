@@ -37,7 +37,15 @@
             </tr>
             </tbody>
             </table>
-
+    <br>
+{% if obj.presentation %}
+<center>    <div style="margin-top: 20px;">
+        <a href="{{ obj.presentation.url }}" target="_blank" class="btn btn-primary">
+            👁 Посмотреть презентацию в новом окне
+        </a>
+    </div>
+    </center>
+{% endif %}
 
      {% if obj.formula %}
             <table class="table table-bordered flexy">
@@ -132,17 +140,11 @@
        {% if obj.img3 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img3.url }}">{% endif %}
 
 </div></center> 
-    <br>  <br>
+    <br>  
 
-{% if obj.presentation %}
-<center>    <div style="margin-top: 20px;">
-        <a href="{{ obj.presentation.url }}" target="_blank" class="btn btn-primary">
-            👁 Посмотреть презентацию в новом окне
-        </a>
-    </div>
-{% endif %}
-</center>
-<br>  <br>
+
+
+
     
 <center> <h4>Подробности</h3></center>
 {% for j in qw %}
