@@ -278,6 +278,9 @@ class ChemTestAnswerView(TemplateView):
         correct_count = self.request.session.get('correct_count')
         incorrect_count = self.request.session.get('incorrect_count')
         all_count = self.request.session.get('all_count')
+        if all_count == 0:
+            percent = 0
+            
         percent = round((correct_count / all_count) * 100)
 
         
