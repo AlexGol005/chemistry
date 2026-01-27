@@ -455,10 +455,10 @@ class AtomTestHeadView(ListView):
             a = AtomTest.objects.filter(number__pk=str).first()
             c = AtomTest.objects.filter(number__pk=str)
             context['numbertitle'] = a.number.title
-            context['count'] = InorganicReaction.objects.filter(number__pk=str).count()
+            context['count'] = AtomTest.objects.filter(number__pk=str).count()
             question_ids = list(c.values_list('id', flat=True))
             random.shuffle(question_ids)
-            context['q1'] = InorganicReaction.objects.get(pk=question_ids[0]).pk            
+            context['q1'] = AtomTest.objects.get(pk=question_ids[0]).pk            
             question_ids.pop(0)
             context['question_ids'] = question_ids           
             self.request.session['question_list'] = question_ids
