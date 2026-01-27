@@ -37,7 +37,16 @@
 </center>                       
                  {% endif %}   
 
-
+<!-- Блок для видео -->
+{% if objcontent.video %}
+<br>
+<center>
+    <a href="{{ objcontent.video }}" target="_blank" rel="noopener noreferrer">
+        <h3>Смотрите видео по ссылке</h3>
+    </a>
+</center>
+{% endif %}
+    
    
 <!-- Блок для первого изображения -->
 {% if objcontent.img1 %}
@@ -66,15 +75,7 @@
 </center>
 {% endif %}
 
-<!-- Блок для видео -->
-{% if objcontent.video %}
-<br>
-<center>
-    <a href="{{ objcontent.video }}" target="_blank" rel="noopener noreferrer">
-        <h3>Смотрите видео по ссылке</h3>
-    </a>
-</center>
-{% endif %}
+
 <!-- {% for j in qw %} -->
 
 
