@@ -21,7 +21,7 @@ urlpatterns = [
     path('atomlawstr/<int:pk>/', views.AtomlawStrView.as_view(), name='atomlawstr'),
     path('atomlaw/searchresult/', views.AtomlawSearchResultView.as_view(), name='atomlawsearchresult'),
     path('atomlaw/test/<str:str>/', views.AtomTestHeadView.as_view(), name='atomlawtest'),
-    path('inorganiclaw/test/question/<str:str>/', views.AtomTestQuestionView.as_view(), name='atomlawtestquestion'),
+    path('atomlaw/test/question/<str:str>/', views.AtomTestQuestionView.as_view(), name='atomlawtestquestion'),
     path('atomlaw/test/answer/<str:str>/', views.AtomTestAnswerView.as_view(), name='atomlawtestanswer'),
     
     path('compaunds', views.CompaundView.as_view(), name='compaunds'),
