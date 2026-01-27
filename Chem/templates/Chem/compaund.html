@@ -36,11 +36,11 @@
             </table>
 </center>                       
                  {% endif %}   
-
+{% if objcontent.img1 %}
 
    <center>  <div class="media text-muted flex-column align-items-center pt-3">
-        <br> 
-       {% if objcontent.img1 %} <img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img1.url }}">{% endif %}         <br>
+
+        <img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img1.url }}">{% endif %}         <br>
 </div></center> 
         <br>
                     <center>    <div class="media text-muted flex-column align-items-center pt-3">
