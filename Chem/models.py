@@ -206,3 +206,19 @@ class Table(models.Model):
     class Meta:
         verbose_name = 'Таблица по химии'
         verbose_name_plural = 'Таблицы по химии'
+        
+
+class Link(models.Model):
+    """ Полезные ссылки """
+    type = models.TextField('Тип', blank=True, null=True)
+    title = models.TextField('Заголовок', blank=True, null=True)
+    text = models.TextField('Ссылка', blank=True, null=True)
+
+
+
+    def __str__(self):
+        return f'{self.title}'
+    
+    class Meta:
+        verbose_name = 'Ссылка по химии'
+        verbose_name_plural = 'Ссылки по химии'
