@@ -28,4 +28,5 @@ urlpatterns = [
     
 
     path('tables', views.TablesView.as_view(), name='tables'),
+    path('links', views.LinkView.as_view(), name='links'),
     ]
