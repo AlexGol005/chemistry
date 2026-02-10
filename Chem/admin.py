@@ -204,5 +204,6 @@ admin.site.register(AtomTest, AtomTestAdmin)
 
 
 admin.site.register(Table)
+admin.site.register(Link)
 
 
