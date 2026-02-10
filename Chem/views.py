@@ -19,6 +19,20 @@ class ChemView(View):
     def get(self, request):
         return render(request, 'Chem/chem.html')
 
+class TablesView(ListView):
+    """ Выводит все таблицы """
+    model = Table
+    template_name = 'Chem/tables.html'
+    context_object_name = 'objects'
+    ordering = ['pk']
+
+class LinkView(ListView):
+    """ Выводит все ссылки """
+    model = Link
+    template_name = 'Chem/link.html'
+    context_object_name = 'objects'
+    ordering = ['pk']
+
 
 class InorganiclawView(ListView):
     """ Выводит список всех всех законов неорганической химии """
@@ -436,12 +450,7 @@ class CompaundSearchResultView(TemplateView):
 
 
 
-class TablesView(ListView):
-    """ Выводит все таблицы """
-    model = Table
-    template_name = 'Chem/tables.html'
-    context_object_name = 'objects'
-    ordering = ['pk']
+
 
 
 class AtomTestHeadView(ListView):
