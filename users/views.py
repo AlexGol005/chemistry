@@ -403,7 +403,7 @@ class ChemProfileView(LoginRequiredMixin, TemplateView):
     """выводит персональную страницу изучение химии """
     template_name = 'users/chemprofile.html'
     def get_context_data(self, **kwargs):
-        context = super(ChemprofileView, self).get_context_data(**kwargs)
+        context = super(ChemProfileView, self).get_context_data(**kwargs)
         user = User.objects.get(username=self.request.user)
         context['ChemProfileUdateForm'] = ChemProfileUdateForm(self.request.POST, self.request.FILES,  instance=self.request.user.chemprofile) 
             
