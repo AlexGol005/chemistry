@@ -137,3 +137,37 @@ class EmployeesUpdateForm(forms.ModelForm):
                 'position', 
                   ]
 
+
+class ChemUserRegisterForm(UserCreationForm):
+    email = forms.EmailField(required=False,
+                             widget=forms.TextInput(attrs={'class': 'form-control',
+                                                           'placeholder': 'ваш email'})
+                             )
+    username = forms.CharField(label='Введите логин',
+                               required=True,
+                               widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password1 = forms.CharField(label='Введите пароль',
+                                required=True,
+                                widget=forms.PasswordInput(attrs={'class': 'form-control',
+                                                           'placeholder': 'введите пароль' }))
+    password2 = forms.CharField(label='Подтвердите пароль',
+                                required=True,
+                                widget=forms.PasswordInput(attrs={'class': 'form-control',
+                                                           'placeholder': 'повторно введите пароль' }))
+
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password1' ]
+
+class ChemProfileRegisterForm(forms.ModelForm):
+    name = forms.CharField(label='ФИО',
+                               required=False,
+                               widget=forms.TextInput(attrs={'class': 'form-control',
+                               'placeholder': 'Иванов Иван Иванович'}))
+
+    class Meta:
+        model = ChemProfile
+        fields = [
+                  'name', 
+                 ]
