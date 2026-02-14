@@ -171,3 +171,11 @@ class ChemProfileRegisterForm(forms.ModelForm):
         fields = [
                   'name', 
                  ]
+
+
+class ChemProfileUdateForm(forms.ModelForm):
+    img = forms.ImageField(label='загрузить фото', widget=forms.FileInput)
+
+    class Meta:
+        model = ChemProfile
+        fields = ['img']
