@@ -402,7 +402,7 @@ def Useractivityreg(request, slug):
 class ChemprofileView(LoginRequiredMixin, TemplateView):
     """выводит персональную страницу изучение химии """
     template_name = 'users/chemprofile.html'
-       def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super(ChemprofileView, self).get_context_data(**kwargs)
         user = User.objects.get(username=self.request.user)
         context['ChemProfileUdateForm'] = ChemProfileUdateForm(self.request.POST, self.request.FILES,  instance=self.request.user.chemprofile) 
