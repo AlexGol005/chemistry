@@ -101,6 +101,8 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
+{% if 'chem' not in request.path %}
+                            
                             {% if not user.is_authenticated %}
                                 <li class="nav-item">
                                     <a href="{% url 'heademployeereg' %}" class="btn btn-outline-success mr-2 ml-2  mt-2">попробовать бесплатно</a>
@@ -120,6 +122,7 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
                                          <a href="{% url 'exit' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> выйти</a>
                                 </li>
                             {% endif %} 
+  {% endif %} 
                         </ul>
                     </div>
                 </nav>
