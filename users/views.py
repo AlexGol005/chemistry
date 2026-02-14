@@ -279,7 +279,7 @@ def Employeereg(request):
         form = UserRegisterForm()
         form1 = ProfileRegisterForm()
         data =         {
-            'title': 'Страница регистрации',
+            'title': 'Страница регистрации - Управление Лабораторией',
             'form': form,
             'form1': form1,
         }
@@ -399,11 +399,53 @@ def Useractivityreg(request, slug):
     
 
 
-                # company = Company.objects.get(userid=request.user.profile.userid)
-                # au, create = CompanyActiveEmployesLists.objects.get_or_create(company=company)
-                # if au.list_employees:
-                #    au.list_employees = au.list_employees + ', ' + str(p_f.pk)
-                #    au.save()
-                # else:
-                #    au.list_employees = p_f.pk
-                #    au.save()
+class ChemprofileView(LoginRequiredMixin, TemplateView):
+    """выводит персональную страницу изучение химии """
+    template_name = 'users/chemprofile.html'
+       def get_context_data(self, **kwargs):
+        context = super(ChemprofileView, self).get_context_data(**kwargs)
+        user = User.objects.get(username=self.request.user)
+        context['ChemProfileUdateForm'] = ChemProfileUdateForm(self.request.POST, self.request.FILES,  instance=self.request.user.chemprofile) 
+            
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        if context['ChemProfileUdateForm'].is_valid():
+            order = context['ChemProfileUdateForm'].save(commit=False)
+            order.save()
+            return redirect('chemprofile')
+
+        else:
+            messages.success(self.request, "Раздел доступен только продвинутому пользователю")
+            return redirect('chemprofile')
+
+
+def Chemprofilereg(request):
+    """выводит форму для регистрации изучающего химию """
+    
+    if request.method == "POST":
+        group_name = 'Базовый пользователь'
+        form = ChemUserRegisterForm(request.POST)
+        form1 = ChemProfileRegisterForm(request.POST) 
+        if form.is_valid() and form1.is_valid():
+            u_f = form.save()
+            p_f = form1.save(commit=False)
+            p_f.user_id = u_f.id
+            
+            messages.success(request, f'Пользовать {username} успешно создан!')
+                  
+            return redirect('chemprofile')
+        else:
+            messages.add_message(request, messages.ERROR, form.errors)
+            return redirect('/')
+                
+    else:
+        form = ChemUserRegisterForm()
+        form1 = ChemProfileRegisterForm()
+        data =         {
+            'title': 'Страница регистрации - изучение химии',
+            'form': form,
+            'form1': form1,
+        }
+        return render(request,  'users/reg.html', data)
