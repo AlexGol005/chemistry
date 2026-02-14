@@ -119,9 +119,29 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
                             {% else %}
                                 <li class="nav-item">
                                     {% if request.user.profile.short_name %}
-                                         <a href="{% url 'profile' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> ID {{ request.user.profile.short_name }}</a>
+                                         <a href="{% url 'profile' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> ЛК Управление Лабораторией {{ request.user.profile.short_name }}</a>
                                     {% else %}
-                                     <a href="{% url 'profile' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> ID {{ request.user.username }}</a>
+                                     <a href="{% url 'profile' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> ЛК Управление Лабораторией</a>
+                                    {% endif %}
+                                </li>
+                                <li class="nav-item">
+                                         <a href="{% url 'exit' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> выйти</a>
+                                </li>
+                            {% endif %} 
+ {% endif %} 
+
+{% if 'chem' in request.path %}   
+                            
+                            {% if not user.is_authenticated %}
+                                <li class="nav-item">
+                                        <a href="{% url 'user' %}" class="btn btn-outline-info mr-2 ml-2  mt-2">войти</a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    {% if request.user.profile.short_name %}
+                                         <a href="{% url 'profile' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> ЛК Изучение Химии {{ request.user.profile.short_name }}</a>
+                                    {% else %}
+                                     <a href="{% url 'profile' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> ЛК Изучение Химии</a>
                                     {% endif %}
                                 </li>
                                 <li class="nav-item">
