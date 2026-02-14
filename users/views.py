@@ -399,7 +399,7 @@ def Useractivityreg(request, slug):
     
 
 
-class ChemprofileView(LoginRequiredMixin, TemplateView):
+class ChemProfileView(LoginRequiredMixin, TemplateView):
     """выводит персональную страницу изучение химии """
     template_name = 'users/chemprofile.html'
     def get_context_data(self, **kwargs):
