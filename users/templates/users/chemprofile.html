@@ -1,0 +1,25 @@
+{% extends 'main/superbase.html' %}
+
+{% block title %}
+    Личный кабинет 
+{% endblock %}
+
+{% block content %}
+ <div class="col-12">
+    <h2>Кабинет пользователя -  изучение химии</h2>
+    <div class="media text-muted pt-3">
+        <img class="bd-placeholder-img mr-2 rounded" width=30% height=30% src="{{ user.profile.img.url }}">
+        <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+            <strong class="d-block text-gray-dark"><b>Данные учетной записи</b></strong>
+            <br>
+            <strong class="d-block text-gray-dark"><b>Логин:  </b> {{ user.username }}</strong>
+            <strong class="d-block text-gray-dark"><b>ФИО:  </b> {{ user.profile.name }}</strong>
+    </div>
+
+       <br>
+    <center>
+        <a href="{% url 'compaunds' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%"> Мои карточки для повторения </a>
+    </center>
+    <br>
+</div>
+{% endblock %}
