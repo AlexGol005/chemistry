@@ -66,7 +66,7 @@ def HeadEmployeereg(request):
                                 f"https://www.journallabeq.ru/login/\n" \
                                 f"Данные для входа на сайт:\n" \
                                 f"логин: {username};\n"\
-                                f"пароль: {password}\n"\
+                                f"пароль: {word}\n"\
                                  f"Вы создали новую организацию. Войдите в Вашу учетную запись и отредактируйте её данные\n"\
                                  f"По всем вопросам обращайтесь к администрации сайта по email sandra.005@mail.ru или по телефону +79500484071 (включая WhatsApp и Viber)"
                
@@ -113,13 +113,13 @@ class ProfileView(LoginRequiredMixin, TemplateView):
            context['user_group'] = user_group 
            context['ProfileUdateForm'] = ProfileUdateForm(self.request.POST, self.request.FILES,  instance=self.request.user.profile) 
         except:
-           pass
+           context['company'] = None
             
         return context
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data()
-        if context['ProfileUdateForm'].is_valid() and context:
+        if context['ProfileUdateForm'].is_valid() and context['company']:
             order = context['ProfileUdateForm'].save(commit=False)
             order.save()
             return redirect('profile')
