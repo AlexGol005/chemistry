@@ -422,30 +422,41 @@ class ChemProfileView(LoginRequiredMixin, TemplateView):
 
 
 def Chemprofilereg(request):
-    """выводит форму для регистрации изучающего химию """
-    
+    """Выводит форму для регистрации изучающего химию"""
     if request.method == "POST":
-        group_name = 'Базовый пользователь'
         form = ChemUserRegisterForm(request.POST)
         form1 = ChemProfileRegisterForm(request.POST) 
+        
         if form.is_valid() and form1.is_valid():
-            u_f = form.save()
-            p_f = form1.save(commit=False)
-           
+            # 1. Сохраняем основного пользователя
+            user = form.save()
             
-            messages.success(request, f'Пользовать успешно создан!')
-                  
+            # 2. Добавляем пользователя в группу (если это необходимо)
+            group, created = Group.objects.get_or_create(name='Базовый пользователь')
+            user.groups.add(group)
+            
+            # 3. Подготавливаем профиль, но не сохраняем сразу
+            profile = form1.save(commit=False)
+            
+            # 4. СВЯЗЫВАЕМ профиль с только что созданным пользователем
+            profile.user = user  # Предполагается, что в модели Profile есть поле user
+            
+            # 5. Теперь сохраняем профиль в базу данных
+            profile.save()
+            
+            messages.success(request, 'Пользователь успешно создан!')
             return redirect('chem')
         else:
-            messages.add_message(request, messages.ERROR, form.errors)
-            return redirect('chem')
-                
+            # Если формы невалидны, лучше не делать редирект, 
+            # чтобы пользователь увидел ошибки валидации прямо в полях
+            messages.error(request, 'Ошибка при регистрации. Проверьте введенные данные.')
     else:
         form = ChemUserRegisterForm()
         form1 = ChemProfileRegisterForm()
-        data =         {
-            'title': 'Страница регистрации - изучение химии',
-            'form': form,
-            'form1': form1,
-        }
-        return render(request,  'users/chemreg.html', data)
+
+    data = {
+        'title': 'Страница регистрации - изучение химии',
+        'form': form,
+        'form1': form1,
+    }
+    return render(request, 'users/chemreg.html', data)
