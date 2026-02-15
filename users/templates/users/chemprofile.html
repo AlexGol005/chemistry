@@ -24,10 +24,12 @@
 </div>
 
  <br>
+<center>
               <form method="post" enctype="multipart/form-data" class="form-register mt-4">
         {% csrf_token %}
         {{ ChemProfileUdateForm.as_p }}
         <button class="btn btn-outline-primary" type="submit">Обновить</button>
     </form>
+    </center>
     <br> 
 {% endblock %}
