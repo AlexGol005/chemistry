@@ -119,7 +119,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data()
-        if context['ProfileUdateForm'].is_valid():
+        if context['ProfileUdateForm'].is_valid() and context:
             order = context['ProfileUdateForm'].save(commit=False)
             order.save()
             return redirect('profile')
