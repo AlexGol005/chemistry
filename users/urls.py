@@ -32,6 +32,8 @@ urlpatterns = [
     path('chem/chemprofilereg/', views.Chemprofilereg, name='chemprofilereg'),
 
     path('chem/chemuserlogin/', authViews.LoginView.as_view(template_name='users/chemuser.html', next_page='chemprofile'), name='chemuser'),
+
+    path('chem/exit/', authViews.LogoutView.as_view(template_name='users/exit.html', next_page='chemuser'), name='chemexit'),
     
         ]
 
