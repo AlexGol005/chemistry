@@ -113,7 +113,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
            context['user_group'] = user_group 
            context['ProfileUdateForm'] = ProfileUdateForm(self.request.POST, self.request.FILES,  instance=self.request.user.profile) 
         except:
-           return redirect('chem')
+           pass
             
         return context
 
