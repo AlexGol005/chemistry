@@ -105,13 +105,15 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             user_group = list(l)[0]
         except:
              user_group = 'Суперпользователь'
-            
-        employees = Employees.objects.filter(userid__userid=user.profile.userid)
-        company = Company.objects.get(userid=user.profile.userid)
-        context['employees'] = employees
-        context['company'] = company 
-        context['user_group'] = user_group 
-        context['ProfileUdateForm'] = ProfileUdateForm(self.request.POST, self.request.FILES,  instance=self.request.user.profile) 
+        try:    
+           employees = Employees.objects.filter(userid__userid=user.profile.userid)
+           company = Company.objects.get(userid=user.profile.userid)
+           context['employees'] = employees
+           context['company'] = company 
+           context['user_group'] = user_group 
+           context['ProfileUdateForm'] = ProfileUdateForm(self.request.POST, self.request.FILES,  instance=self.request.user.profile) 
+        except:
+           return redirect('chem')
             
         return context
 
