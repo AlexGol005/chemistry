@@ -113,13 +113,13 @@ class ProfileView(LoginRequiredMixin, TemplateView):
            context['user_group'] = user_group 
            context['ProfileUdateForm'] = ProfileUdateForm(self.request.POST, self.request.FILES,  instance=self.request.user.profile) 
         except:
-           context['company'] = None
+           context['company'] = "ф"
             
         return context
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data()
-        if context['ProfileUdateForm'].is_valid() and context['company']:
+        if context['ProfileUdateForm'].is_valid() and context['company'] != "ф":
             order = context['ProfileUdateForm'].save(commit=False)
             order.save()
             return redirect('profile')
