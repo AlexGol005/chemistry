@@ -431,11 +431,11 @@ def Chemprofilereg(request):
         if form.is_valid() and form1.is_valid():
             u_f = form.save()
             p_f = form1.save(commit=False)
-            p_f.user_id = u_f.id
+           
             
             messages.success(request, f'Пользовать успешно создан!')
                   
-            return redirect('chemprofile')
+            return redirect('chem')
         else:
             messages.add_message(request, messages.ERROR, form.errors)
             return redirect('chem')
