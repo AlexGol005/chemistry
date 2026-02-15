@@ -405,7 +405,7 @@ class ChemProfileView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ChemProfileView, self).get_context_data(**kwargs)
         user = User.objects.get(username=self.request.user)
-        context['ChemProfileUdateForm'] = ChemProfileUdateForm(self.request.POST, self.request.FILES,  instance=self.request.user.chemprofile) 
+        context['ChemProfileUdateForm'] = ChemProfileUdateForm(self.request.POST, self.request.FILES,  instance=self.request.user.profile) 
             
         return context
 
