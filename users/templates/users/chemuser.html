@@ -1,0 +1,19 @@
+{% extends 'main/base.html' %}
+{% block title %}
+    Страница авторизации
+{% endblock %}
+
+
+{% block content %}
+<div class="col-8">
+    <div style="text-align: center;"><h3>Страница авторизации - изучение химии</h3></div>
+    <form method="post" class="form-register auth">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-outline-warning mt-2" type="submit">Войти</button>
+        <button class="btn btn-outline-warning mt-2"><a href="{% url 'chemprofilereg' %}" > Зарегистрироваться</a></button>
+        <button class="btn btn-outline-warning mt-2"><a href="{% url 'password_reset' %}" > Восстановить пароль </a></button>
+    </form>
+
+</div>
+{% endblock %}
