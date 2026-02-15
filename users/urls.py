@@ -30,5 +30,7 @@ urlpatterns = [
     path('chem/chemprofile/', UserView.ChemProfileView.as_view(), name='chemprofile'),
 
     path('chem/chemprofilereg/', views.Chemprofilereg, name='chemprofilereg'),
+
+    path('chemuserlogin/', authViews.LoginView.as_view(template_name='users/chemuser.html'), name='chemuser'),
         ]
 
