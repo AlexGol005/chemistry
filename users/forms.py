@@ -167,7 +167,7 @@ class ChemProfileRegisterForm(forms.ModelForm):
                                'placeholder': 'Иванов Иван Иванович'}))
 
     class Meta:
-        model = ChemProfile
+        model = Profile
         fields = [
                   'name', 
                  ]
@@ -177,5 +177,5 @@ class ChemProfileUdateForm(forms.ModelForm):
     img = forms.ImageField(label='загрузить фото', widget=forms.FileInput)
 
     class Meta:
-        model = ChemProfile
+        model = Profile
         fields = ['img']
