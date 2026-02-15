@@ -448,4 +448,4 @@ def Chemprofilereg(request):
             'form': form,
             'form1': form1,
         }
-        return render(request,  'users/reg.html', data)
+        return render(request,  'users/chemreg.html', data)
