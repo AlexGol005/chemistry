@@ -438,7 +438,7 @@ def Chemprofilereg(request):
             return redirect('chemprofile')
         else:
             messages.add_message(request, messages.ERROR, form.errors)
-            return redirect('/')
+            return redirect('chem')
                 
     else:
         form = ChemUserRegisterForm()
