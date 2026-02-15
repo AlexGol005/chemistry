@@ -141,7 +141,7 @@ class EmployeesUpdateForm(forms.ModelForm):
 class ChemUserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=False,
                              widget=forms.TextInput(attrs={'class': 'form-control',
-                                                           'placeholder': 'ваш email'})
+                                                           'placeholder': 'ваш email (нужен для восстановления пароля)'})
                              )
     username = forms.CharField(label='Введите логин',
                                required=True,
@@ -161,7 +161,7 @@ class ChemUserRegisterForm(UserCreationForm):
         fields = ['username', 'email', 'password1', 'password1' ]
 
 class ChemProfileRegisterForm(forms.ModelForm):
-    name = forms.CharField(label='ФИО',
+    name = forms.CharField(label='Имя',
                                required=False,
                                widget=forms.TextInput(attrs={'class': 'form-control',
                                'placeholder': 'Иванов Иван Иванович'}))
