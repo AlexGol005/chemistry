@@ -18,11 +18,11 @@ REASON_CHOICES = (
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)    
     name = models.CharField('ФИО', max_length=40, null=True, blank=True)
-    short_name = models.CharField('ФИО кратко для документов', max_length=40, null=True, blank=True)
-    user_email = models.CharField('email', max_length=40, null=True, blank=True)
-    user_phone = models.CharField('телефон', max_length=40, null=True, blank=True)
-    userposition = models.CharField('Должность', max_length=50, null=True, blank=True)
-    userid = models.CharField('Идентификатор организации (20 случайных цифр и латинских букв)', max_length=50, default = 1, null=True, blank=True)
+    short_name = models.CharField('ФИО кратко для документов', max_length=40, null=True, blank=True, default = 1)
+    user_email = models.CharField('email', max_length=40, null=True, blank=True, default = 1)
+    user_phone = models.CharField('телефон', max_length=40, null=True, blank=True, default = 1)
+    userposition = models.CharField('Должность', max_length=50, null=True, blank=True, default = 1)
+    userid = models.CharField('Идентификатор организации (20 случайных цифр и латинских букв)', max_length=50, default = "chem", null=True, blank=True)
     main_user = models.BooleanField ('Главный пользователь - галочка если да', default=False)
     img = models.ImageField('Фото сотрудника', default='user_images/default.png', upload_to='user_images')
 
@@ -147,23 +147,4 @@ class CompanyActiveEmployesLists(models.Model):
         verbose_name_plural = 'Список активных сотрудников компании'
 
 
-class ChemProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)    
-    name = models.CharField('ФИО', max_length=40, null=True, blank=True)
-    img = models.ImageField('Фото', default='user_images/default.png', upload_to='user_images')
 
-
-    def __str__(self):
-        return f'логин: {self.user.username}'
-
-    def save(self, *args, **kwargs):
-        super().save()
-        image = Image.open(self.img.path)
-        if image.height > 256 or image.width > 256:
-            resize = (256, 256)
-            image.thumbnail(resize)
-            image.save(self.img.path)
-
-    class Meta:
-        verbose_name = 'Профиль пользователя изучение химии'
-        verbose_name_plural = 'Профили пользователей изучение химии'
