@@ -13,25 +13,27 @@ from .models import AttestationJ, ResultValueJ
 class Contacts(View):
     """выводит страницу контакты"""
     def get(self, request):
-        # Устанавливаем значение по умолчанию
+        return render(request, 'main/contacts.html')
+
+
+class IndexView(View):
+    """выводит страницу главная страница по основному адресу"""
+    def get(self, request):
+        # 1. Значение по умолчанию
         content_type = "nonchem"
         
+        # 2. Логика определения типа
         if request.user.is_authenticated:
-            if request.user.profile.userid == "chem":
+            # Проверяем атрибут userid у пользователя
+            # Используем getattr на случай, если атрибута не существует
+            if getattr(request.user.profile, 'userid', None) == "chem":
                 content_type = "chem"
         
+        # 3. Формируем контекст
         context = {
-            'type': content_type, 
+            'type': content_type,  # Передаем значение переменной
         }
-        return render(request, 'main/contacts.html', context)
-
-
-        context = {
-            'title': 'Главная страница',
-            'articles': Article.objects.filter(is_published=True)[:5], # Последние 5 статей
-            'categories': Category.objects.all(),
-            'promo_product': Product.objects.order_by('?').first(), # Случайный товар
-        }
+        
         return render(request, 'main/main.html', context)
 
 
