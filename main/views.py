@@ -37,10 +37,6 @@ class IndexView(View):
         return render(request, 'main/main.html', context)
 
 
-class IndexView(View):
-    """выводит страницу главная страница по основному адресу"""
-    def get(self, request):
-        return render(request, 'main/main.html')
 
 
 class EquipmentView(LoginRequiredMixin, TemplateView):
