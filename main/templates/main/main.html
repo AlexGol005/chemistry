@@ -4,8 +4,9 @@
     Лабораторные журналы
 {% endblock %}
 
-{% if type == "nonchem" %}
+
 {% block content %}
+{% if type == "nonchem" %}
 <div class="col-8">
                 <center><h3>Автоматизация учета лабораторного оборудования и микроклимата для Вашей лаборатории</h3></center>
                     {% if not user.is_authenticated %}
@@ -20,11 +21,11 @@
                 <br>
                 <center><img width= 50%   src="{% static 'main/img/2.jpg' %}" alt="Изображение на главной странице" class="mr-2 ml-2 mt-2"> </center>
 </div>
-{% endblock %}
+
 
 {% elif type == "chem" %}
 
-{% block content %}
+
 <div class="col-8">
                 <center><h3>Изучение химии</h3></center>
                   
