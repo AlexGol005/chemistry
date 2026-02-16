@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -21,6 +22,22 @@ def email(subject, content, user_email):
       'sandra.005@mail.ru',
      [user_email, 'sandra.005@mail.ru']
    )
+
+
+
+
+
+class CustomLoginView(LoginView):
+    template_name = 'users/user.html'
+
+    def form_valid(self, form):
+        user = form.get_user()
+        if hasattr(user, 'profile') and user.profile.userid == 'chem':
+            messages.error(self.request, "Ваша учетная запись для пригодна раздела - Изучение Химии. Зайдите с этой страницы")
+            return redirect('chemuser') # или на другую страницу
+            
+        return super().form_valid(form)
+
 
 
 
