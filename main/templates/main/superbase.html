@@ -118,6 +118,9 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
                                 </li>
                             {% else %}
                                 <li class="nav-item">
+
+                    {% if request.user.profile.userid != "chem" %}
+                                    
                                     {% if request.user.profile.short_name %}
                                          <a href="{% url 'profile' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> ЛК Управление Лабораторией {{ request.user.profile.short_name }}</a>
                                     {% else %}
@@ -129,6 +132,7 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
                                 </li>
                             {% endif %} 
  {% endif %} 
+                             {% endif %} 
 
 {% if 'chem' in request.path %}   
                             
