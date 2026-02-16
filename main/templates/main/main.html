@@ -6,7 +6,7 @@
 
 
 {% block content %}
-{% if type == "nonchem" %}
+{% if content_type == "nonchem" %}
 <div class="col-8">
                 <center><h3>Автоматизация учета лабораторного оборудования и микроклимата для Вашей лаборатории</h3></center>
                     {% if not user.is_authenticated %}
@@ -23,7 +23,7 @@
 </div>
 
 
-{% elif type == "chem" %}
+{% elif content_type == "chem" %}
 
 
 <div class="col-8">
