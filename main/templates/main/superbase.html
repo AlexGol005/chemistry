@@ -74,7 +74,7 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
                                     <a class="nav-link active" aria-current="page" href="/">JournalLab</a>
                                 </li>
 
-   {% if 'chem' not in request.path %}                         
+   {% if 'chem' not in request.path and request.user.profile.userid != "chem" %}                         
                                 <li class="nav-item">
                                     <a class="nav-link" href="{% url 'about' %}">О&nbspсайте</a>
                                 </li>
