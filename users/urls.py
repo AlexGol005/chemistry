@@ -16,7 +16,7 @@ urlpatterns = [
     path('companyupdate/', UserView.CompanyUpdateView, name='companyupdate'),
     path('companyprofile/', UserView.CompanyProfileView.as_view(), name='companyprofile'),
     path('profile/', UserView.ProfileView.as_view(), name='profile'),
-    path('login/', authViews.LoginView.as_view(template_name='users/user.html'), name='user'),
+    path('login/', UserView.CustomLoginView.as_view(template_name='users/user.html'), name='user'),
     path('exit/', authViews.LogoutView.as_view(template_name='users/exit.html'), name='exit'),
     path('password-reset/', 
          PasswordResetView.as_view(template_name = "users/password_reset_form.html"),
