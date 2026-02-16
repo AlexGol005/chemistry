@@ -17,7 +17,7 @@ class Contacts(View):
         if request.user.is_authenticated:
             current_user = request.user 
             type_userid = current_user.userid
-            if type_userid == "chem"
+            if type_userid == "chem":
                 type = "chem"
         context = {
             'type': 'type',
