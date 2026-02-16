@@ -13,14 +13,15 @@ from .models import AttestationJ, ResultValueJ
 class Contacts(View):
     """выводит страницу контакты"""
     def get(self, request):
-        type = "nonchem"
+        # Устанавливаем значение по умолчанию
+        content_type = "nonchem"
+        
         if request.user.is_authenticated:
-            current_user = request.user 
-            type_userid = current_user.userid
-            if type_userid == "chem":
-                type = "chem"
+            if request.user.profile.userid == "chem":
+                content_type = "chem"
+        
         context = {
-            'type': 'type',
+            'type': content_type, 
         }
         return render(request, 'main/contacts.html', context)
 
