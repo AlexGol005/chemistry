@@ -31,7 +31,7 @@ class IndexView(View):
         
         # 3. Формируем контекст
         context = {
-            'type': content_type,  # Передаем значение переменной
+            'content_type': content_type,  # Передаем значение переменной
         }
         
         return render(request, 'main/main.html', context)
