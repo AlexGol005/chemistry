@@ -1,0 +1,32 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %}
+  Мои реакции
+{% endblock %}
+
+
+{% block content %}
+<h2>Мои сохраненные реакции</h2>
+
+{% if user_items %}
+    <div class="list-group">
+        {% for item in user_items %}
+            <div class="list-group-item">
+                <h5>{{ item.reaction.metatitle }}</h5>
+                <p>Добавлено: {{ item.created_at|date:"d.m.Y" }}</p>
+                
+                <a href="{{ item.reaction.get_absolute_url }}" class="btn btn-sm btn-info">Смотреть</a>
+                
+                <!-- Кнопка удаления -->
+                <form action="{% url 'remove_reaction' item.reaction.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>Вы еще не добавили ни одной реакции в свой список.</p>
+    <a href="/chem/">Перейти к поиску реакций</a>
+{% endif %}
+{% endblock %}
