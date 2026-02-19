@@ -31,4 +31,5 @@ urlpatterns = [
     path('links', views.LinkView.as_view(), name='links'),
 
     path('add-reaction/<int:reaction_id>/', views.add_to_list, name='add_reaction'),
+    path('chem/remove-reaction/<int:reaction_id>/', views.remove_reaction, name='remove_reaction'),
     ]
