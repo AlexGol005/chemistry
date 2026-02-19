@@ -552,11 +552,12 @@ def my_favorites_view(request):
     
     return render(request, 'my_list.html', {'user_items': user_items})
 
-def remove_from_list(request, item_id):
+def remove_reaction(request, reaction_id):
     if request.method == 'POST':
-        # Фильтруем по юзеру для безопасности, чтобы никто не удалил чужую запись
-        item = get_object_or_404(UserReaction, id=item_id, user=request.user)
-        item.delete()
-    return redirect('my_favorites_view')
+        # Находим и удаляем связь текущего пользователя с этой реакцией
+        UserReaction.objects.filter(user=request.user, reaction_id=reaction_id).delete()
+
+    # Возвращаем пользователя туда, откуда он пришел
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
