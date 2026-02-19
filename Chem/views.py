@@ -543,4 +543,19 @@ def add_to_list(request, reaction_id):
     # Возвращаем пользователя обратно
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
+@login_required
+def my_favorites_view(request):
+    # Получаем все объекты UserReaction для текущего пользователя
+    # select_related('reaction') подтянет данные о самих реакциях одним запросом
+    user_items = UserReaction.objects.filter(user=request.user).select_related('reaction')
+    
+    return render(request, 'my_list.html', {'user_items': user_items})
+
+def remove_from_list(request, item_id):
+    if request.method == 'POST':
+        # Фильтруем по юзеру для безопасности, чтобы никто не удалил чужую запись
+        item = get_object_or_404(UserReaction, id=item_id, user=request.user)
+        item.delete()
+    return redirect('my_favorites_view')
+
 
