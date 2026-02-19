@@ -20,7 +20,8 @@
 {% autoescape off %}
 
 <div class="col-12">
-
+<p>Отладка: ID текущей реакции: {{ obj.id }}</p>
+<p>Отладка: Список избранных ID: {{ favorite_ids }}</p>
 {% if obj %}
     {% if obj.id in favorite_ids %}
         <div style="display:inline;">
