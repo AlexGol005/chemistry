@@ -569,3 +569,12 @@ def remove_reaction(request, reaction_id):
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
+@login_required
+def my_reactions_list(request):
+    # Получаем все связи текущего пользователя с реакциями
+    # select_related('reaction') подгрузит данные InorganicReaction одним запросом
+    user_items = UserReaction.objects.filter(user=request.user).select_related('reaction')
+    
+    return render(request, 'chem/my_reactions.html', {'user_items': user_items})
+
+
