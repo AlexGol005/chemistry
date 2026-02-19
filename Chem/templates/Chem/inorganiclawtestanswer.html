@@ -21,11 +21,11 @@
 
 <div class="col-12">
 
-{% if reaction.id in favorite_ids %}
+{% if obj.id in favorite_ids %}
     <span>✅ В моем списке</span>
 {% else %}
     
-<form action="{% url 'add_reaction' reaction.id %}" method="post" style="display:inline;">
+<form action="{% url 'add_reaction' obj.id %}" method="post" style="display:inline;">
     {% csrf_token %}
     <button type="submit" class="btn btn-primary">
         Добавить в мой список
