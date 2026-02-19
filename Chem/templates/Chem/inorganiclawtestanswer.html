@@ -20,6 +20,16 @@
 {% autoescape off %}
 
 <div class="col-12">
+
+<form action="{% url 'add_reaction' reaction.id %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">
+        Добавить в мой список
+    </button>
+</form>
+
+
+    
    <a href="{% url 'inorganiclawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer">открыть правило</a>            
  {% if percent %}
      <p style="width: 100%;  font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums;">
