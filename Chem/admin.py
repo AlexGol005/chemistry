@@ -77,6 +77,7 @@ class InorganicReactionAdminForm(forms.ModelForm):
 class InorganicReactionAdmin(ImportExportActionModelAdmin):
     resource_class = InorganicReactionResource
     form = InorganicReactionAdminForm
+    autocomplete_fields = ['number']
 
     list_display = ('pk', 'metatitle')
 
