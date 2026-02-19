@@ -575,6 +575,6 @@ def my_reactions_list(request):
     # select_related('reaction') подгрузит данные InorganicReaction одним запросом
     user_items = UserReaction.objects.filter(user=request.user).select_related('reaction')
     
-    return render(request, 'chem/my_reactions.html', {'user_items': user_items})
+    return render(request, 'Сhem/my_reactions.html', {'user_items': user_items})
 
 
