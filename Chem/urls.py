@@ -32,4 +32,5 @@ urlpatterns = [
 
     path('add-reaction/<int:reaction_id>/', views.add_to_list, name='add_reaction'),
     path('chem/remove-reaction/<int:reaction_id>/', views.remove_reaction, name='remove_reaction'),
+    path('chem/my-list/', views.my_reactions_list, name='my_reactions_list'),
     ]
