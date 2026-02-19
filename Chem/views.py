@@ -309,15 +309,15 @@ class ChemTestAnswerView(TemplateView):
         context['obj'] = qw
         context['percent'] = percent
 
-    # блок добавки реакций в список любимых авторизованного пользователя
+        # блок добавки реакций в список любимых авторизованного пользователя
     
-    if self.request.user.is_authenticated:
+        if self.request.user.is_authenticated:
         # Получаем плоский список ID реакций, которые добавил этот пользователь
-        context['favorite_ids'] = list(UserReaction.objects.filter(
-            user=self.request.user
-        ).values_list('reaction_id', flat=True))
-    else:
-        context['favorite_ids'] = []
+            context['favorite_ids'] = list(UserReaction.objects.filter(
+                user=self.request.user
+            ).values_list('reaction_id', flat=True))
+        else:
+            context['favorite_ids'] = []
         
         return context
 
