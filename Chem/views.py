@@ -534,4 +534,13 @@ class AtomTestQuestionView(TemplateView):
 
         return redirect('atomlawtestanswer', str=ind)
 
+def add_to_list(request, reaction_id):
+    if request.method == 'POST':
+        reaction = get_object_or_404(InorganicReaction, id=reaction_id)
+        # get_or_create гарантирует отсутствие дублей (UniqueTogether)
+        UserReaction.objects.get_or_create(user=request.user, reaction=reaction)
+    
+    # Возвращаем пользователя обратно
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
 
