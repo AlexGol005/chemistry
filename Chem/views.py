@@ -239,8 +239,12 @@ class ChemTestQuestionView(TemplateView):
         clean_correct_answer_list_upper = [word.upper() for word in clean_correct_answer_list]
         answer = " + ".join(clean_answer_list)
 
-        if sorted(clean_answer_list_upper) == sorted(clean_correct_answer_list_upper):
+        if sorted(clean_answer_list_upper) == sorted(clean_correct_answer_list_upper) and sorted(clean_correct_answer_list_upper) != []:
             messages.success(request, "Верно!")
+            self.request.session['correct_count'] += 1
+
+        elif sorted(clean_answer_list_upper) == sorted(clean_correct_answer_list_upper) and sorted(clean_correct_answer_list_upper) == []:
+            messages.success(request, "нет ответа")
             self.request.session['correct_count'] += 1
             
         else:
