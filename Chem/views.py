@@ -127,6 +127,49 @@ class ChemTestHeadView(ListView):
         return queryset
 
 
+class ChemMyTestHeadView(ListView):
+    template_name = 'Chem/inorganiclawtesthead.html'
+    context_object_name = 'objects'
+
+    def get_queryset(self):
+        # Получаем только те реакции, которые есть в списке текущего юзера
+        return InorganicReaction.objects.filter(
+            userreaction__user=self.request.user
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        
+        if queryset.exists():
+            # Заголовок теперь логичнее сделать общим, так как это "Мой список"
+            context['numbertitle'] = "Мои сохраненные реакции"
+            context['count'] = queryset.count()
+            
+            # Работа с ID для теста
+            question_ids = list(queryset.values_list('id', flat=True))
+            random.shuffle(question_ids)
+            
+            q1_id = question_ids.pop(0)
+            context['q1'] = q1_id
+            
+            # Обновляем сессию
+            context['question_ids'] = question_ids           
+            self.request.session['question_list'] = question_ids
+            self.request.session['correct_count'] = 0
+            self.request.session['incorrect_count'] = 0
+            self.request.session['all_count'] = 0
+        else:
+            context['numbertitle'] = 'В вашем списке пока нет реакций'
+            context['count'] = 0
+            context['q1'] = 0
+            
+        return context
+
+
+
+
+
 class ChemTestQuestionView(TemplateView):
     """ выводит вопрос теста - реакцию  по неорганической химии """
     template_name = 'Chem/inorganiclawtestquestion.html'
