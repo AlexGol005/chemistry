@@ -1,3 +1,4 @@
+html
 {% extends 'main/superbase.html' %}
 {% load static %}
 
@@ -7,81 +8,103 @@
 
 {% block content %}
 <div class="col-12 p-4">
-    <!-- Скрипт JSME (лучше один раз здесь, если нет в superbase) -->
+    <!-- Подключение редактора JSME -->
     <script type="text/javascript" src="https://jsme-editor.github.io"></script>
 
-    <h1>Вопрос №{{ question.id }}</h1>
+    <div class="card shadow-sm rounded-4 p-4 border-0">
+        <h1 class="h3 mb-4 text-secondary text-center">Вопрос №{{ question.id }}</h1>
 
-    <div class="card p-4 shadow-sm mb-4">
-        {% if question.question_type == 'N2F' %}
-            <h3 class="mb-3">Нарисуйте формулу для: <span class="text-primary">{{ question.name }}</span></h3>
-            
-            <form method="post" id="chemForm" onsubmit="return prepareAnswer()">
-                {% csrf_token %}
-                <div id="jsme_container" class="border rounded bg-white"></div>
-                <input type="hidden" name="user_answer" id="smiles_input">
-                
-                <button type="submit" class="btn btn-primary mt-3 px-5 shadow">Отправить ответ</button>
-            </form>
-        {% else %}
-            <h3 class="mb-3">Назовите это соединение:</h3>
-            <p class="text-muted small">Формула (SMILES): <code>{{ question.smiles }}</code></p>
-            
-            <form method="post">
-                {% csrf_token %}
-                <input type="text" name="user_answer" class="form-control form-control-lg mb-3" placeholder="Введите название" required autofocus>
-                <button type="submit" class="btn btn-primary px-5 shadow">Проверить</button>
-            </form>
-        {% endif %}
-    </div>
-
-    <!-- Единый блок результата -->
-    {% if result is not None %}
-        <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} shadow-sm mt-3 animate__animated animate__fadeIn">
-            {% if result %}
-                <h4 class="alert-heading">✅ Верно!</h4>
-                <p>Структура и название полностью соответствуют.</p>
-                
-                {% if next_id %}
-                    <hr>
-                    <a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-success px-4 rounded-pill">
-                        Следующий вопрос →
-                    </a>
-                {% else %}
-                    <hr>
-                    <span class="text-muted fw-bold">🎉 Поздравляем! Это был последний вопрос.</span>
-                {% endif %}
+        <div class="text-center mb-4">
+            {% if question.question_type == 'N2F' %}
+                <p class="fs-4">Нарисуйте формулу для соединения:</p>
+                <h2 class="display-6 text-primary fw-bold">{{ question.name }}</h2>
             {% else %}
-                <h4 class="alert-heading">❌ Ошибка</h4>
-                <p class="mb-0">Попробуйте еще раз. Убедитесь, что все связи и атомы на месте.</p>
+                <p class="fs-4">Как называется это соединение?</p>
+                <div class="p-3 bg-light rounded border border-dashed mb-2">
+                    <code>SMILES: {{ question.smiles }}</code>
+                </div>
+                <small class="text-muted text-uppercase fw-semibold" style="letter-spacing: 1px;">Введите название ниже</small>
             {% endif %}
         </div>
-    {% endif %}
+
+        <hr class="my-4 opacity-25">
+
+        <!-- Форма ответа -->
+        <form method="post" id="chemForm" onsubmit="return prepareAnswer()" class="text-center">
+            {% csrf_token %}
+            
+            {% if question.question_type == 'N2F' %}
+                <!-- Контейнер для редактора JSME -->
+                <div class="d-flex justify-content-center">
+                    <div id="jsme_container" class="border rounded bg-white shadow-sm" style="overflow: hidden;"></div>
+                </div>
+                <!-- Скрытое поле для передачи SMILES в Django -->
+                <input type="hidden" name="user_answer" id="smiles_input">
+            {% else %}
+                <!-- Текстовое поле для названия -->
+                <div class="mx-auto" style="max-width: 500px;">
+                    <input type="text" name="user_answer" class="form-control form-control-lg text-center rounded-pill mb-3 border-2" placeholder="Название на русском" required autofocus>
+                </div>
+            {% endif %}
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm fw-bold">
+                    Проверить ответ
+                </button>
+            </div>
+        </form>
+
+        <!-- Блок результата и навигации -->
+        {% if result is not None %}
+            <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-4 shadow-sm rounded-4 text-center py-4 animate__animated animate__fadeIn">
+                {% if result %}
+                    <h3 class="alert-heading mb-3">✅ Верно! Великолепно!</h3>
+                    
+                    {% if next_id %}
+                        <div class="mt-4">
+                            <a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-success btn-lg px-4 rounded-pill fw-bold">
+                                К следующей молекуле →
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="mt-3 fs-5 fw-bold text-success">🏆 Поздравляем! Вы завершили все тесты!</div>
+                        <a href="{% url 'quiz_index' %}" class="btn btn-outline-secondary mt-3 rounded-pill">Вернуться на главную</a>
+                    {% endif %}
+
+                {% else %}
+                    <h3 class="alert-heading mb-2">❌ Ошибка в структуре</h3>
+                    <p class="mb-0">Внимательно проверьте валентности и количество атомов углерода. Попробуйте еще раз!</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
 </div>
 
 <script>
     var jsmeApplet;
 
-    // Эта функция вызывается библиотекой JSME автоматически после загрузки
+    // Автоматическая инициализация редактора библиотекой JSME
     function jsmeOnLoad() {
-        // Проверяем наличие контейнера, чтобы не было ошибок на текстовых вопросах
-        if (document.getElementById("jsme_container")) {
-            jsmeApplet = new JSMe("jsme_container", "450px", "350px", {
+        var container = document.getElementById("jsme_container");
+        if (container) {
+            // "jsme_container", "ширина", "высота", "опции"
+            jsmeApplet = new JSMe("jsme_container", "500px", "400px", {
                 "options" : "oldlook,nozoom"
             });
         }
     }
 
+    // Подготовка данных перед отправкой POST-запроса
     function prepareAnswer() {
-        if (jsmeApplet) {
+        if (typeof jsmeApplet !== 'undefined' && jsmeApplet !== null) {
             var smiles = jsmeApplet.smiles(); 
-            document.getElementById('smiles_input').value = smiles;
+            var input = document.getElementById('smiles_input');
+            if (input) {
+                input.value = smiles;
+            }
         }
-        return true; // Разрешаем отправку формы
+        return true; // Разрешить отправку формы
     }
 </script>
-{% endblock %}
 
-   
-</div>
 {% endblock %}
