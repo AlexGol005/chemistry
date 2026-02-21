@@ -7,6 +7,16 @@ from django.db.models import Q
 from .models import *
 from .forms import *
 
+class OrganicNamesHomeView(TemplateView):
+    template_name = 'Chem/headquestion.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Находим ID самого первого вопроса в базе, чтобы кнопка знала куда вести
+        first_question = OrganicNames.objects.first()
+        context['first_id'] = first_question.id if first_question else None
+        return context
+
 class OrganicNamesTestView(DetailView):
     model = OrganicNames
     template_name = 'Chem/question.html'
