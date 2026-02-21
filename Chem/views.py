@@ -26,21 +26,22 @@ class OrganicNamesTestView(DetailView):
         self.object = self.get_object()
         user_answer = request.POST.get('user_answer', '').strip()
         
-        # Логика проверки
         if self.object.question_type == 'N2F':
             result = self.object.verify_structure(user_answer)
         else:
             result = user_answer.lower() == self.object.name.lower()
 
-        # Повторно рендерим страницу, передавая результат в контекст
         return self.render_to_response(self.get_context_data(result=result))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Если в kwargs есть result (пришло из post), добавляем его в шаблон
         context['result'] = kwargs.get('result')
+        
+        # Находим ID следующего вопроса
+        next_q = OrganicNames.objects.filter(id__gt=self.object.id).order_by('id').first()
+        context['next_id'] = next_q.id if next_q else None
+        
         return context
-
 
 
 
