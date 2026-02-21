@@ -22,7 +22,7 @@ def question_detail(request, pk):
             # Сравниваем текстовое название (регистронезависимо)
             result = user_answer.lower() == question.name.lower()
 
-    return render(request, 'quiz/question.html', {
+    return render(request, 'Chem/question.html', {
         'question': question,
         'result': result,
     })
