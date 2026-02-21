@@ -7,25 +7,29 @@ from django.db.models import Q
 from .models import *
 from .forms import *
 
-def question_detail(request, pk):
-    # Получаем вопрос из базы
-    question = get_object_or_404(OrganicNames, pk=pk)
-    result = None  # Здесь будет храниться статус ответа (True/False/None)
+class OrganicNamesTestView(DetailView):
+    model = OrganicNames
+    template_name = 'Chem/question.html'
+    context_object_name = 'question'
 
-    if request.method == 'POST':
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
         user_answer = request.POST.get('user_answer', '').strip()
         
-        if question.question_type == 'N2F':
-            # Сравниваем структуру через метод модели (RDKit)
-            result = question.verify_structure(user_answer)
+        # Логика проверки
+        if self.object.question_type == 'N2F':
+            result = self.object.verify_structure(user_answer)
         else:
-            # Сравниваем текстовое название (регистронезависимо)
-            result = user_answer.lower() == question.name.lower()
+            result = user_answer.lower() == self.object.name.lower()
 
-    return render(request, 'Chem/question.html', {
-        'question': question,
-        'result': result,
-    })
+        # Повторно рендерим страницу, передавая результат в контекст
+        return self.render_to_response(self.get_context_data(result=result))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Если в kwargs есть result (пришло из post), добавляем его в шаблон
+        context['result'] = kwargs.get('result')
+        return context
 
 
 
