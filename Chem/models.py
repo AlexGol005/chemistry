@@ -3,6 +3,51 @@ from django.urls import reverse
 from django.conf import settings
 from PIL import Image
 from django.core.exceptions import ValidationError
+from rdkit import Chem as Chemrdkit
+
+class OrganicNames(models.Model):
+    TYPE_CHOICES = [
+        ('N2F', 'Название -> Формула'),
+        ('F2N', 'Формула -> Название'),
+    ]
+    
+    question_type = models.CharField(
+        max_length=3, 
+        choices=TYPE_CHOICES, 
+        verbose_name="Тип вопроса"
+    )
+    name = models.CharField(
+        max_length=255, 
+        verbose_name="Название соединения"
+    )
+    smiles = models.TextField(
+        verbose_name="Правильная структура (SMILES)"
+    )
+
+    def verify_structure(self, user_smiles):
+        """
+        Сравнивает SMILES пользователя с эталоном.
+        Возвращает True, если структуры химически идентичны.
+        """
+        try:
+            # Создаем объекты молекул
+            user_mol = Chemrdkit.MolFromSmiles(user_smiles)
+            correct_mol = Chemrdkit.MolFromSmiles(self.smiles)
+            
+            if not user_mol or not correct_mol:
+                return False
+                
+            # Сравниваем их уникальные InChIKey
+            return Chemrdkit.MolToInchiKey(user_mol) == Chemrdkit.MolToInchiKey(correct_mol)
+        except Exception:
+            return False
+
+    def __str__(self):
+        return f"{self.get_question_type_display()}: {self.name}"
+
+    class Meta:
+        verbose_name = "Органическое соединение"
+        verbose_name_plural = "Органические соединения"
 
 
 class Inorganiclaw(models.Model):
