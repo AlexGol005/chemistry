@@ -1,82 +1,86 @@
 {% extends 'main/superbase.html' %}
 {% load static %}
+
 {% block title %}
    Названия органических молекул - тест
 {% endblock %}
 
-
 {% block content %}
-<div class="col-12">
+<div class="col-12 p-4">
+    <!-- Скрипт JSME (лучше один раз здесь, если нет в superbase) -->
+    <script type="text/javascript" src="https://jsme-editor.github.io"></script>
 
+    <h1>Вопрос №{{ question.id }}</h1>
 
- <h1>Вопрос №{{ question.id }}</h1>
-
-    {% if question.question_type == 'N2F' %}
-        <p>Нарисуйте формулу для: <strong>{{ question.name }}</strong></p>
-    {% else %}
-        <p>Назовите это соединение: (Тут должна быть картинка {{ question.smiles }})</p>
-    {% endif %}
-
-    <!-- Отображение результата -->
-    {% if result is not None %}
-        {% if result %}
-            <h2 style="color: green;">✅ Верно!</h2>
-        {% else %}
-            <h2 style="color: red;">❌ Ошибка. Попробуйте еще раз.</h2>
-        {% endif %}
-    {% endif %}
-
-    <form method="post" id="chemForm">
-        {% csrf_token %}
-        
+    <div class="card p-4 shadow-sm mb-4">
         {% if question.question_type == 'N2F' %}
-            <!-- Контейнер для редактора -->
-            <div id="jsme_container"></div>
-            <!-- Скрытое поле, куда JS запишет формулу перед отправкой -->
-            <input type="hidden" name="user_answer" id="smiles_input">
-        {% else %}
-            <input type="text" name="user_answer" placeholder="Введите название" required>
-        {% endif %}
-
-        <br>
-        <button type="submit" onclick="prepareAnswer()">Отправить ответ</button>
-    </form>
-
-    <script>
-        // Инициализация редактора
-        function jsmeOnLoad() {
-            jsmeApplet = new JSMe("jsme_container", "400px", "300px");
-        }
-
-        // Перед отправкой формы забираем SMILES из редактора
-        function prepareAnswer() {
-            if (typeof jsmeApplet !== 'undefined') {
-                var smiles = jsmeApplet.smiles(); 
-                document.getElementById('smiles_input').value = smiles;
-            }
-        }
-    </script>
-   
-{% if result is not None %}
-    <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-3">
-        {% if result %}
-            ✅ Верно!
+            <h3 class="mb-3">Нарисуйте формулу для: <span class="text-primary">{{ question.name }}</span></h3>
             
-            {% if next_id %}
-                <div class="mt-3">
-                    <a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-outline-success rounded-pill px-4">
-                        Следующий вопрос →
-                    </a>
-                </div>
-            {% else %}
-                <div class="mt-3 text-muted">🎉 Вы прошли все тесты!</div>
-            {% endif %}
-
+            <form method="post" id="chemForm" onsubmit="return prepareAnswer()">
+                {% csrf_token %}
+                <div id="jsme_container" class="border rounded bg-white"></div>
+                <input type="hidden" name="user_answer" id="smiles_input">
+                
+                <button type="submit" class="btn btn-primary mt-3 px-5 shadow">Отправить ответ</button>
+            </form>
         {% else %}
-            ❌ Ошибка. Попробуйте еще раз.
+            <h3 class="mb-3">Назовите это соединение:</h3>
+            <p class="text-muted small">Формула (SMILES): <code>{{ question.smiles }}</code></p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="user_answer" class="form-control form-control-lg mb-3" placeholder="Введите название" required autofocus>
+                <button type="submit" class="btn btn-primary px-5 shadow">Проверить</button>
+            </form>
         {% endif %}
     </div>
 
+    <!-- Единый блок результата -->
+    {% if result is not None %}
+        <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} shadow-sm mt-3 animate__animated animate__fadeIn">
+            {% if result %}
+                <h4 class="alert-heading">✅ Верно!</h4>
+                <p>Структура и название полностью соответствуют.</p>
+                
+                {% if next_id %}
+                    <hr>
+                    <a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-success px-4 rounded-pill">
+                        Следующий вопрос →
+                    </a>
+                {% else %}
+                    <hr>
+                    <span class="text-muted fw-bold">🎉 Поздравляем! Это был последний вопрос.</span>
+                {% endif %}
+            {% else %}
+                <h4 class="alert-heading">❌ Ошибка</h4>
+                <p class="mb-0">Попробуйте еще раз. Убедитесь, что все связи и атомы на месте.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    var jsmeApplet;
+
+    // Эта функция вызывается библиотекой JSME автоматически после загрузки
+    function jsmeOnLoad() {
+        // Проверяем наличие контейнера, чтобы не было ошибок на текстовых вопросах
+        if (document.getElementById("jsme_container")) {
+            jsmeApplet = new JSMe("jsme_container", "450px", "350px", {
+                "options" : "oldlook,nozoom"
+            });
+        }
+    }
+
+    function prepareAnswer() {
+        if (jsmeApplet) {
+            var smiles = jsmeApplet.smiles(); 
+            document.getElementById('smiles_input').value = smiles;
+        }
+        return true; // Разрешаем отправку формы
+    }
+</script>
+{% endblock %}
 
    
 </div>
