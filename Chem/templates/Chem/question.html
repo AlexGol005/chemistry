@@ -56,7 +56,26 @@
             }
         }
     </script>
+   
+{% if result is not None %}
+    <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-3">
+        {% if result %}
+            ✅ Верно!
+            
+            {% if next_id %}
+                <div class="mt-3">
+                    <a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-outline-success rounded-pill px-4">
+                        Следующий вопрос →
+                    </a>
+                </div>
+            {% else %}
+                <div class="mt-3 text-muted">🎉 Вы прошли все тесты!</div>
+            {% endif %}
 
+        {% else %}
+            ❌ Ошибка. Попробуйте еще раз.
+        {% endif %}
+    </div>
 
 
    
