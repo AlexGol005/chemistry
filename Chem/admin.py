@@ -10,6 +10,10 @@ from import_export.widgets import ForeignKeyWidget
 import tablib
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from .widgets import JSMEWidget
+
+
+
 
 # знх классы для отображения в админке
 
@@ -207,4 +211,21 @@ admin.site.register(AtomTest, AtomTestAdmin)
 admin.site.register(Table)
 admin.site.register(Link)
 
+
+
+
+class OrganicNamesAdminForm(forms.ModelForm):
+    class Meta:
+        model = OrganicNames
+        fields = '__all__'
+        widgets = {
+            'smiles': JSMEWidget(attrs={'style': 'display:none;'}), # Прячем текстовое поле
+        }
+
+@admin.register(OrganicNames)
+class OrganicNamesAdmin(admin.ModelAdmin):
+    form = OrganicNamesAdminForm
+    list_display = ('name', 'question_type', 'smiles')
+    list_filter = ('question_type',)
+    search_fields = ('name', 'smiles')
 
