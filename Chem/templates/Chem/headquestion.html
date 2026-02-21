@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %}
+   Названия органических соединений
+{% endblock %}
+
+
+{% block content %}
+<div class="col-8">
+
+
+      <div class="container vh-100 d-flex justify-content-center align-items-center">
+        <div class="text-center p-5 bg-white shadow-sm rounded-4">
+            <h1 class="display-4 fw-bold mb-4">Химический тест 🧪</h1>
+            
+            {% if first_id %}
+                <a href="{% url 'organicnamestest' pk=first_id %}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow">
+                    Перейти к тесту
+                </a>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    В базе пока нет вопросов.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+   
+</div>
+{% endblock %}
