@@ -1,0 +1,64 @@
+{% extends 'main/superbase.html' %}
+{% load static %}
+{% block title %}
+   Названия органических молекул - тест
+{% endblock %}
+
+
+{% block content %}
+<div class="col-12">
+
+
+ <h1>Вопрос №{{ question.id }}</h1>
+
+    {% if question.question_type == 'N2F' %}
+        <p>Нарисуйте формулу для: <strong>{{ question.name }}</strong></p>
+    {% else %}
+        <p>Назовите это соединение: (Тут должна быть картинка {{ question.smiles }})</p>
+    {% endif %}
+
+    <!-- Отображение результата -->
+    {% if result is not None %}
+        {% if result %}
+            <h2 style="color: green;">✅ Верно!</h2>
+        {% else %}
+            <h2 style="color: red;">❌ Ошибка. Попробуйте еще раз.</h2>
+        {% endif %}
+    {% endif %}
+
+    <form method="post" id="chemForm">
+        {% csrf_token %}
+        
+        {% if question.question_type == 'N2F' %}
+            <!-- Контейнер для редактора -->
+            <div id="jsme_container"></div>
+            <!-- Скрытое поле, куда JS запишет формулу перед отправкой -->
+            <input type="hidden" name="user_answer" id="smiles_input">
+        {% else %}
+            <input type="text" name="user_answer" placeholder="Введите название" required>
+        {% endif %}
+
+        <br>
+        <button type="submit" onclick="prepareAnswer()">Отправить ответ</button>
+    </form>
+
+    <script>
+        // Инициализация редактора
+        function jsmeOnLoad() {
+            jsmeApplet = new JSMe("jsme_container", "400px", "300px");
+        }
+
+        // Перед отправкой формы забираем SMILES из редактора
+        function prepareAnswer() {
+            if (typeof jsmeApplet !== 'undefined') {
+                var smiles = jsmeApplet.smiles(); 
+                document.getElementById('smiles_input').value = smiles;
+            }
+        }
+    </script>
+
+
+
+   
+</div>
+{% endblock %}
