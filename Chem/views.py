@@ -4,13 +4,28 @@ from django.views.generic import ListView, TemplateView, View
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-
-from Chem.models import *
-
-
-
 from .models import *
 from .forms import *
+
+def question_detail(request, pk):
+    # Получаем вопрос из базы
+    question = get_object_or_404(OrganicNames, pk=pk)
+    result = None  # Здесь будет храниться статус ответа (True/False/None)
+
+    if request.method == 'POST':
+        user_answer = request.POST.get('user_answer', '').strip()
+        
+        if question.question_type == 'N2F':
+            # Сравниваем структуру через метод модели (RDKit)
+            result = question.verify_structure(user_answer)
+        else:
+            # Сравниваем текстовое название (регистронезависимо)
+            result = user_answer.lower() == question.name.lower()
+
+    return render(request, 'quiz/question.html', {
+        'question': question,
+        'result': result,
+    })
 
 
 
