@@ -1,46 +1,36 @@
-from django import forms
-from django.utils.safestring import mark_safe
+{% load static %}
+<!-- 1. Контейнер, где появится сам редактор -->
+<div id="jsme_container_{{ widget.attrs.id }}" style="border: 1px solid #444; margin-bottom: 10px;"></div>
 
-class JSMEWidget(forms.Textarea):
-    def render(self, name, value, attrs=None, renderer=None):
-        html = super().render(name, value, attrs)
-        field_id = attrs['id']
-        container_id = f"jsme_container_{name}"
-        
-        # Генерируем JS-код
-        jsme_script = f"""
-        <div id="{container_id}" style="width:450px; height:300px; border:1px solid #79aec8; background:#fff; margin-bottom:10px;"></div>
-        
-        <script type="text/javascript" src="/static/js/jsme.nocache.js"></script>
-        
-        <script type="text/javascript">
-            function tryInitJSME_{name}() {{
-                // JSME создает глобальные объекты JSApplet или JME
-                if (typeof JSApplet !== 'undefined') {{
-                    var applet = new JSApplet.JSApplet("{container_id}", "450px", "300px", {{
-                        "options": "oldlook,nozoom"
-                    }});
-                    
-                    var input = document.getElementById("{field_id}");
-                    if (input.value) {{
-                        applet.readGenericMolecularInput(input.value);
-                    }}
+<!-- 2. Поле, куда Django запишет результат (сделаем его видимым для контроля) -->
+<input type="text" name="{{ widget.name }}" id="{{ widget.attrs.id }}" 
+       value="{{ widget.value|default:'' }}" 
+       style="width: 100%; background: #f0f0f0; font-family: monospace;" readonly>
 
-                    applet.setCallBack("AfterStructureModified", function() {{
-                        input.value = applet.smiles();
-                    }});
-                    console.log("JSME Initialized for {name}");
-                }} else {{
-                    // Если еще не загрузилось, пробуем через 300мс
-                    setTimeout(tryInitJSME_{name}, 300);
-                }}
-            }}
-            
-            // Запуск
-            tryInitJSME_{name}();
-        </script>
-        <style>
-            #{field_id} {{ display: block; height: 35px; border: 1px dashed #ccc; width: 450px; font-size: 11px; }}
-        </style>
-        """
-        return mark_safe(html + jsme_script)
+<!-- 3. Подключение скрипта из вашей папки static/jsme/ -->
+<script type="text/javascript" src="{% static 'jsme/jsme.nocache.js' %}"></script>
+
+<script type="text/javascript">
+    // Эта функция запустится сама, когда JSME загрузится
+    function jsmeOnLoad() {
+        var inputId = "{{ widget.attrs.id }}";
+        var inputField = document.getElementById(inputId);
+        
+        // Создаем редактор (ID контейнера, Ширина, Высота)
+        // Опция "oldLook" делает интерфейс классическим, "paste" разрешает вставку
+        var jsmeApplet = new JSApplet.JSME("jsme_container_" + inputId, "100%", "400px", {
+            "options": "oldLook,paste"
+        });
+
+        // Если в базе уже есть SMILES, рисуем молекулу при открытии страницы
+        if (inputField.value) {
+            jsmeApplet.readGenericMolecularInput(inputField.value);
+        }
+
+        // ГЛАВНОЕ: При каждом изменении рисунка обновляем текст в поле Django
+        jsmeApplet.setCallBack("AfterStructureModified", function(jsme) {
+            var smiles = jsme.smiles();
+            inputField.value = smiles;
+        });
+    }
+</script>
