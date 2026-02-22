@@ -4,72 +4,43 @@
 {% block title %}Тест по химии{% endblock %}
 
 {% block content %}
-<!-- 1. Прямое подключение библиотеки ПЕРЕД всем остальным -->
-<script type="text/javascript" src="https://peter-ertl.com"></script>
+<div class="container mt-5 text-center">
+    <h2 class="mb-4">Вопрос №{{ question.id }}: {{ question.name }}</h2>
 
-<div class="container mt-4">
-    <div class="card shadow p-4 border-0">
-        <h2 class="text-center mb-4">Вопрос №{{ question.id }}</h2>
+    <!-- Контейнер для рисования -->
+    <div id="jsme_container" style="width: 100%; max-width: 600px; height: 450px; margin: 0 auto; border: 2px solid #007bff; border-radius: 10px; background: #fff;"></div>
 
-        {% if question.question_type == 'N2F' %}
-            <div class="text-center">
-                <p class="lead">Нарисуйте формулу для: <strong>{{ question.name }}</strong></p>
-                
-                <!-- 2. Контейнер с ЯВНЫМИ размерами -->
-                <div id="jsme_container" style="width:500px; height:400px; margin: 0 auto; background-color: #fff; border: 2px solid #ddd;"></div>
+    <form method="post" class="mt-4" onsubmit="return prepareAnswer()">
+        {% csrf_token %}
+        <input type="hidden" name="user_answer" id="smiles_input">
+        <button type="submit" class="btn btn-primary btn-lg px-5 shadow">Проверить формулу</button>
+    </form>
 
-                <form method="post" id="chemForm" onsubmit="return prepareAnswer()" class="mt-4">
-                    {% csrf_token %}
-                    <input type="hidden" name="user_answer" id="smiles_input">
-                    <button type="submit" class="btn btn-primary btn-lg">Проверить</button>
-                </form>
-            </div>
-        {% else %}
-            <!-- Код для текстового ответа (оставляем как был) -->
-            <div class="text-center">
-                <p class="lead">Назовите соединение:</p>
-                <div class="p-3 bg-light border mb-3"><code>{{ question.smiles }}</code></div>
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="text" name="user_answer" class="form-control mb-3 text-center" placeholder="Название..." required>
-                    <button type="submit" class="btn btn-primary">Проверить</button>
-                </form>
-            </div>
-        {% endif %}
-        
-        <!-- Блок перехода к следующему вопросу (результат) -->
-        {% if result is not None %}
-            <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-3">
-                {{ result|yesno:"✅ Верно!,❌ Ошибка" }}
-                {% if result and next_id %}<br><a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-sm btn-success mt-2">Дальше →</a>{% endif %}
-            </div>
-        {% endif %}
-    </div>
+    {% if result is not None %}
+        <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-4 shadow-sm">
+            {% if result %} ✅ Верно! {% if next_id %}<a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-sm btn-success ms-2">Дальше</a>{% endif %}
+            {% else %} ❌ Ошибка. Попробуйте еще раз. {% endif %}
+        </div>
+    {% endif %}
 </div>
 
-<!-- 3. Скрипт инициализации строго ПОСЛЕ контейнера -->
+<!-- 1. ПОДКЛЮЧЕНИЕ СКРИПТА (ПРОВЕРЕННЫЙ CDN) -->
+<script type="text/javascript" src="https://peter-ertl.com"></script>
+
 <script type="text/javascript">
-    // Глобальная переменная
     var jsmeApplet;
 
-    // Функция, которую библиотека вызовет сама
-    function jsmeOnLoad() {
-        console.log("JSME: Попытка запуска..."); // Если это не появится в консоли - скрипт не работает
-        jsmeApplet = new JSMe("jsme_container", "500px", "400px", {
+    // 2. Эта функция ОБЯЗАТЕЛЬНО должна быть глобальной
+    window.jsmeOnLoad = function() {
+        console.log("JSME: Попытка инициализации...");
+        window.jsmeApplet = new JSMe("jsme_container", "100%", "450px", {
             "options": "query,paste,toggle"
         });
-    }
-
-    // Дублирующий запуск для надежности
-    window.onload = function() {
-        if (typeof JSMe !== "undefined" && !jsmeApplet) {
-            jsmeOnLoad();
-        }
     };
 
     function prepareAnswer() {
-        if (jsmeApplet) {
-            document.getElementById('smiles_input').value = jsmeApplet.smiles();
+        if (window.jsmeApplet) {
+            document.getElementById('smiles_input').value = window.jsmeApplet.smiles();
         }
         return true;
     }
