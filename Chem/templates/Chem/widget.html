@@ -1,43 +1,47 @@
 {% load static %}
-<!-- Контейнер с четко заданными размерами в пикселях (не в %) -->
-<div id="jsme_container_{{ widget.attrs.id }}" style="width: 700px; height: 450px; border: 1px solid #ccc; margin-bottom: 10px; background-color: #fff;"></div>
+<!-- Контейнер для рисования -->
+<div id="jsme_container_{{ widget.attrs.id }}" style="width: 700px; height: 450px; border: 2px solid #444; margin-bottom: 10px; background-color: #fff;"></div>
 
-<!-- Текстовое поле для SMILES, которое видит Django -->
-<input type="text" name="{{ widget.name }}" id="{{ widget.attrs.id }}" 
+<p><b>SMILES код (автозаполнение):</b></p>
+<!-- Текстовое поле ДОЛЖНО быть здесь. Мы убрали 'hidden', чтобы вы его видели -->
+<input type="text" 
+       name="{{ widget.name }}" 
+       id="{{ widget.attrs.id }}" 
        value="{{ widget.value|default:'' }}" 
-       style="width: 700px; background: #f9f9f9; font-family: monospace; border: 1px solid #ddd; padding: 5px;" readonly>
+       style="width: 700px; padding: 8px; border: 1px solid #ccc; background: #eee; font-family: monospace;" 
+       readonly>
 
-<!-- Подключение основного скрипта JSME -->
-<script type="text/javascript" src="{% static 'jsme/jsme.nocache.js' %}"></script>
+<script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
 
 <script type="text/javascript">
-    // Эта функция вызывается JSME автоматически после загрузки всех файлов
     function jsmeOnLoad() {
         var inputId = "{{ widget.attrs.id }}";
-        var containerId = "jsme_container_" + inputId;
         var inputField = document.getElementById(inputId);
 
-        // Инициализация редактора с фиксированным размером
-        // Это решит проблему с исчезновением кнопок
-        var jsmeApplet = new JSApplet.JSME(containerId, "700px", "450px", {
-            "options": "oldLook,paste,toggle"
+        // Проверка: видит ли скрипт текстовое поле
+        if (!inputField) {
+            alert("Критическая ошибка: Поле с ID " + inputId + " не найдено в HTML!");
+            return;
+        }
+
+        var jsmeApplet = new JSApplet.JSME("jsme_container_" + inputId, "700px", "450px", {
+            "options": "oldLook,paste"
         });
 
-        // Если в базе уже есть SMILES, загружаем его в редактор
+        // Загрузка существующей молекулы
         if (inputField.value) {
             jsmeApplet.readGenericMolecularInput(inputField.value);
         }
 
-        // При каждом изменении рисунка обновляем значение в поле Django
+        // Передача данных из редактора в поле при каждом клике
         jsmeApplet.setCallBack("AfterStructureModified", function(jsme) {
             var smiles = jsme.smiles();
             inputField.value = smiles;
+            console.log("SMILES обновлен: " + smiles);
         });
 
-        // Исправление бага с отрисовкой: принудительно обновляем экран через 200 мс
-        // Это заменяет "эффект открытия F12" и заставляет кнопки появиться сразу
         setTimeout(function() {
             jsmeApplet.repaint();
-        }, 200);
+        }, 300);
     }
 </script>
