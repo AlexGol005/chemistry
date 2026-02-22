@@ -7,41 +7,41 @@ from django.db.models import Q
 from .models import *
 from .forms import *
 
-class OrganicNamesHomeView(TemplateView):
-    template_name = 'Chem/headquestion.html'
+# class OrganicNamesHomeView(TemplateView):
+#     template_name = 'Chem/headquestion.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Находим ID самого первого вопроса в базе, чтобы кнопка знала куда вести
-        first_question = OrganicNames.objects.first()
-        context['first_id'] = first_question.id if first_question else None
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         # Находим ID самого первого вопроса в базе, чтобы кнопка знала куда вести
+#         first_question = OrganicNames.objects.first()
+#         context['first_id'] = first_question.id if first_question else None
+#         return context
 
-class OrganicNamesTestView(DetailView):
-    model = OrganicNames
-    template_name = 'Chem/question.html'
-    context_object_name = 'question'
+# class OrganicNamesTestView(DetailView):
+#     model = OrganicNames
+#     template_name = 'Chem/question.html'
+#     context_object_name = 'question'
 
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        user_answer = request.POST.get('user_answer', '').strip()
+#     def post(self, request, *args, **kwargs):
+#         self.object = self.get_object()
+#         user_answer = request.POST.get('user_answer', '').strip()
         
-        if self.object.question_type == 'N2F':
-            result = self.object.verify_structure(user_answer)
-        else:
-            result = user_answer.lower() == self.object.name.lower()
+#         if self.object.question_type == 'N2F':
+#             result = self.object.verify_structure(user_answer)
+#         else:
+#             result = user_answer.lower() == self.object.name.lower()
 
-        return self.render_to_response(self.get_context_data(result=result))
+#         return self.render_to_response(self.get_context_data(result=result))
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['result'] = kwargs.get('result')
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['result'] = kwargs.get('result')
         
-        # Находим ID следующего вопроса
-        next_q = OrganicNames.objects.filter(id__gt=self.object.id).order_by('id').first()
-        context['next_id'] = next_q.id if next_q else None
+#         # Находим ID следующего вопроса
+#         next_q = OrganicNames.objects.filter(id__gt=self.object.id).order_by('id').first()
+#         context['next_id'] = next_q.id if next_q else None
         
-        return context
+#         return context
 
 
 
