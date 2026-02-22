@@ -70,55 +70,40 @@
 </div>
 
 <!-- СКРИПТЫ ИНИЦИАЛИЗАЦИИ -->
-<script type="text/javascript">
-    // 1. Резервируем глобальную переменную
+{% block any %}
+<!-- Разрешаем загрузку скриптов и стилей с домена автора -->
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https://peter-ertl.com https://jsme-editor.github.io; style-src 'self' 'unsafe-inline' https://peter-ertl.com;">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Ваш остальной HTML код -->
+    <div id="jsme_container" style="width:100%; height:450px; border:1px solid #ccc; background:#fff;"></div>
+</div>
+
+<script>
     window.jsmeApplet = null;
 
-    // 2. Функция ручного запуска редактора
-    function forceInitJSME() {
-        var container = document.getElementById("jsme_container");
-        
-        // Проверяем, загрузилась ли сама библиотека (объект JSMe)
-        if (typeof JSMe !== "undefined" && container) {
-            console.log("JSME: Библиотека готова, создаю редактор вручную...");
+    // Прямая функция создания редактора
+    function startJSME() {
+        if (typeof JSMe !== "undefined") {
             window.jsmeApplet = new JSMe("jsme_container", "100%", "450px", {
                 "options": "query,paste,toggle"
             });
+            console.log("JSME: Инструменты запущены!");
             return true;
         }
         return false;
     }
 
-    // 3. Пытаемся запустить редактор несколько раз (на случай задержки загрузки)
-    var initInterval = setInterval(function() {
-        if (forceInitJSME()) {
-            clearInterval(initInterval); // Останавливаем проверку, когда создали
-        }
-    }, 500); // Проверяем каждые полсекунды
-
-    // 4. На всякий случай оставляем стандартный коллбэк
-    window.jsmeOnLoad = forceInitJSME;
-
-    // 5. Функция сбора данных (не меняется)
-    function prepareAnswer() {
-        if (window.jsmeApplet) {
-            var smiles = window.jsmeApplet.smiles();
-            if (!smiles || smiles === "") {
-                alert("Нарисуйте структуру!");
-                return false;
-            }
-            document.getElementById('smiles_input').value = smiles;
-        }
-        return true;
-    }
-
-    // 6. ПРЯМАЯ ЗАГРУЗКА СКРИПТА
-    (function() {
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        // Используем самый стабильный сервер
-        script.src = 'https://peter-ertl.com';
-        document.head.appendChild(script);
-    })();
+    // Ждем полной загрузки страницы и библиотеки
+    window.addEventListener('load', function() {
+        var timer = setInterval(function() {
+            if (startJSME()) clearInterval(timer);
+        }, 300);
+    });
 </script>
+
+<script type="text/javascript" src="https://peter-ertl.com"></script>
+{% endblock %}
 {% endblock %}
