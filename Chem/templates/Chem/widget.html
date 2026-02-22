@@ -1,47 +1,65 @@
 {% load static %}
-<!-- Контейнер для рисования -->
-<div id="jsme_container_{{ widget.attrs.id }}" style="width: 700px; height: 450px; border: 2px solid #444; margin-bottom: 10px; background-color: #fff;"></div>
 
-<p><b>SMILES код (автозаполнение):</b></p>
-<!-- Текстовое поле ДОЛЖНО быть здесь. Мы убрали 'hidden', чтобы вы его видели -->
-<input type="text" 
-       name="{{ widget.name }}" 
-       id="{{ widget.attrs.id }}" 
-       value="{{ widget.value|default:'' }}" 
-       style="width: 700px; padding: 8px; border: 1px solid #ccc; background: #eee; font-family: monospace;" 
-       readonly>
+<!-- Контейнер для редактора -->
+<div id="jsme_container_{{ widget.attrs.id }}" style="width: 700px !important; height: 450px !important; border: 2px solid #444; background-color: #fff; display: block !important;"></div>
 
+<div style="margin-top: 10px;">
+    <label>SMILES код:</label><br>
+    <!-- Поле ввода с принудительным отображением -->
+    <input type="text" 
+           name="{{ widget.name }}" 
+           id="{{ widget.attrs.id }}" 
+           value="{{ widget.value|default:'' }}" 
+           style="width: 700px !important; display: block !important; visibility: visible !important; padding: 8px; border: 1px solid #ccc; background: #f0f0f0; font-family: monospace;" 
+           readonly>
+</div>
+
+<!-- Подключаем JSME только один раз -->
 <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
 
 <script type="text/javascript">
-    function jsmeOnLoad() {
+    // Используем задержку, чтобы дождаться окончания работы всех скриптов админки
+    function initializeJSME() {
         var inputId = "{{ widget.attrs.id }}";
         var inputField = document.getElementById(inputId);
+        var containerId = "jsme_container_" + inputId;
 
-        // Проверка: видит ли скрипт текстовое поле
         if (!inputField) {
-            alert("Критическая ошибка: Поле с ID " + inputId + " не найдено в HTML!");
+            console.error("Поле " + inputId + " не найдено, пробуем еще раз...");
             return;
         }
 
-        var jsmeApplet = new JSApplet.JSME("jsme_container_" + inputId, "700px", "450px", {
+        // Создаем объект редактора
+        var jsmeApplet = new JSApplet.JSME(containerId, "700px", "450px", {
             "options": "oldLook,paste"
         });
 
-        // Загрузка существующей молекулы
+        // Загружаем данные из поля в редактор
         if (inputField.value) {
             jsmeApplet.readGenericMolecularInput(inputField.value);
         }
 
-        // Передача данных из редактора в поле при каждом клике
+        // Связываем редактор с полем
         jsmeApplet.setCallBack("AfterStructureModified", function(jsme) {
             var smiles = jsme.smiles();
             inputField.value = smiles;
-            console.log("SMILES обновлен: " + smiles);
+            console.log("Обновлено: " + smiles);
         });
 
-        setTimeout(function() {
-            jsmeApplet.repaint();
-        }, 300);
+        // Принудительная отрисовка
+        setTimeout(function() { 
+            jsmeApplet.repaint(); 
+            // Еще раз проверяем видимость поля
+            inputField.style.display = 'block';
+            inputField.style.visibility = 'visible';
+        }, 500);
+    }
+
+    // Запускаем инициализацию, когда всё остальное уже загрузилось
+    if (typeof jsmeOnLoad === 'undefined') {
+        window.jsmeOnLoad = initializeJSME;
+    } else {
+        // Если функция уже была вызвана раньше, запускаем вручную
+        setTimeout(initializeJSME, 1000);
     }
 </script>
