@@ -71,32 +71,32 @@
 
 <!-- СКРИПТЫ ИНИЦИАЛИЗАЦИИ -->
 <script type="text/javascript">
-    // Глобальная переменная для редактора
     var jsmeApplet;
 
-    // Эта функция будет вызвана библиотекой JSME автоматически
+    // 1. Функция инициализации
     window.jsmeOnLoad = function() {
-        console.log("JSME: Библиотека загружена, инициализация инструментов...");
+        console.log("JSME: Попытка создать редактор...");
         var container = document.getElementById("jsme_container");
-        
         if (container) {
-            // Создаем редактор с инструментами
-            // Опция "oldlook" иногда скрывает современные иконки, лучше использовать пустую строку или специфичные опции
-            jsmeApplet = new JSMe("jsme_container", "500px", "400px", {
-                "options" : "query,paste,toggle" 
-            });
+            // Создаем редактор БЕЗ лишних опций, чтобы включить всё по умолчанию
+            window.jsmeApplet = new JSMe("jsme_container", "100%", "450px");
             
-            // Принудительно разрешаем редактирование
-            jsmeApplet.setAsEditable(true);
+            // Если через 1 сек инструментов нет, пробуем форсировать режим
+            setTimeout(function() {
+                if (window.jsmeApplet) {
+                    window.jsmeApplet.setAsEditable(true);
+                    console.log("JSME: Режим редактирования форсирован");
+                }
+            }, 1000);
         }
     };
 
-    // Функция считывания SMILES перед отправкой формы
+    // 2. Функция считывания данных
     function prepareAnswer() {
-        if (jsmeApplet) {
-            var smiles = jsmeApplet.smiles();
-            if (!smiles || smiles === "") {
-                alert("Пожалуйста, нарисуйте структуру перед отправкой.");
+        if (window.jsmeApplet) {
+            var smiles = window.jsmeApplet.smiles();
+            if (!smiles) {
+                alert("Пожалуйста, нарисуйте структуру!");
                 return false;
             }
             document.getElementById('smiles_input').value = smiles;
@@ -104,15 +104,13 @@
         return true;
     }
 
-    // Принудительная дозагрузка скрипта ПРАВИЛЬНОЙ ССЫЛКОЙ
+    // 3. ЗАГРУЗКА БИБЛИОТЕКИ С ПРАВИЛЬНОГО СЕРВЕРА
     (function() {
-        if (typeof JSMe === "undefined") {
-            var script = document.createElement('script');
-            script.type = 'text/javascript';
-            // ВНИМАНИЕ: Здесь полный путь к файлу .js
-            script.src = 'https://jsme-editor.github.io';
-            document.head.appendChild(script);
-        }
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        // Используем оригинальный сервер автора (Peter Ertl) - он самый стабильный
+        script.src = 'https://peter-ertl.com';
+        document.head.appendChild(script);
     })();
 </script>
 {% endblock %}
