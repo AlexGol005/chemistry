@@ -3,6 +3,11 @@
 
 {% block title %}Тест: {{ question.name }}{% endblock %}
 
+{% block any %}
+<!-- Разрешаем загрузку скриптов и стилей для редактора -->
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https://peter-ertl.com https://jsme-editor.github.io; style-src 'self' 'unsafe-inline' https://peter-ertl.com;">
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
@@ -12,14 +17,13 @@
                 <h2 class="text-center text-secondary mb-4">Вопрос №{{ question.id }}</h2>
 
                 {% if question.question_type == 'N2F' %}
-                    <!-- ТИП: НАЗВАНИЕ -> ФОРМУЛА -->
                     <div class="text-center">
                         <p class="lead mb-2">Нарисуйте структурную формулу для:</p>
                         <h1 class="display-5 text-primary fw-bold mb-4">{{ question.name }}</h1>
                         
-                        <!-- Контейнер для редактора JSME -->
+                        <!-- Контейнер для редактора -->
                         <div class="d-flex justify-content-center">
-                            <div id="jsme_container" class="border rounded bg-white shadow-sm" style="width: 500px; height: 400px;"></div>
+                            <div id="jsme_container" style="width: 100%; height: 450px; border: 1px solid #ccc; background: #fff;"></div>
                         </div>
 
                         <form method="post" id="chemForm" onsubmit="return prepareAnswer()" class="mt-4">
@@ -28,13 +32,11 @@
                             <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow">Проверить формулу</button>
                         </form>
                     </div>
-
                 {% else %}
-                    <!-- ТИП: ФОРМУЛА -> НАЗВАНИЕ -->
                     <div class="text-center">
                         <p class="lead mb-3">Как называется это соединение?</p>
                         <div class="alert alert-light border py-3 mb-4">
-                            <code class="fs-5 text-dark">{{ question.smiles }}</code>
+                            <code class="fs-5 text-dark">SMILES: {{ question.smiles }}</code>
                         </div>
 
                         <form method="post" class="mx-auto" style="max-width: 400px;">
@@ -45,65 +47,65 @@
                     </div>
                 {% endif %}
 
-                <!-- БЛОК РЕЗУЛЬТАТА -->
                 {% if result is not None %}
                     <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-4 text-center shadow-sm rounded-3">
                         {% if result %}
                             <h4 class="alert-heading">✅ Верно!</h4>
-                            <p class="mb-0">Отличная работа!</p>
                             {% if next_id %}
-                                <hr>
                                 <a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-success rounded-pill px-4">Следующий вопрос →</a>
                             {% else %}
-                                <p class="mt-2 fw-bold">🎉 Вы прошли все тесты в этой категории!</p>
+                                <p class="mt-2 fw-bold text-success">🎉 Тест завершен!</p>
                             {% endif %}
                         {% else %}
                             <h4 class="alert-heading">❌ Ошибка</h4>
-                            <p class="mb-0">Попробуйте еще раз. Проверьте валентности и атомы.</p>
+                            <p class="mb-0">Попробуйте еще раз.</p>
                         {% endif %}
                     </div>
                 {% endif %}
-
             </div>
         </div>
     </div>
 </div>
 
-<!-- СКРИПТЫ ИНИЦИАЛИЗАЦИИ -->
-{% block any %}
-<!-- Разрешаем загрузку скриптов и стилей с домена автора -->
-<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https://peter-ertl.com https://jsme-editor.github.io; style-src 'self' 'unsafe-inline' https://peter-ertl.com;">
-{% endblock %}
-
-{% block content %}
-<div class="container mt-4">
-    <!-- Ваш остальной HTML код -->
-    <div id="jsme_container" style="width:100%; height:450px; border:1px solid #ccc; background:#fff;"></div>
-</div>
-
-<script>
+<!-- Логика работы редактора -->
+<script type="text/javascript">
     window.jsmeApplet = null;
 
-    // Прямая функция создания редактора
-    function startJSME() {
-        if (typeof JSMe !== "undefined") {
+    // Функция, которую вызовет библиотека сама
+    window.jsmeOnLoad = function() {
+        if (document.getElementById("jsme_container")) {
             window.jsmeApplet = new JSMe("jsme_container", "100%", "450px", {
                 "options": "query,paste,toggle"
             });
-            console.log("JSME: Инструменты запущены!");
+        }
+    };
+
+    // Запасной ручной запуск, если автоматика не сработала
+    function startJSME() {
+        if (typeof JSMe !== "undefined" && window.jsmeApplet === null) {
+            window.jsmeApplet = new JSMe("jsme_container", "100%", "450px", {
+                "options": "query,paste,toggle"
+            });
             return true;
         }
-        return false;
+        return window.jsmeApplet !== null;
     }
 
-    // Ждем полной загрузки страницы и библиотеки
-    window.addEventListener('load', function() {
-        var timer = setInterval(function() {
-            if (startJSME()) clearInterval(timer);
-        }, 300);
-    });
+    // Проверяем готовность каждые 500мс
+    var timer = setInterval(function() {
+        if (startJSME()) clearInterval(timer);
+    }, 500);
+
+    function prepareAnswer() {
+        if (window.jsmeApplet) {
+            var smiles = window.jsmeApplet.smiles();
+            document.getElementById('smiles_input').value = smiles;
+        }
+        return true;
+    }
 </script>
 
+<!-- ПРАВИЛЬНАЯ ССЫЛКА НА СКРИПТ -->
 <script type="text/javascript" src="https://peter-ertl.com"></script>
-{% endblock %}
+
 {% endblock %}
