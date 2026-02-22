@@ -51,20 +51,26 @@
 </div>
 
 <script type="text/javascript">
-    // Глобальная переменная для апплета
+    // 1. Создаем глобальный объект ДО загрузки библиотеки
     window.jsmeApplet = null;
 
-    // Функция, которую вызовет библиотека после загрузки
+    // 2. Эта функция ОБЯЗАТЕЛЬНО должна быть в window
     window.jsmeOnLoad = function() {
-        if (document.getElementById("jsme_container")) {
-            // Инициализация с базовыми настройками (без oldlook, чтобы иконки были современными)
+        console.log("JSME: Библиотека получена, создаю редактор...");
+        var container = document.getElementById("jsme_container");
+        if (container) {
+            // Создаем апплет с полным набором инструментов
             window.jsmeApplet = new JSMe("jsme_container", "100%", "450px", {
-                "options" : "query,paste,toggle"
+                "options" : "query,paste,toggle,removerpc" 
             });
+            // Принудительно включаем инструменты через секунду, если они "спят"
+            setTimeout(function() {
+                if(window.jsmeApplet) window.jsmeApplet.setAsEditable(true);
+            }, 1000);
         }
     };
 
-    // Считывание SMILES перед отправкой
+    // 3. Функция сбора данных
     function prepareAnswer() {
         if (window.jsmeApplet) {
             var smiles = window.jsmeApplet.smiles();
@@ -73,21 +79,19 @@
         return true;
     }
 
-    // "Железная" загрузка библиотеки
+    // 4. Загрузка через надежный CDN (Cloudflare/CDNJS альтернатива)
     (function() {
         var script = document.createElement('script');
         script.type = 'text/javascript';
-        // Используем самый стабильный сервер автора
-        script.src = 'https://peter-ertl.com';
+        // Пробуем еще один официальный путь (иногда github.io отдает битые MIME-типы)
+        script.src = 'https://jsme-editor.github.io';
         
-        script.onload = function() {
-            console.log("JSME Script loaded to DOM");
-            // Если через 2 секунды апплета нет, пробуем форсировать
-            setTimeout(function() {
-                if (!window.jsmeApplet && typeof JSMe !== "undefined") {
-                    window.jsmeOnLoad();
-                }
-            }, 2000);
+        // Если через 3 секунды объект JSMe все еще undefined, пробуем резервный сервер
+        script.onerror = function() {
+            console.error("Ошибка загрузки с GitHub, пробую Peter-Ertl...");
+            var backup = document.createElement('script');
+            backup.src = 'https://peter-ertl.com';
+            document.head.appendChild(backup);
         };
         
         document.head.appendChild(script);
