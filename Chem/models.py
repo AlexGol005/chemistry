@@ -7,7 +7,7 @@ from rdkit import Chem as Chemrdkit
 from django_rdkit import models as models_django_rdkit
 
 class OrganicNames(models_django_rdkit.Model):
-    name = models_django_rdkit.CharField(max_length=256)
+    name = models_django_rdkit.CharField(max_length=255)
     molecule = models_django_rdkit.MolField()
 
     def __str__(self):
