@@ -1,48 +1,91 @@
 {% extends 'main/superbase.html' %}
 {% load static %}
 
-{% block title %}Тест по химии{% endblock %}
+{% block title %}Тест по химии: {{ question.name }}{% endblock %}
 
 {% block content %}
-<div class="container mt-5 text-center">
-    <h2 class="mb-4">Вопрос №{{ question.id }}: {{ question.name }}</h2>
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 border-0 rounded-4 bg-white">
+        <h2 class="text-center mb-4 text-primary">Вопрос №{{ question.id }}</h2>
 
-    <!-- Контейнер для рисования -->
-    <div id="jsme_container" style="width: 100%; max-width: 600px; height: 450px; margin: 0 auto; border: 2px solid #007bff; border-radius: 10px; background: #fff;"></div>
+        {% if question.question_type == 'N2F' %}
+            <div class="text-center">
+                <p class="lead text-muted mb-3">Нарисуйте формулу для соединения:</p>
+                <h1 class="display-6 fw-bold text-dark mb-4">{{ question.name }}</h1>
+                
+                <!-- Контейнер для рисования -->
+                <div id="jsme_container" style="width: 100%; max-width: 600px; height: 450px; margin: 0 auto; border: 2px solid #e9ecef; border-radius: 12px; background: #fff;"></div>
 
-    <form method="post" class="mt-4" onsubmit="return prepareAnswer()">
-        {% csrf_token %}
-        <input type="hidden" name="user_answer" id="smiles_input">
-        <button type="submit" class="btn btn-primary btn-lg px-5 shadow">Проверить формулу</button>
-    </form>
+                <form method="post" id="chemForm" onsubmit="return prepareAnswer()" class="mt-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_answer" id="smiles_input">
+                    <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow">Проверить ответ</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="text-center">
+                <p class="lead mb-3">Как называется это соединение?</p>
+                <div class="p-3 bg-light border rounded-3 mb-4 shadow-sm">
+                    <code class="fs-5 text-dark">SMILES: {{ question.smiles }}</code>
+                </div>
+                <form method="post" class="mx-auto" style="max-width: 450px;">
+                    {% csrf_token %}
+                    <input type="text" name="user_answer" class="form-control form-control-lg text-center rounded-pill mb-3" placeholder="Введите название..." required autofocus>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow">Отправить</button>
+                </form>
+            {% endif %}
 
-    {% if result is not None %}
-        <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-4 shadow-sm">
-            {% if result %} ✅ Верно! {% if next_id %}<a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-sm btn-success ms-2">Дальше</a>{% endif %}
-            {% else %} ❌ Ошибка. Попробуйте еще раз. {% endif %}
-        </div>
-    {% endif %}
+        {% if result is not None %}
+            <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-4 text-center rounded-3 animate__animated animate__fadeIn">
+                {% if result %}
+                    <h4 class="alert-heading">✅ Верно!</h4>
+                    {% if next_id %}<a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-success mt-2 px-4 rounded-pill fw-bold">Следующий вопрос →</a>{% endif %}
+                {% else %}
+                    <h4 class="alert-heading">❌ Ошибка</h4>
+                    <p class="mb-0">Попробуйте еще раз. Проверьте связи и атомы.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
 </div>
 
-<!-- 1. ПОДКЛЮЧЕНИЕ СКРИПТА (ПРОВЕРЕННЫЙ CDN) -->
-<script type="text/javascript" src="https://peter-ertl.com"></script>
-
+<!-- ИНИЦИАЛИЗАЦИЯ СКРИПТОВ -->
 <script type="text/javascript">
-    var jsmeApplet;
+    window.jsmeApplet = null;
 
-    // 2. Эта функция ОБЯЗАТЕЛЬНО должна быть глобальной
+    // Глобальная функция для библиотеки
     window.jsmeOnLoad = function() {
-        console.log("JSME: Попытка инициализации...");
-        window.jsmeApplet = new JSMe("jsme_container", "100%", "450px", {
-            "options": "query,paste,toggle"
-        });
+        console.log("JSME: Попытка создания редактора...");
+        if (document.getElementById("jsme_container")) {
+            window.jsmeApplet = new JSMe("jsme_container", "100%", "450px", {
+                "options" : "query,paste,toggle"
+            });
+        }
     };
 
     function prepareAnswer() {
         if (window.jsmeApplet) {
-            document.getElementById('smiles_input').value = window.jsmeApplet.smiles();
+            var smiles = window.jsmeApplet.smiles();
+            document.getElementById('smiles_input').value = smiles;
         }
         return true;
     }
+
+    // Принудительная загрузка библиотеки (ПРОВЕРЕННЫЙ ПУТЬ)
+    (function() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        // Если peter-ertl.com открывается, этот путь ДОЛЖЕН сработать:
+        script.src = 'https://peter-ertl.com';
+        
+        script.onerror = function() {
+            console.error("Основной CDN недоступен, пробую запасной...");
+            var backup = document.createElement('script');
+            backup.src = 'https://jsme-editor.github.io';
+            document.head.appendChild(backup);
+        };
+        
+        document.head.appendChild(script);
+    })();
 </script>
 {% endblock %}
