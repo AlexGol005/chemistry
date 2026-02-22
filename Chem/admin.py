@@ -236,3 +236,5 @@ class OrganicNamesAdmin(admin.ModelAdmin):
     # Отображаем имя и SMILES-строку в списке всех записей
     list_display = ('name', 'molecule')
 
+
+
