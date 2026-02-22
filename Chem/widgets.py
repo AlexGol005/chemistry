@@ -3,36 +3,29 @@ from django.utils.safestring import mark_safe
 
 class JSMEWidget(forms.Textarea):
     def render(self, name, value, attrs=None, renderer=None):
-        # Оставляем поле видимым для отладки или скрываем через класс
-        attrs['style'] = 'width: 100%; height: 50px; margin-top: 10px;'
-        html = super().render(name, value, attrs, renderer)
-        
-        # Генерируем уникальный ID для контейнера редактора
-        field_id = attrs.get('id')
-        
+        # Скрываем стандартное текстовое поле и добавляем контейнер для редактора
+        html = super().render(name, value, attrs)
         jsme_html = f"""
-        <div id="jsme_container_{field_id}" style="border: 1px solid #ccc; background: #fff;"></div>
-        
+        <div id="jsme_container_{name}" style="margin-bottom:10px;"></div>
         <script type="text/javascript" src="https://jsme-editor.github.io"></script>
-        
-        <script>
+        <script type="text/javascript">
             function jsmeOnLoad() {{
-                // Инициализация редактора
-                var jsmeApplet = new JSMe("jsme_container_{field_id}", "500px", "350px");
+                var jsmeApplet = new JSME.JSApplet("jsme_container_{name}", "400px", "350px", {{
+                    "options": "oldlook,nozoom"
+                }});
                 
-                var inputField = document.getElementById("{field_id}");
-                
-                // Если в базе уже есть SMILES, отрисовываем его
-                if (inputField.value) {{
-                    jsmeApplet.readGenericMolecularInput(inputField.value);
+                // Загружаем существующий SMILES из поля в редактор
+                var startValue = document.getElementById("{attrs['id']}").value;
+                if (startValue) {{
+                    jsmeApplet.readGenericMolecularInput(startValue);
                 }}
 
-                // При каждом изменении в редакторе обновляем текстовое поле
+                // При каждом изменении в редакторе обновляем скрытое текстовое поле Django
                 jsmeApplet.setCallBack("AfterStructureModified", function(event) {{
-                    var smiles = event.src.smiles();
-                    inputField.value = smiles;
+                    var smiles = jsmeApplet.smiles();
+                    document.getElementById("{attrs['id']}").value = smiles;
                 }});
             }}
         </script>
         """
-        return mark_safe(jsme_html + html)
+        return mark_safe(html + jsme_html)
