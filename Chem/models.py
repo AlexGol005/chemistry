@@ -8,7 +8,8 @@ from django_rdkit import models as models_django_rdkit
 
 class OrganicNames(models_django_rdkit.Model):
     name = models_django_rdkit.CharField(max_length=255)
-    molecule = models_django_rdkit.MolField()
+    molecule = models_django_rdkit.MolField(null=True, blank=True)
+
 
     def __str__(self):
         return f"{self.name}"
