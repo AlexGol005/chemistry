@@ -4,11 +4,11 @@ from django.conf import settings
 from PIL import Image
 from django.core.exceptions import ValidationError
 from rdkit import Chem as Chemrdkit
-from django_rdkit import models
+from django_rdkit import models as models_django_rdkit
 
-class OrganicNames(models.Model):
-    name = models.CharField(max_length=256)
-    molecule = models.MolField()
+class OrganicNames(models_django_rdkit.Model):
+    name = models_django_rdkit.CharField(max_length=256)
+    molecule = models_django_rdkit.MolField()
 
     def __str__(self):
         return f"{self.name}"
