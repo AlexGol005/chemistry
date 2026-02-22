@@ -214,17 +214,18 @@ admin.site.register(Link)
 
 
 
-class OrganicNamesAdminForm(forms.ModelForm):
-    class Meta:
-        model = OrganicNames
-        fields = '__all__'
-        widgets = {
-            'smiles': JSMEWidget(attrs={'style': 'display:none;'}), # Прячем текстовое поле
-        }
+from django.contrib import admin
+from .models import OrganicNames
+from .widgets import JSMEWidget
+from django.db import models
 
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
-    form = OrganicNamesAdminForm
     list_display = ('name',)
-    search_fields = ('name',)
+    search_fields = ['name',]
+    
+    # Переопределяем виджет для поля molecule
+    formfield_overrides = {
+        models.TextField: {'widget': JSMEWidget},
+    }
 
