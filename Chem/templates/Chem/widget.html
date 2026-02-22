@@ -1,0 +1,23 @@
+{% load static %}
+<div id="jsme_container_{{ widget.attrs.id }}" style="border: 1px solid #444; margin-bottom: 10px;"></div>
+<input type="text" name="{{ widget.name }}" id="{{ widget.attrs.id }}" 
+       value="{{ widget.value|default:'' }}" 
+       style="width: 100%; background: #f0f0f0; font-family: monospace;" readonly>
+
+<script type="text/javascript" src="{% static 'jsme/jsme.nocache.js' %}"></script>
+<script type="text/javascript">
+    function jsmeOnLoad() {
+        var inputId = "{{ widget.attrs.id }}";
+        var inputField = document.getElementById(inputId);
+        // Инициализация редактора
+        var jsmeApplet = new JSApplet.JSME("jsme_container_" + inputId, "100%", "400px", {
+            "options": "oldLook,paste"
+        });
+        if (inputField.value) {
+            jsmeApplet.readGenericMolecularInput(inputField.value);
+        }
+        jsmeApplet.setCallBack("AfterStructureModified", function(jsme) {
+            inputField.value = jsme.smiles();
+        });
+    }
+</script>
