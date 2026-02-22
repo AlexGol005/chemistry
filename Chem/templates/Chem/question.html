@@ -80,30 +80,40 @@
 </div>
 
 <script>
-    var jsmeApplet;
+    // 1. Принудительно делаем переменную и функцию глобальными
+    window.jsmeApplet = null;
 
-    // Автоматическая инициализация редактора библиотекой JSME
-    function jsmeOnLoad() {
+    window.jsmeOnLoad = function() {
+        console.log("JSME запущен!");
         var container = document.getElementById("jsme_container");
         if (container) {
-            // "jsme_container", "ширина", "высота", "опции"
-            jsmeApplet = new JSMe("jsme_container", "500px", "400px", {
+            // Создаем экземпляр редактора
+            window.jsmeApplet = new JSMe("jsme_container", "500px", "400px", {
                 "options" : "oldlook,nozoom"
             });
+            console.log("Редактор инициализирован в контейнере");
+        } else {
+            console.error("Контейнер jsme_container не найден на странице!");
         }
-    }
+    };
 
-    // Подготовка данных перед отправкой POST-запроса
+    // 2. Функция для кнопки "Проверить"
     function prepareAnswer() {
-        if (typeof jsmeApplet !== 'undefined' && jsmeApplet !== null) {
-            var smiles = jsmeApplet.smiles(); 
-            var input = document.getElementById('smiles_input');
-            if (input) {
-                input.value = smiles;
+        if (window.jsmeApplet) {
+            var smiles = window.jsmeApplet.smiles();
+            console.log("Считанный SMILES: " + smiles);
+            var hiddenInput = document.getElementById('smiles_input');
+            if (hiddenInput) {
+                hiddenInput.value = smiles;
             }
+        } else {
+            console.error("Редактор еще не загружен!");
         }
-        return true; // Разрешить отправку формы
+        return true;
     }
 </script>
+
+<!-- 3. Загружаем библиотеку ПОСЛЕ определения функции -->
+<script type="text/javascript" src="https://jsme-editor.github.io"></script>
 
 {% endblock %}
