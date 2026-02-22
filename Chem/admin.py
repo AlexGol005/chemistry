@@ -216,23 +216,25 @@ admin.site.register(Link)
 
 from django.contrib import admin
 from django import forms
-from .models import Compound  # 1. ЗАМЕНИТЕ на имя вашей модели
+from .models import OrganicNames  # Импортируем вашу модель
 
-# Описываем, какой HTML-файл использовать для отображения поля
+# 1. Описываем виджет, который подгрузит JSME
 class JSMEWidget(forms.Widget):
-    template_name = 'widget.html'  # Должен лежать в папке templates/
+    template_name = 'widget.html'
 
-# Создаем форму, которая подменит стандартное текстовое поле на JSME
-class CompoundAdminForm(forms.ModelForm):
+# 2. Создаем форму, где указываем, что для поля 'molecule' нужен JSME
+class OrganicNamesAdminForm(forms.ModelForm):
     class Meta:
-        model = Compound
+        model = OrganicNames
         fields = '__all__'
         widgets = {
-            'smiles': JSMEWidget(),  # 2. ЗАМЕНИТЕ 'smiles' на имя вашего поля в модели
+            'molecule': JSMEWidget(),  # Привязываем редактор к полю molecule
         }
 
-# Регистрируем модель в админке с использованием нашей новой формы
-@admin.register(Compound)
-class CompoundAdmin(admin.ModelAdmin):
-    form = CompoundAdminForm
+# 3. Регистрируем модель в админке с этой формой
+@admin.register(OrganicNames)
+class OrganicNamesAdmin(admin.ModelAdmin):
+    form = OrganicNamesAdminForm
+    # Добавим отображение имени в списке записей
+    list_display = ('name', 'molecule')
 
