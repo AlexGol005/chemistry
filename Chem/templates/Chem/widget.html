@@ -1,23 +1,43 @@
 {% load static %}
-<div id="jsme_container_{{ widget.attrs.id }}" style="border: 1px solid #444; margin-bottom: 10px;"></div>
+<!-- Контейнер с четко заданными размерами в пикселях (не в %) -->
+<div id="jsme_container_{{ widget.attrs.id }}" style="width: 700px; height: 450px; border: 1px solid #ccc; margin-bottom: 10px; background-color: #fff;"></div>
+
+<!-- Текстовое поле для SMILES, которое видит Django -->
 <input type="text" name="{{ widget.name }}" id="{{ widget.attrs.id }}" 
        value="{{ widget.value|default:'' }}" 
-       style="width: 100%; background: #f0f0f0; font-family: monospace;" readonly>
+       style="width: 700px; background: #f9f9f9; font-family: monospace; border: 1px solid #ddd; padding: 5px;" readonly>
 
+<!-- Подключение основного скрипта JSME -->
 <script type="text/javascript" src="{% static 'jsme/jsme.nocache.js' %}"></script>
+
 <script type="text/javascript">
+    // Эта функция вызывается JSME автоматически после загрузки всех файлов
     function jsmeOnLoad() {
         var inputId = "{{ widget.attrs.id }}";
+        var containerId = "jsme_container_" + inputId;
         var inputField = document.getElementById(inputId);
-        // Инициализация редактора
-        var jsmeApplet = new JSApplet.JSME("jsme_container_" + inputId, "100%", "400px", {
-            "options": "oldLook,paste"
+
+        // Инициализация редактора с фиксированным размером
+        // Это решит проблему с исчезновением кнопок
+        var jsmeApplet = new JSApplet.JSME(containerId, "700px", "450px", {
+            "options": "oldLook,paste,toggle"
         });
+
+        // Если в базе уже есть SMILES, загружаем его в редактор
         if (inputField.value) {
             jsmeApplet.readGenericMolecularInput(inputField.value);
         }
+
+        // При каждом изменении рисунка обновляем значение в поле Django
         jsmeApplet.setCallBack("AfterStructureModified", function(jsme) {
-            inputField.value = jsme.smiles();
+            var smiles = jsme.smiles();
+            inputField.value = smiles;
         });
+
+        // Исправление бага с отрисовкой: принудительно обновляем экран через 200 мс
+        // Это заменяет "эффект открытия F12" и заставляет кнопки появиться сразу
+        setTimeout(function() {
+            jsmeApplet.repaint();
+        }, 200);
     }
 </script>
