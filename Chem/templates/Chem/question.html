@@ -3,99 +3,68 @@
 
 {% block title %}Тест: {{ question.name }}{% endblock %}
 
-{% block any %}
-<!-- Разрешаем загрузку скриптов и стилей для редактора -->
-<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https://peter-ertl.com https://jsme-editor.github.io; style-src 'self' 'unsafe-inline' https://peter-ertl.com;">
-{% endblock %}
-
 {% block content %}
 <div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow-sm border-0 rounded-3 p-4">
+    <div class="card shadow p-4 border-0 rounded-3">
+        <h2 class="text-center mb-4 text-secondary">Вопрос №{{ question.id }}</h2>
+
+        {% if question.question_type == 'N2F' %}
+            <div class="text-center">
+                <p class="lead mb-2">Нарисуйте структурную формулу для:</p>
+                <h1 class="display-5 text-primary fw-bold mb-4">{{ question.name }}</h1>
                 
-                <h2 class="text-center text-secondary mb-4">Вопрос №{{ question.id }}</h2>
+                <!-- Контейнер для редактора -->
+                <div id="jsme_container" style="width: 100%; height: 450px; border: 2px solid #eee; background: #fff; margin: 0 auto;"></div>
 
-                {% if question.question_type == 'N2F' %}
-                    <div class="text-center">
-                        <p class="lead mb-2">Нарисуйте структурную формулу для:</p>
-                        <h1 class="display-5 text-primary fw-bold mb-4">{{ question.name }}</h1>
-                        
-                        <!-- Контейнер для редактора -->
-                        <div class="d-flex justify-content-center">
-                            <div id="jsme_container" style="width: 100%; height: 450px; border: 1px solid #ccc; background: #fff;"></div>
-                        </div>
+                <form method="post" id="chemForm" onsubmit="return prepareAnswer()" class="mt-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_answer" id="smiles_input">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow">Проверить ответ</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="text-center">
+                <p class="lead mb-3">Как называется это соединение?</p>
+                <div class="alert alert-light border py-3 mb-4">
+                    <code id="smiles_display" class="fs-5 text-dark">{{ question.smiles }}</code>
+                </div>
+                <form method="post" class="mx-auto" style="max-width: 400px;">
+                    {% csrf_token %}
+                    <input type="text" name="user_answer" class="form-control form-control-lg text-center rounded-pill mb-3" placeholder="Введите название" required autofocus>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow">Проверить название</button>
+                </form>
+            </div>
+        {% endif %}
 
-                        <form method="post" id="chemForm" onsubmit="return prepareAnswer()" class="mt-4">
-                            {% csrf_token %}
-                            <input type="hidden" name="user_answer" id="smiles_input">
-                            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow">Проверить формулу</button>
-                        </form>
-                    </div>
+        {% if result is not None %}
+            <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-4 text-center shadow-sm">
+                {% if result %}
+                    <h4 class="alert-heading">✅ Верно!</h4>
+                    {% if next_id %}<a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-success mt-2 px-4 rounded-pill">Следующий вопрос →</a>{% endif %}
                 {% else %}
-                    <div class="text-center">
-                        <p class="lead mb-3">Как называется это соединение?</p>
-                        <div class="alert alert-light border py-3 mb-4">
-                            <code class="fs-5 text-dark">SMILES: {{ question.smiles }}</code>
-                        </div>
-
-                        <form method="post" class="mx-auto" style="max-width: 400px;">
-                            {% csrf_token %}
-                            <input type="text" name="user_answer" class="form-control form-control-lg text-center rounded-pill mb-3" placeholder="Введите название" required autofocus>
-                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow">Проверить название</button>
-                        </form>
-                    </div>
-                {% endif %}
-
-                {% if result is not None %}
-                    <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-4 text-center shadow-sm rounded-3">
-                        {% if result %}
-                            <h4 class="alert-heading">✅ Верно!</h4>
-                            {% if next_id %}
-                                <a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-success rounded-pill px-4">Следующий вопрос →</a>
-                            {% else %}
-                                <p class="mt-2 fw-bold text-success">🎉 Тест завершен!</p>
-                            {% endif %}
-                        {% else %}
-                            <h4 class="alert-heading">❌ Ошибка</h4>
-                            <p class="mb-0">Попробуйте еще раз.</p>
-                        {% endif %}
-                    </div>
+                    <h4 class="alert-heading">❌ Ошибка</h4>
+                    <p class="mb-0">Попробуйте еще раз. Проверьте атомы и валентность.</p>
                 {% endif %}
             </div>
-        </div>
+        {% endif %}
     </div>
 </div>
 
-<!-- Логика работы редактора -->
 <script type="text/javascript">
+    // Глобальная переменная для апплета
     window.jsmeApplet = null;
 
-    // Функция, которую вызовет библиотека сама
+    // Функция, которую вызовет библиотека после загрузки
     window.jsmeOnLoad = function() {
         if (document.getElementById("jsme_container")) {
+            // Инициализация с базовыми настройками (без oldlook, чтобы иконки были современными)
             window.jsmeApplet = new JSMe("jsme_container", "100%", "450px", {
-                "options": "query,paste,toggle"
+                "options" : "query,paste,toggle"
             });
         }
     };
 
-    // Запасной ручной запуск, если автоматика не сработала
-    function startJSME() {
-        if (typeof JSMe !== "undefined" && window.jsmeApplet === null) {
-            window.jsmeApplet = new JSMe("jsme_container", "100%", "450px", {
-                "options": "query,paste,toggle"
-            });
-            return true;
-        }
-        return window.jsmeApplet !== null;
-    }
-
-    // Проверяем готовность каждые 500мс
-    var timer = setInterval(function() {
-        if (startJSME()) clearInterval(timer);
-    }, 500);
-
+    // Считывание SMILES перед отправкой
     function prepareAnswer() {
         if (window.jsmeApplet) {
             var smiles = window.jsmeApplet.smiles();
@@ -103,9 +72,25 @@
         }
         return true;
     }
+
+    // "Железная" загрузка библиотеки
+    (function() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        // Используем самый стабильный сервер автора
+        script.src = 'https://peter-ertl.com';
+        
+        script.onload = function() {
+            console.log("JSME Script loaded to DOM");
+            // Если через 2 секунды апплета нет, пробуем форсировать
+            setTimeout(function() {
+                if (!window.jsmeApplet && typeof JSMe !== "undefined") {
+                    window.jsmeOnLoad();
+                }
+            }, 2000);
+        };
+        
+        document.head.appendChild(script);
+    })();
 </script>
-
-<!-- ПРАВИЛЬНАЯ ССЫЛКА НА СКРИПТ -->
-<script type="text/javascript" src="https://peter-ertl.com"></script>
-
 {% endblock %}
