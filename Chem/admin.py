@@ -225,7 +225,6 @@ class OrganicNamesAdminForm(forms.ModelForm):
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
-    list_display = ('name', 'question_type', 'smiles')
-    list_filter = ('question_type',)
-    search_fields = ('name', 'smiles')
+    list_display = ('name')
+    search_fields = ('name')
 
