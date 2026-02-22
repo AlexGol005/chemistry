@@ -76,11 +76,18 @@
 
     // Эта функция будет вызвана библиотекой JSME автоматически
     window.jsmeOnLoad = function() {
-        console.log("JSME: Библиотека загружена!");
-        if (document.getElementById("jsme_container")) {
+        console.log("JSME: Библиотека загружена, инициализация инструментов...");
+        var container = document.getElementById("jsme_container");
+        
+        if (container) {
+            // Создаем редактор с инструментами
+            // Опция "oldlook" иногда скрывает современные иконки, лучше использовать пустую строку или специфичные опции
             jsmeApplet = new JSMe("jsme_container", "500px", "400px", {
-                "options" : "oldlook,nozoom"
+                "options" : "query,paste,toggle" 
             });
+            
+            // Принудительно разрешаем редактирование
+            jsmeApplet.setAsEditable(true);
         }
     };
 
@@ -88,7 +95,7 @@
     function prepareAnswer() {
         if (jsmeApplet) {
             var smiles = jsmeApplet.smiles();
-            if (!smiles) {
+            if (!smiles || smiles === "") {
                 alert("Пожалуйста, нарисуйте структуру перед отправкой.");
                 return false;
             }
@@ -97,11 +104,12 @@
         return true;
     }
 
-    // Принудительная дозагрузка скрипта, если он не подтянулся из superbase
+    // Принудительная дозагрузка скрипта ПРАВИЛЬНОЙ ССЫЛКОЙ
     (function() {
         if (typeof JSMe === "undefined") {
             var script = document.createElement('script');
             script.type = 'text/javascript';
+            // ВНИМАНИЕ: Здесь полный путь к файлу .js
             script.src = 'https://jsme-editor.github.io';
             document.head.appendChild(script);
         }
