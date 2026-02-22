@@ -6,23 +6,7 @@ from django.core.exceptions import ValidationError
 from rdkit import Chem as Chemrdkit
 
 
-class OrganicNames(models.Model): # Используем стандартный models.Model
-    name = models.CharField(max_length=255)
-    molecule = models.TextField(null=True, blank=True)
 
-    @property
-    def mol_object(self):
-        """Метод для получения объекта RDKit из строки SMILES"""
-        if self.molecule:
-            return Chemrdkit.MolFromSmiles(self.molecule)
-        return None
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "Органическое соединение"
-        verbose_name_plural = "Органические соединения"
 
 
 class Inorganiclaw(models.Model):
