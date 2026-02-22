@@ -216,25 +216,23 @@ admin.site.register(Link)
 
 from django.contrib import admin
 from django import forms
-from .models import OrganicNames  # Импортируем вашу модель
+from .models import OrganicNames
+from .widgets import JSMEWidget
 
-# 1. Описываем виджет, который подгрузит JSME
-class JSMEWidget(forms.Widget):
-    template_name = 'widget.html'
-
-# 2. Создаем форму, где указываем, что для поля 'molecule' нужен JSME
+# 1. Создаем форму, которая подменит стандартное поле на редактор JSME
 class OrganicNamesAdminForm(forms.ModelForm):
     class Meta:
         model = OrganicNames
         fields = '__all__'
         widgets = {
-            'molecule': JSMEWidget(),  # Привязываем редактор к полю molecule
+            # Указываем, что для поля 'molecule' используем наш JSMEWidget
+            'molecule': JSMEWidget(), 
         }
 
-# 3. Регистрируем модель в админке с этой формой
+# 2. Регистрируем модель в админке с использованием этой формы
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
-    # Добавим отображение имени в списке записей
+    # Отображаем имя и SMILES-строку в списке всех записей
     list_display = ('name', 'molecule')
 
