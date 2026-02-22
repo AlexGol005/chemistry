@@ -1,65 +1,65 @@
 {% load static %}
 
-<!-- Контейнер для редактора -->
-<div id="jsme_container_{{ widget.attrs.id }}" style="width: 700px !important; height: 450px !important; border: 2px solid #444; background-color: #fff; display: block !important;"></div>
+<!-- Уникальный контейнер для редактора -->
+<div id="jsme_canvas_{{ widget.attrs.id }}" 
+     style="width: 750px !important; height: 450px !important; border: 2px solid #444; background: white !important; display: block !important;">
+</div>
 
-<div style="margin-top: 10px;">
-    <label>SMILES код:</label><br>
-    <!-- Поле ввода с принудительным отображением -->
+<div style="margin-top: 15px; border: 1px solid #ddd; padding: 10px; background: #fafafa; width: 730px;">
+    <label style="font-weight: bold; color: #333;">SMILES (генерируется редактором):</label><br>
+    <!-- Поле с принудительными стилями 'important' -->
     <input type="text" 
            name="{{ widget.name }}" 
            id="{{ widget.attrs.id }}" 
            value="{{ widget.value|default:'' }}" 
-           style="width: 700px !important; display: block !important; visibility: visible !important; padding: 8px; border: 1px solid #ccc; background: #f0f0f0; font-family: monospace;" 
+           style="width: 100% !important; display: block !important; visibility: visible !important; opacity: 1 !important; background: #fff !important; font-family: monospace !important; color: black !important; padding: 5px !important;" 
            readonly>
 </div>
 
-<!-- Подключаем JSME только один раз -->
 <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
 
 <script type="text/javascript">
-    // Используем задержку, чтобы дождаться окончания работы всех скриптов админки
-    function initializeJSME() {
+    function startJSME() {
         var inputId = "{{ widget.attrs.id }}";
-        var inputField = document.getElementById(inputId);
-        var containerId = "jsme_container_" + inputId;
+        var field = document.getElementById(inputId);
+        var containerId = "jsme_canvas_" + inputId;
 
-        if (!inputField) {
-            console.error("Поле " + inputId + " не найдено, пробуем еще раз...");
-            return;
-        }
+        if (!field) return;
 
-        // Создаем объект редактора
-        var jsmeApplet = new JSApplet.JSME(containerId, "700px", "450px", {
+        // Создаем редактор
+        var applet = new JSApplet.JSME(containerId, "750px", "450px", {
             "options": "oldLook,paste"
         });
 
-        // Загружаем данные из поля в редактор
-        if (inputField.value) {
-            jsmeApplet.readGenericMolecularInput(inputField.value);
+        // Загружаем данные
+        if (field.value) {
+            applet.readGenericMolecularInput(field.value);
         }
 
-        // Связываем редактор с полем
-        jsmeApplet.setCallBack("AfterStructureModified", function(jsme) {
-            var smiles = jsme.smiles();
-            inputField.value = smiles;
-            console.log("Обновлено: " + smiles);
+        // Связываем изменения
+        applet.setCallBack("AfterStructureModified", function(jsme) {
+            field.value = jsme.smiles();
+            console.log("New SMILES: " + field.value);
         });
 
-        // Принудительная отрисовка
-        setTimeout(function() { 
-            jsmeApplet.repaint(); 
-            // Еще раз проверяем видимость поля
-            inputField.style.display = 'block';
-            inputField.style.visibility = 'visible';
+        // ЦИКЛ ПРОВЕРКИ ВИДИМОСТИ (защита от скрытия админкой)
+        setInterval(function() {
+            if (field.style.display === 'none' || field.type === 'hidden') {
+                field.style.setProperty('display', 'block', 'important');
+                field.style.setProperty('visibility', 'visible', 'important');
+                field.type = 'text'; // На случай, если Django сменил тип на hidden
+            }
+            applet.repaint();
         }, 500);
     }
 
-    // Запускаем инициализацию, когда всё остальное уже загрузилось
-    if (typeof jsmeOnLoad === 'undefined') {
-        window.jsmeOnLoad = initializeJSME;
-    } else {
-        // Если функция уже была вызвана раньше, запускаем вручную
-        setTimeout(initializeJSME, 1000);
-    }
+    // Регистрация функции в глобальном окне для JSME
+    window.jsmeOnLoad = startJSME;
+
+    // Резервный запуск, если jsmeOnLoad уже проскочил
+    setTimeout(function() {
+        if (typeof JSApplet !== 'undefined' && document.getElementById("jsme_canvas_{{ widget.attrs.id }}").innerHTML === "") {
+            startJSME();
+        }
+    }, 1500);
 </script>
