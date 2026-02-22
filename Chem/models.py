@@ -4,15 +4,21 @@ from django.conf import settings
 from PIL import Image
 from django.core.exceptions import ValidationError
 from rdkit import Chem as Chemrdkit
-from django_rdkit import models as models_django_rdkit
 
-class OrganicNames(models_django_rdkit.Model):
-    name = models_django_rdkit.CharField(max_length=255)
-    molecule = models_django_rdkit.MolField(null=True, blank=True)
 
+class OrganicNames(models.Model): # Используем стандартный models.Model
+    name = models.CharField(max_length=255)
+    molecule_smiles = models.TextField(null=True, blank=True)
+
+    @property
+    def mol_object(self):
+        """Метод для получения объекта RDKit из строки SMILES"""
+        if self.molecule_smiles:
+            return Chemrdkit.MolFromSmiles(self.molecule_smiles)
+        return None
 
     def __str__(self):
-        return f"{self.name}"
+        return self.name
 
     class Meta:
         verbose_name = "Органическое соединение"
