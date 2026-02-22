@@ -217,15 +217,14 @@ admin.site.register(Link)
 from django.contrib import admin
 from .models import OrganicNames
 from .widgets import JSMEWidget
-from django.db import models
 
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ['name',]
-    
-    # Переопределяем виджет для поля molecule
-    formfield_overrides = {
-        models.TextField: {'widget': JSMEWidget},
-    }
+    list_display = ('name', 'molecule')
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        # Применяем виджет ТОЛЬКО к полю с именем 'molecule'
+        if db_field.name == 'molecule':
+            kwargs['widget'] = JSMEWidget
+        return super().formfield_for_dbfield(db_field, **kwargs)
 
