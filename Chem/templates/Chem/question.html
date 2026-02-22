@@ -1,91 +1,120 @@
 {% extends 'main/superbase.html' %}
 {% load static %}
 
-{% block title %}Тест по химии: {{ question.name }}{% endblock %}
+{% block title %}Тест: {{ question.name }}{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-lg p-4 border-0 rounded-4 bg-white">
-        <h2 class="text-center mb-4 text-primary">Вопрос №{{ question.id }}</h2>
-
-        {% if question.question_type == 'N2F' %}
-            <div class="text-center">
-                <p class="lead text-muted mb-3">Нарисуйте формулу для соединения:</p>
-                <h1 class="display-6 fw-bold text-dark mb-4">{{ question.name }}</h1>
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0 rounded-4 p-4">
                 
-                <!-- Контейнер для рисования -->
-                <div id="jsme_container" style="width: 100%; max-width: 600px; height: 450px; margin: 0 auto; border: 2px solid #e9ecef; border-radius: 12px; background: #fff;"></div>
+                <h2 class="text-center text-secondary mb-4">Вопрос №{{ question.id }}</h2>
 
-                <form method="post" id="chemForm" onsubmit="return prepareAnswer()" class="mt-4">
-                    {% csrf_token %}
-                    <input type="hidden" name="user_answer" id="smiles_input">
-                    <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow">Проверить ответ</button>
-                </form>
-            </div>
-        {% else %}
-            <div class="text-center">
-                <p class="lead mb-3">Как называется это соединение?</p>
-                <div class="p-3 bg-light border rounded-3 mb-4 shadow-sm">
-                    <code class="fs-5 text-dark">SMILES: {{ question.smiles }}</code>
-                </div>
-                <form method="post" class="mx-auto" style="max-width: 450px;">
-                    {% csrf_token %}
-                    <input type="text" name="user_answer" class="form-control form-control-lg text-center rounded-pill mb-3" placeholder="Введите название..." required autofocus>
-                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow">Отправить</button>
-                </form>
-            {% endif %}
+                {% if question.question_type == 'N2F' %}
+                    <!-- ТИП: НАЗВАНИЕ -> ФОРМУЛА -->
+                    <div class="text-center">
+                        <p class="lead mb-2">Нарисуйте структурную формулу для:</p>
+                        <h1 class="display-5 text-primary fw-bold mb-4">{{ question.name }}</h1>
+                        
+                        <!-- Виджет Ketcher (современный редактор) -->
+                        <div class="border rounded-3 shadow-sm mb-4" style="overflow: hidden; background: #f8f9fa;">
+                            <iframe 
+                                id="ketcher-frame" 
+                                src="https://lifescience.opensource.epam.com" 
+                                width="100%" 
+                                height="600px" 
+                                style="border: none;">
+                            </iframe>
+                        </div>
 
-        {% if result is not None %}
-            <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-4 text-center rounded-3 animate__animated animate__fadeIn">
-                {% if result %}
-                    <h4 class="alert-heading">✅ Верно!</h4>
-                    {% if next_id %}<a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-success mt-2 px-4 rounded-pill fw-bold">Следующий вопрос →</a>{% endif %}
+                        <form method="post" id="chemForm" onsubmit="return submitKetcherForm(event)" class="mt-4">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_answer" id="smiles_output">
+                            <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 shadow-sm">
+                                Проверить формулу
+                            </button>
+                        </form>
+                    </div>
+
                 {% else %}
-                    <h4 class="alert-heading">❌ Ошибка</h4>
-                    <p class="mb-0">Попробуйте еще раз. Проверьте связи и атомы.</p>
+                    <!-- ТИП: ФОРМУЛА -> НАЗВАНИЕ -->
+                    <div class="text-center">
+                        <p class="lead mb-3">Как называется это соединение?</p>
+                        <div class="alert alert-light border py-3 mb-4 shadow-sm">
+                            <code class="fs-4 text-dark">{{ question.smiles }}</code>
+                        </div>
+
+                        <form method="post" class="mx-auto" style="max-width: 500px;">
+                            {% csrf_token %}
+                            <input type="text" name="user_answer" class="form-control form-control-lg text-center rounded-pill mb-3" placeholder="Введите название (например: аспирин)" required autofocus>
+                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm">Отправить ответ</button>
+                        </form>
+                    </div>
                 {% endif %}
+
+                <!-- БЛОК РЕЗУЛЬТАТА -->
+                {% if result is not None %}
+                    <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-4 text-center shadow-sm rounded-4 animate__animated animate__fadeIn">
+                        {% if result %}
+                            <h3 class="alert-heading">✅ Верно!</h3>
+                            <p class="fs-5">Вы отлично справились с этим соединением.</p>
+                            {% if next_id %}
+                                <hr>
+                                <a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-success btn-lg rounded-pill px-5 fw-bold">
+                                    Следующий вопрос →
+                                </a>
+                            {% else %}
+                                <p class="mt-3 fw-bold text-success">🎉 Поздравляем! Это был последний вопрос в базе.</p>
+                                <a href="/" class="btn btn-outline-secondary rounded-pill">На главную</a>
+                            {% endif %}
+                        {% else %}
+                            <h3 class="alert-heading">❌ Почти...</h3>
+                            <p class="mb-0 fs-5">В формуле или названии есть ошибка. Попробуйте еще раз!</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
             </div>
-        {% endif %}
+        </div>
     </div>
 </div>
 
-<!-- ИНИЦИАЛИЗАЦИЯ СКРИПТОВ -->
-<script type="text/javascript">
-    window.jsmeApplet = null;
+<script>
+    /**
+     * Функция получения SMILES из Ketcher
+     * Поскольку Ketcher работает асинхронно, мы используем async/await
+     */
+    async function submitKetcherForm(event) {
+        // Останавливаем стандартную отправку формы, чтобы дождаться ответа от Ketcher
+        event.preventDefault();
+        
+        const frame = document.getElementById('ketcher-frame');
+        const ketcher = frame.contentWindow.ketcher;
+        const hiddenInput = document.getElementById('smiles_output');
+        const form = document.getElementById('chemForm');
 
-    // Глобальная функция для библиотеки
-    window.jsmeOnLoad = function() {
-        console.log("JSME: Попытка создания редактора...");
-        if (document.getElementById("jsme_container")) {
-            window.jsmeApplet = new JSMe("jsme_container", "100%", "450px", {
-                "options" : "query,paste,toggle"
-            });
+        if (!ketcher) {
+            alert("Редактор еще загружается. Пожалуйста, подождите...");
+            return false;
         }
-    };
 
-    function prepareAnswer() {
-        if (window.jsmeApplet) {
-            var smiles = window.jsmeApplet.smiles();
-            document.getElementById('smiles_input').value = smiles;
+        try {
+            // Запрашиваем SMILES у Ketcher
+            const smiles = await ketcher.getSmiles();
+            
+            if (!smiles || smiles.trim() === "") {
+                alert("Пожалуйста, нарисуйте структуру перед проверкой.");
+                return false;
+            }
+
+            // Записываем результат в скрытое поле и отправляем форму вручную
+            hiddenInput.value = smiles;
+            form.submit(); 
+        } catch (error) {
+            console.error("Ошибка Ketcher:", error);
+            alert("Произошла ошибка при считывании формулы. Попробуйте нарисовать заново.");
         }
-        return true;
     }
-
-    // Принудительная загрузка библиотеки (ПРОВЕРЕННЫЙ ПУТЬ)
-    (function() {
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        // Если peter-ertl.com открывается, этот путь ДОЛЖЕН сработать:
-        script.src = 'https://peter-ertl.com';
-        
-        script.onerror = function() {
-            console.error("Основной CDN недоступен, пробую запасной...");
-            var backup = document.createElement('script');
-            backup.src = 'https://jsme-editor.github.io';
-            document.head.appendChild(backup);
-        };
-        
-        document.head.appendChild(script);
-    })();
 </script>
 {% endblock %}
