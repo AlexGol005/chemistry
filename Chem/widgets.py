@@ -2,56 +2,49 @@ from django import forms
 from django.utils.safestring import mark_safe
 
 class JSMEWidget(forms.Textarea):
+    class Media:
+        # Подгружаем JSME через механизм медиа-файлов Django
+        js = ('https://jsme-editor.github.io',)
+
     def render(self, name, value, attrs=None, renderer=None):
-        # Получаем стандартный HTML для Textarea
+        # Обычное текстовое поле (будет скрыто)
         html = super().render(name, value, attrs)
         field_id = attrs['id']
-        
-        # Генерируем уникальный ID для контейнера редактора
         container_id = f"jsme_container_{name}"
         
-        jsme_script = f"""
-        <div id="{container_id}" style="border: 1px solid #ccc; margin-bottom: 10px;"></div>
-        
-        <!-- Загружаем JSME напрямую -->
-        <script type="text/javascript" src="https://jsme-editor.github.io"></script>
-        
+        # Скрипт инициализации с проверкой готовности объекта JSME
+        jsme_init = f"""
+        <div id="{container_id}" style="width: 400px; height: 350px; border: 1px solid #ccc;"></div>
         <script type="text/javascript">
-            // Функция запуска редактора
-            function startJsme() {{
-                if (typeof JSME === 'undefined') {{
-                    // Если библиотека еще не загружена, пробуем через 200мс
-                    setTimeout(startJsme, 200);
+            function initJSME_{name}() {{
+                // Ждем появления глобального объекта JSME (он создается асинхронно библиотекой)
+                if (typeof JSApplet === 'undefined') {{
+                    setTimeout(initJSME_{name}, 200);
                     return;
                 }}
                 
-                var jsmeApplet = new JSME.JSApplet("{container_id}", "400px", "350px", {{
+                var applet = new JSApplet.JSApplet("{container_id}", "400px", "350px", {{
                     "options": "oldlook,nozoom"
                 }});
+
+                var inputField = document.getElementById("{field_id}");
                 
-                var hiddenField = document.getElementById("{field_id}");
-                
-                // Загружаем текущее значение из базы
-                if (hiddenField.value) {{
-                    jsmeApplet.readGenericMolecularInput(hiddenField.value);
+                // Загружаем данные из БД при старте
+                if (inputField.value) {{
+                    applet.readGenericMolecularInput(inputField.value);
                 }}
 
-                // Синхронизация: Редактор -> Текстовое поле
-                jsmeApplet.setCallBack("AfterStructureModified", function(event) {{
-                    var smiles = jsmeApplet.smiles();
-                    hiddenField.value = smiles;
+                // При изменении структуры обновляем скрытое поле
+                applet.setCallBack("AfterStructureModified", function(event) {{
+                    inputField.value = applet.smiles();
                 }});
             }}
-
-            // Запускаем при загрузке страницы
-            if (document.readyState === "complete") {{
-                startJsme();
-            }} else {{
-                window.addEventListener("load", startJsme);
-            }}
+            
+            // Запуск после полной загрузки страницы
+            window.addEventListener('load', initJSME_{name});
         </script>
         <style>
-            #{field_id} {{ display: block; width: 100%; margin-top: 5px; font-family: monospace; }}
+            #{field_id} {{ display: none; }} /* Скрываем текстовое поле, оставляя только редактор */
         </style>
         """
-        return mark_safe(html + jsme_script)
+        return mark_safe(html + jsme_init)
