@@ -1,24 +1,27 @@
 {% load static %}
 
-<!-- Уникальный контейнер для редактора -->
+<!-- Контейнер редактора с фиксированным размером, который влезет в админку -->
 <div id="jsme_canvas_{{ widget.attrs.id }}" 
-     style="width: 750px !important; height: 450px !important; border: 2px solid #444; background: white !important; display: block !important;">
+     style="width: 600px !important; height: 400px !important; border: 2px solid #444; background: white !important; display: block !important; overflow: hidden;">
 </div>
 
-<div style="margin-top: 15px; border: 1px solid #ddd; padding: 10px; background: #fafafa; width: 730px;">
-    <label style="font-weight: bold; color: #333;">SMILES (генерируется редактором):</label><br>
-    <!-- Поле с принудительными стилями 'important' -->
+<div style="margin-top: 10px; width: 600px;">
+    <label style="font-weight: bold; font-size: 12px; color: #666;">SMILES (генерируется автоматически):</label><br>
+    <!-- Поле ввода, которое точно влезет по ширине -->
     <input type="text" 
            name="{{ widget.name }}" 
            id="{{ widget.attrs.id }}" 
            value="{{ widget.value|default:'' }}" 
-           style="width: 100% !important; display: block !important; visibility: visible !important; opacity: 1 !important; background: #fff !important; font-family: monospace !important; color: black !important; padding: 5px !important;" 
+           style="width: 100% !important; display: block !important; visibility: visible !important; background: #f9f9f9 !important; font-family: monospace !important; color: #333 !important; padding: 5px !important; border: 1px solid #ccc !important; box-sizing: border-box;" 
            readonly>
 </div>
 
+<!-- Подключение скрипта JSME -->
 <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
 
 <script type="text/javascript">
+    var mainJsmeApplet_{{ widget.attrs.id|cut:"id_" }}; // Уникальная переменная для редактора
+
     function startJSME() {
         var inputId = "{{ widget.attrs.id }}";
         var field = document.getElementById(inputId);
@@ -26,40 +29,47 @@
 
         if (!field) return;
 
-        // Создаем редактор
-        var applet = new JSApplet.JSME(containerId, "750px", "450px", {
+        // Инициализация (600x400 - оптимальный размер для админки)
+        mainJsmeApplet_{{ widget.attrs.id|cut:"id_" }} = new JSApplet.JSME(containerId, "600px", "400px", {
             "options": "oldLook,paste"
         });
 
-        // Загружаем данные
+        // Загружаем данные из базы, если они есть
         if (field.value) {
-            applet.readGenericMolecularInput(field.value);
+            mainJsmeApplet_{{ widget.attrs.id|cut:"id_" }}.readGenericMolecularInput(field.value);
         }
 
-        // Связываем изменения
-        applet.setCallBack("AfterStructureModified", function(jsme) {
-            field.value = jsme.smiles();
-            console.log("New SMILES: " + field.value);
+        // ИСПРАВЛЕННЫЙ CALLBACK: используем переменную объекта напрямую
+        mainJsmeApplet_{{ widget.attrs.id|cut:"id_" }}.setCallBack("AfterStructureModified", function(event) {
+            try {
+                var smiles = mainJsmeApplet_{{ widget.attrs.id|cut:"id_" }}.smiles(); 
+                field.value = smiles;
+                console.log("SMILES updated: " + smiles);
+            } catch (e) {
+                console.error("Ошибка получения SMILES: " + e);
+            }
         });
 
-        // ЦИКЛ ПРОВЕРКИ ВИДИМОСТИ (защита от скрытия админкой)
+        // Защита от скрытия и принудительная отрисовка
         setInterval(function() {
             if (field.style.display === 'none' || field.type === 'hidden') {
                 field.style.setProperty('display', 'block', 'important');
                 field.style.setProperty('visibility', 'visible', 'important');
-                field.type = 'text'; // На случай, если Django сменил тип на hidden
+                field.type = 'text';
             }
-            applet.repaint();
-        }, 500);
+            if (mainJsmeApplet_{{ widget.attrs.id|cut:"id_" }}) {
+                mainJsmeApplet_{{ widget.attrs.id|cut:"id_" }}.repaint();
+            }
+        }, 800);
     }
 
-    // Регистрация функции в глобальном окне для JSME
+    // Регистрация в глобальном окне
     window.jsmeOnLoad = startJSME;
 
-    // Резервный запуск, если jsmeOnLoad уже проскочил
+    // Резервный запуск через 2 секунды, если автоматика не сработала
     setTimeout(function() {
-        if (typeof JSApplet !== 'undefined' && document.getElementById("jsme_canvas_{{ widget.attrs.id }}").innerHTML === "") {
+        if (typeof JSApplet !== 'undefined' && !mainJsmeApplet_{{ widget.attrs.id|cut:"id_" }}) {
             startJSME();
         }
-    }, 1500);
+    }, 2000);
 </script>
