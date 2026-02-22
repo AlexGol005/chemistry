@@ -1,119 +1,76 @@
 {% extends 'main/superbase.html' %}
 {% load static %}
 
-{% block title %}
-   Названия органических молекул - тест
-{% endblock %}
+{% block title %}Тест: {{ question.name }}{% endblock %}
 
 {% block content %}
-<div class="col-12 p-4">
-    <!-- Подключение редактора JSME -->
-    <script type="text/javascript" src="https://jsme-editor.github.io"></script>
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <h2 class="text-center">Вопрос №{{ question.id }}</h2>
+        <hr>
 
-    <div class="card shadow-sm rounded-4 p-4 border-0">
-        <h1 class="h3 mb-4 text-secondary text-center">Вопрос №{{ question.id }}</h1>
-
-        <div class="text-center mb-4">
-            {% if question.question_type == 'N2F' %}
-                <p class="fs-4">Нарисуйте формулу для соединения:</p>
-                <h2 class="display-6 text-primary fw-bold">{{ question.name }}</h2>
-            {% else %}
-                <p class="fs-4">Как называется это соединение?</p>
-                <div class="p-3 bg-light rounded border border-dashed mb-2">
-                    <code>SMILES: {{ question.smiles }}</code>
-                </div>
-                <small class="text-muted text-uppercase fw-semibold" style="letter-spacing: 1px;">Введите название ниже</small>
-            {% endif %}
-        </div>
-
-        <hr class="my-4 opacity-25">
-
-        <!-- Форма ответа -->
-        <form method="post" id="chemForm" onsubmit="return prepareAnswer()" class="text-center">
-            {% csrf_token %}
-            
-            {% if question.question_type == 'N2F' %}
-                <!-- Контейнер для редактора JSME -->
-                <div class="d-flex justify-content-center">
-                    <div id="jsme_container" class="border rounded bg-white shadow-sm" style="overflow: hidden;"></div>
-                </div>
-                <!-- Скрытое поле для передачи SMILES в Django -->
-                <input type="hidden" name="user_answer" id="smiles_input">
-            {% else %}
-                <!-- Текстовое поле для названия -->
-                <div class="mx-auto" style="max-width: 500px;">
-                    <input type="text" name="user_answer" class="form-control form-control-lg text-center rounded-pill mb-3 border-2" placeholder="Название на русском" required autofocus>
-                </div>
-            {% endif %}
-
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm fw-bold">
-                    Проверить ответ
-                </button>
+        {% if question.question_type == 'N2F' %}
+            <div class="text-center">
+                <p class="lead">Нарисуйте формулу для: <strong>{{ question.name }}</strong></p>
+                <!-- Важно: ID контейнера должен быть уникальным -->
+                <div id="jsme_container" style="margin: 0 auto; border: 1px solid #dee2e6; border-radius: 8px;"></div>
+                
+                <form method="post" id="chemForm" onsubmit="return prepareAnswer()" class="mt-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_answer" id="smiles_input">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5">Проверить</button>
+                </form>
             </div>
-        </form>
+        {% else %}
+            <div class="text-center">
+                <p class="lead">Назовите соединение:</p>
+                <div class="p-3 bg-light border rounded mb-3"><code>{{ question.smiles }}</code></div>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="text" name="user_answer" class="form-control mb-3 text-center" placeholder="Название..." required>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5">Проверить</button>
+                </form>
+            </div>
+        {% endif %}
 
-        <!-- Блок результата и навигации -->
         {% if result is not None %}
-            <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-4 shadow-sm rounded-4 text-center py-4 animate__animated animate__fadeIn">
+            <div class="alert {% if result %}alert-success{% else %}alert-danger{% endif %} mt-3 text-center">
                 {% if result %}
-                    <h3 class="alert-heading mb-3">✅ Верно! Великолепно!</h3>
-                    
-                    {% if next_id %}
-                        <div class="mt-4">
-                            <a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-success btn-lg px-4 rounded-pill fw-bold">
-                                К следующей молекуле →
-                            </a>
-                        </div>
-                    {% else %}
-                        <div class="mt-3 fs-5 fw-bold text-success">🏆 Поздравляем! Вы завершили все тесты!</div>
-                        <a href="{% url 'quiz_index' %}" class="btn btn-outline-secondary mt-3 rounded-pill">Вернуться на главную</a>
-                    {% endif %}
-
+                    <b>✅ Верно!</b>
+                    {% if next_id %}<br><a href="{% url 'organicnamestest' pk=next_id %}" class="btn btn-sm btn-success mt-2">Дальше →</a>{% endif %}
                 {% else %}
-                    <h3 class="alert-heading mb-2">❌ Ошибка в структуре</h3>
-                    <p class="mb-0">Внимательно проверьте валентности и количество атомов углерода. Попробуйте еще раз!</p>
+                    <b>❌ Ошибка.</b> Попробуйте еще раз.
                 {% endif %}
             </div>
         {% endif %}
     </div>
 </div>
 
+<!-- БЛОК СКРИПТОВ ВНИЗУ -->
 <script>
-    // 1. Принудительно делаем переменную и функцию глобальными
-    window.jsmeApplet = null;
-
+    // 1. Глобальная функция для JSME
     window.jsmeOnLoad = function() {
-        console.log("JSME запущен!");
-        var container = document.getElementById("jsme_container");
-        if (container) {
-            // Создаем экземпляр редактора
-            window.jsmeApplet = new JSMe("jsme_container", "500px", "400px", {
+        if (document.getElementById("jsme_container")) {
+            window.jsmeApplet = new JSMe("jsme_container", "450px", "350px", {
                 "options" : "oldlook,nozoom"
             });
-            console.log("Редактор инициализирован в контейнере");
-        } else {
-            console.error("Контейнер jsme_container не найден на странице!");
         }
     };
 
-    // 2. Функция для кнопки "Проверить"
+    // 2. Функция сбора данных
     function prepareAnswer() {
         if (window.jsmeApplet) {
-            var smiles = window.jsmeApplet.smiles();
-            console.log("Считанный SMILES: " + smiles);
-            var hiddenInput = document.getElementById('smiles_input');
-            if (hiddenInput) {
-                hiddenInput.value = smiles;
-            }
-        } else {
-            console.error("Редактор еще не загружен!");
+            document.getElementById('smiles_input').value = window.jsmeApplet.smiles();
         }
         return true;
     }
+
+    // 3. Динамическая загрузка скрипта (самый надежный способ)
+    (function() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        // Используем проверенный CDN автора библиотеки
+        script.src = 'https://peter-ertl.com';
+        document.head.appendChild(script);
+    })();
 </script>
-
-<!-- 3. Загружаем библиотеку ПОСЛЕ определения функции -->
-<script type="text/javascript" src="https://jsme-editor.github.io"></script>
-
-{% endblock %}
