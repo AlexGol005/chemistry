@@ -8,13 +8,13 @@ from rdkit import Chem as Chemrdkit
 
 class OrganicNames(models.Model): # Используем стандартный models.Model
     name = models.CharField(max_length=255)
-    molecule_smiles = models.TextField(null=True, blank=True)
+    molecule = models.TextField(null=True, blank=True)
 
     @property
     def mol_object(self):
         """Метод для получения объекта RDKit из строки SMILES"""
-        if self.molecule_smiles:
-            return Chemrdkit.MolFromSmiles(self.molecule_smiles)
+        if self.molecule:
+            return Chemrdkit.MolFromSmiles(self.molecule)
         return None
 
     def __str__(self):
