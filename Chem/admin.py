@@ -223,7 +223,7 @@ class OrganicNamesAdmin(admin.ModelAdmin):
     list_display = ('name', 'molecule')
 
     def formfield_for_dbfield(self, db_field, **kwargs):
-        # Применяем виджет ТОЛЬКО к полю с именем 'molecule'
+        # Применяем JSMEWidget ТОЛЬКО к полю 'molecule'
         if db_field.name == 'molecule':
             kwargs['widget'] = JSMEWidget
         return super().formfield_for_dbfield(db_field, **kwargs)
