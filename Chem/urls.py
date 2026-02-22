@@ -5,8 +5,8 @@ from . import views
 
 
 urlpatterns = [
-    path('organicnamestesthead', views.OrganicNamesHomeView.as_view(), name='organicnamestesthead'),
-    path('organicnamestest/<int:pk>/', views.OrganicNamesTestView.as_view(), name='organicnamestest'),
+    # path('organicnamestesthead', views.OrganicNamesHomeView.as_view(), name='organicnamestesthead'),
+    # path('organicnamestest/<int:pk>/', views.OrganicNamesTestView.as_view(), name='organicnamestest'),
     
     path('', views.ChemView.as_view(), name='chem'),
     path('inorganiclaw', views.InorganiclawView.as_view(), name='inorganiclaw'),
