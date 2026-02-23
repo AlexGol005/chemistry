@@ -989,4 +989,28 @@ class OrganicChemTestAnswerView(TemplateView):
         
         return context
 
+def organic_add_to_list(request, reaction_id):
+    if request.method == 'POST':
+        reaction = get_object_or_404(OrganicReaction, id=reaction_id)
+        # get_or_create гарантирует отсутствие дублей (UniqueTogether)
+        OrganicUserReaction.objects.get_or_create(user=request.user, reaction=reaction)
+    
+    # Возвращаем пользователя обратно
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
+
+def organic_remove_reaction(request, reaction_id):
+    if request.method == 'POST':
+        # Находим и удаляем связь текущего пользователя с этой реакцией
+        OrganicUserReaction.objects.filter(user=request.user, reaction_id=reaction_id).delete()
+
+    # Возвращаем пользователя туда, откуда он пришел
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+def organic_my_reactions_list(request):
+    # Получаем все связи текущего пользователя с реакциями
+    # select_related('reaction') подгрузит данные InorganicReaction одним запросом
+    user_items = OrganicUserReaction.objects.filter(user=request.user).select_related('reaction')
+    
+    return render(request, 'Chem/organic_my_reactions.html', {'user_items': user_items})
