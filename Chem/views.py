@@ -78,19 +78,16 @@ class OrganicNamesTestAnswerView(View):
         user_smiles = request.POST.get('user_smiles', '')
         test_ids = request.session.get('organicnamestest_ids', [])
         
-        if not test_ids or index >= len(test_ids):
-            return redirect('organicnamestest_start')
-
         molecule = get_object_or_404(OrganicNames, id=test_ids[index])
         
-        # Сравнение SMILES
+        # Сравнение
         is_correct = user_smiles.strip() == molecule.smiles.strip()
         
         context = {
             'molecule': molecule,
+            'user_smiles': user_smiles,  # ПЕРЕДАЕМ ОТВЕТ ПОЛЬЗОВАТЕЛЯ
             'is_correct': is_correct,
             'next_index': index + 1,
-            'total_questions': len(test_ids)
         }
         return render(request, 'organicnamestest_answer.html', context)
 
