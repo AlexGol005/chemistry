@@ -237,4 +237,102 @@ class OrganicNamesAdmin(admin.ModelAdmin):
     list_display = ('name', 'molecule')
 
 
+# базовая органика
+# зох классы для отображения в админке
+
+# класс для загрузки/выгрузки зох
+class InorganiclawResource(resources.ModelResource):
+    class Meta:
+        model = Inorganiclaw
+        
+
+
+# класс добавления стилей к окну # класс для загрузки/выгрузки зох
+class OrganiclawAdminForm(forms.ModelForm):
+    title = forms.CharField(label="Заголовок", widget=CKEditorUploadingWidget())
+    text = forms.CharField(label="Описание закона", widget=CKEditorUploadingWidget())
+    examples = forms.CharField(label="Примеры", widget=CKEditorUploadingWidget())
+    exceptions = forms.CharField(label="Исключения", widget=CKEditorUploadingWidget(), required=False)
+
+
+    class Meta:
+        model = Organiclaw
+        fields = '__all__'
+        
+# класс подробностей # класс для загрузки/выгрузки зох   
+class OrganiclawAdmin(ImportExportActionModelAdmin):
+    resource_class = OrganiclawResource
+    list_display = ('number', 'title' , 'display_count', 'pk')
+    ordering = ('number',)
+    search_fields = ['number', 'title', 'text', 'keywords']
+    form = OrganiclawAdminForm
+    save_as = True
+
+    def display_count(self, obj):
+        return obj.organicreaction_set.count()
+    
+    display_count.short_description = "реакций"
+        
+# фиксация формы в админке # класс для загрузки/выгрузки зох
+admin.site.register(Organiclaw, OrganiclawAdmin)
+
+
+
+
+
+# реакции ох классы для отображения в админке
+
+# класс для загрузки/выгрузки реакции ох
+class OrganicReactionResource(resources.ModelResource):
+    class Meta:
+        model = OrganicReaction
+        skip_unchanged = True
+        report_skipped = True   
+
+
+# класс добавления стилей к окну реакции ох
+class OrganicReactionAdminForm(forms.ModelForm):
+    extra = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+
+
+    class Meta:
+        model = OrganicReaction
+        fields = '__all__'
+        
+# класс подробностей реакции ох   
+class OrganicReactionAdmin(ImportExportActionModelAdmin):
+    resource_class = OrganicReactionResource
+    form = OrganicReactionAdminForm
+    autocomplete_fields = ['number']
+
+    list_display = ('pk', 'metatitle')
+
+
+    search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
+    save_as = True
+    def save_model(self, request, obj, form, change):
+        # Проверяем наличие записи в другой модели
+        if not OrganicNames.objects.filter(name1=obj.reagent1).exists() and obj.reagent1 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.reagent1}' нет в модели названий.")
+        if not OrganicNames.objects.filter(name1=obj.reagent2).exists() and obj.reagent2 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.reagent2}' нет в модели названий.")
+        if not OrganicNames.objects.filter(name1=obj.reagent3).exists() and obj.reagent3 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.reagent3}' нет в модели названий.")
+        if not OrganicNames.objects.filter(name1=obj.product1).exists() and obj.product1 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.product1}' нет в модели названий.")
+        if not OrganicNames.objects.filter(name1=obj.product2).exists() and obj.product2 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.product2}' нет в модели названий.")
+        if not OrganicNames.objects.filter(name1=obj.product3).exists() and obj.product3 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.product3}' нет в модели названий.")
+        if not OrganicNames.objects.filter(name1=obj.product4).exists() and obj.product4 != None :
+            messages.warning(request, f"Внимание: вещества '{obj.product4}' нет в модели названий.")
+       
+        # Сохранение сработает в любом случае
+        super().save_model(request, obj, form, change)
+        
+# фиксация формы в админке реакции ох
+admin.site.register(OrganicReaction, OrganicReactionAdmin)
+
+
+
 
