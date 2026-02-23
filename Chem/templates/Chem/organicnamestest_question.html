@@ -5,33 +5,70 @@
 <div class="col-8">
     <center>
         <h3>Вопрос №{{ index|add:1 }}</h3>
-        <!-- Используем name1 -->
         <h4>Нарисуйте формулу для: <br><strong>«{{ molecule.name1 }}»</strong></h4>
 
-        <div id="jsme_container" style="width: 620px; height: 420px; border: 1px solid #ccc; margin: 20px 0;"></div>
+        <!-- Контейнер редактора -->
+        <div id="jsme_canvas_test" 
+             style="width: 450px !important; height: 300px !important; border: 1px solid #ccc; background: white !important; display: block !important; overflow: hidden; margin-top: 20px;">
+        </div>
 
         <form method="POST" action="{% url 'organicnamestest_answer' index %}" id="answer-form">
             {% csrf_token %}
-            <input type="hidden" name="user_smiles" id="user_smiles">
-            <button type="button" onclick="makeAnswer()" class="btn btn-primary" style="width: 80%">Ответить</button>
+            
+            <div style="margin-top: 5px; width: 450px; text-align: left;">
+                <label style="font-weight: bold; font-size: 11px; color: #888;">Ваш ответ (SMILES):</label>
+                <!-- Поле для передачи данных на сервер -->
+                <input type="text" 
+                       name="user_smiles" 
+                       id="user_smiles" 
+                       style="width: 100% !important; background: #f8f9fa !important; font-family: monospace; font-size: 11px; padding: 3px; border: 1px solid #ddd;" 
+                       readonly>
+            </div>
+            
+            <!-- Кнопка обычного типа submit — она сработает всегда -->
+            <button type="submit" class="btn btn-primary mt-4" style="width: 450px">
+                Ответить
+            </button>
         </form>
     </center>
 </div>
 
-<script type="text/javascript" src="{% static 'js/jsme/jsme.nocache.js' %}"></script>
-<script>
-    var jsmeApplet;
-    function jsmeOnLoad() {
-        if (document.getElementById("jsme_container")) {
-            jsmeApplet = new JSME.jsmeApplet("jsme_container", "600px", "400px");
-        }
+<!-- Локальный путь к JSME -->
+<script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
+
+<script type="text/javascript">
+    var testJsmeApplet;
+
+    function startJSME() {
+        var field = document.getElementById("user_smiles");
+        var containerId = "jsme_canvas_test";
+
+        if (!field) return;
+
+        // Инициализация как в работающей админке
+        testJsmeApplet = new JSApplet.JSME(containerId, "450px", "300px", {
+            "options": "oldLook,paste,autocenter"
+        });
+
+        // Каждое изменение рисунка сразу пишет строку в поле input
+        testJsmeApplet.setCallBack("AfterStructureModified", function(event) {
+            try {
+                var smiles = event.src.smiles();
+                field.value = smiles;
+            } catch (e) {
+                console.error("Ошибка при получении SMILES: " + e);
+            }
+        });
     }
 
-    function makeAnswer() {
-        if (jsmeApplet) {
-            document.getElementById('user_smiles').value = jsmeApplet.smiles();
-            document.getElementById('answer-form').submit();
+    // Авто-запуск при загрузке библиотеки
+    window.jsmeOnLoad = startJSME;
+
+    // Резервный запуск через 1.5 сек, если jsmeOnLoad не сработал
+    setTimeout(function() {
+        if (typeof JSApplet !== 'undefined' && !testJsmeApplet) {
+            startJSME();
         }
-    }
+    }, 1500);
 </script>
 {% endblock %}
