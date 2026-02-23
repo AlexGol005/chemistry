@@ -1,0 +1,55 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load mol_extras %}
+
+{% block title %}Результат ответа{% endblock %}
+
+{% block content %}
+<div class="col-8">
+    <center>
+        {% if is_correct %}
+            <h3 class="text-success">✅ Правильно!</h3>
+        {% else %}
+            <h3 class="text-danger">❌ Ошибка в формуле</h3>
+        {% endif %}
+        <hr>
+        <h5>Вещество: <strong>{{ molecule.name }}</strong></h5>
+
+        <div class="row mt-4">
+            <!-- Блок пользователя -->
+            <div class="col-md-6">
+                <div class="card border-info mb-3">
+                    <div class="card-header bg-info text-white">Ваш рисунок</div>
+                    <div class="card-body">
+                        {% if user_smiles %}
+                            {% render_smiles user_smiles width=250 height=250 %}
+                        {% else %}
+                            <p class="text-muted">Вы ничего не нарисовали</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок эталона -->
+            <div class="col-md-6">
+                <div class="card border-success mb-3">
+                    <div class="card-header bg-success text-white">Правильный ответ</div>
+                    <div class="card-body">
+                        {% render_smiles molecule.smiles width=250 height=250 %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="{% url 'organicnamestest_question' next_index %}" class="btn btn-primary" style="width: 80%">
+                Следующий вопрос
+            </a>
+            <br>
+            <a href="{% url 'organicnamestest_start' %}" class="btn btn-link mt-2 text-muted">
+                Закончить тест
+            </a>
+        </div>
+    </center>
+</div>
+{% endblock %}
