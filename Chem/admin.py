@@ -25,7 +25,7 @@ class InorganiclawResource(resources.ModelResource):
 
 
 # класс добавления стилей к окну знх
-class InAdminForm(forms.ModelForm):
+class InorganiclawAdminForm(forms.ModelForm):
     title = forms.CharField(label="Заголовок", widget=CKEditorUploadingWidget())
     text = forms.CharField(label="Описание закона", widget=CKEditorUploadingWidget())
     formula = forms.CharField(label="Общая формула закона", widget=CKEditorUploadingWidget())
