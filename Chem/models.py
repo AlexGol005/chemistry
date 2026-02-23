@@ -76,7 +76,7 @@ class Organiclaw(models.Model):
 
 
     def __str__(self):
-        count = self.inorganicreaction_set.count()
+        count = self.organicreaction_set.count()
         return f'{self.title} - {count} реакций'
 
 
