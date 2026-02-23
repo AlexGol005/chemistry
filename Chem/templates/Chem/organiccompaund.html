@@ -49,20 +49,20 @@
 {% endif %}
      {% if objcontent.formula %}
 
-
-     {% render_smiles objcontent.formula width=200 height=200 %}
+<center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 38pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
+     {{objcontent.formula}} </p>    </center>
     
 {% endif %}
 
-
+ {% if objcontent.molecule %}
 <br>
 
-    
-  <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 38pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
-      {{objcontent.molecule}} </p>    </center>
+   <center> {% render_smiles objcontent.molecule width=200 height=200 %} </center>
+  
+      
  <br>
 
-
+{% endif %}
 
 <br>
     
