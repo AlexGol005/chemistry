@@ -17,8 +17,8 @@ class OrganicNames(models.Model): # Используем стандартный 
     name2 = models.CharField('Название 2', max_length=255, blank=True, null=True, unique=True)
     name3 = models.CharField('Название 3', max_length=255, blank=True, null=True, unique=True)
     name4 = models.CharField('Название 4', max_length=255, blank=True, null=True, unique=True)
-    formula = models.CharField('Формула', max_length=10000, blank=True, null=True, unique=True)
-    molecule = models.TextField('Структура молекулы', null=True, blank=True)
+    formula = models.CharField('Молекулярная формула', max_length=10000, blank=True, null=True, unique=True)
+    molecule = models.TextField('Структурная формула', null=True, blank=True)
     appearance = models.TextField('Внешний вид', blank=True, null=True) 
     img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
                                         
