@@ -226,3 +226,5 @@ CKEDITOR_CONFIGS = {
 # DEBUG = True
 DEBUG = False
 
+SILENCED_SYSTEM_CHECKS = ['ckeditor.W001']
+
