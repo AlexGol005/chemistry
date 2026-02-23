@@ -2,6 +2,7 @@
 {% extends 'main/superbase.html' %}
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
+{% load mol_extras %}
 
 {#название страницы#}
 {#стандартная#}
@@ -47,9 +48,10 @@
     <br>
 {% endif %}
      {% if objcontent.formula %}
-  <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 38pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
-      {{objcontent.formula}} </p>    </center>
- <br>
+
+
+     {% render_smiles objcontent.formula width=200 height=200 %}
+    
 {% endif %}
 
 
