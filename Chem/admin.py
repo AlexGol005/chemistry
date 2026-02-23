@@ -34,16 +34,16 @@ class InAdminForm(forms.ModelForm):
 
 
     class Meta:
-        model = In
+        model = Inorganiclaw
         fields = '__all__'
         
 # класс подробностей знх   
-class InorganicReactionAdmin(ImportExportActionModelAdmin):
-    resource_class = InorganicReactionResource
+class InorganiclawAdmin(ImportExportActionModelAdmin):
+    resource_class = InorganiclawResource
     list_display = ('number', 'title' , 'display_count', 'pk')
     ordering = ('number',)
     search_fields = ['number', 'title', 'text', 'keywords']
-    form = InorganicReactionAdminForm
+    form = InorganiclawAdminForm
     save_as = True
 
     def display_count(self, obj):
@@ -52,7 +52,7 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
     display_count.short_description = "реакций"
         
 # фиксация формы в админке знх
-admin.site.register(In, InAdmin)
+admin.site.register(Inorganiclaw, InorganiclawAdmin)
 
 
 
