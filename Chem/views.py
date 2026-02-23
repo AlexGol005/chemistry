@@ -7,49 +7,6 @@ from django.db.models import Q
 from .models import *
 from .forms import *
 
-# class OrganicNamesHomeView(TemplateView):
-#     template_name = 'Chem/headquestion.html'
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         # Находим ID самого первого вопроса в базе, чтобы кнопка знала куда вести
-#         first_question = OrganicNames.objects.first()
-#         context['first_id'] = first_question.id if first_question else None
-#         return context
-
-# class OrganicNamesTestView(DetailView):
-#     model = OrganicNames
-#     template_name = 'Chem/question.html'
-#     context_object_name = 'question'
-
-#     def post(self, request, *args, **kwargs):
-#         self.object = self.get_object()
-#         user_answer = request.POST.get('user_answer', '').strip()
-        
-#         if self.object.question_type == 'N2F':
-#             result = self.object.verify_structure(user_answer)
-#         else:
-#             result = user_answer.lower() == self.object.name.lower()
-
-#         return self.render_to_response(self.get_context_data(result=result))
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['result'] = kwargs.get('result')
-        
-#         # Находим ID следующего вопроса
-#         next_q = OrganicNames.objects.filter(id__gt=self.object.id).order_by('id').first()
-#         context['next_id'] = next_q.id if next_q else None
-        
-#         return context
-
-
-# тест на название органических веществ
-
-import random
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views import View
-from .models import OrganicNames
 
 class OrganicNamesTestStartView(View):
     def get(self, request):
@@ -57,7 +14,7 @@ class OrganicNamesTestStartView(View):
         ids = list(OrganicNames.objects.values_list('id', flat=True))
         random.shuffle(ids)
         request.session['organicnamestest_ids'] = ids
-        return render(request, 'organicnamestest_start.html')
+        return render(request, 'Chem/organicnamestest_start.html')
 
 class OrganicNamesTestQuestionView(View):
     def get(self, request, index):
@@ -68,7 +25,7 @@ class OrganicNamesTestQuestionView(View):
             return render(request, 'organicnamestest_finished.html')
 
         molecule = get_object_or_404(OrganicNames, id=test_ids[index])
-        return render(request, 'organicnamestest_question.html', {
+        return render(request, 'Chem/organicnamestest_question.html', {
             'molecule': molecule,
             'index': index
         })
@@ -89,7 +46,7 @@ class OrganicNamesTestAnswerView(View):
             'is_correct': is_correct,
             'next_index': index + 1,
         }
-        return render(request, 'organicnamestest_answer.html', context)
+        return render(request, 'Chem/organicnamestest_answer.html', context)
 
 
 
