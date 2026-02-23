@@ -360,6 +360,14 @@ class Link(models.Model):
         verbose_name_plural = 'Ссылки по химии'
 
 
+class UserReaction(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='favorite_reactions')
+    reaction = models.ForeignKey(InorganicReaction, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'reaction') # Защита от дублей
+
 class OrganicUserReaction(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organic_favorite_reactions')
     reaction = models.ForeignKey(OrganicReaction, on_delete=models.CASCADE)
