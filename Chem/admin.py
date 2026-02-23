@@ -38,12 +38,12 @@ class InAdminForm(forms.ModelForm):
         fields = '__all__'
         
 # класс подробностей знх   
-class InAdmin(ImportExportActionModelAdmin):
-    resource_class = InResource
+class InorganicReactionAdmin(ImportExportActionModelAdmin):
+    resource_class = InorganicReactionResource
     list_display = ('number', 'title' , 'display_count', 'pk')
     ordering = ('number',)
     search_fields = ['number', 'title', 'text', 'keywords']
-    form = InAdminForm
+    form = InorganicReactionAdminForm
     save_as = True
 
     def display_count(self, obj):
