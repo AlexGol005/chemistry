@@ -32,17 +32,28 @@ class OrganicNamesTestAnswerView(View):
     def post(self, request, index):
         user_smiles = request.POST.get('user_smiles', '')
         test_ids = request.session.get('organicnamestest_ids', [])
-        
         molecule = get_object_or_404(OrganicNames, id=test_ids[index])
-        is_correct = user_smiles.strip() == molecule.smiles.strip()
         
+        is_correct = False
+        
+        # Умное сравнение через RDKit
+        mol_user = Chem.MolFromSmiles(user_smiles)
+        mol_ref = Chem.MolFromSmiles(molecule.smiles)
+        
+        if mol_user and mol_ref:
+            # Превращаем обе молекулы в каноническую строку
+            # Теперь неважно, к какому атому присоединен радикал
+            is_correct = Chem.MolToSmiles(mol_user) == Chem.MolToSmiles(mol_ref)
+        elif not user_smiles and not molecule.smiles:
+            # Если оба поля пустые (теоретически)
+            is_correct = True
+
         return render(request, 'Chem/organicnamestest_answer.html', {
             'molecule': molecule,
             'user_smiles': user_smiles,
             'is_correct': is_correct,
             'next_index': index + 1
         })
-
 
 
 
