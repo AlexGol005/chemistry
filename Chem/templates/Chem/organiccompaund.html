@@ -19,16 +19,51 @@
 <div class="col-12">
          
    <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
-       {{objcontent.name}} </p>    </center>
+       {{objcontent.name1}} </p>    </center>
     <br>
+    
+{% if objcontent.name2 %}
+
+    или
+    <br>
+       <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
+       {{objcontent.name2}} </p>    </center>
+    <br>
+{% endif %}
+    {% if objcontent.name3 %}
+
+    или
+    <br>
+       <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
+       {{objcontent.name3}} </p>    </center>
+    <br>
+{% endif %}
+    {% if objcontent.name4 %}
+
+    или
+    <br>
+       <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
+       {{objcontent.name4}} </p>    </center>
+    <br>
+{% endif %}
+     {% if objcontent.formula %}
   <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 38pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
       {{objcontent.formula}} </p>    </center>
  <br>
+{% endif %}
 
+
+<br>
+
+    
   <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 38pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
       {{objcontent.molecule}} </p>    </center>
  <br>
 
+
+
+<br>
+    
 
   
                  {% if objcontent.appearance %}
