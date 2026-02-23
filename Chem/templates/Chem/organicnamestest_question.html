@@ -15,17 +15,9 @@
         <form method="POST" action="{% url 'organicnamestest_answer' index %}" id="answer-form">
             {% csrf_token %}
             
-            <div style="margin-top: 5px; width: 450px; text-align: left;">
-                <label style="font-weight: bold; font-size: 11px; color: #888;">Ваш ответ (SMILES):</label>
-                <!-- Поле для передачи данных на сервер -->
-                <input type="text" 
-                       name="user_smiles" 
-                       id="user_smiles" 
-                       style="width: 100% !important; background: #f8f9fa !important; font-family: monospace; font-size: 11px; padding: 3px; border: 1px solid #ddd;" 
-                       readonly>
-            </div>
+            <!-- Скрытое поле для передачи SMILES на сервер -->
+            <input type="hidden" name="user_smiles" id="user_smiles" value="">
             
-            <!-- Кнопка обычного типа submit — она сработает всегда -->
             <button type="submit" class="btn btn-primary mt-4" style="width: 450px">
                 Ответить
             </button>
@@ -45,12 +37,11 @@
 
         if (!field) return;
 
-        // Инициализация как в работающей админке
         testJsmeApplet = new JSApplet.JSME(containerId, "450px", "300px", {
             "options": "oldLook,paste,autocenter"
         });
 
-        // Каждое изменение рисунка сразу пишет строку в поле input
+        // Записываем результат рисования в скрытое поле
         testJsmeApplet.setCallBack("AfterStructureModified", function(event) {
             try {
                 var smiles = event.src.smiles();
@@ -61,10 +52,8 @@
         });
     }
 
-    // Авто-запуск при загрузке библиотеки
     window.jsmeOnLoad = startJSME;
 
-    // Резервный запуск через 1.5 сек, если jsmeOnLoad не сработал
     setTimeout(function() {
         if (typeof JSApplet !== 'undefined' && !testJsmeApplet) {
             startJSME();
