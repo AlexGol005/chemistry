@@ -40,9 +40,9 @@ urlpatterns = [
     path('organiccompaunds/searchresult/', views.OrganicCompaundSearchResultView.as_view(), name='organiccompaundsearchresult'),
     path('organiccompaund/<str:str>/', views.OrganicCompaundStrView.as_view(), name='organiccompaund'),
 
-    path('organicnamestest/', OrganicNamesTestStartView.as_view(), name='organicnamestest_start'),
-    path('organicnamestest/question/<int:index>/', OrganicNamesTestQuestionView.as_view(), name='organicnamestest_question'),
-    path('organicnamestest/answer/<int:index>/', OrganicNamesTestAnswerView.as_view(), name='organicnamestest_answer'),
+    path('organicnamestest/', views.OrganicNamesTestStartView.as_view(), name='organicnamestest_start'),
+    path('organicnamestest/question/<int:index>/', views.OrganicNamesTestQuestionView.as_view(), name='organicnamestest_question'),
+    path('organicnamestest/answer/<int:index>/', views.OrganicNamesTestAnswerView.as_view(), name='organicnamestest_answer'),
     
 
     path('tables', views.TablesView.as_view(), name='tables'),
