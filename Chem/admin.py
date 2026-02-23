@@ -241,9 +241,9 @@ class OrganicNamesAdmin(admin.ModelAdmin):
 # зох классы для отображения в админке
 
 # класс для загрузки/выгрузки зох
-class InorganiclawResource(resources.ModelResource):
+class OrganiclawResource(resources.ModelResource):
     class Meta:
-        model = Inorganiclaw
+        model = Organiclaw
         
 
 
