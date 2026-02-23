@@ -44,7 +44,62 @@ from .forms import *
 #         return context
 
 
+# тест на название органических веществ
 
+import random
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
+from .models import OrganicNames
+
+class OrganicNamesTestStartView(View):
+    def get(self, request):
+        # Формируем случайный список ID молекул для текущей сессии
+        ids = list(OrganicNames.objects.values_list('id', flat=True))
+        random.shuffle(ids)
+        request.session['organicnamestest_ids'] = ids
+        return render(request, 'organicnamestest_start.html')
+
+class OrganicNamesTestQuestionView(View):
+    def get(self, request, index):
+        test_ids = request.session.get('organicnamestest_ids', [])
+        
+        # Если тест закончен или список пуст
+        if not test_ids or index >= len(test_ids):
+            return render(request, 'organicnamestest_finished.html')
+
+        molecule = get_object_or_404(OrganicNames, id=test_ids[index])
+        return render(request, 'organicnamestest_question.html', {
+            'molecule': molecule,
+            'index': index
+        })
+
+class OrganicNamesTestAnswerView(View):
+    def post(self, request, index):
+        user_smiles = request.POST.get('user_smiles', '')
+        test_ids = request.session.get('organicnamestest_ids', [])
+        
+        if not test_ids or index >= len(test_ids):
+            return redirect('organicnamestest_start')
+
+        molecule = get_object_or_404(OrganicNames, id=test_ids[index])
+        
+        # Сравнение SMILES
+        is_correct = user_smiles.strip() == molecule.smiles.strip()
+        
+        context = {
+            'molecule': molecule,
+            'is_correct': is_correct,
+            'next_index': index + 1,
+            'total_questions': len(test_ids)
+        }
+        return render(request, 'organicnamestest_answer.html', context)
+
+
+
+
+
+
+# начало
 class ChemView(View):
     """выводит страницу химия"""
     def get(self, request):
