@@ -15,8 +15,7 @@ urlpatterns = [
     path('inorganiclaw/test/<str:str>/', views.ChemTestHeadView.as_view(), name='inorganiclawtest'),
     path('inorganiclaw/test/question/<str:str>/', views.ChemTestQuestionView.as_view(), name='inorganiclawtestquestion'),
     path('inorganiclaw/test/answer/<str:str>/', views.ChemTestAnswerView.as_view(), name='inorganiclawtestanswer'),
-    path('compaunds/searchresult/', views.CompaundSearchResultView.as_view(), name='compaundsearchresult'),
-    path('compaund/<str:str>/', views.CompaundStrView.as_view(), name='compaund'),
+
 
     path('organiclaw', views.OrganiclawView.as_view(), name='organiclaw'),
     path('organiclawstr/<int:pk>/', views.OrganiclawStrView.as_view(), name='organiclawstr'),
@@ -34,6 +33,12 @@ urlpatterns = [
     path('atomlaw/test/answer/<str:str>/', views.AtomTestAnswerView.as_view(), name='atomlawtestanswer'),
     
     path('compaunds', views.CompaundView.as_view(), name='compaunds'),
+    path('compaunds/searchresult/', views.CompaundSearchResultView.as_view(), name='compaundsearchresult'),
+    path('compaund/<str:str>/', views.CompaundStrView.as_view(), name='compaund'),
+
+    path('organiccompaunds', views.OrganicCompaundView.as_view(), name='organiccompaunds'),
+    path('organiccompaunds/searchresult/', views.OrganicCompaundSearchResultView.as_view(), name='organiccompaundsearchresult'),
+    path('organiccompaund/<str:str>/', views.OrganicCompaundStrView.as_view(), name='organiccompaund'),
     
 
     path('tables', views.TablesView.as_view(), name='tables'),
