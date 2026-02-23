@@ -43,6 +43,7 @@ urlpatterns = [
     path('organicnamestest/', views.OrganicNamesTestStartView.as_view(), name='organicnamestest_start'),
     path('organicnamestest/question/<int:index>/', views.OrganicNamesTestQuestionView.as_view(), name='organicnamestest_question'),
     path('organicnamestest/answer/<int:index>/', views.OrganicNamesTestAnswerView.as_view(), name='organicnamestest_answer'),
+    path('organicnamestest/finished/', views.OrganicNamesTestFinishedView.as_view(), name='organicnamestest_finished'),
     
 
     path('tables', views.TablesView.as_view(), name='tables'),
