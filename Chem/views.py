@@ -6,26 +6,28 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import *
 from .forms import *
-from rdkit import Chem as Chemredactor
-
+from rdkit import Chem as Chemredactor # Используем ваш импорт
 
 class OrganicNamesTestStartView(View):
     def get(self, request):
+        # Получаем список ID всех органических соединений
         ids = list(OrganicNames.objects.values_list('id', flat=True))
         random.shuffle(ids)
+        # Сохраняем перемешанный список в сессию
         request.session['organicnamestest_ids'] = ids
-        # Указываем путь с папкой приложения
         return render(request, 'Chem/organicnamestest_start.html')
 
 class OrganicNamesTestQuestionView(View):
     def get(self, request, index):
         test_ids = request.session.get('organicnamestest_ids', [])
+        
         if not test_ids or index >= len(test_ids):
+            # Если вопросы закончились, можно перенаправить на начало или спец. страницу
             return render(request, 'Chem/organicnamestest_finished.html')
 
-        molecule = get_object_or_404(OrganicNames, id=test_ids[index])
+        obj = get_object_or_404(OrganicNames, id=test_ids[index])
         return render(request, 'Chem/organicnamestest_question.html', {
-            'molecule': molecule,
+            'molecule': obj, # Передаем объект как 'molecule'
             'index': index
         })
 
@@ -34,33 +36,28 @@ class OrganicNamesTestAnswerView(View):
         user_smiles = request.POST.get('user_smiles', '')
         test_ids = request.session.get('organicnamestest_ids', [])
         
-        # Защита от пустого списка в сессии
-        if not test_ids or index >= len(test_ids):
+        if not test_ids:
             return redirect('organicnamestest_start')
 
-        molecule = get_object_or_404(OrganicNames, id=test_ids[index])
+        # Получаем объект из базы
+        obj = get_object_or_404(OrganicNames, id=test_ids[index])
+        
+        # ВАЖНО: В вашей модели SMILES хранится в поле .molecule
+        ref_smiles = obj.molecule  
         
         is_correct = False
         
-        # 1. Создаем объекты молекул из SMILES-строк
+        # Умное сравнение через RDKit (Chemredactor)
         mol_user = Chemredactor.MolFromSmiles(user_smiles)
-        mol_ref = Chemredactor.MolFromSmiles(molecule.smiles)
+        mol_ref = Chemredactor.MolFromSmiles(ref_smiles) if ref_smiles else None
         
-        # 2. Если обе структуры распознаны корректно
         if mol_user and mol_ref:
-            # Канонизируем (приводим к единому стандарту записи)
-            # Теперь неважно, к какому атому бензола прикреплен радикал
-            user_canonical = Chemredactor.MolToSmiles(mol_user, isomericSmiles=True)
-            ref_canonical = Chemredactor.MolToSmiles(mol_ref, isomericSmiles=True)
-            
-            is_correct = (user_canonical == ref_canonical)
+            user_can = Chemredactor.MolToSmiles(mol_user, isomericSmiles=True)
+            ref_can = Chemredactor.MolToSmiles(mol_ref, isomericSmiles=True)
+            is_correct = (user_can == ref_can)
         
-        # 3. Обработка случая, когда нарисовано что-то химически невозможное
-        elif not user_smiles:
-            is_correct = False # Пустой ответ всегда неверный
-            
         return render(request, 'Chem/organicnamestest_answer.html', {
-            'molecule': molecule,
+            'molecule': obj,
             'user_smiles': user_smiles,
             'is_correct': is_correct,
             'next_index': index + 1
