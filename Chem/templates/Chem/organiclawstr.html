@@ -1,0 +1,201 @@
+{% extends 'main/superbase.html' %}
+
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+{{obj.title}} 
+{% endblock %}
+{#конец названия страницы#}
+
+
+    {% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
+    {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
+    {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
+
+
+{% block content %}
+{% autoescape off %}
+
+<div class="col-8">
+         
+   <center>  <h3><a href="/chem/inorganiclaw"> Законы органической химии </a></h3>     </center>
+{#основная таблица#}
+
+
+
+ 
+ 
+            <center><h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2></center>
+        
+            <table class="table table-bordered flexy1">
+            <tbody>
+            <tr>
+            <td class="ind1">
+                {{ obj.text }}
+            </td>
+            </tr>
+            </tbody>
+            </table>
+
+
+   <center>  <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img1 %} <img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img1.url }}">{% endif %}         <br>
+</div></center> 
+        <br>
+                    <center>    <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img2 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img2.url }}">{% endif %}
+        <br>
+                </div></center> 
+
+     <br>
+            <table class="table table-bordered flexy1">
+            <tbody>
+            <tr>
+            <td>
+                <h4>Примеры</h4>
+                <br>
+                {{ obj.examples }}
+            </td>
+            </tr>
+            </tbody> 
+                </table>
+
+   
+      
+                {% if obj.trening %}
+            <table class="table table-bordered flexy1">
+            <tbody>
+            <tr>
+            <td>
+                <h4>Ссылки</h4>
+                <br>
+                                <a href="{{ obj.trening}}"  target="blank" >
+                ссылка
+                </a>
+            </td>
+            </tr>
+            </tbody>
+                </table>
+                {% endif %}
+
+
+{% if obj.presentation and obj.file_extension == '.pdf' %}
+    <div style="margin-top: 20px;">
+        <embed src="{{ obj.presentation.url }}#toolbar=0&navpanes=0" 
+               type="application/pdf" 
+               width="100%" 
+               height="600px" />
+    </div>
+{% endif %}
+
+    
+ {% if obj.video %}
+  <br>  <br>
+       <center>   <a href="{{ obj.video }}"  class="btn btn-primary  mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> 
+       Посмотрите интересное и наглядное видео!
+   </a></center> 
+   {% endif %} 
+{% if obj.presentation %}
+<center>    <div style="margin-top: 20px;">
+        <a href="{{ obj.presentation.url }}" target="_blank" class="btn btn-primary">
+            👁 Посмотреть презентацию в новом окне
+        </a>
+    </div>
+    </center>
+{% endif %}
+
+    
+  <br>  <br>
+       <center>   <a href="{% url 'inorganiclawtest' obj.pk %}"  class="btn btn-primary  mt-2 mr-2 ml-2"> 
+       Перейти к тренировке
+   </a></center> 
+
+     
+  <br>  <br>
+
+
+               <center>  <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img3 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img3.url }}">{% endif %}
+
+</div></center> 
+    <br>  <br>
+ <h4>Примеры (реакции приведены без коэффициентов)</h3>
+{% for j in qw %}
+ <br>  <br>
+   
+
+             <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
+<a href="{% url 'organiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
+           {% if j.reagent1 %}       
+       {{j.reagent1}} 
+         {% endif %}
+                 
+         {% if j.reagent2 %}
+          +  {{j.reagent2}}
+         {% endif %}
+
+        {% if j.reagent3 %}
+          +  {{j.reagent3}}
+         {% endif %}
+
+         =
+{% if j.product1 %}
+{{j.product1}} 
+                  {% endif %}
+     {% if j.product2 %}
+          + {{j.product2}}
+         {% endif %}
+      {% if j.product3 %}
+          + {{j.product3}}
+         {% endif %}
+      {% if j.product4 %}
+          +{{j.product4}}
+         {% endif %}
+
+</a>
+</p>
+
+
+  
+ {% endfor %}
+
+
+ </div>
+
+<div class="col-4">
+    <center>   <h4>Напоминание</h4>  </center><br>
+    Мет- 1 <br>
+    Эт- 2 <br>
+    Проп- 3 <br>
+    Бут- 4 <br>
+    Пент- 5 <br>
+    Гекс- 6 <br>
+    Гепт- 7 <br>
+    Окт- 8 <br>
+    Нон- 9 <br>
+    Дек- 10 <br><br>
+  
+    - ан - алкан <br>
+    - ен - алкен <br>
+    - ен - алкен <br>
+    - ин - алкин <br>
+    - ил - радикал <br><br>
+
+  ди-2 радикала<br>
+  три-3 радикала<br>
+  тетра-4 радикала<br><br>
+
+
+    - ол - спирт <br>
+    - он - кетон <br>
+    - аль - альдегид <br>
+    - аль - альдегид <br>
+  <br>  <br>
+       <center>   <a href="{% url 'tables' %}"  class="btn btn-primary  mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> 
+       Таблицы
+   </a></center> 
+
+    </div>
+{% endautoescape %}
+{% endblock %}
