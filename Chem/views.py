@@ -6,48 +6,28 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import *
 from .forms import *
-from rdkit import Chem as Chemredactor # Используем ваш импорт
+from rdkit import Chem as Chemredactor
 
 class OrganicNamesTestStartView(View):
     def get(self, request):
-        # Получаем список ID всех органических соединений
         ids = list(OrganicNames.objects.values_list('id', flat=True))
         random.shuffle(ids)
-        # Сохраняем перемешанный список в сессию
         request.session['organicnamestest_ids'] = ids
+        request.session['organicnamestest_score'] = 0  # Обнуляем счетчик в начале
         return render(request, 'Chem/organicnamestest_start.html')
-
-class OrganicNamesTestQuestionView(View):
-    def get(self, request, index):
-        test_ids = request.session.get('organicnamestest_ids', [])
-        
-        if not test_ids or index >= len(test_ids):
-            # Если вопросы закончились, можно перенаправить на начало или спец. страницу
-            return render(request, 'Chem/organicnamestest_finished.html')
-
-        obj = get_object_or_404(OrganicNames, id=test_ids[index])
-        return render(request, 'Chem/organicnamestest_question.html', {
-            'molecule': obj, # Передаем объект как 'molecule'
-            'index': index
-        })
 
 class OrganicNamesTestAnswerView(View):
     def post(self, request, index):
         user_smiles = request.POST.get('user_smiles', '')
         test_ids = request.session.get('organicnamestest_ids', [])
         
-        if not test_ids:
+        if not test_ids or index >= len(test_ids):
             return redirect('organicnamestest_start')
 
-        # Получаем объект из базы
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
-        
-        # ВАЖНО: В вашей модели SMILES хранится в поле .molecule
         ref_smiles = obj.molecule  
         
         is_correct = False
-        
-        # Умное сравнение через RDKit (Chemredactor)
         mol_user = Chemredactor.MolFromSmiles(user_smiles)
         mol_ref = Chemredactor.MolFromSmiles(ref_smiles) if ref_smiles else None
         
@@ -55,13 +35,32 @@ class OrganicNamesTestAnswerView(View):
             user_can = Chemredactor.MolToSmiles(mol_user, isomericSmiles=True)
             ref_can = Chemredactor.MolToSmiles(mol_ref, isomericSmiles=True)
             is_correct = (user_can == ref_can)
+            
+            # Увеличиваем счетчик в сессии, если ответ верный
+            if is_correct:
+                request.session['organicnamestest_score'] = request.session.get('organicnamestest_score', 0) + 1
         
         return render(request, 'Chem/organicnamestest_answer.html', {
             'molecule': obj,
             'user_smiles': user_smiles,
             'is_correct': is_correct,
-            'next_index': index + 1
+            'next_index': index + 1,
+            'total_questions': len(test_ids) # Передаем общее количество для условий
         })
+
+class OrganicNamesTestFinishedView(View):
+    def get(self, request):
+        score = request.session.get('organicnamestest_score', 0)
+        test_ids = request.session.get('organicnamestest_ids', [])
+        total = len(test_ids)
+        
+        context = {
+            'score': score,
+            'total': total,
+            # Можно добавить процент успеха
+            'percent': int((score / total) * 100) if total > 0 else 0
+        }
+        return render(request, 'Chem/organicnamestest_finished.html', context)
 
 
 
