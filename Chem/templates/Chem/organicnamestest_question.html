@@ -1,0 +1,42 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Вопрос {{ index|add:1 }}{% endblock %}
+
+{% block content %}
+<div class="col-8">
+    <center>
+        <h3>Вопрос №{{ index|add:1 }}</h3>
+        <hr>
+        <h4 class="mb-4">Нарисуйте формулу для: <br><strong>«{{ molecule.name }}»</strong></h4>
+
+        <!-- Контейнер для редактора (JSME) -->
+        <div id="jsme_container" style="border: 1px solid #ccc; border-radius: 5px;"></div>
+
+        <form method="POST" action="{% url 'organicnamestest_answer' index %}" id="answer-form">
+            {% csrf_token %}
+            <input type="hidden" name="user_smiles" id="user_smiles">
+            <button type="button" onclick="makeAnswer()" class="btn btn-primary mt-4" style="width: 80%">
+                Ответить
+            </button>
+        </form>
+    </center>
+</div>
+
+<!-- Скрипт редактора -->
+<script type="text/javascript" src="https://jsme-editor.github.io"></script>
+<script>
+    function jsmeOnLoad() {
+        // Создаем редактор 600x400 (или 100% ширины)
+        jsmeApplet = new JSME.jsmeApplet("jsme_container", "100%", "400px", {
+            "options" : "oldlook,nozoom"
+        });
+    }
+
+    function makeAnswer() {
+        var drawing = jsmeApplet.smiles(); 
+        document.getElementById('user_smiles').value = drawing;
+        document.getElementById('answer-form').submit();
+    }
+</script>
+{% endblock %}
