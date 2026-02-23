@@ -34,8 +34,9 @@ class OrganicNames(models.Model): # Используем стандартный 
             return Chemrdkit.MolFromSmiles(self.molecule)
         return None
 
-    def __str__(self):
-        return self.name1
+        def __str__(self):
+            # Вместо return self.name (где name может быть None)
+            return str(self.name1) if self.name1 else "Без названия"
 
     def clean(self):
         # Ищем существующую запись с такими же полями
