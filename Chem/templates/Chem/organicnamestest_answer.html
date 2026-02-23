@@ -42,14 +42,16 @@
         </div>
 
         <div class="mt-4">
-            <a href="{% url 'organicnamestest_question' next_index %}" class="btn btn-primary" style="width: 80%">
-                Следующий вопрос
-            </a>
-            <br>
-            <a href="{% url 'organicnamestest_start' %}" class="btn btn-link mt-2 text-muted">
-                Закончить тест
-            </a>
-        </div>
+    {% if next_index < total_questions %}
+        <a href="{% url 'organicnamestest_question' next_index %}" class="btn btn-primary" style="width: 80%">
+            Следующий вопрос
+        </a>
+    {% else %}
+        <a href="{% url 'organicnamestest_finished' %}" class="btn btn-success" style="width: 80%">
+            Посмотреть итоги теста
+        </a>
+    {% endif %}
+</div>
     </center>
 </div>
 {% endblock %}
