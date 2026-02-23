@@ -18,6 +18,12 @@ urlpatterns = [
     path('compaunds/searchresult/', views.CompaundSearchResultView.as_view(), name='compaundsearchresult'),
     path('compaund/<str:str>/', views.CompaundStrView.as_view(), name='compaund'),
 
+    path('organiclaw', views.OrganiclawView.as_view(), name='organiclaw'),
+    path('organiclawstr/<int:pk>/', views.OrganiclawStrView.as_view(), name='organiclawstr'),
+    path('organiclaw/searchresult/', views.OrganicChemSearchResultView.as_view(), name='organiclawsearchresult'),
+    path('organiclaw/test/<str:str>/', views.OrganicChemTestHeadView.as_view(), name='organiclawtest'),
+    path('organiclaw/test/question/<str:str>/', views.OrganicChemTestQuestionView.as_view(), name='organiclawtestquestion'),
+    path('organiclaw/test/answer/<str:str>/', views.OrganicChemTestAnswerView.as_view(), name='organiclawtestanswer'),
     
     path('atomlaw/test/answer/<str:str>/', views.AtomTestAnswerView.as_view(), name='atomlawtestanswer'),
     path('atomlaws', views.AtomlawView.as_view(), name='atomlaws'),
@@ -37,4 +43,10 @@ urlpatterns = [
     path('chem/remove-reaction/<int:reaction_id>/', views.remove_reaction, name='remove_reaction'),
     path('chem/my-list/', views.my_reactions_list, name='my_reactions_list'),
     path('my-reactions-test/', views.ChemMyTestHeadView.as_view(), name='my_reactions_test'),
+
+
+    path('organic_add-reaction/<int:reaction_id>/', views.organic_add_to_list, name='organic_add_reaction'),
+    path('chem/organic_remove_reaction-reaction/<int:reaction_id>/', views.organic_remove_reaction, name='organic_remove_reaction'),
+    path('chem/oganic_my-list/', views.organic_my_reactions_list, name='organic_my_reactions_list'),
+    path('organic_my-reactions-test/', views.OrganicChemMyTestHeadView.as_view(), name='organic_my_reactions_test'),
     ]
