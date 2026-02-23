@@ -16,6 +16,22 @@ class OrganicNamesTestStartView(View):
         request.session['organicnamestest_score'] = 0  # Обнуляем счетчик в начале
         return render(request, 'Chem/organicnamestest_start.html')
 
+class OrganicNamesTestQuestionView(View):
+    def get(self, request, index):
+        test_ids = request.session.get('organicnamestest_ids', [])
+        
+        if not test_ids or index >= len(test_ids):
+            # Если вопросы закончились, можно перенаправить на начало или спец. страницу
+            return render(request, 'Chem/organicnamestest_finished.html')
+
+        obj = get_object_or_404(OrganicNames, id=test_ids[index])
+        return render(request, 'Chem/organicnamestest_question.html', {
+            'molecule': obj, # Передаем объект как 'molecule'
+            'index': index
+        })
+
+
+
 class OrganicNamesTestAnswerView(View):
     def post(self, request, index):
         user_smiles = request.POST.get('user_smiles', '')
