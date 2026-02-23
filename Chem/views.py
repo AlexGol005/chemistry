@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import *
 from .forms import *
+from rdkit import Chem as Chemredactor
 
 
 class OrganicNamesTestStartView(View):
@@ -32,29 +33,38 @@ class OrganicNamesTestAnswerView(View):
     def post(self, request, index):
         user_smiles = request.POST.get('user_smiles', '')
         test_ids = request.session.get('organicnamestest_ids', [])
+        
+        # Защита от пустого списка в сессии
+        if not test_ids or index >= len(test_ids):
+            return redirect('organicnamestest_start')
+
         molecule = get_object_or_404(OrganicNames, id=test_ids[index])
         
         is_correct = False
         
-        # Умное сравнение через RDKit
-        mol_user = Chem.MolFromSmiles(user_smiles)
-        mol_ref = Chem.MolFromSmiles(molecule.smiles)
+        # 1. Создаем объекты молекул из SMILES-строк
+        mol_user = Chemredactor.MolFromSmiles(user_smiles)
+        mol_ref = Chemredactor.MolFromSmiles(molecule.smiles)
         
+        # 2. Если обе структуры распознаны корректно
         if mol_user and mol_ref:
-            # Превращаем обе молекулы в каноническую строку
-            # Теперь неважно, к какому атому присоединен радикал
-            is_correct = Chem.MolToSmiles(mol_user) == Chem.MolToSmiles(mol_ref)
-        elif not user_smiles and not molecule.smiles:
-            # Если оба поля пустые (теоретически)
-            is_correct = True
-
+            # Канонизируем (приводим к единому стандарту записи)
+            # Теперь неважно, к какому атому бензола прикреплен радикал
+            user_canonical = Chemredactor.MolToSmiles(mol_user, isomericSmiles=True)
+            ref_canonical = Chemredactor.MolToSmiles(mol_ref, isomericSmiles=True)
+            
+            is_correct = (user_canonical == ref_canonical)
+        
+        # 3. Обработка случая, когда нарисовано что-то химически невозможное
+        elif not user_smiles:
+            is_correct = False # Пустой ответ всегда неверный
+            
         return render(request, 'Chem/organicnamestest_answer.html', {
             'molecule': molecule,
             'user_smiles': user_smiles,
             'is_correct': is_correct,
             'next_index': index + 1
         })
-
 
 
 
