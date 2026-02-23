@@ -234,7 +234,7 @@ class OrganicNamesAdminForm(forms.ModelForm):
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
     # Отображаем имя и SMILES-строку в списке всех записей
-    list_display = ('name', 'molecule')
+    list_display = ('name1', 'molecule')
 
 
 # базовая органика
