@@ -10,19 +10,17 @@ from .forms import *
 
 class OrganicNamesTestStartView(View):
     def get(self, request):
-        # Формируем случайный список ID молекул для текущей сессии
         ids = list(OrganicNames.objects.values_list('id', flat=True))
         random.shuffle(ids)
         request.session['organicnamestest_ids'] = ids
+        # Указываем путь с папкой приложения
         return render(request, 'Chem/organicnamestest_start.html')
 
 class OrganicNamesTestQuestionView(View):
     def get(self, request, index):
         test_ids = request.session.get('organicnamestest_ids', [])
-        
-        # Если тест закончен или список пуст
         if not test_ids or index >= len(test_ids):
-            return render(request, 'organicnamestest_finished.html')
+            return render(request, 'Chem/organicnamestest_finished.html')
 
         molecule = get_object_or_404(OrganicNames, id=test_ids[index])
         return render(request, 'Chem/organicnamestest_question.html', {
@@ -36,17 +34,14 @@ class OrganicNamesTestAnswerView(View):
         test_ids = request.session.get('organicnamestest_ids', [])
         
         molecule = get_object_or_404(OrganicNames, id=test_ids[index])
-        
-        # Сравнение
         is_correct = user_smiles.strip() == molecule.smiles.strip()
         
-        context = {
+        return render(request, 'Chem/organicnamestest_answer.html', {
             'molecule': molecule,
-            'user_smiles': user_smiles,  # ПЕРЕДАЕМ ОТВЕТ ПОЛЬЗОВАТЕЛЯ
+            'user_smiles': user_smiles,
             'is_correct': is_correct,
-            'next_index': index + 1,
-        }
-        return render(request, 'Chem/organicnamestest_answer.html', context)
+            'next_index': index + 1
+        })
 
 
 
