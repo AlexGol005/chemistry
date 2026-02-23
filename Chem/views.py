@@ -517,6 +517,8 @@ class CompaundView(ListView):
         context['form'] = SearchForm()
         return context
 
+
+
 class CompaundSearchResultView(TemplateView):
     """ Представление, которое выводит результаты поиска по веществам """
 
@@ -1014,3 +1016,55 @@ def organic_my_reactions_list(request):
     user_items = OrganicUserReaction.objects.filter(user=request.user).select_related('reaction')
     
     return render(request, 'Chem/organic_my_reactions.html', {'user_items': user_items})
+
+
+
+# органические вещества
+class OrganicCompaundView(ListView):
+    """ Выводит список всех всех веществ """
+    model = OrganicNames
+    template_name = 'Chem/organiccompaunds.html'
+    context_object_name = 'objects'
+    ordering = ['pk']
+    paginate_by = 6
+
+    def get_context_data(self, **kwargs):
+        context = super(OrganicCompaundView, self).get_context_data(**kwargs)
+        context['form'] = SearchForm()
+        return context
+
+
+class OrganicCompaundStrView(TemplateView):
+    """страница химического вещества"""
+    template_name = 'Chem/organiccompaund.html'
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        ind=self.kwargs['str']
+        objcontent = OrganicNames.objects.get(pk=ind) 
+        f = objcontent.name1
+        context['objcontent'] = objcontent
+
+        qw = OrganicReaction.objects.filter(Q(reagent1__icontains=f) | Q(reagent2__icontains=f) | Q(reagent3__icontains=f) | Q(product1__icontains=f) | Q(product2__icontains=f) | Q(product3__icontains=f) | Q(product4__icontains=f) )
+
+        context['qw'] = qw
+        
+        return context
+
+class OrganicCompaundSearchResultView(TemplateView):
+    """ Представление, которое выводит результаты поиска по веществам """
+
+    template_name = 'Chem/organiccompaunds.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(OrganicCompaundSearchResultView, self).get_context_data(**kwargs)
+        searchword = self.request.GET['searchword']
+        if self.request.GET['searchword']:
+            searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
+        if searchword:
+            objects = OrganicNames.objects.\
+            filter(Q(name1__icontains=searchword)|Q(name1__icontains=searchword1)|Q(name2__icontains=searchword)|Q(name2__icontains=searchword1)).order_by('pk')
+            context['objects'] = objects
+            context['form'] = SearchForm(initial={'searchword': searchword})
+        return context
