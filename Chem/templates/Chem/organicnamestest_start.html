@@ -1,0 +1,21 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Тест по органике: Начало{% endblock %}
+
+{% block content %}
+<div class="col-8">
+    <center>
+        <h3>Тест: Названия органических веществ</h3>
+        <p class="text-muted">Вам будет дано название, ваша задача — нарисовать его структурную формулу.</p>
+        <br>
+        <a href="{% url 'organicnamestest_question' 0 %}" class="btn btn-success mt-2" style="width: 80%">
+            Начать тест
+        </a>
+        <br><br>
+        <a href="{% url 'organiccompaunds' %}" class="btn btn-outline-secondary mt-2" style="width: 80%">
+            Вернуться к списку веществ
+        </a>
+    </center>
+</div>
+{% endblock %}
