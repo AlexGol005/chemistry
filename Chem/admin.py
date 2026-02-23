@@ -25,7 +25,7 @@ class InorganiclawResource(resources.ModelResource):
 
 
 # класс добавления стилей к окну знх
-class InorganiclawAdminForm(forms.ModelForm):
+class InAdminForm(forms.ModelForm):
     title = forms.CharField(label="Заголовок", widget=CKEditorUploadingWidget())
     text = forms.CharField(label="Описание закона", widget=CKEditorUploadingWidget())
     formula = forms.CharField(label="Общая формула закона", widget=CKEditorUploadingWidget())
@@ -34,16 +34,16 @@ class InorganiclawAdminForm(forms.ModelForm):
 
 
     class Meta:
-        model = Inorganiclaw
+        model = In
         fields = '__all__'
         
 # класс подробностей знх   
-class InorganiclawAdmin(ImportExportActionModelAdmin):
-    resource_class = InorganiclawResource
+class InAdmin(ImportExportActionModelAdmin):
+    resource_class = InResource
     list_display = ('number', 'title' , 'display_count', 'pk')
     ordering = ('number',)
     search_fields = ['number', 'title', 'text', 'keywords']
-    form = InorganiclawAdminForm
+    form = InAdminForm
     save_as = True
 
     def display_count(self, obj):
@@ -52,7 +52,7 @@ class InorganiclawAdmin(ImportExportActionModelAdmin):
     display_count.short_description = "реакций"
         
 # фиксация формы в админке знх
-admin.site.register(Inorganiclaw, InorganiclawAdmin)
+admin.site.register(In, InAdmin)
 
 
 
@@ -251,7 +251,6 @@ class OrganiclawResource(resources.ModelResource):
 class OrganiclawAdminForm(forms.ModelForm):
     title = forms.CharField(label="Заголовок", widget=CKEditorUploadingWidget())
     text = forms.CharField(label="Описание закона", widget=CKEditorUploadingWidget())
-    examples = forms.CharField(label="Примеры", widget=CKEditorUploadingWidget())
     exceptions = forms.CharField(label="Исключения", widget=CKEditorUploadingWidget(), required=False)
 
 
