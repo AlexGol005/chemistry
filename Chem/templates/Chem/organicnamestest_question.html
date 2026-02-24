@@ -2,62 +2,46 @@
 {% load static %}
 
 {% block content %}
-<div class="col-8">
-    <center>
-        <h3>Вопрос №{{ index|add:1 }}</h3>
-        <h4>Нарисуйте формулу для: <br><strong>«{{ molecule.name1 }}»</strong></h4>
+<div class="col-12 col-md-10 col-lg-8 mx-auto">
+    <div class="text-center">
+        <h3 class="h4">Вопрос №{{ index|add:1 }}</h3>
+        <h4 class="h5 mb-4">Нарисуйте формулу для: <br><strong>«{{ molecule.name1 }}»</strong></h4>
 
-        <!-- Контейнер редактора -->
-        <div id="jsme_canvas_test" 
-             style="width: 450px !important; height: 300px !important; border: 1px solid #ccc; background: white !important; display: block !important; overflow: hidden; margin-top: 20px;">
+        <!-- Адаптивный контейнер редактора -->
+        <div class="jsme-wrapper shadow-sm mx-auto" style="max-width: 600px;">
+            <div id="jsme_canvas_test" 
+                 style="width: 100% !important; height: 350px !important; border: 1px solid #ccc; background: white !important; overflow: hidden;">
+            </div>
         </div>
 
-        <form method="POST" action="{% url 'organicnamestest_answer' index %}" id="answer-form">
+        <form method="POST" action="{% url 'organicnamestest_answer' index %}" class="mt-4">
             {% csrf_token %}
-            
-            <!-- Скрытое поле для передачи SMILES на сервер -->
             <input type="hidden" name="user_smiles" id="user_smiles" value="">
             
-            <button type="submit" class="btn btn-primary mt-4" style="width: 450px">
+            <button type="submit" class="btn btn-primary btn-lg w-100" style="max-width: 450px">
                 Ответить
             </button>
         </form>
-    </center>
+    </div>
 </div>
 
-<!-- Локальный путь к JSME -->
 <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
-
 <script type="text/javascript">
     var testJsmeApplet;
-
     function startJSME() {
         var field = document.getElementById("user_smiles");
-        var containerId = "jsme_canvas_test";
-
-        if (!field) return;
-
-        testJsmeApplet = new JSApplet.JSME(containerId, "450px", "300px", {
+        // Передаем "100%" вместо фиксированных пикселей
+        testJsmeApplet = new JSApplet.JSME("jsme_canvas_test", "100%", "350px", {
             "options": "oldLook,paste,autocenter"
         });
 
-        // Записываем результат рисования в скрытое поле
         testJsmeApplet.setCallBack("AfterStructureModified", function(event) {
-            try {
-                var smiles = event.src.smiles();
-                field.value = smiles;
-            } catch (e) {
-                console.error("Ошибка при получении SMILES: " + e);
-            }
+            field.value = event.src.smiles();
         });
     }
-
     window.jsmeOnLoad = startJSME;
-
     setTimeout(function() {
-        if (typeof JSApplet !== 'undefined' && !testJsmeApplet) {
-            startJSME();
-        }
+        if (typeof JSApplet !== 'undefined' && !testJsmeApplet) startJSME();
     }, 1500);
 </script>
 {% endblock %}
