@@ -1,0 +1,40 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Выбор режима теста{% endblock %}
+
+{% block content %}
+<div class="col-12 col-md-10 col-lg-8 mx-auto text-center mt-5">
+    <h3 class="mb-4">Тренажер: Органические вещества</h3>
+    <p class="text-muted mb-5">Выберите тип заданий для проверки знаний:</p>
+
+    <!-- 1. Название -> Структура -->
+    <div class="mb-3">
+        <a href="{% url 'organicnamestest_start' %}?mode=name_to_mol" 
+           class="btn btn-primary py-3 shadow-sm w-100" style="max-width: 500px">
+            <i class="fas fa-pen-nib mr-2"></i> Тест: Название — Структура
+        </a>
+    </div>
+
+    <!-- 2. Структура -> Название -->
+    <div class="mb-3">
+        <a href="{% url 'organicnamestest_start' %}?mode=mol_to_name" 
+           class="btn btn-success py-3 shadow-sm w-100" style="max-width: 500px">
+            <i class="fas fa-microscope mr-2"></i> Тест: Структура — Название
+        </a>
+    </div>
+
+    <!-- 3. Формула -> Класс -->
+    <div class="mb-3">
+        <a href="{% url 'organicnamestest_start' %}?mode=form_to_class" 
+           class="btn btn-info py-3 shadow-sm w-100 text-white" style="max-width: 500px">
+            <i class="fas fa-layer-group mr-2"></i> Тест: Формула — Класс веществ
+        </a>
+    </div>
+
+    <div class="mt-5">
+        <a href="{% url 'organiccompaunds' %}" class="btn btn-outline-secondary">
+            Вернуться к списку веществ
+        </a>
+    </div>
+</div>
+{% endblock %}
