@@ -1,27 +1,23 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-<div class="col-12 col-md-8 mx-auto text-center">
-    <h3 class="h4">Вопрос №{{ index|add:1 }}</h3>
-    <h4 class="mb-4">Определите класс вещества по формуле:</h4>
-    
-    <div class="display-4 border p-4 bg-light shadow-sm rounded mb-4">
+<div class="col-12 col-md-10 col-lg-8 mx-auto text-center">
+    <h3 class="h4 mt-4">Вопрос №{{ index|add:1 }}</h3>
+    <h4 class="h5 mb-4">Определите класс вещества:</h4>
+
+    <div class="display-3 font-weight-bold text-primary mb-5 p-4 border rounded bg-light shadow-sm">
         {{ molecule.formula }}
     </div>
 
     <form method="POST" action="{% url 'organicnamestest_answer' index %}">
         {% csrf_token %}
-        
-        <div class="form-group mb-4">
-            <label for="class_select" class="text-muted">Выберите класс из списка:</label>
-            <select name="user_answer" id="class_select" class="form-control form-control-lg custom-select">
-                <option value="">--- Не выбрано ---</option>
-                {% for key, value in organic_classes %}
-                    <option value="{{ key }}">{{ value }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-lg w-100 shadow">Ответить</button>
+        <select name="user_answer" class="form-control form-control-lg mb-4 mx-auto" style="max-width: 450px">
+            <option value="">--- Выберите класс ---</option>
+            {% for key, value in organic_classes %}
+                <option value="{{ key }}">{{ value }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-info text-white btn-lg w-100" style="max-width: 450px">Ответить</button>
     </form>
 </div>
+{% endblock %}
