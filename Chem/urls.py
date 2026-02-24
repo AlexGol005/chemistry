@@ -40,10 +40,30 @@ urlpatterns = [
     path('organiccompaunds/searchresult/', views.OrganicCompaundSearchResultView.as_view(), name='organiccompaundsearchresult'),
     path('organiccompaund/<str:str>/', views.OrganicCompaundStrView.as_view(), name='organiccompaund'),
 
-    path('organicnamestest/', views.OrganicNamesTestStartView.as_view(), name='organicnamestest_start'),
-    path('organicnamestest/question/<int:index>/', views.OrganicNamesTestQuestionView.as_view(), name='organicnamestest_question'),
-    path('organicnamestest/answer/<int:index>/', views.OrganicNamesTestAnswerView.as_view(), name='organicnamestest_answer'),
-    path('organicnamestest/finished/', views.OrganicNamesTestFinishedView.as_view(), name='organicnamestest_finished'),
+# 1. Главная страница выбора режима (Пульт управления с 3 кнопками)
+    path('organicnamestest/head/', 
+         views.OrganicNamesTestHeadView.as_view(), 
+         name='organicnamestest_head'),
+
+    # 2. Страница подготовки/превью перед стартом конкретного теста
+    path('organicnamestest/start/', 
+         views.OrganicNamesTestStartView.as_view(), 
+         name='organicnamestest_start'),
+
+    # 3. Страница текущего вопроса (использует индекс от 0 до конца списка)
+    path('organicnamestest/question/<int:index>/', 
+         views.OrganicNamesTestQuestionView.as_view(), 
+         name='organicnamestest_question'),
+
+    # 4. Страница проверки ответа (принимает POST данные и показывает результат)
+    path('organicnamestest/answer/<int:index>/', 
+         views.OrganicNamesTestAnswerView.as_view(), 
+         name='organicnamestest_answer'),
+
+    # 5. Финальная страница с итогами, процентами и баллами
+    path('organicnamestest/finished/', 
+         views.OrganicNamesTestFinishedView.as_view(), 
+         name='organicnamestest_finished'),
     
 
     path('tables', views.TablesView.as_view(), name='tables'),
