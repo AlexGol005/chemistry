@@ -1,41 +1,46 @@
-{% extends 'main/base.html' %}
-{% load static %}
+{% extends 'main/superbase.html' %}
 
-{% block title %}Выбор режима теста{% endblock %}
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+{{obj.title}} 
+{% endblock %}
+{#конец названия страницы#}
+
+
+    {% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
+    {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
+    {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
+
 
 {% block content %}
-<div class="col-12 col-md-10 col-lg-8 mx-auto">
-    <center>
-        <h3 class="mb-4">Тренажер по органической химии</h3>
-        <p class="text-muted mb-5">Выберите режим тестирования:</p>
+{% autoescape off %}
 
-        <!-- Старая кнопка (Название -> Структура) -->
-        <div class="mb-3">
-            <a href="{% url 'organicnamestest_start' %}?mode=name_to_mol" 
-               class="btn btn-primary py-3 shadow-sm w-100" style="max-width: 500px">
-                <i class="fas fa-pen-nib mr-2"></i> Тест: Название — Структура
-            </a>
-        </div>
+<div class="col-12">
+         
+   <center>  <h3><a href="/chem/organiclaw"> {{numbertitle}} </a></h3>     
+   </center>
+     <br>
 
-        <!-- Новая кнопка (Структура -> Название) -->
-        <div class="mb-3">
-            <a href="{% url 'organicnamestest_start' %}?mode=mol_to_name" 
-               class="btn btn-success py-3 shadow-sm w-100" style="max-width: 500px">
-                <i class="fas fa-microscope mr-2"></i> Тест: Структура — Название
-            </a>
-        </div>
+  <center> 
+      <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia; font-size: 16pt; ">
+      Химических реакций в тесте: {{count}}    
+      </p>
+  </center>
 
-        <!-- Новая кнопка (Формула -> Класс) -->
-        <div class="mb-3">
-            <a href="{% url 'organicnamestest_start' %}?mode=form_to_class" 
-               class="btn btn-info py-3 shadow-sm w-100 text-white" style="max-width: 500px">
-                <i class="fas fa-vial mr-2"></i> Тест: Мол. формула — Класс веществ
-            </a>
-        </div>
+  <br>  <br>
+{% if q1 != 0 %}
+       <center>   <a href="{% url 'organiclawtestquestion' q1 %}"  class="btn btn-primary  mt-2 mr-2 ml-2"> 
+       Перейти к вопросам
+   </a></center> 
+ {% endif %}   
+  <br>  <br>
 
-        <div class="mt-5">
-            <a href="{% url 'organiccompaunds' %}" class="btn btn-outline-secondary">Вернуться к списку веществ</a>
-        </div>
-    </center>
-</div>
+ </div>
+
+<div class="col-4">
+
+    </div>
+{% endautoescape %}
 {% endblock %}
