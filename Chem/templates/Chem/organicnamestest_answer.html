@@ -1,57 +1,44 @@
 {% extends 'main/base.html' %}
-{% load static %}
 {% load mol_extras %}
 
-{% block title %}Результат ответа{% endblock %}
-
 {% block content %}
-<div class="col-8">
-    <center>
-        {% if is_correct %}
-            <h3 class="text-success">✅ Правильно!</h3>
-        {% else %}
-            <h3 class="text-danger">❌ Ошибка в формуле</h3>
-        {% endif %}
-        <hr>
-        <h5>Вещество: <strong>{{ molecule.name }}</strong></h5>
+<div class="col-12 col-md-10 col-lg-8 mx-auto">
+    <div class="text-center">
+        <h3 class="{% if is_correct %}text-success{% else %}text-danger{% endif %} mb-4">
+            {% if is_correct %}✅ Правильно!{% else %}❌ Ошибка{% endif %}
+        </h3>
+        
+        <h5 class="mb-4">Вещество: <strong>{{ molecule.name1 }}</strong></h5>
 
-        <div class="row mt-4">
-            <!-- Блок пользователя -->
-            <div class="col-md-6">
-                <div class="card border-info mb-3">
-                    <div class="card-header bg-info text-white">Ваш рисунок</div>
-                    <div class="card-body">
-                        {% if user_smiles %}
-                            {% render_smiles user_smiles width=250 height=250 %}
-                        {% else %}
-                            <p class="text-muted">Вы ничего не нарисовали</p>
-                        {% endif %}
+        <!-- Сетка: на мобильных 1 колонка, на десктопе 2 -->
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-light py-1 small">Ваш рисунок</div>
+                    <div class="card-body p-2 d-flex justify-content-center align-items-center" style="min-height: 220px;">
+                        <div class="mw-100 overflow-auto">
+                            {% render_smiles user_smiles width=220 height=220 %}
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Блок эталона -->
-            <div class="col-md-6">
-                <div class="card border-success mb-3">
-                    <div class="card-header bg-success text-white">Правильный ответ</div>
-                    <div class="card-body">
-                        {% render_smiles molecule.molecule width=250 height=250 %}
+            <div class="col-12 col-md-6">
+                <div class="card h-100 shadow-sm border-success">
+                    <div class="card-header bg-success text-white py-1 small">Правильно</div>
+                    <div class="card-body p-2 d-flex justify-content-center align-items-center" style="min-height: 220px;">
+                        <div class="mw-100 overflow-auto">
+                            {% render_smiles molecule.molecule width=220 height=220 %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="mt-4">
-    {% if next_index < total_questions %}
-        <a href="{% url 'organicnamestest_question' next_index %}" class="btn btn-primary" style="width: 80%">
-            Следующий вопрос
-        </a>
-    {% else %}
-        <a href="{% url 'organicnamestest_finished' %}" class="btn btn-success" style="width: 80%">
-            Посмотреть итоги теста
-        </a>
-    {% endif %}
-</div>
-    </center>
+        <div class="mt-4 pb-5">
+            <a href="{% url 'organicnamestest_question' next_index %}" class="btn btn-primary btn-lg w-100" style="max-width: 450px">
+                {% if next_index < total_questions %}Следующий вопрос{% else %}Итоги теста{% endif %}
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}
