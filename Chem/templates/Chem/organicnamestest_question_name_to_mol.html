@@ -1,0 +1,34 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="col-12 col-md-10 col-lg-8 mx-auto text-center">
+    <h3 class="h4 mt-4">Вопрос №{{ index|add:1 }}</h3>
+    <h4 class="h5 mb-4">Нарисуйте формулу для: <br><strong>«{{ molecule.name1 }}»</strong></h4>
+
+    <div class="jsme-wrapper shadow-sm mx-auto mb-4" style="max-width: 500px;">
+        <div id="jsme_canvas_test" 
+             style="width: 100% !important; height: 350px !important; border: 1px solid #ccc; background: white !important;">
+        </div>
+    </div>
+
+    <form method="POST" action="{% url 'organicnamestest_answer' index %}">
+        {% csrf_token %}
+        <input type="hidden" name="user_answer" id="user_smiles" value="">
+        <button type="submit" class="btn btn-primary btn-lg w-100" style="max-width: 450px">Ответить</button>
+    </form>
+</div>
+
+<script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
+<script type="text/javascript">
+    var testJsmeApplet;
+    function startJSME() {
+        testJsmeApplet = new JSApplet.JSME("jsme_canvas_test", "100%", "350px", {"options": "oldLook,paste,autocenter"});
+        testJsmeApplet.setCallBack("AfterStructureModified", function(event) {
+            document.getElementById("user_smiles").value = event.src.smiles();
+        });
+    }
+    window.jsmeOnLoad = startJSME;
+    setTimeout(function() { if (typeof JSApplet !== 'undefined' && !testJsmeApplet) startJSME(); }, 1500);
+</script>
+{% endblock %}
