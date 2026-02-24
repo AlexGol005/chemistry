@@ -1,21 +1,59 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
-{% block title %}Тест по органике: Начало{% endblock %}
-
 {% block content %}
-<div class="col-8">
-    <center>
-        <h3>Тест: Названия органических веществ</h3>
-        <p class="text-muted">Вам будет дано название, ваша задача — нарисовать его структурную формулу.</p>
-        <br>
-        <a href="{% url 'organicnamestest_question' 0 %}" class="btn btn-success mt-2" style="width: 80%">
-            Начать тест
-        </a>
-        <br><br>
-        <a href="{% url 'organiccompaunds' %}" class="btn btn-outline-secondary mt-2" style="width: 80%">
-            Вернуться к списку веществ
-        </a>
-    </center>
+<div class="col-12 col-md-10 col-lg-8 mx-auto">
+    <div class="text-center mt-5">
+        <h2 class="font-weight-bold mb-3">Подготовка к тестированию</h2>
+        
+        <!-- Адаптивное описание режима -->
+        <div class="alert alert-info py-4 shadow-sm rounded-lg border-0 mb-4">
+            <h3 class="mb-2 text-primary">
+                <strong>
+                    {% if mode == 'name_to_mol' %}
+                        Название → Структурная формула
+                    {% elif mode == 'mol_to_name' %}
+                        Структурная формула → Название
+                    {% elif mode == 'form_to_class' %}
+                        Молекулярная формула → Класс веществ
+                    {% endif %}
+                </strong>
+            </h3>
+            
+            <p class="lead mb-0">
+                {% if mode == 'name_to_mol' %}
+                    Вам будет дано название, ваша задача — нарисовать его структурную формулу в редакторе.
+                {% elif mode == 'mol_to_name' %}
+                    Вам будет представлена структурная формула, ваша задача — написать её правильное название.
+                {% elif mode == 'form_to_class' %}
+                    Вам будет дана молекулярная формула, ваша задача — выбрать верный класс соединения из списка.
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="card bg-light border-0 p-4 mb-5 shadow-sm text-left">
+            <ul class="mb-0 list-unstyled">
+                <li class="mb-2">✅ Вопросы выбраны в случайном порядке.</li>
+                <li class="mb-2">✅ Система автоматически проверит ваш ответ.</li>
+                <li>✅ Результат будет доступен сразу после завершения.</li>
+            </ul>
+        </div>
+
+        <form method="POST" action="{% url 'organicnamestest_start' %}">
+            {% csrf_token %}
+            <!-- Скрытое поле передает выбранный режим в метод POST -->
+            <input type="hidden" name="mode" value="{{ mode }}">
+            
+            <button type="submit" class="btn btn-success btn-lg w-100 py-3 shadow font-weight-bold" style="max-width: 450px">
+                Начать тестирование <i class="fas fa-play ml-2"></i>
+            </button>
+        </form>
+
+        <div class="mt-4 pb-5">
+            <a href="{% url 'organicnamestest_head' %}" class="btn btn-link text-secondary text-decoration-none">
+                <i class="fas fa-undo mr-1"></i> Назад к выбору режима
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}
