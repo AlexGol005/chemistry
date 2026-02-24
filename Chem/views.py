@@ -17,29 +17,45 @@ class OrganicNamesTestHeadView(View):
 # 2. Подготовка (Превью и инициализация сессии)
 class OrganicNamesTestStartView(View):
     def get(self, request):
+        # 1. Получаем режим из URL (например, ?mode=form_to_class)
         mode = request.GET.get('mode', 'name_to_mol')
+        
+        # Предварительно сохраняем выбранный режим в сессию
         request.session['organicnamestest_mode'] = mode
+        
+        # Рендерим страницу превью (где кнопка "Начать тестирование")
         return render(request, 'Chem/organicnamestest_start.html', {'mode': mode})
 
     def post(self, request):
+        # 2. Этот метод срабатывает при нажатии на кнопку "Начать" в шаблоне
         mode = request.session.get('organicnamestest_mode', 'name_to_mol')
         
-        # Начинаем выборку
+        # Фильтруем базу данных
         queryset = OrganicNames.objects.all()
         
-        # ПРАВКА: Исключаем пустые формулы только для режима "form_to_class"
+        # Если режим "Формула -> Класс", исключаем записи без формул
         if mode == 'form_to_class':
             queryset = queryset.exclude(formula__isnull=True).exclude(formula__exact='')
         
+        # Получаем список ID и перемешиваем их
         ids = list(queryset.values_list('id', flat=True))
         random.shuffle(ids)
         
-        # ПРАВКА: Ограничиваем тест 10 вопросами (или всей базой, если меньше 10)
-        # Обязательно ОБНУЛЯЕМ счетчик баллов здесь
-        request.session['organicnamestest_ids'] = ids[:10]
-        request.session['organicnamestest_score'] = 0 
-        request.session.modified = True
+        # --- СБРОС И ГЕНЕРАЦИЯ НОВОЙ СЕССИИ ТЕСТА ---
+        # Ограничиваем количество вопросов (например, 10)
+        selected_questions = ids[:10]
         
+        # Записываем новые ID в сессию
+        request.session['organicnamestest_ids'] = selected_questions
+        
+        # ЖЕСТКО ОБНУЛЯЕМ СЧЕТЧИК (это лечит ошибку 8/4)
+        request.session['organicnamestest_score'] = 0
+        
+        # Помечаем сессию как измененную для сохранения в БД
+        request.session.modified = True
+        # --------------------------------------------
+
+        # Перенаправляем на первый вопрос (индекс 0)
         return redirect('organicnamestest_question', index=0)
 
 # 3. Страница вопроса
