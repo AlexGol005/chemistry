@@ -12,6 +12,7 @@ import tablib
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 # from .widgets import JSMEWidget
 from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 
 
 class JSMEWidget(forms.Widget):
