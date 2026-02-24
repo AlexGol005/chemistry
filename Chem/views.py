@@ -9,56 +9,43 @@ from .forms import *
 from rdkit import Chem as Chemredactor
 
 
-# 1. Выбор режима (Пульт управления)
+# 1. ВЫБОР РЕЖИМА (Пульт управления)
 class OrganicNamesTestHeadView(View):
     def get(self, request):
         return render(request, 'Chem/organicnames_test_head.html')
 
-# 2. Подготовка (Превью и инициализация сессии)
+# 2. ПОДГОТОВКА (Превью и инициализация сессии)
 class OrganicNamesTestStartView(View):
     def get(self, request):
-        # 1. Получаем режим из URL (например, ?mode=form_to_class)
+        # Получаем режим из URL (?mode=...)
         mode = request.GET.get('mode', 'name_to_mol')
-        
-        # Предварительно сохраняем выбранный режим в сессию
-        request.session['organicnamestest_mode'] = mode
-        
-        # Рендерим страницу превью (где кнопка "Начать тестирование")
         return render(request, 'Chem/organicnamestest_start.html', {'mode': mode})
 
     def post(self, request):
-        # 2. Этот метод срабатывает при нажатии на кнопку "Начать" в шаблоне
-        mode = request.session.get('organicnamestest_mode', 'name_to_mol')
+        # Получаем режим из POST или сессии
+        mode = request.POST.get('mode') or request.session.get('organicnamestest_mode', 'name_to_mol')
         
-        # Фильтруем базу данных
+        # КРИТИЧЕСКИ ВАЖНО: Очищаем старую сессию, чтобы обнулить баллы и вопросы
+        request.session.flush()
+        
+        # Начинаем выборку из базы
         queryset = OrganicNames.objects.all()
         
-        # Если режим "Формула -> Класс", исключаем записи без формул
+        # Исключаем пустые формулы для соответствующего режима
         if mode == 'form_to_class':
             queryset = queryset.exclude(formula__isnull=True).exclude(formula__exact='')
         
-        # Получаем список ID и перемешиваем их
         ids = list(queryset.values_list('id', flat=True))
         random.shuffle(ids)
         
-        # --- СБРОС И ГЕНЕРАЦИЯ НОВОЙ СЕССИИ ТЕСТА ---
-        # Ограничиваем количество вопросов (например, 10)
-        selected_questions = ids[:10]
-        
-        # Записываем новые ID в сессию
-        request.session['organicnamestest_ids'] = selected_questions
-        
-        # ЖЕСТКО ОБНУЛЯЕМ СЧЕТЧИК (это лечит ошибку 8/4)
+        # Записываем новые данные в чистую сессию
+        request.session['organicnamestest_ids'] = ids[:10] # Ограничение 10 вопросов
         request.session['organicnamestest_score'] = 0
+        request.session['organicnamestest_mode'] = mode
         
-        # Помечаем сессию как измененную для сохранения в БД
-        request.session.modified = True
-        # --------------------------------------------
-
-        # Перенаправляем на первый вопрос (индекс 0)
         return redirect('organicnamestest_question', index=0)
 
-# 3. Страница вопроса
+# 3. СТРАНИЦА ВОПРОСА
 class OrganicNamesTestQuestionView(View):
     def get(self, request, index):
         test_ids = request.session.get('organicnamestest_ids', [])
@@ -74,17 +61,17 @@ class OrganicNamesTestQuestionView(View):
             'index': index,
             'mode': mode,
             'total_questions': len(test_ids),
-            'organic_classes': ORGANIC_CLASSES # Для выпадающего списка
+            'organic_classes': ORGANIC_CLASSES
         }
         
         template_name = f'Chem/organicnamestest_question_{mode}.html'
         return render(request, template_name, context)
 
-# 4. Проверка ответа
+# 4. ПРОВЕРКА ОТВЕТА
 class OrganicNamesTestAnswerView(View):
     def post(self, request, index):
         mode = request.session.get('organicnamestest_mode', 'name_to_mol')
-        # Собираем ответ из разных типов полей (текст, скрытое поле или селект)
+        # Собираем ответ из разных типов полей
         user_ans = request.POST.get('user_answer') or request.POST.get('user_smiles') or ""
         user_ans = user_ans.strip()
         
@@ -92,12 +79,12 @@ class OrganicNamesTestAnswerView(View):
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
         
         is_correct = False
-        user_label = user_ans # По умолчанию показываем как есть
+        user_label = user_ans
 
-        # ЛОГИКА ПРОВЕРКИ
+        # Логика сравнения
         if mode == 'name_to_mol':
             m1 = Chemredactor.MolFromSmiles(user_ans)
-            m2 = Chemredactor.MolFromSmiles(obj.molecule) # Поле .molecule из вашей модели
+            m2 = Chemredactor.MolFromSmiles(obj.molecule)
             if m1 and m2:
                 is_correct = Chemredactor.MolToSmiles(m1) == Chemredactor.MolToSmiles(m2)
         
@@ -105,27 +92,25 @@ class OrganicNamesTestAnswerView(View):
             is_correct = user_ans.lower() == obj.name1.lower()
             
         elif mode == 'form_to_class':
-            # Сравнение технического ключа (напр. 'alkanes')
             is_correct = (user_ans == obj.organic_class)
-            # ПРАВКА: Получаем человеческое название вместо технического ключа
+            # Заменяем код (alkanes) на название (Алканы) для отображения
             user_label = dict(ORGANIC_CLASSES).get(user_ans, "Не выбрано")
 
-        # ПРАВКА: Начисляем баллы только если ответ верный
+        # Начисляем баллы
         if is_correct:
-            current_score = request.session.get('organicnamestest_score', 0)
-            request.session['organicnamestest_score'] = current_score + 1
+            request.session['organicnamestest_score'] = request.session.get('organicnamestest_score', 0) + 1
             request.session.modified = True
 
         return render(request, 'Chem/organicnamestest_answer.html', {
             'molecule': obj,
             'is_correct': is_correct,
-            'user_answer_label': user_label, # Передаем красивое имя
+            'user_answer_label': user_label,
             'next_index': index + 1,
             'total_questions': len(test_ids),
             'mode': mode
         })
 
-# 5. Финал
+# 5. ФИНАЛ
 class OrganicNamesTestFinishedView(View):
     def get(self, request):
         score = request.session.get('organicnamestest_score', 0)
