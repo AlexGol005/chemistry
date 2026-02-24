@@ -1,0 +1,70 @@
+{% load static %}
+<div class="jsme-admin-wrapper" style="margin-bottom: 20px; border: 1px solid #eee; padding: 10px; background: #fcfcfc;">
+    
+    <!-- Текстовое поле SMILES (для ручного ввода) -->
+    <div style="margin-bottom: 10px;">
+        <label style="font-weight: bold; color: #444; font-size: 13px;">SMILES (редактируйте здесь или рисуйте ниже):</label>
+        <input type="text" name="{{ name }}" id="{{ id }}" value="{{ value }}" 
+               style="width: 100%; max-width: 500px; font-family: monospace; padding: 8px; border: 1px solid #ccc; display: block; margin-top: 5px;">
+    </div>
+
+    <!-- Редактор JSME -->
+    <div id="jsme_container_{{ id }}" 
+         style="width: 500px; height: 350px; border: 1px solid #999; background: #fff; box-shadow: inset 0 0 5px rgba(0,0,0,0.1);">
+    </div>
+    
+    <div style="margin-top: 5px;">
+        <button type="button" onclick="jsmeApplet_{{ id }}.clear(); document.getElementById('{{ id }}').value='';" 
+                style="font-size: 11px; cursor: pointer; padding: 2px 10px;">Очистить всё</button>
+    </div>
+</div>
+
+<!-- Подключение JSME (путь как у вас в админке) -->
+<script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
+
+<script type="text/javascript">
+    var jsmeApplet_{{ id }};
+
+    function startJSME_{{ id }}() {
+        var field = document.getElementById("{{ id }}");
+        var containerId = "jsme_container_{{ id }}";
+        
+        // Инициализация через JSApplet (как у вас заработало)
+        jsmeApplet_{{ id }} = new JSApplet.JSME(containerId, "500px", "350px", {
+            "options": "oldLook,paste,autocenter"
+        });
+
+        // 1. Загрузка из поля в редактор при открытии
+        if (field.value) {
+            setTimeout(function() {
+                jsmeApplet_{{ id }}.readGenericMolecularInput(field.value);
+            }, 500);
+        }
+
+        // 2. Синхронизация: РИСУНОК -> ПОЛЕ (при каждом клике/изменении)
+        jsmeApplet_{{ id }}.setCallBack("AfterStructureModified", function(event) {
+            var smiles = event.src.smiles();
+            field.value = smiles;
+        });
+
+        // 3. Синхронизация: ПОЛЕ -> РИСУНОК (при ручном вводе/вставке)
+        field.addEventListener('input', function() {
+            var val = this.value.trim();
+            if (val) {
+                jsmeApplet_{{ id }}.readGenericMolecularInput(val);
+            } else {
+                jsmeApplet_{{ id }}.clear();
+            }
+        });
+    }
+
+    // Глобальный колбэк загрузки JSME
+    window.jsmeOnLoad = startJSME_{{ id }};
+
+    // Страховка, если jsmeOnLoad уже проскочил
+    setTimeout(function() {
+        if (typeof JSApplet !== 'undefined' && !jsmeApplet_{{ id }}) {
+            startJSME_{{ id }}();
+        }
+    }, 1500);
+</script>
