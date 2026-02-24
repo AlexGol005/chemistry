@@ -10,11 +10,65 @@ from import_export.widgets import ForeignKeyWidget
 import tablib
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
-from .widgets import JSMEWidget
+# from .widgets import JSMEWidget
 from django.template.loader import render_to_string
 
 
+class JSMEWidget(forms.Widget):
+    template_name = 'admin/widgets/jsme_editor.html'
 
+    def render(self, name, value, attrs=None, renderer=None):
+        # Если значение None, заменяем на пустую строку
+        value = value or ""
+        final_attrs = self.build_attrs(attrs)
+        id_name = final_attrs.get('id', 'id_molecule')
+        
+        # Мы вставляем HTML напрямую, чтобы избежать ошибок поиска шаблона в циклах
+        html = f"""
+        <div class="jsme-admin-wrapper" style="margin-bottom: 20px;">
+            <div style="margin-bottom: 10px;">
+                <label style="font-weight: bold;">SMILES строка:</label>
+                <input type="text" name="{name}" id="{id_name}" value='{value}' 
+                       style="width: 100%; font-family: monospace; padding: 8px; border: 1px solid #ccc;">
+            </div>
+            <div id="jsme_container_{id_name}" style="width: 500px; height: 350px; border: 1px solid #999; background: #fff;"></div>
+        </div>
+        <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
+        <script type="text/javascript">
+            function startJSME_{id_name.replace('-', '_')}() {{
+                var field = document.getElementById("{id_name}");
+                var applet = new JSApplet.JSME("jsme_container_{id_name}", "500px", "350px", {{
+                    "options": "oldLook,paste,autocenter"
+                }});
+                if (field.value) applet.readGenericMolecularInput(field.value);
+                applet.setCallBack("AfterStructureModified", function(event) {{
+                    field.value = event.src.smiles();
+                }});
+                field.addEventListener('input', function() {{
+                    try {{ applet.readGenericMolecularInput(this.value); }} catch (e) {{}}
+                }});
+            }}
+            window.jsmeOnLoad = startJSME_{id_name.replace('-', '_')};
+            setTimeout(function() {{ if (typeof JSApplet !== 'undefined') startJSME_{id_name.replace('-', '_')}(); }}, 1000);
+        </script>
+        """
+        return mark_safe(html)
+
+class OrganicNamesAdminForm(forms.ModelForm):
+    class Meta:
+        model = OrganicNames
+        fields = '__all__'
+        widgets = {'molecule': JSMEWidget()}
+
+@admin.register(OrganicNames)
+class OrganicNamesAdmin(admin.ModelAdmin):
+    form = OrganicNamesAdminForm
+    list_display = ('pk', 'name1', 'molecule')
+    
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        msg = f"Редактирована запись № {obj.pk}" if change else f"Создана запись № {obj.pk}"
+        messages.success(request, msg)
 
 # знх классы для отображения в админке
 
@@ -231,43 +285,7 @@ from .widgets import JSMEWidget
 #     # Отображаем имя и SMILES-строку в списке всех записей
 #     list_display = ('name1', 'molecule')
 
-# 1. Виджет с исправленным методом render
-class JSMEWidget(forms.Widget):
-    template_name = 'admin/widgets/jsme_editor.html'
 
-    def render(self, name, value, attrs=None, renderer=None):
-        # Подготавливаем данные для шаблона
-        context = {
-            'name': name,
-            'value': value or "",
-            'id': attrs.get('id', 'id_molecule'),
-        }
-        # Рендерим шаблон и помечаем как безопасный HTML
-        html = render_to_string(self.template_name, context)
-        return mark_safe(html)
-
-# 2. Форма
-class OrganicNamesAdminForm(forms.ModelForm):
-    class Meta:
-        model = OrganicNames
-        fields = '__all__'
-        widgets = {
-            'molecule': JSMEWidget(), 
-        }
-
-# 3. Админка
-@admin.register(OrganicNames)
-class OrganicNamesAdmin(admin.ModelAdmin):
-    form = OrganicNamesAdminForm
-    list_display = ('pk', 'name1', 'molecule')
-    search_fields = ('name1', 'molecule')
-    
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-        if change:
-            messages.success(request, f"Редактирована запись № {obj.pk}")
-        else:
-            messages.success(request, f"Создана новая запись № {obj.pk}")
 
 
 # базовая органика
