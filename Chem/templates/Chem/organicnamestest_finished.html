@@ -1,34 +1,67 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
+{% block title %}Тест завершен{% endblock %}
+
 {% block content %}
-<div class="col-8">
-    <center>
-        <h2 class="mt-5">Тест завершен!</h2>
-        <hr>
-        
-        <div class="card p-4 shadow-sm mb-4">
-            <h4>Ваш результат:</h4>
-            <h1 class="display-3 text-primary">{{ score }} / {{ total }}</h1>
-            <p class="lead">Правильных ответов: {{ percent }}%</p>
+<div class="col-12 col-md-10 col-lg-8 mx-auto">
+    <div class="text-center mt-5">
+        <h2 class="display-4 mb-4">Тест окончен! 🏁</h2>
+        <hr class="mb-5">
+
+        <div class="card shadow border-0 rounded-lg overflow-hidden mb-5">
+            <div class="card-body p-5">
+                <h4 class="text-muted mb-3">Ваш итоговый результат:</h4>
+                <h1 class="display-2 font-weight-bold text-primary mb-3">
+                    {{ score }} <span class="h3 text-muted">/ {{ total }}</span>
+                </h1>
+                
+                <!-- Прогресс-бар -->
+                <div class="progress mb-4" style="height: 30px; border-radius: 15px;">
+                    <div class="progress-bar {% if percent >= 80 %}bg-success{% elif percent >= 50 %}bg-warning{% else %}bg-danger{% endif %} progress-bar-striped progress-bar-animated" 
+                         role="progressbar" 
+                         style="width: {{ percent }}%;" 
+                         aria-valuenow="{{ percent }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                        {{ percent }}%
+                    </div>
+                </div>
+
+                <!-- Сообщение-вердикт -->
+                <div class="py-3">
+                    {% if percent >= 90 %}
+                        <h3 class="text-success">Великолепно! Вы настоящий химик! 🧪✨</h3>
+                    {% elif percent >= 70 %}
+                        <h3 class="text-success">Хороший результат! Уверенные знания. 👍</h3>
+                    {% elif percent >= 50 %}
+                        <h3 class="text-warning">Неплохо, но есть над чем поработать. 📚</h3>
+                    {% else %}
+                        <h3 class="text-danger">Стоит еще раз повторить материал. ✍️</h3>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
-        {% if percent >= 80 %}
-            <div class="alert alert-success">Отличный результат! Вы прекрасно знаете органику.</div>
-        {% elif percent >= 50 %}
-            <div class="alert alert-warning">Хорошо, но есть над чем поработать.</div>
-        {% else %}
-            <div class="alert alert-danger">Стоит еще раз повторить названия и формулы.</div>
-        {% endif %}
-
-        <br>
-        <a href="{% url 'organicnamestest_start' %}" class="btn btn-primary mt-2" style="width: 80%">
-            Попробовать еще раз
-        </a>
-        <br>
-        <a href="{% url 'organiccompaunds' %}" class="btn btn-outline-secondary mt-3" style="width: 80%">
-            Вернуться к справочнику
-        </a>
-    </center>
+        <!-- Кнопки управления -->
+        <div class="row g-3 justify-content-center">
+            <div class="col-12 col-sm-6">
+                <a href="{% url 'organicnamestest_start' %}" class="btn btn-primary btn-lg w-100 shadow">
+                    <i class="fas fa-redo mr-2"></i> Попробовать снова
+                </a>
+            </div>
+            <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                <a href="{% url 'organiccompaunds' %}" class="btn btn-outline-secondary btn-lg w-100 shadow-sm">
+                    <i class="fas fa-list mr-2"></i> К списку веществ
+                </a>
+            </div>
+        </div>
+        
+        <div class="mt-4 pb-5">
+            <a href="{% url 'organiclaw' %}" class="text-muted">
+                <small>Перейти к законам органической химии</small>
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}
