@@ -58,8 +58,6 @@ admin.site.register(Inorganiclaw, InorganiclawAdmin)
 
 
 
-# реакции классы для отображения в админке
-
 # класс для загрузки/выгрузки реакции
 class InorganicReactionResource(resources.ModelResource):
     class Meta:
@@ -67,11 +65,9 @@ class InorganicReactionResource(resources.ModelResource):
         skip_unchanged = True
         report_skipped = True   
 
-
 # класс добавления стилей к окну реакции
 class InorganicReactionAdminForm(forms.ModelForm):
     extra = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
-
 
     class Meta:
         model = InorganicReaction
@@ -82,32 +78,30 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
     resource_class = InorganicReactionResource
     form = InorganicReactionAdminForm
     autocomplete_fields = ['number']
-
     list_display = ('pk', 'metatitle')
-
-
     search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
     save_as = True
+
     def save_model(self, request, obj, form, change):
-        # Проверяем наличие записи в другой модели
-        if not NamesCompaunds.objects.filter(formula=obj.reagent1).exists() and obj.reagent1 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.reagent1}' нет в модели названий.")
-        if not NamesCompaunds.objects.filter(formula=obj.reagent2).exists() and obj.reagent2 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.reagent2}' нет в модели названий.")
-        if not NamesCompaunds.objects.filter(formula=obj.reagent3).exists() and obj.reagent3 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.reagent3}' нет в модели названий.")
-        if not NamesCompaunds.objects.filter(formula=obj.product1).exists() and obj.product1 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.product1}' нет в модели названий.")
-        if not NamesCompaunds.objects.filter(formula=obj.product2).exists() and obj.product2 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.product2}' нет в модели названий.")
-        if not NamesCompaunds.objects.filter(formula=obj.product3).exists() and obj.product3 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.product3}' нет в модели названий.")
-        if not NamesCompaunds.objects.filter(formula=obj.product4).exists() and obj.product4 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.product4}' нет в модели названий.")
-       
-        # Сохранение сработает в любом случае
-        super().save_model(request, obj, form, change)
+        # 1. Проверка наличия веществ в модели названий (через цикл для краткости)
+        items_to_check = [
+            obj.reagent1, obj.reagent2, obj.reagent3, 
+            obj.product1, obj.product2, obj.product3, obj.product4
+        ]
         
+        for item in items_to_check:
+            if item is not None and item != "" and not NamesCompaunds.objects.filter(formula=item).exists():
+                messages.warning(request, f"Внимание: вещества '{item}' нет в модели названий.")
+
+        # 2. Выполняем сохранение объекта
+        super().save_model(request, obj, form, change)
+
+        # 3. Вывод сообщения о редактировании/создании с PK
+        if change:
+            messages.success(request, f"Редактирована запись № {obj.pk}")
+        else:
+            messages.success(request, f"Создана новая запись № {obj.pk}")
+
 # фиксация формы в админке реакции
 admin.site.register(InorganicReaction, InorganicReactionAdmin)
 
@@ -219,22 +213,62 @@ from django import forms
 from .models import OrganicNames
 from .widgets import JSMEWidget
 
-# 1. Создаем форму, которая подменит стандартное поле на редактор JSME
+# # 1. Создаем форму, которая подменит стандартное поле на редактор JSME
+# class OrganicNamesAdminForm(forms.ModelForm):
+#     class Meta:
+#         model = OrganicNames
+#         fields = '__all__'
+#         widgets = {
+#             # Указываем, что для поля 'molecule' используем наш JSMEWidget
+#             'molecule': JSMEWidget(), 
+#         }
+
+# # 2. Регистрируем модель в админке с использованием этой формы
+# @admin.register(OrganicNames)
+# class OrganicNamesAdmin(admin.ModelAdmin):
+#     form = OrganicNamesAdminForm
+#     # Отображаем имя и SMILES-строку в списке всех записей
+#     list_display = ('name1', 'molecule')
+
+# 1. Описываем логику виджета (связь HTML-шаблона с Django)
+class JSMEWidget(forms.Widget):
+    template_name = 'admin/widgets/jsme_editor.html'
+
+    def render(self, name, value, attrs=None, renderer=None):
+        # Передаем данные в ваш HTML-файл
+        context = {
+            'name': name,
+            'value': value or "",
+            'id': attrs.get('id', 'id_molecule'),
+        }
+        return render_to_string(self.template_name, context)
+
+# 2. Создаем форму для админки, где указываем наш виджет
 class OrganicNamesAdminForm(forms.ModelForm):
     class Meta:
         model = OrganicNames
         fields = '__all__'
         widgets = {
-            # Указываем, что для поля 'molecule' используем наш JSMEWidget
+            # Применяем двойной виджет к полю molecule
             'molecule': JSMEWidget(), 
         }
 
-# 2. Регистрируем модель в админке с использованием этой формы
+# 3. Регистрируем модель в админке
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
-    # Отображаем имя и SMILES-строку в списке всех записей
-    list_display = ('name1', 'molecule')
+    # Отображаем PK, название и SMILES в списке
+    list_display = ('pk', 'name1', 'molecule')
+    # Добавляем поиск по названию и SMILES
+    search_fields = ('name1', 'molecule')
+    
+    # Логика уведомления о редактировании с номером записи
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if change:
+            messages.success(request, f"Редактирована запись № {obj.pk}")
+        else:
+            messages.success(request, f"Создана новая запись № {obj.pk}")
 
 
 # базовая органика
