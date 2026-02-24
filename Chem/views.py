@@ -8,75 +8,96 @@ from .models import *
 from .forms import *
 from rdkit import Chem as Chemredactor
 
+
+# 1. Страница выбора режима (с 3 кнопками)
+class OrganicNamesTestHeadView(View):
+    def get(self, request):
+        return render(request, 'Chem/organicnames_test_head.html')
+
+# 2. Страница подготовки (превью перед стартом)
 class OrganicNamesTestStartView(View):
     def get(self, request):
+        mode = request.GET.get('mode', 'name_to_mol')
+        request.session['organicnamestest_mode'] = mode
+        return render(request, 'Chem/organicnamestest_start.html', {'mode': mode})
+
+    def post(self, request):
+        # Нажали "Начать" — формируем список вопросов
         ids = list(OrganicNames.objects.values_list('id', flat=True))
         random.shuffle(ids)
-        request.session['organicnamestest_ids'] = ids
-        request.session['organicnamestest_score'] = 0  # Обнуляем счетчик в начале
-        return render(request, 'Chem/organicnamestest_start.html')
+        request.session['organicnamestest_ids'] = ids[:15] # Ограничим 15 вопросами
+        request.session['organicnamestest_score'] = 0
+        return redirect('organicnamestest_question', index=0)
 
+# 3. Страница вопроса
 class OrganicNamesTestQuestionView(View):
     def get(self, request, index):
         test_ids = request.session.get('organicnamestest_ids', [])
-        
+        mode = request.session.get('organicnamestest_mode', 'name_to_mol')
+
         if not test_ids or index >= len(test_ids):
-            # Если вопросы закончились, можно перенаправить на начало или спец. страницу
-            return render(request, 'Chem/organicnamestest_finished.html')
+            return redirect('organicnamestest_finished')
 
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
-        return render(request, 'Chem/organicnamestest_question.html', {
-            'molecule': obj, # Передаем объект как 'molecule'
-            'index': index
-        })
+        
+        context = {
+            'molecule': obj,
+            'index': index,
+            'mode': mode,
+            'total_questions': len(test_ids),
+            'organic_classes': ORGANIC_CLASSES # Для выпадающего списка
+        }
+        
+        # Загружаем шаблон в зависимости от режима
+        template_name = f'Chem/organicnamestest_question_{mode}.html'
+        return render(request, template_name, context)
 
-
-
+# 4. Страница проверки ответа
 class OrganicNamesTestAnswerView(View):
     def post(self, request, index):
-        user_smiles = request.POST.get('user_smiles', '')
+        mode = request.session.get('organicnamestest_mode', 'name_to_mol')
+        user_ans = request.POST.get('user_smiles') or request.POST.get('user_answer') or ""
         test_ids = request.session.get('organicnamestest_ids', [])
         
-        if not test_ids or index >= len(test_ids):
-            return redirect('organicnamestest_start')
-
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
-        ref_smiles = obj.molecule  
-        
         is_correct = False
-        mol_user = Chemredactor.MolFromSmiles(user_smiles)
-        mol_ref = Chemredactor.MolFromSmiles(ref_smiles) if ref_smiles else None
+
+        # Логика проверки для каждого режима
+        if mode == 'name_to_mol':
+            m_user = Chemredactor.MolFromSmiles(user_ans)
+            m_ref = Chemredactor.MolFromSmiles(obj.molecule) # Поле .molecule
+            if m_user and m_ref:
+                is_correct = Chemredactor.MolToSmiles(m_user) == Chemredactor.MolToSmiles(m_ref)
         
-        if mol_user and mol_ref:
-            user_can = Chemredactor.MolToSmiles(mol_user, isomericSmiles=True)
-            ref_can = Chemredactor.MolToSmiles(mol_ref, isomericSmiles=True)
-            is_correct = (user_can == ref_can)
+        elif mode == 'mol_to_name':
+            # Сравнение названия без учета регистра и лишних пробелов
+            is_correct = user_ans.strip().lower() == obj.name1.strip().lower()
             
-            # Увеличиваем счетчик в сессии, если ответ верный
-            if is_correct:
-                request.session['organicnamestest_score'] = request.session.get('organicnamestest_score', 0) + 1
-        
+        elif mode == 'form_to_class':
+            # Сравнение ключа из ChoiceField
+            is_correct = user_ans == obj.organic_class
+
+        if is_correct:
+            request.session['organicnamestest_score'] = request.session.get('organicnamestest_score', 0) + 1
+
         return render(request, 'Chem/organicnamestest_answer.html', {
             'molecule': obj,
-            'user_smiles': user_smiles,
             'is_correct': is_correct,
+            'user_answer': user_ans,
             'next_index': index + 1,
-            'total_questions': len(test_ids) # Передаем общее количество для условий
+            'total_questions': len(test_ids),
+            'mode': mode
         })
 
+# 5. Страница итогов
 class OrganicNamesTestFinishedView(View):
     def get(self, request):
         score = request.session.get('organicnamestest_score', 0)
-        test_ids = request.session.get('organicnamestest_ids', [])
-        total = len(test_ids)
-        
-        context = {
-            'score': score,
-            'total': total,
-            # Можно добавить процент успеха
-            'percent': int((score / total) * 100) if total > 0 else 0
-        }
-        return render(request, 'Chem/organicnamestest_finished.html', context)
+        total = len(request.session.get('organicnamestest_ids', []))
+        percent = int((score / total) * 100) if total > 0 else 0
+        return render(request, 'Chem/organicnamestest_finished.html', {
+            'score': score, 'total': total, 'percent': percent
+        })
 
 
 
