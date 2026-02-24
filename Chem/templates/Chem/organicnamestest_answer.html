@@ -1,43 +1,109 @@
 {% extends 'main/base.html' %}
+{% load static %}
 {% load mol_extras %}
+
+{% block title %}Результат ответа{% endblock %}
 
 {% block content %}
 <div class="col-12 col-md-10 col-lg-8 mx-auto">
     <div class="text-center">
-        <h3 class="{% if is_correct %}text-success{% else %}text-danger{% endif %} mb-4">
-            {% if is_correct %}✅ Правильно!{% else %}❌ Ошибка{% endif %}
+        <!-- Заголовок статуса -->
+        <h3 class="{% if is_correct %}text-success{% else %}text-danger{% endif %} mb-4 mt-3">
+            {% if is_correct %}
+                <i class="fas fa-check-circle"></i> ✅ Правильно!
+            {% else %}
+                <i class="fas fa-times-circle"></i> ❌ Ошибка
+            {% endif %}
         </h3>
         
-        <h5 class="mb-4">Вещество: <strong>{{ molecule.name1 }}</strong></h5>
+        <hr>
 
-        <!-- Сетка: на мобильных 1 колонка, на десктопе 2 -->
-        <div class="row g-3">
-            <div class="col-12 col-md-6">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-header bg-light py-1 small">Ваш рисунок</div>
-                    <div class="card-body p-2 d-flex justify-content-center align-items-center" style="min-height: 220px;">
-                        <div class="mw-100 overflow-auto">
-                            {% render_smiles user_smiles width=220 height=220 %}
+        <!-- Секция сравнения ответов -->
+        <div class="row g-4 mt-2">
+            
+            {% if mode == 'name_to_mol' %}
+                <!-- РЕЖИМ: НАЗВАНИЕ -> СТРУКТУРА -->
+                <h5 class="col-12 mb-3">Вещество: <strong>«{{ molecule.name1 }}»</strong></h5>
+                <div class="col-12 col-md-6">
+                    <div class="card h-100 shadow-sm border-info">
+                        <div class="card-header bg-info text-white py-1 small">Ваш рисунок</div>
+                        <div class="card-body p-2 d-flex justify-content-center align-items-center" style="min-height: 250px;">
+                            <div class="mw-100">
+                                {% if user_answer %}
+                                    {% render_smiles user_answer width=250 height=250 %}
+                                {% else %}
+                                    <p class="text-muted">Ничего не нарисовано</p>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="card h-100 shadow-sm border-success">
-                    <div class="card-header bg-success text-white py-1 small">Правильно</div>
-                    <div class="card-body p-2 d-flex justify-content-center align-items-center" style="min-height: 220px;">
-                        <div class="mw-100 overflow-auto">
-                            {% render_smiles molecule.molecule width=220 height=220 %}
+                <div class="col-12 col-md-6">
+                    <div class="card h-100 shadow-sm border-success">
+                        <div class="card-header bg-success text-white py-1 small">Правильный ответ</div>
+                        <div class="card-body p-2 d-flex justify-content-center align-items-center" style="min-height: 250px;">
+                            <div class="mw-100">
+                                {% render_smiles molecule.molecule width=250 height=250 %}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+            {% elif mode == 'mol_to_name' %}
+                <!-- РЕЖИМ: СТРУКТУРА -> НАЗВАНИЕ -->
+                <div class="col-12 mb-3 text-center">
+                    {% render_smiles molecule.molecule width=300 height=300 %}
+                </div>
+                <div class="col-12">
+                    <div class="p-3 border rounded bg-light mb-2">
+                        <p class="mb-1 text-muted">Ваш ответ:</p>
+                        <h4 class="{% if is_correct %}text-success{% else %}text-danger{% endif %}">
+                            {{ user_answer|default:"(пусто)" }}
+                        </h4>
+                    </div>
+                    <div class="p-3 border rounded bg-white shadow-sm border-success">
+                        <p class="mb-1 text-muted">Правильное название:</p>
+                        <h4 class="text-success"><strong>{{ molecule.name1 }}</strong></h4>
+                    </div>
+                </div>
+
+            {% elif mode == 'form_to_class' %}
+                <!-- РЕЖИМ: ФОРМУЛА -> КЛАСС -->
+                <div class="col-12">
+                    <h2 class="display-4 mb-4 font-weight-bold">{{ molecule.formula }}</h2>
+                    <div class="p-3 border rounded bg-light mb-2">
+                        <p class="mb-1 text-muted">Выбранный вами класс:</p>
+                        <h4 class="{% if is_correct %}text-success{% else %}text-danger{% endif %}">
+                            {{ user_answer }}
+                        </h4>
+                    </div>
+                    <div class="p-3 border rounded bg-white shadow-sm border-success">
+                        <p class="mb-1 text-muted">Правильный класс:</p>
+                        <h4 class="text-success font-weight-bold">
+                            <!-- Используем Django-метод для отображения значения ChoiceField -->
+                            {{ molecule.get_organic_class_display }}
+                        </h4>
+                    </div>
+                </div>
+            {% endif %}
+
         </div>
 
-        <div class="mt-4 pb-5">
-            <a href="{% url 'organicnamestest_question' next_index %}" class="btn btn-primary btn-lg w-100" style="max-width: 450px">
-                {% if next_index < total_questions %}Следующий вопрос{% else %}Итоги теста{% endif %}
-            </a>
+        <!-- Кнопки навигации -->
+        <div class="mt-5 pb-5">
+            {% if next_index < total_questions %}
+                <a href="{% url 'organicnamestest_question' next_index %}" class="btn btn-primary btn-lg w-100 shadow" style="max-width: 450px">
+                    Следующий вопрос <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            {% else %}
+                <a href="{% url 'organicnamestest_finished' %}" class="btn btn-success btn-lg w-100 shadow" style="max-width: 450px">
+                    Завершить и посмотреть итоги <i class="fas fa-flag-checkered ml-2"></i>
+                </a>
+            {% endif %}
+            
+            <div class="mt-3">
+                <a href="{% url 'organicnamestest_start' %}" class="btn btn-link text-muted">Прервать тест</a>
+            </div>
         </div>
     </div>
 </div>
