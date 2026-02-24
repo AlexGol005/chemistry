@@ -10,6 +10,32 @@ LEVEL = [
         ('ЕГЭ', 'ЕГЭ'),
     ]
 
+ORGANIC_CLASSES = [
+    ('alkanes', 'Алканы'),
+    ('alkenes', 'Алкены'),
+    ('alkynes', 'Алкины'),
+    ('alkadienes', 'Алкадиены'),
+    ('cycloalkanes', 'Циклоалканы'),
+    ('arenes', 'Арены'),
+    ('alcohols', 'Спирты'),
+    ('phenols', 'Фенолы'),
+    ('ethers', 'Простые эфиры'),
+    ('aldehydes', 'Альдегиды'),
+    ('ketones', 'Кетоны'),
+    ('carboxylic_acids', 'Карбоновые кислоты'),
+    ('esters', 'Сложные эфиры'),
+    ('fats', 'Жиры'),
+    ('carbohydrates', 'Углеводы'),
+    ('amines', 'Амины'),
+    ('nitro_compounds', 'Нитросоединения'),
+    ('amino_acids', 'Аминокислоты'),
+    ('proteins', 'Белки'),
+    ('nucleic_acids', 'Нуклеиновые кислоты'),
+    ('halogen_derivatives', 'Галогенопроизводные'),
+    ('thiols', 'Тиолы'),
+    ('heterocycles', 'Гетероциклы'),
+    ('organometallic_compounds', 'Элементоорганические соединения'),
+] 
 
 
 class OrganicNames(models.Model): # Используем стандартный models.Model
@@ -26,6 +52,7 @@ class OrganicNames(models.Model): # Используем стандартный 
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
+    organic_class = models.CharField('Класс', blank=True, null=True, default='ЕГЭ', choices=ORGANIC_CLASSES)
 
     @property
     def mol_object(self):
