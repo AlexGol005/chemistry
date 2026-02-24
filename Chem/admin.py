@@ -11,6 +11,7 @@ import tablib
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from .widgets import JSMEWidget
+from django.template.loader import render_to_string
 
 
 
@@ -230,39 +231,37 @@ from .widgets import JSMEWidget
 #     # Отображаем имя и SMILES-строку в списке всех записей
 #     list_display = ('name1', 'molecule')
 
-# 1. Описываем логику виджета (связь HTML-шаблона с Django)
+# 1. Виджет с исправленным методом render
 class JSMEWidget(forms.Widget):
     template_name = 'admin/widgets/jsme_editor.html'
 
     def render(self, name, value, attrs=None, renderer=None):
-        # Передаем данные в ваш HTML-файл
+        # Подготавливаем данные для шаблона
         context = {
             'name': name,
             'value': value or "",
             'id': attrs.get('id', 'id_molecule'),
         }
-        return render_to_string(self.template_name, context)
+        # Рендерим шаблон и помечаем как безопасный HTML
+        html = render_to_string(self.template_name, context)
+        return mark_safe(html)
 
-# 2. Создаем форму для админки, где указываем наш виджет
+# 2. Форма
 class OrganicNamesAdminForm(forms.ModelForm):
     class Meta:
         model = OrganicNames
         fields = '__all__'
         widgets = {
-            # Применяем двойной виджет к полю molecule
             'molecule': JSMEWidget(), 
         }
 
-# 3. Регистрируем модель в админке
+# 3. Админка
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
-    # Отображаем PK, название и SMILES в списке
     list_display = ('pk', 'name1', 'molecule')
-    # Добавляем поиск по названию и SMILES
     search_fields = ('name1', 'molecule')
     
-    # Логика уведомления о редактировании с номером записи
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         if change:
