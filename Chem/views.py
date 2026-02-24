@@ -17,31 +17,33 @@ class OrganicNamesTestHeadView(View):
 # 2. ПОДГОТОВКА (Превью и инициализация сессии)
 class OrganicNamesTestStartView(View):
     def get(self, request):
-        # Получаем режим из URL (?mode=...)
+        # Принудительно берем режим из URL
         mode = request.GET.get('mode', 'name_to_mol')
+        # Сохраняем его временно, чтобы показать в шаблоне
         return render(request, 'Chem/organicnamestest_start.html', {'mode': mode})
 
     def post(self, request):
-        # Получаем режим из POST или сессии
-        mode = request.POST.get('mode') or request.session.get('organicnamestest_mode', 'name_to_mol')
+        # 1. Получаем режим из скрытого поля формы или из URL
+        mode = request.POST.get('mode') or request.GET.get('mode') or 'name_to_mol'
         
-        # КРИТИЧЕСКИ ВАЖНО: Очищаем старую сессию, чтобы обнулить баллы и вопросы
-        request.session.flush()
+        # 2. ПОЛНОЕ УДАЛЕНИЕ СТАРОЙ СЕССИИ (Чистим 8/4 и прочее)
+        request.session.flush() 
         
-        # Начинаем выборку из базы
+        # 3. Начинаем выборку заново
         queryset = OrganicNames.objects.all()
-        
-        # Исключаем пустые формулы для соответствующего режима
         if mode == 'form_to_class':
             queryset = queryset.exclude(formula__isnull=True).exclude(formula__exact='')
         
         ids = list(queryset.values_list('id', flat=True))
         random.shuffle(ids)
         
-        # Записываем новые данные в чистую сессию
-        request.session['organicnamestest_ids'] = ids[:10] # Ограничение 10 вопросов
-        request.session['organicnamestest_score'] = 0
+        # 4. ЗАПИСЫВАЕМ ЧИСТЫЕ ДАННЫЕ
+        request.session['organicnamestest_ids'] = ids[:10] # Строго 10 вопросов
+        request.session['organicnamestest_score'] = 0      # Строго НОЛЬ баллов
         request.session['organicnamestest_mode'] = mode
+        
+        # 5. Принудительно сохраняем
+        request.session.modified = True
         
         return redirect('organicnamestest_question', index=0)
 
