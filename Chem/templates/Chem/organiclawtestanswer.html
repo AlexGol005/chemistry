@@ -1,0 +1,130 @@
+{% extends 'main/superbase.html' %}
+{% load crispy_forms_tags %}
+{% load mol_extras %}
+
+{% block title %} Ответ: {{ obj.metatitle }} {% endblock %}
+
+{% block content %}
+{% autoescape off %}
+
+<div class="col-12">
+    <!-- Блок избранного -->
+    {% if obj %}
+        <div class="mb-3">
+            {% if obj.id in favorite_ids %}
+                <span>✅ В моем списке</span>
+                <form action="{% url 'remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                </form>
+            {% else %}
+                <form action="{% url 'add_reaction' obj.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Добавить в мой список</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer">Открыть правило</a>            
+    
+    {% if percent %}
+        <p class="mt-2" style="font-family: Georgia, serif; font-size: 12pt;">
+            Процент верных ответов: <b>{{ percent }} %</b>
+        </p>
+    {% endif %}
+
+    <!-- Блок с картинками структур (Реагенты = Продукты) -->
+    <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 30px 0;">
+        
+        <!-- Реагенты -->
+        <div class="mol-unit">{% render_smiles molecule1 width=150 height=150 %}<div>{{ reagent1 }}</div></div>
+        
+        {% if reagent2 %}
+            <div class="operator">+</div>
+            <div class="mol-unit">{% render_smiles molecule2 width=150 height=150 %}<div>{{ reagent2 }}</div></div>
+        {% endif %}
+
+        {% if reagent3 %}
+            <div class="operator">+</div>
+            <div class="mol-unit">{% render_smiles molecule3 width=150 height=150 %}<div>{{ reagent3 }}</div></div>
+        {% endif %}
+
+        <div class="operator">=</div>
+
+        <!-- Продукты -->
+        {% if product1 %}
+            <div class="mol-unit">{% render_smiles molecule4 width=150 height=150 %}<div>{{ product1 }}</div></div>
+        {% endif %}
+
+        {% if product2 %}
+            <div class="operator">+</div>
+            <div class="mol-unit">{% render_smiles molecule5 width=150 height=150 %}<div>{{ product2 }}</div></div>
+        {% endif %}
+
+        {% if product3 %}
+            <div class="operator">+</div>
+            <div class="mol-unit">{% render_smiles molecule6 width=150 height=150 %}<div>{{ product3 }}</div></div>
+        {% endif %}
+
+        {% if product4 %}
+            <div class="operator">+</div>
+            <div class="mol-unit">{% render_smiles molecule7 width=150 height=150 %}<div>{{ product4 }}</div></div>
+        {% endif %}
+    </div>
+
+    <!-- Блок с текстовыми названиями-ссылками -->
+    <p style="text-align: center; font-family: Georgia, serif; font-size: 12pt;">
+        {% if reagent1 %}<a href="{% url 'organiccompaund' pkc1 %}" target="_blank">{{ name1 }}</a>{% endif %}
+        {% if reagent2 %} + <a href="{% url 'organiccompaund' pkc2 %}" target="_blank">{{ name2 }}</a>{% endif %}
+        {% if reagent3 %} + <a href="{% url 'organiccompaund' pkc3 %}" target="_blank">{{ name3 }}</a>{% endif %}
+        =
+        {% if product1 %}<a href="{% url 'organiccompaund' pkc4 %}" target="_blank">{{ name4 }}</a>{% endif %}
+        {% if product2 %} + <a href="{% url 'organiccompaund' pkc5 %}" target="_blank">{{ name5 }}</a>{% endif %}
+        {% if product3 %} + <a href="{% url 'organiccompaund' pkc6 %}" target="_blank">{{ name6 }}</a>{% endif %}
+        {% if product4 %} + <a href="{% url 'organiccompaund' pkc7 %}" target="_blank">{{ name7 }}</a>{% endif %}
+    </p>
+
+    <!-- Условия и доп. информация -->
+    <center>
+        <p style="font-size: 18pt;">{% if condition %} {{ condition }} {% endif %}</p>
+        
+        {% if obj.extra %}
+            <div class="card p-3 bg-light text-left" style="max-width: 800px; font-family: Georgia; font-size: 14pt;">
+                {{ obj.extra }}
+            </div>
+        {% endif %}
+    </center>
+
+    <!-- Медиа-файлы -->
+    {% if obj.video %}
+        <div class="text-center mt-4"><a href="{{ obj.video }}" target="_blank"><h3>🎬 Смотреть видео</h3></a></div>
+    {% endif %}
+
+    {% for img in images %}
+        {% if img %}
+            <center><img class="img-fluid rounded mt-3" style="width: 60%;" src="{{ img.url }}"></center>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Навигация -->
+    <div class="text-center mt-5 mb-5">
+        {% if next_index %}
+            <a href="{% url 'organiclawtestquestion' next_index %}" class="btn btn-primary btn-lg">Следующая реакция</a>
+        {% else %}
+            <a href="/chem/organiclaw" class="btn btn-success btn-lg">Тест завершен! В меню</a>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endautoescape %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .mol-unit { text-align: center; flex: 0 1 auto; }
+    .operator { font-size: 24pt; font-weight: bold; padding: 0 5px; margin-bottom: 30px; }
+    .img-fluid { max-width: 100%; height: auto; }
+</style>
+{% endblock %}
