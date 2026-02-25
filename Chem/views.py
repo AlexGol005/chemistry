@@ -979,31 +979,39 @@ class OrganicLawTestHeadView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        num = self.kwargs['num'] # ID темы из URL
         
-        # 1. Берем все реакции, относящиеся к этой теме (поле 'number')
-        question_list = list(OrganicReaction.objects.filter(number_id=num).values_list('pk', flat=True))
+        # Берем num из URL (теперь ключи совпадают)
+        num = self.kwargs['num'] 
         
-        # Перемешиваем
+        # Получаем объект темы для заголовков
+        # (Замените OrganicLaw на ваше название модели тем)
+        topic = get_object_or_404(OrganicLaw, pk=num) 
+        
+        # 1. Формируем список ID реакций, привязанных к этой теме
+        # Убедитесь, что поле связи в OrganicReaction называется 'number'
+        question_list = list(OrganicReaction.objects.filter(number=topic).values_list('pk', flat=True))
+        
         import random
         random.shuffle(question_list)
 
-        # 2. Сохраняем в сессию! Без этого в вопросах будет пусто
+        # 2. Инициализируем сессию для органики
         self.request.session['question_list'] = question_list
         self.request.session['all_count'] = 0
         self.request.session['correct_count'] = 0
         self.request.session['incorrect_count'] = 0
 
-        # 3. Берем первый ID для кнопки
+        # 3. Передаем данные в шаблон
         if question_list:
+            # Извлекаем первый ID для кнопки "Перейти к вопросам"
+            # Важно: используем копию, чтобы не испортить список в сессии раньше времени
             context['q1'] = question_list[0]
-            # Убираем первый ID из списка в сессии сразу (так как он уже пошел в q1)
-            # Либо делайте это во вьюшке ответа, как у вас было раньше
         else:
             context['q1'] = None
 
         context['count'] = len(question_list)
-        context['numbertitle'] = "Название вашей темы" # Можно достать из модели темы
+        context['numbertitle'] = topic.metatitle # Название темы
+        context['obj'] = topic
+        
         return context
 
 
