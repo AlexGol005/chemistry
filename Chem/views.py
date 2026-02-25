@@ -9,6 +9,183 @@ from .forms import *
 from rdkit import Chem as Chemredactor
 
 
+class OrganicChemTestAnswerView(TemplateView):
+    """ Выводит ответ теста - реакцию по органической химии со структурами """
+    template_name = 'Chem/organiclawtestanswer.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ind = self.kwargs['str']
+        
+        # Получаем объект реакции (используем get_object_or_404 для безопасности)
+        qw = get_object_or_404(OrganicReaction, pk=ind)
+        context['obj'] = qw
+        
+        # Список всех компонентов реакции для обработки
+        components = [
+            qw.reagent1, qw.reagent2, qw.reagent3, 
+            qw.product1, qw.product2, qw.product3, qw.product4
+        ]
+        
+        molecules = []
+        pks = []
+
+        for item in components:
+            if item:
+                # Ищем по 4 полям имен в OrganicNames
+                org_obj = OrganicNames.objects.filter(
+                    Q(name1=item) | Q(name2=item) | Q(name3=item) | Q(name4=item)
+                ).first()
+                
+                if org_obj:
+                    molecules.append(org_obj.molecule or "")
+                    pks.append(org_obj.pk)
+                else:
+                    molecules.append("")
+                    pks.append(1) # Дефолтный PK если не найдено
+            else:
+                molecules.append("")
+                pks.append(1)
+
+        # Раскладываем SMILES (molecule) в контекст
+        for i, mol in enumerate(molecules, 1):
+            context[f'molecule{i}'] = mol
+
+        # Раскладываем PK в контекст
+        for i, pk_val in enumerate(pks, 1):
+            context[f'pkc{i}'] = pk_val
+
+        # Прочие данные реакции
+        context.update({
+            'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
+            'condition': qw.condition,
+            'product1': qw.product1, 'product2': qw.product2, 
+            'product3': qw.product3, 'product4': qw.product4,
+        })
+
+        # --- Логика тестов и сессий ---
+        my_answer = self.request.session.get('answer_list', [])
+        context['my_answer'] = my_answer
+
+        question_list = self.request.session.get('question_list', [])
+        context['last_list'] = list(question_list) # Копия для отладки
+        
+        try:
+            # Извлекаем следующий ID из списка
+            next_index = question_list.pop(0)
+        except (IndexError, AttributeError):
+            next_index = None
+            
+        self.request.session['question_list'] = question_list
+        
+        # Расчет статистики
+        correct = self.request.session.get('correct_count', 0)
+        total = self.request.session.get('all_count', 0)
+        context['percent'] = round((correct / total) * 100) if total > 0 else 0
+        
+        context['next_index'] = next_index
+        context['count'] = len(question_list)
+
+        # Избранное (UserReaction)
+        if self.request.user.is_authenticated:
+            context['favorite_ids'] = list(UserReaction.objects.filter(
+                user=self.request.user
+            ).values_list('reaction_id', flat=True))
+        else:
+            context['favorite_ids'] = []
+
+        return context
+
+
+
+class OrganicChemTestQuestionView(TemplateView):
+    """ Выводит вопрос теста - реакцию по органической химии со структурами """
+    template_name = 'Chem/organiclawtestquestion.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ind = self.kwargs['str']
+        
+        # Получаем объект реакции
+        qw = get_object_or_404(OrganicReaction, pk=ind)
+        
+        # Список реагентов из объекта реакции
+        reagents = [qw.reagent1, qw.reagent2, qw.reagent3]
+        molecules = []
+
+        for r in reagents:
+            if r:
+                # Ищем молекулу (SMILES), если реагент совпадает с любым из 4 имен
+                mol = OrganicNames.objects.filter(
+                    Q(name1=r) | Q(name2=r) | Q(name3=r) | Q(name4=r)
+                ).values_list('molecule', flat=True).first()
+                molecules.append(mol or "")
+            else:
+                molecules.append("")
+
+        # Раскладываем структуры (SMILES) по контексту
+        context.update({
+            'molecule1': molecules[0],
+            'molecule2': molecules[1],
+            'molecule3': molecules[2],
+            'reagent1': qw.reagent1,
+            'reagent2': qw.reagent2,
+            'reagent3': qw.reagent3,
+            'condition': qw.condition,
+            'form': Unswer4Form(), # Предполагаем, что форма та же
+            'q1': ind,
+            'obj': qw,
+            'items': self.request.session.get('question_list', []),
+            'count': len(self.request.session.get('question_list', [])),
+        })
+
+        # Увеличиваем счетчик
+        self.request.session['all_count'] = self.request.session.get('all_count', 0) + 1
+        
+        return context
+
+    def post(self, request, *args, **kwargs):
+        ind = int(self.kwargs['str'])
+        qw = get_object_or_404(OrganicReaction, pk=ind)
+        
+        # Синонимы для отсутствия ответа
+        no_ans = ["not", "ytn", "нет", "none", "-"]
+        
+        raw_fields = ['field1', 'field2', 'field3', 'field4']
+        user_answers = []
+
+        for f in raw_fields:
+            val = request.POST.get(f, '').strip()
+            if val:
+                if val.lower() in no_ans:
+                    user_answers.append("нет")
+                else:
+                    user_answers.append(val)
+
+        # Продукты из базы
+        correct_answers = list(filter(None, [qw.product1, qw.product2, qw.product3, qw.product4]))
+        
+        # Сравнение без учета регистра и порядка
+        user_upper = sorted([a.upper() for a in user_answers])
+        correct_upper = sorted([c.upper() for c in correct_answers])
+
+        answer_display = " + ".join(user_answers)
+
+        if user_upper == correct_upper:
+            messages.success(request, "Верно!")
+            self.request.session['correct_count'] = self.request.session.get('correct_count', 0) + 1
+        else:
+            messages.error(request, f'Не верно :( . Ваш ответ: {answer_display}')
+            self.request.session['incorrect_count'] = self.request.session.get('incorrect_count', 0) + 1
+            
+        request.session['answer_list'] = [request.POST.get(f, '') for f in raw_fields]
+        return redirect('organiclawtestanswer', str=ind)
+
+
+
+
+
+# тесты на названия органики
 # 1. ВЫБОР РЕЖИМА (Пульт управления)
 class OrganicNamesTestHeadView(View):
     def get(self, request):
