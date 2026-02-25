@@ -35,6 +35,7 @@ ORGANIC_CLASSES = [
     ('thiols', 'Тиолы'),
     ('heterocycles', 'Гетероциклы'),
     ('organometallic_compounds', 'Элементоорганические соединения'),
+    ('inorganic_compounds', 'Неорганические соединения'),
 ] 
 
 
