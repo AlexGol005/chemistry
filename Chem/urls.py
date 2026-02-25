@@ -19,10 +19,12 @@ urlpatterns = [
 
     path('organiclaw', views.OrganiclawView.as_view(), name='organiclaw'),
     path('organiclawstr/<int:pk>/', views.OrganiclawStrView.as_view(), name='organiclawstr'),
+    
     path('organiclaw/searchresult/', views.OrganicChemSearchResultView.as_view(), name='organiclawsearchresult'),
     path('organiclaw/test/<str:str>/', views.OrganicChemTestHeadView.as_view(), name='organiclawtest'),
-    path('organiclaw/test/question/<str:str>/', views.OrganicChemTestQuestionView.as_view(), name='organiclawtestquestion'),
-    path('organiclaw/test/answer/<str:str>/', views.OrganicChemTestAnswerView.as_view(), name='organiclawtestanswer'),
+    path('organiclaw/test/question/<int:str>/', views.OrganicChemTestQuestionView.as_view(), name='organiclawtestquestion'),
+    path('organiclaw/test/answer/<int:str>/', views.OrganicChemTestAnswerView.as_view(), name='organiclawtestanswer'),
+
     
     path('atomlaw/test/answer/<str:str>/', views.AtomTestAnswerView.as_view(), name='atomlawtestanswer'),
     path('atomlaws', views.AtomlawView.as_view(), name='atomlaws'),
