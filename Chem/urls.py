@@ -21,7 +21,7 @@ urlpatterns = [
     path('organiclawstr/<int:pk>/', views.OrganiclawStrView.as_view(), name='organiclawstr'),
     
     path('organiclaw/searchresult/', views.OrganicChemSearchResultView.as_view(), name='organiclawsearchresult'),
-    path('organiclaw/test/<str:str>/', views.OrganicLawTestHeadView.as_view(), name='organiclawtest'),
+    path('organiclaw/test/<int:num>/', views.OrganicLawTestHeadView.as_view(), name='organiclawtest'),
     path('organiclaw/test/question/<int:str>/', views.OrganicChemTestQuestionView.as_view(), name='organiclawtestquestion'),
     path('organiclaw/test/answer/<int:str>/', views.OrganicChemTestAnswerView.as_view(), name='organiclawtestanswer'),
 
