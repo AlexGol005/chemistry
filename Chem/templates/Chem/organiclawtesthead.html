@@ -1,46 +1,62 @@
 {% extends 'main/superbase.html' %}
 
-
-{#название страницы#}
-{#стандартная#}
 {% block title %}
-{{obj.title}} 
+    Тест: {{ numbertitle }} 
 {% endblock %}
-{#конец названия страницы#}
 
-
-    {% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
-    {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
-    {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
-
+{% block metaname %}<meta name="description" content="{{ obj.metatitle }}">{% endblock %}
+{% block keywords %}<meta name="keywords" content="{{ obj.keywords }}">{% endblock %}
 
 {% block content %}
 {% autoescape off %}
 
 <div class="col-12">
-         
-   <center>  <h3><a href="/chem/organiclaw"> {{numbertitle}} </a></h3>     
-   </center>
-     <br>
+    <center>
+        <!-- Ссылка на общую тему органических законов -->
+        <h3 class="mt-4">
+            <a href="/chem/organiclaw" style="text-decoration: none; color: #007bff;"> 
+                {{ numbertitle }} 
+            </a>
+        </h3>     
+    </center>
+    
+    <br>
 
-  <center> 
-      <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia; font-size: 16pt; ">
-      Химических реакций в тесте: {{count}}    
-      </p>
-  </center>
+    <center> 
+        <div class="card shadow-sm p-4 bg-light" style="max-width: 500px; border-radius: 15px;">
+            <p style="font-family: Georgia, serif; font-size: 16pt; margin-bottom: 0;">
+                Химических реакций в тесте: <b>{{ count }}</b>
+            </p>
+        </div>
+    </center>
 
-  <br>  <br>
-{% if q1 != 0 %}
-       <center>   <a href="{% url 'organiclawtestquestion' q1 %}"  class="btn btn-primary  mt-2 mr-2 ml-2"> 
-       Перейти к вопросам
-   </a></center> 
- {% endif %}   
-  <br>  <br>
+    <br><br>
 
- </div>
+    {% if q1 %}
+        <center>
+            <!-- Кнопка перехода к первому вопросу теста -->
+            <a href="{% url 'organiclawtestquestion' q1 %}" class="btn btn-primary btn-lg px-5 shadow" style="border-radius: 30px;"> 
+                Перейти к вопросам
+            </a>
+        </center> 
+    {% else %}
+        <center>
+            <p class="text-danger">В данной теме пока нет доступных реакций для теста.</p>
+        </center>
+    {% endif %}
 
-<div class="col-4">
+    <br><br>
+</div>
 
-    </div>
 {% endautoescape %}
+{% endblock %}
+
+{% block aside %}
+    <div class="p-3">
+        <h5>Инструкция:</h5>
+        <p class="small text-muted">
+            Вам будут показаны структурные формулы органических веществ. 
+            Ваша задача — правильно определить продукты взаимодействия.
+        </p>
+    </div>
 {% endblock %}
