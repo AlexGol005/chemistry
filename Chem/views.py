@@ -985,7 +985,7 @@ class OrganicLawTestHeadView(TemplateView):
         
         # Получаем объект темы для заголовков
         # (Замените OrganicLaw на ваше название модели тем)
-        topic = get_object_or_404(OrganicLaw, pk=num) 
+        topic = get_object_or_404(Organiclaw, pk=num) 
         
         # 1. Формируем список ID реакций, привязанных к этой теме
         # Убедитесь, что поле связи в OrganicReaction называется 'number'
