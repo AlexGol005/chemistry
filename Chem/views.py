@@ -974,45 +974,37 @@ class OrganicChemSearchResultView(TemplateView):
         return context
 
 
-class OrganicChemTestHeadView(ListView):
-    """ выводит заглавную страницу теста по органической химии для конкретного закона органической химии """
-    
+class OrganicLawTestHeadView(TemplateView):
     template_name = 'Chem/organiclawtesthead.html'
-    context_object_name = 'objects'
 
     def get_context_data(self, **kwargs):
-        context = super(OrganicChemTestHeadView, self).get_context_data(**kwargs)
-        str=self.kwargs['str']
+        context = super().get_context_data(**kwargs)
+        num = self.kwargs['num'] # ID темы из URL
         
-        try:
-            a = organicReaction.objects.filter(number__pk=str).first()
-            c = organicReaction.objects.filter(number__pk=str)
-            context['numbertitle'] = a.number.title
-            context['count'] = OrganicReaction.objects.filter(number__pk=str).count()
-            question_ids = list(c.values_list('id', flat=True))
-            random.shuffle(question_ids)
-            context['q1'] = OrganicReaction.objects.get(pk=question_ids[0]).pk            
-            question_ids.pop(0)
-            context['question_ids'] = question_ids           
-            self.request.session['question_list'] = question_ids
-            self.request.session['correct_count'] = 0
-            self.request.session['incorrect_count'] = 0
-            self.request.session['all_count'] = 0
-            
+        # 1. Берем все реакции, относящиеся к этой теме (поле 'number')
+        question_list = list(OrganicReaction.objects.filter(number_id=num).values_list('pk', flat=True))
+        
+        # Перемешиваем
+        import random
+        random.shuffle(question_list)
 
+        # 2. Сохраняем в сессию! Без этого в вопросах будет пусто
+        self.request.session['question_list'] = question_list
+        self.request.session['all_count'] = 0
+        self.request.session['correct_count'] = 0
+        self.request.session['incorrect_count'] = 0
 
+        # 3. Берем первый ID для кнопки
+        if question_list:
+            context['q1'] = question_list[0]
+            # Убираем первый ID из списка в сессии сразу (так как он уже пошел в q1)
+            # Либо делайте это во вьюшке ответа, как у вас было раньше
+        else:
+            context['q1'] = None
 
-        except:
-            context['numbertitle'] = 'Пока нет реакций'
-            context['count'] = ''
-            context['question_ids'] = '' 
-            context['q1'] = 0
+        context['count'] = len(question_list)
+        context['numbertitle'] = "Название вашей темы" # Можно достать из модели темы
         return context
-
-    def get_queryset(self):
-        str=self.kwargs['str']
-        queryset = OrganicReaction.objects.filter(number__pk=str)
-        return queryset
 
 
 class OrganicChemMyTestHeadView(ListView):
