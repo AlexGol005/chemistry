@@ -41,10 +41,10 @@ ORGANIC_CLASSES = [
 
 class OrganicNames(models.Model): # Используем стандартный models.Model
     name1 = models.CharField('Название 1', max_length=255, blank=True, null=True, unique=True)
-    name2 = models.CharField('Название 2', max_length=255, blank=True, null=True, unique=True)
-    name3 = models.CharField('Название 3', max_length=255, blank=True, null=True, unique=True)
-    name4 = models.CharField('Название 4', max_length=255, blank=True, null=True, unique=True)
-    formula = models.CharField('Молекулярная формула', max_length=10000, blank=True, null=True, unique=True)
+    name2 = models.CharField('Название 2', max_length=255, blank=True, null=True)
+    name3 = models.CharField('Название 3', max_length=255, blank=True, null=True)
+    name4 = models.CharField('Название 4', max_length=255, blank=True, null=True)
+    formula = models.CharField('Молекулярная формула', max_length=10000, blank=True, null=True)
     molecule = models.TextField('Структурная формула', null=True, blank=True)
     molecule_short = models.TextField('сокращенная структурная формула', null=True, blank=True)
     appearance = models.TextField('Внешний вид', blank=True, null=True) 
