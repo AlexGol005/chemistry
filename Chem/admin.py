@@ -59,7 +59,7 @@ class OrganicNamesAdminForm(forms.ModelForm):
     class Meta:
         model = OrganicNames
         fields = '__all__'
-        widgets = {'molecule': JSMEWidget()}
+        widgets = {'molecule': JSMEWidget(), 'appearance' : CKEditorUploadingWidget(),}
 
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
