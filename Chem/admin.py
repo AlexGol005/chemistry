@@ -355,30 +355,33 @@ class OrganicReactionAdmin(ImportExportActionModelAdmin):
     resource_class = OrganicReactionResource
     form = OrganicReactionAdminForm
     autocomplete_fields = ['number']
-
     list_display = ('pk', 'metatitle')
-
-
     search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
     save_as = True
+
     def save_model(self, request, obj, form, change):
-        # Проверяем наличие записи в другой модели
-        if not OrganicNames.objects.filter(name1=obj.reagent1).exists() and obj.reagent1 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.reagent1}' нет в модели названий.")
-        if not OrganicNames.objects.filter(name1=obj.reagent2).exists() and obj.reagent2 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.reagent2}' нет в модели названий.")
-        if not OrganicNames.objects.filter(name1=obj.reagent3).exists() and obj.reagent3 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.reagent3}' нет в модели названий.")
-        if not OrganicNames.objects.filter(name1=obj.product1).exists() and obj.product1 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.product1}' нет в модели названий.")
-        if not OrganicNames.objects.filter(name1=obj.product2).exists() and obj.product2 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.product2}' нет в модели названий.")
-        if not OrganicNames.objects.filter(name1=obj.product3).exists() and obj.product3 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.product3}' нет в модели названий.")
-        if not OrganicNames.objects.filter(name1=obj.product4).exists() and obj.product4 != None :
-            messages.warning(request, f"Внимание: вещества '{obj.product4}' нет в модели названий.")
-       
-        # Сохранение сработает в любом случае
+        # Собираем все значения реагентов и продуктов
+        check_values = [
+            obj.reagent1, obj.reagent2, obj.reagent3,
+            obj.product1, obj.product2, obj.product3, obj.product4
+        ]
+
+        # Убираем None, пустые строки и дубликаты
+        names_to_verify = {name for name in check_values if name}
+
+        if names_to_verify:
+            # Ищем существующие значения в поле molecule_short одним запросом
+            existing_names = set(
+                OrganicNames.objects.filter(molecule_short__in=names_to_verify)
+                .values_list('molecule_short', flat=True)
+            )
+
+            # Находим разницу: те, что ввели, но которых нет в базе
+            missing_names = names_to_verify - existing_names
+
+            for name in missing_names:
+                messages.warning(request, f"Внимание: вещества '{name}' нет в модели названий (поле molecule_short).")
+
         super().save_model(request, obj, form, change)
         
 # фиксация формы в админке реакции ох
