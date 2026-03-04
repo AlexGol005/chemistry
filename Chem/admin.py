@@ -64,7 +64,7 @@ class OrganicNamesAdminForm(forms.ModelForm):
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
-    search_fields = ['name1', 'name2', 'name3', 'keywords']
+    search_fields = ['name1', 'name2', 'name3']
     list_display = ('pk', 'name1', 'molecule_short')
     
     def save_model(self, request, obj, form, change):
