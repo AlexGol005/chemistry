@@ -34,6 +34,7 @@ ORGANIC_CLASSES = [
     ('halogen_derivatives', 'Галогенопроизводные'),
     ('thiols', 'Тиолы'),
     ('heterocycles', 'Гетероциклы'),
+    ('carboxylic_acids_salts', 'Соли карбоновых кислот'),
     ('organometallic_compounds', 'Элементоорганические соединения'),
     ('inorganic_compounds', 'Неорганические соединения'),
 ] 
