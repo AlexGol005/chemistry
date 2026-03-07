@@ -3,55 +3,59 @@
 
 {% block content %}
 {% autoescape off %}
-
 <div class="col-12">
     <!-- КРИТИЧЕСКИЙ ТЕСТ ОБНОВЛЕНИЯ -->
-    <div style="background: black; color: yellow; padding: 10px; font-family: monospace; border: 3px solid yellow;">
-        СТАТУС КОДА: {{ TEST_STR|default:"СТАРЫЙ КОД (ВЬЮШКА НЕ ОБНОВЛЕНА)" }}<br>
+    <div style="background: black; color: yellow; padding: 10px; font-family: monospace; border: 3px solid yellow; margin-bottom: 20px;">
+        СТАТУС КОДА: {{ TEST_STR|default:"ОШИБКА ОБНОВЛЕНИЯ" }}<br>
         <hr>
         <b>ЛОГ ПОИСКА:</b><br>
         {% for line in debug_log_list %}
             • {{ line }}<br>
         {% empty %}
-            <span style="color:red;">ДАННЫЕ ИЗ ВЬЮШКИ НЕ ПРИШЛИ!</span>
+            <span style="color:red;">СПИСОК ПУСТ</span>
         {% endfor %}
-        <hr>
-        html_name1: "{{ html_name1 }}" | reagent1: "{{ reagent1 }}"
     </div>
 
-{% if obj %}
-    <div style="margin-top: 15px;">
-        {% if obj.id in favorite_ids %}
-            <span>✅ В списке</span>
-            <form action="{% url 'organic_remove_reaction' obj.id %}" method="post" style="display:inline;">
-                {% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
-            </form>
-        {% else %}
-            <form action="{% url 'organic_add_reaction' obj.id %}" method="post" style="display:inline;">
-                {% csrf_token %}<button type="submit" class="btn btn-primary">Добавить в мой список</button>
-            </form>
-        {% endif %}
-    </div>
-{% endif %}
+    {% if obj %}
+        <div style="margin-bottom: 20px;">
+            {% if obj.id in favorite_ids %}
+                <span>✅ В списке</span>
+                <form action="{% url 'organic_remove_reaction' obj.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                </form>
+            {% else %}
+                <form action="{% url 'organic_add_reaction' obj.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}<button type="submit" class="btn btn-primary">Добавить в мой список</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
 
     <br>
-    <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">открыть правило</a>            
+    {% if obj.number %}
+        <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">открыть правило</a>
+    {% endif %}
 
     <!-- ФОРМУЛА -->
     <p style="text-align: center; font-size: 23pt; margin: 20px auto; line-height: 1.5;">
         {% if reagent1 %}<span style="white-space: nowrap;">{{reagent1}}</span>{% endif %}
         {% if reagent2 %} + <wbr><span style="white-space: nowrap;">{{reagent2}}</span>{% endif %}
+        {% if reagent3 %} + <wbr><span style="white-space: nowrap;">{{reagent3}}</span>{% endif %}
         = <wbr>
         {% if product1 %}<span style="white-space: nowrap;">{{product1}}</span>{% endif %}
+        {% if product2 %} + <wbr><span style="white-space: nowrap;">{{product2}}</span>{% endif %}
     </p>
 
     <!-- НАЗВАНИЯ -->
     <p style="text-align: center; font-size: 9pt; color: #888; margin-top: -15px;">
         {% if reagent1 %}<span style="white-space: nowrap;">{{ html_name1 }}</span>{% endif %}
         {% if reagent2 %}&nbsp;&nbsp;&nbsp;<span>{{ html_name2 }}</span>{% endif %}
-        &nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         {% if product1 %}<span style="white-space: nowrap;">{{ html_name4 }}</span>{% endif %}
+        {% if product2 %}&nbsp;&nbsp;&nbsp;<span>{{ html_name5 }}</span>{% endif %}
     </p>
+
+    <center><p style="font-size: 20pt;">{{ condition }}</p></center>
 
     {% if obj.extra %}
     <center> 
@@ -67,7 +71,6 @@
     {% else %}
        <center><a href="/chem/organiclaw" class="btn btn-primary mt-2">Тест завершен</a></center> 
     {% endif %}   
-
-    <br><br>
 </div>
 {% endautoescape %}
+{% endblock %}
