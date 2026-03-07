@@ -10,52 +10,101 @@ from rdkit import Chem as Chemredactor
 
 from django.http import Http404
 
+class OrganicLawTestHeadView(TemplateView):
+    template_name = 'Chem/organiclawtesthead.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Берем num из URL (теперь ключи совпадают)
+        num = self.kwargs['num'] 
+        
+        # Получаем объект темы для заголовков
+        # (Замените OrganicLaw на ваше название модели тем)
+        topic = get_object_or_404(Organiclaw, pk=num) 
+        
+        # 1. Формируем список ID реакций, привязанных к этой теме
+        # Убедитесь, что поле связи в OrganicReaction называется 'number'
+        question_list = list(OrganicReaction.objects.filter(number=topic).values_list('pk', flat=True))
+        
+        import random
+        random.shuffle(question_list)
+
+        # 2. Инициализируем сессию для органики
+        self.request.session['question_list'] = question_list
+        self.request.session['all_count'] = 0
+        self.request.session['correct_count'] = 0
+        self.request.session['incorrect_count'] = 0
+
+        # 3. Передаем данные в шаблон
+        if question_list:
+            # Извлекаем первый ID для кнопки "Перейти к вопросам"
+            # Важно: используем копию, чтобы не испортить список в сессии раньше времени
+            context['q1'] = question_list[0]
+        else:
+            context['q1'] = None
+
+        context['count'] = len(question_list)
+        context['numbertitle'] = topic.metatitle # Название темы
+        context['obj'] = topic
+        
+        return context
 
 class OrganicChemTestQuestionView(TemplateView):
-    """ Выводит вопрос теста — сравнение идет по тексту из molecule_short """
+    """ Выводит вопрос теста — только текст реакции и условия """
     template_name = 'Chem/organiclawtestquestion.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs['str']
+        
+        # Получаем объект реакции
         qw = get_object_or_404(OrganicReaction, pk=ind)
         
+        # Передаем данные для текстового отображения реакции
         context.update({
             'reagent1': qw.reagent1,
             'reagent2': qw.reagent2,
             'reagent3': qw.reagent3,
             'condition': qw.condition,
-            'form': OrganicTestForm(),
+            'form': OrganicTestForm(), # Используем новую форму с кнопками Сверху и Снизу
             'q1': ind,
             'obj': qw,
+            # Список оставшихся вопросов для инфо (опционально)
             'items': self.request.session.get('question_list', []),
-            'count': len(self.request.session.get('question_list', [])),
         })
 
+        # Увеличиваем общий счетчик вопросов в сессии
         self.request.session['all_count'] = self.request.session.get('all_count', 0) + 1
+        
         return context
 
     def post(self, request, *args, **kwargs):
         ind = int(self.kwargs['str'])
         qw = get_object_or_404(OrganicReaction, pk=ind)
         
+        # Синонимы для отсутствия ответа
         no_ans = ["not", "ytn", "нет", "none", "-"]
+        
+        # Поля из нашей новой формы OrganicTestForm
+        raw_fields = ['field1', 'field2', 'field3', 'field4']
         user_answers = []
 
-        # Собираем ввод пользователя
-        for f in ['field1', 'field2', 'field3', 'field4']:
+        for f in raw_fields:
             val = request.POST.get(f, '').strip()
             if val:
-                # Если введено "нет" или аналоги, приводим к единому виду
-                user_answers.append("нет" if val.lower() in no_ans else val)
+                # Если введено "нет", приводим к единому виду
+                if val.lower() in no_ans:
+                    user_answers.append("нет")
+                else:
+                    user_answers.append(val)
 
-        # Продукты из OrganicReaction (которые по факту являются molecule_short)
+        # Продукты из базы (поля в OrganicReaction уже содержат molecule_short)
         correct_answers = [qw.product1, qw.product2, qw.product3, qw.product4]
-        # Убираем None и пустые строки, приводим к строкам для безопасности
+        # Очищаем от пустых значений и приводим к строкам
         correct_list = [str(c).strip() for c in correct_answers if c]
         
-        # Сравнение: регистр не важен, порядок не важен
+        # Сравнение без учета регистра и порядка
         user_upper = sorted([a.upper() for a in user_answers])
         correct_upper = sorted([c.upper() for c in correct_list])
 
@@ -63,15 +112,11 @@ class OrganicChemTestQuestionView(TemplateView):
             messages.success(request, "Верно!")
             self.request.session['correct_count'] = self.request.session.get('correct_count', 0) + 1
         else:
-            # Выводим сообщение об ошибке (можно без указания правильного ответа, если это тест)
             messages.error(request, 'Не верно :(')
             self.request.session['incorrect_count'] = self.request.session.get('incorrect_count', 0) + 1
             
-        # Сохраняем введенные данные в сессию для отображения на странице ответа (если нужно)
-        request.session['answer_list'] = [request.POST.get(f, '') for f in ['field1', 'field2', 'field3', 'field4']]
-        
+        # Редирект на вьюшку ответа, которая "проест" следующий ID из сессии
         return redirect('organiclawtestanswer', str=ind)
-
 
 
 
@@ -105,27 +150,28 @@ class OrganicChemTestAnswerView(TemplateView):
         for i, val in enumerate(struct_list, 1):
             if val:
                 target = str(val).strip()
-                # Ищем объект по molecule_short (точное совпадение)
                 found_obj = OrganicNames.objects.filter(molecule_short__iexact=target).first()
                 context[f'obj_n{i}'] = found_obj
             else:
                 context[f'obj_n{i}'] = None
 
-        # Проброс самих строк (для текстовой формулы)
         context.update({
             'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
             'product1': qw.product1, 'product2': qw.product2, 'product3': qw.product3, 'product4': qw.product4,
             'condition': qw.condition,
         })
 
-        # Статистика и очередь
+        # Статистика
         all_c = self.request.session.get('all_count', 0) or 0
         corr_c = self.request.session.get('correct_count', 0) or 0
         context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else 0
         
-        q_list = list(self.request.session.get('organic_question_list', []))
+        # --- ИСПРАВЛЕННЫЙ БЛОК ОЧЕРЕДИ ---
+        # Меняем 'organic_question_list' на 'question_list' (как в "голове")
+        q_list = list(self.request.session.get('question_list', []))
         context['next_index'] = q_list.pop(0) if q_list else None
-        self.request.session['organic_question_list'] = q_list
+        self.request.session['question_list'] = q_list
+        # ---------------------------------
         
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(OrganicUserReaction.objects.filter(user=self.request.user).values_list('reaction_id', flat=True))
