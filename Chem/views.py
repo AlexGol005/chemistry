@@ -26,7 +26,7 @@ class OrganicChemTestQuestionView(TemplateView):
             'reagent2': qw.reagent2,
             'reagent3': qw.reagent3,
             'condition': qw.condition,
-            'form': Unswer4Form(),
+            'form': OrganicTestForm(),
             'q1': ind,
             'obj': qw,
             'items': self.request.session.get('question_list', []),
