@@ -94,9 +94,18 @@
 
     <br>
     {% if next_index %}
-       <center><a href="{% url 'organiclawtestanswer' next_index %}" class="btn btn-primary mt-2">Следующая реакция</a></center> 
+       <!-- ИСПРАВЛЕНО: url теперь ведет на question, а не на answer -->
+       <center>
+           <a href="{% url 'organiclawtestquestion' next_index %}" class="btn btn-primary mt-2">
+               Следующая реакция
+           </a>
+       </center> 
     {% else %}
-       <center><a href="/chem/organiclaw" class="btn btn-primary mt-2">Тест завершен</a></center> 
+       <center>
+           <a href="/chem/organiclaw" class="btn btn-primary mt-2">
+               Тест завершен
+           </a>
+       </center> 
     {% endif %}   
 </div>
 {% endautoescape %}
