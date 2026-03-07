@@ -15,27 +15,24 @@ class OrganicChemTestAnswerView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Получаем ID из URL (используем имя 'str', как прописано в urls.py)
-        ind = self.kwargs.get('str') 
+        # Берем ID из URL (используем имя 'str', как в вашем urls.py)
+        ind = self.kwargs.get('str')
         
-        # ИСПРАВЛЕНИЕ ОШИБКИ 1298: 
-        # Вместо OrganicNames.objects.get(pk=ind) используем OrganicReaction
+        # 1. ПОИСК РЕАКЦИИ (а не вещества!)
         try:
             qw = OrganicReaction.objects.get(pk=ind)
         except OrganicReaction.DoesNotExist:
-            # Если вдруг ID битый, чтобы сайт не падал
             from django.http import Http404
             raise Http404("Реакция не найдена")
-
+            
         context['obj'] = qw
-        
-        # Список формул для сопоставления с именами
+
+        # 2. ПОИСК НАЗВАНИЙ И PK (через справочник NamesCompaunds)
         formulas = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        # Собираем имена и PK (используем ваш NamesCompaunds)
         res_names = []
         res_pks = []
         for f in formulas:
@@ -47,7 +44,7 @@ class OrganicChemTestAnswerView(TemplateView):
                 res_names.append("")
                 res_pks.append(1)
 
-        # Раскладываем по контексту (по аналогии с неорганикой)
+        # Раскладываем по контексту для формулы в шаблоне
         for i in range(1, 4):
             context[f'reagent{i}'] = getattr(qw, f'reagent{i}')
             context[f'name{i}'] = res_names[i-1]
@@ -60,7 +57,18 @@ class OrganicChemTestAnswerView(TemplateView):
 
         context['condition'] = qw.condition
 
-        # Логика сессий (статистика и очередь)
+        # 3. БЕЗОПАСНЫЙ РАСЧЕТ ПРОЦЕНТОВ (исправляет TypeError)
+        correct_count = self.request.session.get('correct_count', 0) or 0
+        all_count = self.request.session.get('all_count', 0) or 0
+        
+        if all_count == 0:
+            percent = 0
+        else:
+            percent = round((correct_count / all_count) * 100)
+        
+        context['percent'] = percent
+
+        # 4. ЛОГИКА ОЧЕРЕДИ ВОПРОСОВ (используем organic_question_list)
         last_list = self.request.session.get('organic_question_list', [])
         question_list = list(last_list)
         
@@ -70,17 +78,16 @@ class OrganicChemTestAnswerView(TemplateView):
             next_index = None
             
         self.request.session['organic_question_list'] = question_list
-
-        correct_count = self.request.session.get('correct_count', 0)
-        all_count = self.request.session.get('all_count', 0)
-        context['percent'] = round((correct_count / all_count) * 100) if all_count > 0 else 0
         
-        context['next_index'] = next_index
-        context['items'] = question_list
-        context['count'] = len(question_list)
-        context['last_list'] = last_list
+        context.update({
+            'next_index': next_index,
+            'items': question_list,
+            'count': len(question_list),
+            'last_list': last_list,
+            'my_answer': self.request.session.get('answer_list', [])
+        })
 
-        # Избранное (используем OrganicUserReaction)
+        # 5. ИЗБРАННОЕ (OrganicUserReaction)
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
                 user=self.request.user
