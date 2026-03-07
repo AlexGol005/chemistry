@@ -53,11 +53,7 @@ class Unswer4Form(forms.Form):
 from crispy_forms.layout import Layout, Field, Submit, Row, Column
 
 class OrganicTestForm(forms.Form):
-    """ Форма с 4 длинными полями и кнопками сверху и снизу """
-    field1 = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'placeholder': 'Продукт 1'}))
-    field2 = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'placeholder': 'Продукт 2'}))
-    field3 = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'placeholder': 'Продукт 3'}))
-    field4 = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'placeholder': 'Продукт 4'}))
+    # ... поля field1, field2 и т.д. остаются те же ...
                            
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -79,3 +75,5 @@ class OrganicTestForm(forms.Form):
             
             # Кнопка СНИЗУ
             Submit('submit_bottom', 'Отправить ответ', css_class='btn-success btn-lg w-100 mt-2', style=btn_style)
+        ) # <--- ПЕРВАЯ скобка (закрывает Layout)
+    # <--- ВТОРАЯ скобка (неявная, завершает метод __init__)
