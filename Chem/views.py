@@ -16,6 +16,7 @@ class OrganicChemTestAnswerView(TemplateView):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs.get('str')
         
+        # Получаем объект органической реакции
         try:
             qw = OrganicReaction.objects.get(pk=ind)
         except OrganicReaction.DoesNotExist:
@@ -24,37 +25,42 @@ class OrganicChemTestAnswerView(TemplateView):
             
         context['obj'] = qw
 
-        # Список текстовых структур из реакции
+        # Список структур из полей реакции
         structures = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        # Поиск name1 по полю molecule_short
+        # Поиск названий (name1) в модели OrganicNames по полю molecule_short
         for i, struct in enumerate(structures, 1):
             if struct:
-                # Ищем запись, где molecule_short соответствует тексту из реакции
-                name_obj = OrganicNames.objects.filter(molecule_short=struct).first()
-                context[f'html_name{i}'] = name_obj.name1 if name_obj else ""
+                # Очистка: убираем пробелы/табуляции по краям
+                clean_struct = struct.strip()
+                
+                # Ищем точное совпадение (molecule_short == чистая строка из реакции)
+                name_obj = OrganicNames.objects.filter(molecule_short=clean_struct).first()
+                
+                if name_obj:
+                    context[f'html_name{i}'] = name_obj.name1
+                else:
+                    # ДЕБАГ: если не найдено, выводим саму строку в спец-символах
+                    context[f'html_name{i}'] = f"![НЕ НАЙДЕНО: {clean_struct}]!"
             else:
                 context[f'html_name{i}'] = ""
 
-        # Проброс самих формул (для удобства шаблона)
-        context['reagent1'] = qw.reagent1
-        context['reagent2'] = qw.reagent2
-        context['reagent3'] = qw.reagent3
-        context['product1'] = qw.product1
-        context['product2'] = qw.product2
-        context['product3'] = qw.product3
-        context['product4'] = qw.product4
-        context['condition'] = qw.condition
+        # Проброс базовых полей для формулы
+        context.update({
+            'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
+            'product1': qw.product1, 'product2': qw.product2, 'product3': qw.product3, 'product4': qw.product4,
+            'condition': qw.condition
+        })
 
-        # Расчет процентов
+        # Безопасный расчет процентов
         correct_count = self.request.session.get('correct_count', 0) or 0
         all_count = self.request.session.get('all_count', 0) or 0
         context['percent'] = round((correct_count / all_count) * 100) if all_count > 0 else 0
 
-        # Очередь
+        # Логика очереди вопросов
         last_list = self.request.session.get('organic_question_list', [])
         question_list = list(last_list)
         try:
@@ -67,8 +73,10 @@ class OrganicChemTestAnswerView(TemplateView):
             'next_index': next_index,
             'count': len(question_list),
             'last_list': last_list,
+            'my_answer': self.request.session.get('answer_list', [])
         })
 
+        # Избранное
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
                 user=self.request.user
