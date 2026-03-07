@@ -44,49 +44,43 @@
     {% if obj.number %}<a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">открыть правило</a>{% endif %}
     {% if percent %}<p>Процент верных ответов: {{percent}} %</p>{% endif %}
 
-    <!-- ЛИНИЯ 1: ТЕКСТОВЫЕ ФОРМУЛЫ И НАЗВАНИЯ -->
+   <!-- ЛИНИЯ 1: ТЕКСТОВЫЕ ФОРМУЛЫ (Берем напрямую из obj) -->
     <div style="text-align: center; margin: 40px 0;">
-        <!-- Реагенты (obj_n1 - obj_n3) -->
         <div class="chem-item">
-            <span class="chem-formula">{{ reagent1 }}</span>
+            <span class="chem-formula">{{ obj.reagent1 }}</span>
             <span class="chem-name">{% if obj_n1 %}<a href="/chem/organiccompaund/{{ obj_n1.pk }}/" target="_blank">{{ obj_n1.name1 }}</a>{% endif %}</span>
         </div>
-        {% if reagent2 %}<span class="chem-operator">+</span>
+
+        {% if obj.reagent2 %}
+        <span class="chem-operator">+</span>
         <div class="chem-item">
-            <span class="chem-formula">{{ reagent2 }}</span>
+            <span class="chem-formula">{{ obj.reagent2 }}</span>
             <span class="chem-name">{% if obj_n2 %}<a href="/chem/organiccompaund/{{ obj_n2.pk }}/" target="_blank">{{ obj_n2.name1 }}</a>{% endif %}</span>
-        </div>
-        {% endif %}
-        {% if reagent3 %}<span class="chem-operator">+</span>
-        <div class="chem-item">
-            <span class="chem-formula">{{ reagent3 }}</span>
-            <span class="chem-name">{% if obj_n3 %}<a href="/chem/organiccompaund/{{ obj_n3.pk }}/" target="_blank">{{ obj_n3.name1 }}</a>{% endif %}</span>
         </div>
         {% endif %}
 
         <span class="chem-operator">=</span>
 
-        <!-- Продукты (obj_n4 - obj_n7) -->
+        <!-- Первый продукт -->
         <div class="chem-item">
-            <span class="chem-formula">{{ product1 }}</span>
+            <span class="chem-formula">{{ obj.product1 }}</span>
             <span class="chem-name">{% if obj_n4 %}<a href="/chem/organiccompaund/{{ obj_n4.pk }}/" target="_blank">{{ obj_n4.name1 }}</a>{% endif %}</span>
         </div>
-        {% if product2 %}<span class="chem-operator">+</span>
+
+        <!-- Второй продукт (Проверяем все возможные поля) -->
+        {% if obj.product2 %}
+        <span class="chem-operator">+</span>
         <div class="chem-item">
-            <span class="chem-formula">{{ product2 }}</span>
+            <span class="chem-formula">{{ obj.product2 }}</span>
             <span class="chem-name">{% if obj_n5 %}<a href="/chem/organiccompaund/{{ obj_n5.pk }}/" target="_blank">{{ obj_n5.name1 }}</a>{% endif %}</span>
         </div>
         {% endif %}
-        {% if product3 %}<span class="chem-operator">+</span>
+
+        {% if obj.product3 %}
+        <span class="chem-operator">+</span>
         <div class="chem-item">
-            <span class="chem-formula">{{ product3 }}</span>
+            <span class="chem-formula">{{ obj.product3 }}</span>
             <span class="chem-name">{% if obj_n6 %}<a href="/chem/organiccompaund/{{ obj_n6.pk }}/" target="_blank">{{ obj_n6.name1 }}</a>{% endif %}</span>
-        </div>
-        {% endif %}
-        {% if product4 %}<span class="chem-operator">+</span>
-        <div class="chem-item">
-            <span class="chem-formula">{{ product4 }}</span>
-            <span class="chem-name">{% if obj_n7 %}<a href="/chem/organiccompaund/{{ obj_n7.pk }}/" target="_blank">{{ obj_n7.name1 }}</a>{% endif %}</span>
         </div>
         {% endif %}
     </div>
