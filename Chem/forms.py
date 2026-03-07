@@ -53,7 +53,7 @@ class Unswer4Form(forms.Form):
 from crispy_forms.layout import Layout, Field, Submit, Row, Column
 
 class OrganicTestForm(forms.Form):
-    """ Форма с 4 длинными полями одно под другим """
+    """ Форма с 4 длинными полями и кнопками сверху и снизу """
     field1 = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'placeholder': 'Продукт 1'}))
     field2 = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'placeholder': 'Продукт 2'}))
     field3 = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'placeholder': 'Продукт 3'}))
@@ -62,15 +62,20 @@ class OrganicTestForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_tag = False # Чтобы не дублировать <form> в HTML
+        self.helper.form_tag = False 
 
-        # Стиль для длинных полей (высота 60px, текст крупный)
         custom_style = "height: 65px; font-size: 24pt; font-family: Georgia, serif; margin-bottom: 15px;"
+        btn_style = "height: 60px; font-size: 18pt;"
         
         self.helper.layout = Layout(
+            # Кнопка СВЕРХУ
+            Submit('submit_top', 'Отправить ответ', css_class='btn-success btn-lg w-100 mb-4', style=btn_style),
+            
+            # Поля ввода
             Row(Column(Field('field1', style=custom_style), css_class='col-12')),
             Row(Column(Field('field2', style=custom_style), css_class='col-12')),
             Row(Column(Field('field3', style=custom_style), css_class='col-12')),
             Row(Column(Field('field4', style=custom_style), css_class='col-12')),
-            Submit('submit', 'Отправить ответ', css_class='btn-success btn-lg w-100', style="height: 60px; font-size: 18pt;")
-        )
+            
+            # Кнопка СНИЗУ
+            Submit('submit_bottom', 'Отправить ответ', css_class='btn-success btn-lg w-100 mt-2', style=btn_style)
