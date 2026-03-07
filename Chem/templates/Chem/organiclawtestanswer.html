@@ -3,17 +3,18 @@
 
 {% block title %}реакция (органика){% endblock %}
 
-{% block metaname %}<meta name="description" content="{{obj.metatitle}}">{% endblock %}
-{% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
-{% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
-
 {% block content %}
 {% autoescape off %}
 
 <div class="col-12">
-    <!-- ЖЕСТКИЙ ДЕБАГ: Если тут пусто, значит вьюшка не передала данные -->
-    <div style="color: red; border: 1px solid red; padding: 5px; margin-bottom: 10px;">
-        DEBUG: html_name1 = {{ html_name1 }} | reagent1 = {{ reagent1 }}
+    <!-- КРАСНАЯ РАМКА ДЕБАГА -->
+    <div style="border: 2px solid red; background: #fff5f5; padding: 10px; font-family: monospace; font-size: 9pt; margin-bottom: 20px;">
+        <b style="color: red;">DEBUG LOG:</b><br>
+        {% for line in debug_info %}
+            {{ line }}<br>
+        {% endfor %}
+        <hr>
+        <b>Текущие html_names:</b> 1:{{html_name1}} | 2:{{html_name2}} | 4:{{html_name4}}
     </div>
 
 {% if obj %}
@@ -34,16 +35,13 @@
 {% endif %}
 
     <br><br>
-    
-    <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer">открыть правило</a>            
+    <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">открыть правило</a>            
 
     {% if percent %}
-        <p style="width: 100%; font-family: Georgia, serif; font-size: 12pt;">
-            Процент верных ответов: {{percent}} %
-        </p>
+        <p>Процент верных ответов: {{percent}} %</p>
     {% endif %}
 
-    <!-- ФОРМУЛА РЕАКЦИИ -->
+    <!-- ФОРМУЛА -->
     <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 23pt; margin: 20px auto; line-height: 1.5;">
         {% if reagent1 %}<span style="white-space: nowrap;">{{reagent1}}</span>{% endif %}
         {% if reagent2 %} + <wbr><span style="white-space: nowrap;">{{reagent2}}</span>{% endif %}
@@ -51,11 +49,9 @@
         = <wbr>
         {% if product1 %}<span style="white-space: nowrap;">{{product1}}</span>{% endif %}
         {% if product2 %} + <wbr><span style="white-space: nowrap;">{{product2}}</span>{% endif %}
-        {% if product3 %} + <wbr><span style="white-space: nowrap;">{{product3}}</span>{% endif %}
-        {% if product4 %} + <wbr><span style="white-space: nowrap;">{{product4}}</span>{% endif %}
     </p>
 
-    <!-- НАЗВАНИЯ (name1) -->
+    <!-- НАЗВАНИЯ -->
     <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 9pt; margin: -10px auto 20px auto; line-height: 1.4; color: #888;">
         {% if reagent1 %}<span style="white-space: nowrap;">{{ html_name1 }}</span>{% endif %}
         {% if reagent2 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name2 }}</span>{% endif %}
@@ -63,52 +59,28 @@
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         {% if product1 %}<span style="white-space: nowrap;">{{ html_name4 }}</span>{% endif %}
         {% if product2 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name5 }}</span>{% endif %}
-        {% if product3 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name6 }}</span>{% endif %}
-        {% if product4 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name7 }}</span>{% endif %}
     </p>
 
-    <center>     
-        <p style="text-align: center; font-family: Georgia, serif; font-size: 20pt;">
-            {% if condition %}{{condition}}{% endif %}
-        </p>
-    </center>
+    <center><p style="font-size: 20pt;">{% if condition %}{{condition}}{% endif %}</p></center>
 
-    <br>  
-
-    <!-- БЛОК ПОДРОБНОСТЕЙ -->
     {% if obj.extra %}
     <center> 
-        <div style="border-left: 6px solid #00aaff; background-color: #f8fdff; padding: 15px; text-align: left; max-width: 80%; border-radius: 4px; box-shadow: 2px 2px 8px rgba(0,0,0,0.05);">
-             <p style="font-family: Georgia, serif; font-size: 15pt; margin: 0;">
-                {{ obj.extra }}
-             </p>
+        <div style="border-left: 6px solid #00aaff; background-color: #f8fdff; padding: 15px; text-align: left; max-width: 80%;">
+             <p style="font-size: 15pt; margin: 0;">{{ obj.extra }}</p>
         </div>
     </center>                       
     {% endif %}   
 
     <br>
-
-    {% if obj.video %}
-    <center>
-        <a href="{{ obj.video }}" target="_blank" rel="noopener noreferrer"><h3>Смотрите видео по ссылке</h3></a>
-    </center>
-    {% endif %}
-    
-    {% if obj.img1 %}<center><div class="pt-3"><img style="width: 30%; height: auto;" src="{{ obj.img1.url }}"></div></center>{% endif %}
-    {% if obj.img2 %}<center><div class="pt-3"><img style="width: 30%; height: auto;" src="{{ obj.img2.url }}"></div></center>{% endif %}
-    {% if obj.img3 %}<center><div class="pt-3"><img style="width: 30%; height: auto;" src="{{ obj.img3.url }}"></div></center>{% endif %}
+    {% if obj.video %}<center><a href="{{ obj.video }}" target="_blank"><h3>Смотрите видео</h3></a></center>{% endif %}
+    {% if obj.img1 %}<center><img style="width: 30%;" src="{{ obj.img1.url }}"></center>{% endif %}
 
     <br>
     {% if next_index %}
-       <center><a href="{% url 'organiclawtestanswer' next_index %}" class="btn btn-primary mt-2">Следующая химическая реакция</a></center> 
+       <center><a href="{% url 'organiclawtestanswer' next_index %}" class="btn btn-primary mt-2">Следующая реакция</a></center> 
     {% else %}
-       <center><a href="/chem/organiclaw" class="btn btn-primary mt-2">Тест завершен, спасибо! Перейти в тему</a></center> 
+       <center><a href="/chem/organiclaw" class="btn btn-primary mt-2">Тест завершен</a></center> 
     {% endif %}   
-
-    <br><br>
+</div>
 {% endautoescape %}
-{% endblock %}
-
-{% block aside %}
-    <i>*Все реакции приведены без коэффициентов!</i><br>
 {% endblock %}
