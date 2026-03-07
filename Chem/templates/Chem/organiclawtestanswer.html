@@ -4,6 +4,10 @@
 
 {% block title %} Ответ: {{ obj.metatitle }} {% endblock %}
 
+{% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
+{% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
+{% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
+
 {% block content %}
 {% autoescape off %}
 
@@ -12,11 +16,13 @@
     {% if obj %}
         <div class="mb-3">
             {% if obj.id in favorite_ids %}
-                <span>✅ В моем списке</span>
-                <form action="{% url 'remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
-                </form>
+                <div style="display:inline;">
+                    <span>✅ В моем списке</span>
+                    <form action="{% url 'remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                    </form>
+                </div>
             {% else %}
                 <form action="{% url 'add_reaction' obj.id %}" method="post" style="display:inline;">
                     {% csrf_token %}
@@ -26,93 +32,121 @@
         </div>
     {% endif %}
 
-    <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer">Открыть правило</a>            
-    
+    <div class="mb-3">
+        <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer" class="btn btn-link p-0">Открыть правило</a>
+    </div>
+
     {% if percent %}
         <p class="mt-2" style="font-family: Georgia, serif; font-size: 12pt;">
             Процент верных ответов: <b>{{ percent }} %</b>
         </p>
     {% endif %}
 
-    <!-- Блок с картинками структур (Реагенты = Продукты) -->
-    <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 30px 0;">
+    <!-- ОСНОВНОЙ БЛОК РЕАКЦИИ (3 строки в колонке для каждого вещества) -->
+    <div class="reaction-container">
         
-        <!-- Реагенты -->
-        <div class="mol-unit">{% render_smiles molecule1 width=150 height=150 %}<div>{{ reagent1 }}</div></div>
-        
+        <!-- Реагент 1 -->
+        <div class="mol-column">
+            <div class="m-short">{{ reagent1 }}</div>
+            <div class="m-name"><a href="{% url 'organiccompaund' pkc1 %}" target="_blank">{{ name1 }}</a></div>
+            <div class="m-struct">{% render_smiles molecule1 width=150 height=150 %}</div>
+        </div>
+
         {% if reagent2 %}
             <div class="operator">+</div>
-            <div class="mol-unit">{% render_smiles molecule2 width=150 height=150 %}<div>{{ reagent2 }}</div></div>
+            <div class="mol-column">
+                <div class="m-short">{{ reagent2 }}</div>
+                <div class="m-name"><a href="{% url 'organiccompaund' pkc2 %}" target="_blank">{{ name2 }}</a></div>
+                <div class="m-struct">{% render_smiles molecule2 width=150 height=150 %}</div>
+            </div>
         {% endif %}
 
         {% if reagent3 %}
             <div class="operator">+</div>
-            <div class="mol-unit">{% render_smiles molecule3 width=150 height=150 %}<div>{{ reagent3 }}</div></div>
+            <div class="mol-column">
+                <div class="m-short">{{ reagent3 }}</div>
+                <div class="m-name"><a href="{% url 'organiccompaund' pkc3 %}" target="_blank">{{ name3 }}</a></div>
+                <div class="m-struct">{% render_smiles molecule3 width=150 height=150 %}</div>
+            </div>
         {% endif %}
 
         <div class="operator">=</div>
 
-        <!-- Продукты -->
+        <!-- Продукт 1 -->
         {% if product1 %}
-            <div class="mol-unit">{% render_smiles molecule4 width=150 height=150 %}<div>{{ product1 }}</div></div>
+            <div class="mol-column">
+                <div class="m-short">{{ product1 }}</div>
+                <div class="m-name"><a href="{% url 'organiccompaund' pkc4 %}" target="_blank">{{ name4 }}</a></div>
+                <div class="m-struct">{% render_smiles molecule4 width=150 height=150 %}</div>
+            </div>
         {% endif %}
 
         {% if product2 %}
             <div class="operator">+</div>
-            <div class="mol-unit">{% render_smiles molecule5 width=150 height=150 %}<div>{{ product2 }}</div></div>
+            <div class="mol-column">
+                <div class="m-short">{{ product2 }}</div>
+                <div class="m-name"><a href="{% url 'organiccompaund' pkc5 %}" target="_blank">{{ name5 }}</a></div>
+                <div class="m-struct">{% render_smiles molecule5 width=150 height=150 %}</div>
+            </div>
         {% endif %}
 
         {% if product3 %}
             <div class="operator">+</div>
-            <div class="mol-unit">{% render_smiles molecule6 width=150 height=150 %}<div>{{ product3 }}</div></div>
+            <div class="mol-column">
+                <div class="m-short">{{ product3 }}</div>
+                <div class="m-name"><a href="{% url 'organiccompaund' pkc6 %}" target="_blank">{{ name6 }}</a></div>
+                <div class="m-struct">{% render_smiles molecule6 width=150 height=150 %}</div>
+            </div>
         {% endif %}
 
         {% if product4 %}
             <div class="operator">+</div>
-            <div class="mol-unit">{% render_smiles molecule7 width=150 height=150 %}<div>{{ product4 }}</div></div>
+            <div class="mol-column">
+                <div class="m-short">{{ product4 }}</div>
+                <div class="m-name"><a href="{% url 'organiccompaund' pkc7 %}" target="_blank">{{ name7 }}</a></div>
+                <div class="m-struct">{% render_smiles molecule7 width=150 height=150 %}</div>
+            </div>
         {% endif %}
     </div>
 
-    <!-- Блок с текстовыми названиями-ссылками -->
-    <p style="text-align: center; font-family: Georgia, serif; font-size: 12pt;">
-        {% if reagent1 %}<a href="{% url 'organiccompaund' pkc1 %}" target="_blank">{{ name1 }}</a>{% endif %}
-        {% if reagent2 %} + <a href="{% url 'organiccompaund' pkc2 %}" target="_blank">{{ name2 }}</a>{% endif %}
-        {% if reagent3 %} + <a href="{% url 'organiccompaund' pkc3 %}" target="_blank">{{ name3 }}</a>{% endif %}
-        =
-        {% if product1 %}<a href="{% url 'organiccompaund' pkc4 %}" target="_blank">{{ name4 }}</a>{% endif %}
-        {% if product2 %} + <a href="{% url 'organiccompaund' pkc5 %}" target="_blank">{{ name5 }}</a>{% endif %}
-        {% if product3 %} + <a href="{% url 'organiccompaund' pkc6 %}" target="_blank">{{ name6 }}</a>{% endif %}
-        {% if product4 %} + <a href="{% url 'organiccompaund' pkc7 %}" target="_blank">{{ name7 }}</a>{% endif %}
-    </p>
-
-    <!-- Условия и доп. информация -->
+    <!-- Условия реакции -->
     <center>
-        <p style="font-size: 18pt;">{% if condition %} {{ condition }} {% endif %}</p>
+        <p style="font-family: Georgia, serif; font-size: 20pt; color: #555;">
+            {% if condition %} {{ condition }} {% endif %}
+        </p>
         
         {% if obj.extra %}
-            <div class="card p-3 bg-light text-left" style="max-width: 800px; font-family: Georgia; font-size: 14pt;">
+            <div class="card p-3 bg-light text-left shadow-sm mt-3" style="max-width: 850px; font-family: Georgia; font-size: 14pt;">
                 {{ obj.extra }}
             </div>
         {% endif %}
     </center>
 
-    <!-- Медиа-файлы -->
+    <!-- Медиа-контент -->
     {% if obj.video %}
-        <div class="text-center mt-4"><a href="{{ obj.video }}" target="_blank"><h3>🎬 Смотреть видео</h3></a></div>
+        <div class="text-center mt-5">
+            <a href="{{ obj.video }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger">
+                <h3 class="mb-0">🎬 Смотреть видеоурок</h3>
+            </a>
+        </div>
     {% endif %}
 
-    {% for img in images %}
-        {% if img %}
-            <center><img class="img-fluid rounded mt-3" style="width: 60%;" src="{{ img.url }}"></center>
-        {% endif %}
-    {% endfor %}
+    {% if obj.img1 %}
+        <center><img class="img-fluid rounded mt-4 shadow-sm" style="width: 70%;" src="{{ obj.img1.url }}"></center>
+    {% endif %}
+    {% if obj.img2 %}
+        <center><img class="img-fluid rounded mt-3 shadow-sm" style="width: 70%;" src="{{ obj.img2.url }}"></center>
+    {% endif %}
+    {% if obj.img3 %}
+        <center><img class="img-fluid rounded mt-3 shadow-sm" style="width: 70%;" src="{{ obj.img3.url }}"></center>
+    {% endif %}
 
-    <!-- Навигация -->
-    <div class="text-center mt-5 mb-5">
+    <!-- Навигация теста -->
+    <div class="text-center mt-5 mb-5 pt-4 border-top">
         {% if next_index %}
-            <a href="{% url 'organiclawtestquestion' next_index %}" class="btn btn-primary btn-lg">Следующая реакция</a>
+            <a href="{% url 'organiclawtestquestion' next_index %}" class="btn btn-primary btn-lg px-5 shadow">Следующая реакция</a>
         {% else %}
-            <a href="/chem/organiclaw" class="btn btn-success btn-lg">Тест завершен! В меню</a>
+            <a href="/chem/organiclaw" class="btn btn-success btn-lg px-5 shadow">Тест завершен! В основное меню</a>
         {% endif %}
     </div>
 
@@ -123,8 +157,58 @@
 
 {% block extra_css %}
 <style>
-    .mol-unit { text-align: center; flex: 0 1 auto; }
-    .operator { font-size: 24pt; font-weight: bold; padding: 0 5px; margin-bottom: 30px; }
+    /* Контейнер для выравнивания всей реакции */
+    .reaction-container {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin: 40px 0;
+        text-align: center;
+    }
+    /* Колонка для одного вещества: 3 строки */
+    .mol-column {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 160px;
+    }
+    /* 1 строка: Краткая формула */
+    .m-short {
+        font-family: "Georgia", serif;
+        font-size: 24pt;
+        font-weight: bold;
+        margin-bottom: 5px;
+        line-height: 1.2;
+    }
+    /* 2 строка: Название-ссылка */
+    .m-name {
+        font-family: "Georgia", serif;
+        font-size: 11pt;
+        margin-bottom: 10px;
+        height: 2.8em; /* Ограничение высоты для выравнивания */
+        overflow: hidden;
+    }
+    .m-name a {
+        color: #007bff;
+        text-decoration: underline;
+    }
+    /* 3 строка: Структурная картинка */
+    .m-struct {
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 5px;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    /* Плюсы и Равно */
+    .operator {
+        font-size: 30pt;
+        font-weight: bold;
+        margin-top: 60px; /* Смещение вниз для центровки относительно картинок */
+        padding: 0 5px;
+    }
     .img-fluid { max-width: 100%; height: auto; }
 </style>
 {% endblock %}
