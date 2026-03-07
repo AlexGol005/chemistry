@@ -25,50 +25,46 @@ class OrganicChemTestAnswerView(TemplateView):
             raise Http404("Реакция не найдена")
             
         context['obj'] = qw
-        
+
+        # Поиск названий (name1) в модели OrganicNames по полю molecule_short
         struct_list = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        log = []
-        try:
-            log.append(f"В базе имен: {OrganicNames.objects.count()}")
-        except:
-            log.append("Ошибка доступа к OrganicNames")
-
         for i, val in enumerate(struct_list, 1):
-            name_key = f'html_name{i}'
+            html_key = f'html_name{i}'
             if val:
                 target = str(val).strip()
-                found = OrganicNames.objects.filter(molecule_short=target).first()
-                if found:
-                    context[name_key] = found.name1
-                    log.append(f"Поле {i}: {found.name1}")
-                else:
-                    context[name_key] = f"({target}?)"
-                    log.append(f"Поле {i}: Не найдено")
+                # Ищем точное совпадение без учета регистра
+                found = OrganicNames.objects.filter(molecule_short__iexact=target).first()
+                # Если не нашли, выводим саму формулу как заглушку
+                context[html_key] = found.name1 if found else f"({target}?)"
             else:
-                context[name_key] = ""
+                context[html_key] = ""
 
+        # Базовые поля для формулы
         context.update({
             'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
             'product1': qw.product1, 'product2': qw.product2, 'product3': qw.product3, 'product4': qw.product4,
             'condition': qw.condition,
-            'debug_log_list': log,
-            'TEST_STR': "КОД ОБНОВЛЕН И РАБОТАЕТ"
         })
 
+        # Статистика
         all_c = self.request.session.get('all_count', 0) or 0
         corr_c = self.request.session.get('correct_count', 0) or 0
         context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else 0
 
-        q = list(self.request.session.get('organic_question_list', []))
-        context['next_index'] = q.pop(0) if q else None
-        self.request.session['organic_question_list'] = q
-
+        # Очередь вопросов
+        q_list = list(self.request.session.get('organic_question_list', []))
+        context['next_index'] = q_list.pop(0) if q_list else None
+        self.request.session['organic_question_list'] = q_list
+        
+        # Избранное
         if self.request.user.is_authenticated:
-            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(user=self.request.user).values_list('reaction_id', flat=True))
+            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
+                user=self.request.user
+            ).values_list('reaction_id', flat=True))
             
         return context
 
@@ -1035,230 +1031,8 @@ class OrganicChemMyTestHeadView(ListView):
 
 
 
-class OrganicChemTestQuestionView(TemplateView):
-    """ выводит вопрос теста - реакцию  по неорганической химии """
-    template_name = 'Chem/organiclawtestquestion.html'
 
-    def get_context_data(self, **kwargs):
-        # Вызываем базовый метод для получения контекста
-        context = super().get_context_data(**kwargs)
-        ind=self.kwargs['str']
-
-        # Получаем данные из сессии по ключу 'my_list'
-        # Если ключа нет, вернется пустой список []
-        my_data = self.request.session.get('question_list', [])
-        qw = OrganicReaction.objects.get(pk=ind)
-        
-        name1 = OrganicNames.objects.filter(name1=qw.reagent1).values_list('name1', flat=True).first() or ""
-        name2 = OrganicNames.objects.filter(name1=qw.reagent2).values_list('name1', flat=True).first() or ""
-        name3 = OrganicNames.objects.filter(name1=qw.reagent3).values_list('name1', flat=True).first() or ""
-        context['name1'] = name1
-        context['name2'] = name2
-        context['name3'] = name3
-        
-        # Добавляем данные в контекст шаблона
-        context['reagent1'] = qw.reagent1
-        context['reagent2'] = qw.reagent2
-        context['reagent3'] = qw.reagent3
-
-        context['condition'] = qw.condition
-        context['form']= Unswer4Form
-
-        context['q1'] = ind
-        context['obj'] = qw
-        
-        context['items'] = my_data
-        context['count'] = len(my_data)
-        self.request.session['all_count'] += 1 
-        
-        return context
-
-
-    def post(self, request, *args, **kwargs):
-        # Получение данных из POST-запроса
-        ind=self.kwargs['str']
-        ind=int(ind)
-        qw = OrganicReaction.objects.get(pk=ind)
-        product1 = request.POST.get('field1')
-        if product1 == "not":
-            product1 = "нет"
-        if product1 == "ytn":
-            product1 = "нет"
-        if product1 == "Ytn":
-            product1 = "нет"
-        if product1 == "Not":
-            product1 = "нет"
-        if product1 == "Нет":
-            product1 = "нет"
-        product2 = request.POST.get('field2')
-        product3 = request.POST.get('field3')
-        product4 = request.POST.get('field4')
-        answer_list = [product1, product2, product3, product4]
-        correct_answer_list = [qw.product1, qw.product2, qw.product3, qw.product4]
-
-        clean_answer_list = list(filter(None, answer_list))
-        clean_correct_answer_list = list(filter(None, correct_answer_list))
-        
-        clean_answer_list_upper = [word.upper() for word in clean_answer_list]
-        
-        clean_correct_answer_list_upper = [word.upper() for word in clean_correct_answer_list]
-        answer = " + ".join(clean_answer_list)
-
-        if sorted(clean_answer_list_upper) == sorted(clean_correct_answer_list_upper) and sorted(clean_correct_answer_list_upper) != []:
-            messages.success(request, "Верно!")
-            self.request.session['correct_count'] += 1
-
-        elif sorted(clean_answer_list_upper) == sorted(clean_correct_answer_list_upper) and sorted(clean_correct_answer_list_upper) == []:
-            messages.success(request, "нет ответа")
-            self.request.session['correct_count'] += 1
-            
-        else:
-            messages.success(request, f'Не верно :( .Ваш ответ: = {answer}')
-            self.request.session['incorrect_count'] += 1
-            
-        
-        # self.request.session['all_count'] += 1 
-        
-        self.request.session['answer_list'] = answer_list
-        return redirect('inorganiclawtestanswer', str=ind)
-        
-
-
-class OrganicChemTestAnswerView(TemplateView):
-    """ выводит ответ теста - реакцию  по органической химии """
     
-    template_name = 'Chem/organiclawtestanswer.html'
-
-    def get_context_data(self, **kwargs):
-
-        # вывод ответа
-        context = super().get_context_data(**kwargs)
-        ind=self.kwargs['str']
-        qw = OrganicReaction.objects.get(pk=ind)
-        context['reagent1'] = OrganicReaction.objects.get(pk=ind).reagent1
-        context['reagent2'] = OrganicReaction.objects.get(pk=ind).reagent2
-        context['reagent3'] = OrganicReaction.objects.get(pk=ind).reagent3
-        context['condition'] = OrganicReaction.objects.get(pk=ind).condition
-        context['product1'] = OrganicReaction.objects.get(pk=ind).product1
-        context['product2'] = OrganicReaction.objects.get(pk=ind).product2
-        context['product3'] = OrganicReaction.objects.get(pk=ind).product3
-        context['product4'] = OrganicReaction.objects.get(pk=ind).product4
-
-
-        
-        name1 = NamesCompaunds.objects.filter(formula=qw.reagent1).values_list('name', flat=True).first() or ""
-        name2 = NamesCompaunds.objects.filter(formula=qw.reagent2).values_list('name', flat=True).first() or ""
-        name3 = NamesCompaunds.objects.filter(formula=qw.reagent3).values_list('name', flat=True).first() or ""
-        context['name1'] = name1
-        context['name2'] = name2
-        context['name3'] = name3
-
-        pkc1 = NamesCompaunds.objects.filter(formula=qw.reagent1).values_list('pk', flat=True).first() or ""
-        pkc2 = NamesCompaunds.objects.filter(formula=qw.reagent2).values_list('pk', flat=True).first() or ""
-        pkc3 = NamesCompaunds.objects.filter(formula=qw.reagent3).values_list('pk', flat=True).first() or ""
-
-        
-        name4 = NamesCompaunds.objects.filter(formula=qw.product1).values_list('name', flat=True).first() or ""
-        name5 = NamesCompaunds.objects.filter(formula=qw.product2).values_list('name', flat=True).first() or ""
-        name6 = NamesCompaunds.objects.filter(formula=qw.product3).values_list('name', flat=True).first() or ""
-        name7 = NamesCompaunds.objects.filter(formula=qw.product4).values_list('name', flat=True).first() or ""
-        context['name4'] = name4
-        context['name5'] = name5
-        context['name6'] = name6
-        context['name7'] = name7
-
-        pkc4 = OrganicNames.objects.filter(name1=qw.product1).values_list('pk', flat=True).first() or ""
-        pkc5 = OrganicNames.objects.filter(name1=qw.product2).values_list('pk', flat=True).first() or ""
-        pkc6 = OrganicNames.objects.filter(name1=qw.product3).values_list('pk', flat=True).first() or ""
-        pkc7 = OrganicNames.objects.filter(name1=qw.product4).values_list('pk', flat=True).first() or ""
-
-        my_list = [pkc1, pkc2, pkc3, pkc4, pkc5, pkc6, pkc7]
-        new_list = [x if x != "" else 1 for x in my_list]
-
-        context['pkc1'] = new_list[0]
-        context['pkc2'] = new_list[1]
-        context['pkc3'] = new_list[2]
-        context['pkc4'] = new_list[3]
-        context['pkc5'] = new_list[4]
-        context['pkc6'] = new_list[5]
-        context['pkc7'] = new_list[6]
-
-
-        
-        # проверка ответа
-        my_answer = self.request.session.get('answer_list', [])
-        context['my_answer'] = my_answer
-
-        # поиск следующего уравнения через индекс из списка (список сначала запомним потом перезапишем)
-        last_list = self.request.session.get('question_list', [])
-        
-        question_list = self.request.session.get('question_list', [])
-        try:
-            next_index =  question_list.pop(0)
-        except:
-            next_index = None
-            
-        self.request.session['question_list'] = question_list
-
-        question_list = self.request.session.get('question_list', [])
-
-        correct_count = self.request.session.get('correct_count')
-        incorrect_count = self.request.session.get('incorrect_count')
-        all_count = self.request.session.get('all_count')
-        if all_count == 0:
-            percent = 0
-        else:
-            
-            percent = round((correct_count / all_count) * 100)
-
-        
-        
-        context['next_index'] = next_index
-       
-        context['items'] = question_list
-        context['count'] = len(question_list)
-        context['last_list'] = last_list
-        context['obj'] = qw
-        context['percent'] = percent
-
-        # блок добавки реакций в список любимых авторизованного пользователя
-    
-        if self.request.user.is_authenticated:
-        # Получаем плоский список ID реакций, которые добавил этот пользователь
-            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
-                user=self.request.user
-            ).values_list('reaction_id', flat=True))
-        else:
-            context['organic_favorite_ids'] = []
-        
-        return context
-
-def organic_add_to_list(request, reaction_id):
-    if request.method == 'POST':
-        reaction = get_object_or_404(OrganicReaction, id=reaction_id)
-        # get_or_create гарантирует отсутствие дублей (UniqueTogether)
-        OrganicUserReaction.objects.get_or_create(user=request.user, reaction=reaction)
-    
-    # Возвращаем пользователя обратно
-    return redirect(request.META.get('HTTP_REFERER', '/'))
-
-
-def organic_remove_reaction(request, reaction_id):
-    if request.method == 'POST':
-        # Находим и удаляем связь текущего пользователя с этой реакцией
-        OrganicUserReaction.objects.filter(user=request.user, reaction_id=reaction_id).delete()
-
-    # Возвращаем пользователя туда, откуда он пришел
-    return redirect(request.META.get('HTTP_REFERER', '/'))
-
-@login_required
-def organic_my_reactions_list(request):
-    # Получаем все связи текущего пользователя с реакциями
-    # select_related('reaction') подгрузит данные InorganicReaction одним запросом
-    user_items = OrganicUserReaction.objects.filter(user=request.user).select_related('reaction')
-    
-    return render(request, 'Chem/organic_my_reactions.html', {'user_items': user_items})
-
 
 
 # органические вещества
