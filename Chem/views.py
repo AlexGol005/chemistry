@@ -17,41 +17,35 @@ class OrganicChemTestAnswerView(TemplateView):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs['str']
         
-        # Получаем объект реакции
+        # 1. Получаем объект реакции
         qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
         
-        # Собираем все компоненты: 3 реагента и 4 продукта
+        # Список всех компонентов реакции (3 реагента + 4 продукта)
         components = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        # Проходим циклом по всем 7 компонентам
+        # 2. Собираем данные по каждому веществу (SMILES, Название, PK)
         for i, item in enumerate(components, 1):
-            mol_val = ""
-            pk_val = 1
-            name_val = ""
-            
+            mol_val, pk_val, name_val = "", 1, ""
             if item:
-                # Ищем по 4 полям имен в OrganicNames
                 org_obj = OrganicNames.objects.filter(
                     Q(name1=item) | Q(name2=item) | Q(name3=item) | Q(name4=item)
                 ).first()
-                
                 if org_obj:
                     mol_val = org_obj.molecule or ""
                     pk_val = org_obj.pk
-                    name_val = org_obj.name1 or item # Берем name1 из базы или само название из реакции
+                    name_val = org_obj.name1 or item
                 else:
-                    name_val = item # Если в базе орг. соединений нет, просто выводим текст из реакции
+                    name_val = item # Если в OrganicNames нет, оставляем текст из реакции
 
-            # Наполняем контекст динамически: molecule1, name1, pkc1 ... molecule7, name7, pkc7
             context[f'molecule{i}'] = mol_val
             context[f'pkc{i}'] = pk_val
             context[f'name{i}'] = name_val
 
-        # Условия и базовые поля (для совместимости с шаблоном)
+        # 3. Базовые поля реакции
         context.update({
             'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
             'product1': qw.product1, 'product2': qw.product2, 
@@ -59,32 +53,34 @@ class OrganicChemTestAnswerView(TemplateView):
             'condition': qw.condition,
         })
 
-        # --- ЛОГИКА ТЕСТОВ И СЕССИЙ (ИСПРАВЛЕННАЯ) ---
+        # --- ЛОГИКА ТЕСТА И СЕССИЙ (БЕЗОПАСНАЯ) ---
         my_answer = self.request.session.get('answer_list', [])
         context['my_answer'] = my_answer
 
-        # Работа со списком вопросов
         question_list = self.request.session.get('question_list', [])
-        context['last_list'] = list(question_list)
+        all_count = self.request.session.get('all_count', 0) or 0
+        correct = self.request.session.get('correct_count', 0) or 0
         
-        try:
-            next_index = question_list.pop(0) if question_list else None
-        except (IndexError, AttributeError):
-            next_index = None
-            
-        self.request.session['question_list'] = question_list
-        
-        # --- ИСПРАВЛЕНИЕ ОШИБКИ TypeError (NoneType / NoneType) ---
-        # Используем 0 как значение по умолчанию, чтобы избежать None
-        correct = self.request.session.get('correct_count', 0)
-        total = self.request.session.get('all_count', 0)
+        # Флаг: находимся ли мы в режиме активного теста
+        # Показываем кнопки, если тест начат (all_count > 0)
+        context['is_test'] = all_count > 0
 
-        # Проверяем на 0, чтобы не было ZeroDivisionError, и на None для безопасности
-        if total and total > 0 and correct is not None:
-            context['percent'] = round((correct / total) * 100)
+        # Безопасный расчет процентов (исправление TypeError)
+        if all_count > 0:
+            context['percent'] = round((correct / all_count) * 100)
         else:
             context['percent'] = 0
         
+        # Извлекаем следующий индекс
+        try:
+            # Делаем копию списка, чтобы не портить сессию при простом просмотре
+            temp_list = list(question_list)
+            next_index = temp_list.pop(0) if temp_list else None
+            if context['is_test']:
+                self.request.session['question_list'] = temp_list # Сохраняем только в тесте
+        except (IndexError, AttributeError):
+            next_index = None
+            
         context['next_index'] = next_index
         context['count'] = len(question_list)
 
