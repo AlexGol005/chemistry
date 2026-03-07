@@ -14,11 +14,8 @@ class OrganicChemTestAnswerView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Берем ID из URL (используем имя 'str', как в вашем urls.py)
         ind = self.kwargs.get('str')
         
-        # 1. ПОИСК РЕАКЦИИ (а не вещества!)
         try:
             qw = OrganicReaction.objects.get(pk=ind)
         except OrganicReaction.DoesNotExist:
@@ -27,67 +24,51 @@ class OrganicChemTestAnswerView(TemplateView):
             
         context['obj'] = qw
 
-        # 2. ПОИСК НАЗВАНИЙ И PK (через справочник NamesCompaunds)
-        formulas = [
+        # Список текстовых структур из реакции
+        structures = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        res_names = []
-        res_pks = []
-        for f in formulas:
-            if f:
-                item = NamesCompaunds.objects.filter(formula=f).values('name', 'pk').first()
-                res_names.append(item['name'] if item else "")
-                res_pks.append(item['pk'] if item else 1)
+        # Поиск name1 по полю molecule_short
+        for i, struct in enumerate(structures, 1):
+            if struct:
+                # Ищем запись, где molecule_short соответствует тексту из реакции
+                name_obj = OrganicNames.objects.filter(molecule_short=struct).first()
+                context[f'html_name{i}'] = name_obj.name1 if name_obj else ""
             else:
-                res_names.append("")
-                res_pks.append(1)
+                context[f'html_name{i}'] = ""
 
-        # Раскладываем по контексту для формулы в шаблоне
-        for i in range(1, 4):
-            context[f'reagent{i}'] = getattr(qw, f'reagent{i}')
-            context[f'name{i}'] = res_names[i-1]
-            context[f'pkc{i}'] = res_pks[i-1]
-
-        for i in range(1, 5):
-            context[f'product{i}'] = getattr(qw, f'product{i}')
-            context[f'name{i+3}'] = res_names[i+2]
-            context[f'pkc{i+3}'] = res_pks[i+2]
-
+        # Проброс самих формул (для удобства шаблона)
+        context['reagent1'] = qw.reagent1
+        context['reagent2'] = qw.reagent2
+        context['reagent3'] = qw.reagent3
+        context['product1'] = qw.product1
+        context['product2'] = qw.product2
+        context['product3'] = qw.product3
+        context['product4'] = qw.product4
         context['condition'] = qw.condition
 
-        # 3. БЕЗОПАСНЫЙ РАСЧЕТ ПРОЦЕНТОВ (исправляет TypeError)
+        # Расчет процентов
         correct_count = self.request.session.get('correct_count', 0) or 0
         all_count = self.request.session.get('all_count', 0) or 0
-        
-        if all_count == 0:
-            percent = 0
-        else:
-            percent = round((correct_count / all_count) * 100)
-        
-        context['percent'] = percent
+        context['percent'] = round((correct_count / all_count) * 100) if all_count > 0 else 0
 
-        # 4. ЛОГИКА ОЧЕРЕДИ ВОПРОСОВ (используем organic_question_list)
+        # Очередь
         last_list = self.request.session.get('organic_question_list', [])
         question_list = list(last_list)
-        
         try:
             next_index = question_list.pop(0)
-        except (IndexError, AttributeError):
+        except:
             next_index = None
-            
         self.request.session['organic_question_list'] = question_list
         
         context.update({
             'next_index': next_index,
-            'items': question_list,
             'count': len(question_list),
             'last_list': last_list,
-            'my_answer': self.request.session.get('answer_list', [])
         })
 
-        # 5. ИЗБРАННОЕ (OrganicUserReaction)
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
                 user=self.request.user
