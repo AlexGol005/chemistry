@@ -97,4 +97,3 @@ class OrganicTestForm(forms.Form):
             # Кнопка СНИЗУ
             Submit('submit_bottom', 'Отправить ответ', css_class='btn-success btn-lg w-100 mt-2', style=btn_style)
         )
-Используйте код с осторожностью.
