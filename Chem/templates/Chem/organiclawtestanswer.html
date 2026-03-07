@@ -38,30 +38,18 @@
         </p>
     {% endif %}
 
-    <!-- ФОРМУЛА РЕАКЦИИ (шрифт 23pt, без разрывов внутри формул, перенос после +) -->
+    <!-- ФОРМУЛА РЕАКЦИИ (перенос разрешен после + и =) -->
     <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 23pt; margin: 20px auto; line-height: 1.5;">
         {% if reagent1 %}<span style="white-space: nowrap;">{{reagent1}}</span>{% endif %}
         {% if reagent2 %} + <wbr><span style="white-space: nowrap;">{{reagent2}}</span>{% endif %}
         {% if reagent3 %} + <wbr><span style="white-space: nowrap;">{{reagent3}}</span>{% endif %}
-        =
+        = <wbr>
         {% if product1 %}<span style="white-space: nowrap;">{{product1}}</span>{% endif %}
         {% if product2 %} + <wbr><span style="white-space: nowrap;">{{product2}}</span>{% endif %}
         {% if product3 %} + <wbr><span style="white-space: nowrap;">{{product3}}</span>{% endif %}
         {% if product4 %} + <wbr><span style="white-space: nowrap;">{{product4}}</span>{% endif %}
     </p>
 
-    <!-- НАЗВАНИЯ ПОД ФОРМУЛОЙ (шрифт 8pt, ссылки на organiccompaund) -->
-    <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 8pt; margin: 0 auto; line-height: 1.4;">
-        {% if reagent1 %}<span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc1 %}" target="_blank">{{name1}}</a></span>{% endif %}
-        {% if reagent2 %} + <wbr><span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc2 %}" target="_blank">{{name2}}</a></span>{% endif %}
-        {% if reagent3 %} + <wbr><span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc3 %}" target="_blank">{{name3}}</a></span>{% endif %}
-        =
-        {% if product1 %}<span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc4 %}" target="_blank">{{name4}}</a></span>{% endif %}
-        {% if product2 %} + <wbr><span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc5 %}" target="_blank">{{name5}}</a></span>{% endif %}
-        {% if product3 %} + <wbr><span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc6 %}" target="_blank">{{name6}}</a></span>{% endif %}
-        {% if product4 %} + <wbr><span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc7 %}" target="_blank">{{name7}}</a></span>{% endif %}
-    </p>
-    
     <center>     
         <p style="text-align: center; font-family: Georgia, serif; font-size: 20pt;">
             {% if condition %}{{condition}}{% endif %}
