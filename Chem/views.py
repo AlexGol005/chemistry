@@ -10,10 +10,13 @@ from rdkit import Chem as Chemredactor
 
 from .models import OrganicReaction, OrganicNames, OrganicUserReaction
 
+from .models import OrganicReaction, OrganicNames, OrganicUserReaction
+
 class OrganicChemTestAnswerView(TemplateView):
     template_name = 'Chem/organiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
+        # 1. Получаем базу
         context = super().get_context_data(**kwargs)
         ind = self.kwargs.get('str')
         
@@ -23,64 +26,68 @@ class OrganicChemTestAnswerView(TemplateView):
             from django.http import Http404
             raise Http404("Реакция не найдена")
             
-        context['obj'] = qw
-        
-        # --- БЛОК ГЛУБОКОГО ДЕБАГА ---
-        debug_log = []
-        total_names = OrganicNames.objects.count()
-        debug_log.append(f"Всего записей в OrganicNames: {total_names}")
-        
+        # 2. Подготавливаем словарь для контекста (сразу со всеми данными)
+        data = {
+            'obj': qw,
+            'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
+            'product1': qw.product1, 'product2': qw.product2, 
+            'product3': qw.product3, 'product4': qw.product4,
+            'condition': qw.condition,
+            'debug_log': []
+        }
+
+        # 3. Дебаг счетчик
+        data['debug_log'].append(f"Всего в OrganicNames: {OrganicNames.objects.count()}")
+
+        # 4. Список для поиска имен
         struct_list = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
+        # 5. Цикл поиска
         for i, s_val in enumerate(struct_list, 1):
+            key = f'html_name{i}'
             if s_val:
                 target = str(s_val).strip()
-                # Прямой запрос к БД для дебага: ищем любые похожие
-                similar_exists = OrganicNames.objects.filter(molecule_short__icontains=target).exists()
-                exact_match = OrganicNames.objects.filter(molecule_short=target).first()
-                iexact_match = OrganicNames.objects.filter(molecule_short__iexact=target).first()
+                # Ищем объект (сначала точное совпадение)
+                res_obj = OrganicNames.objects.filter(molecule_short=target).first()
                 
-                status = "OK" if exact_match else ("IE_OK" if iexact_match else "FAIL")
-                debug_log.append(f"Поле {i} [{target}]: точное={bool(exact_match)}, без_регистра={bool(iexact_match)}, похожие={similar_exists}")
-                
-                # Приоритет поиска
-                res_obj = exact_match or iexact_match or OrganicNames.objects.filter(molecule_short__icontains=target).first()
+                # Если не нашли точно, ищем без регистра
+                if not res_obj:
+                    res_obj = OrganicNames.objects.filter(molecule_short__iexact=target).first()
                 
                 if res_obj:
-                    context[f'html_name{i}'] = res_obj.name1
+                    data[key] = res_obj.name1
+                    data['debug_log'].append(f"Поле {i} [{target}]: НАЙДЕНО ({res_obj.name1})")
                 else:
-                    context[f'html_name{i}'] = f"({target}?)"
+                    data[key] = f"({target}?)"
+                    data['debug_log'].append(f"Поле {i} [{target}]: НЕ НАЙДЕНО")
             else:
-                context[f'html_name{i}'] = ""
-        
-        context['debug_info'] = debug_log
-        # --- КОНЕЦ ДЕБАГА ---
+                data[key] = ""
 
-        context.update({
-            'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
-            'product1': qw.product1, 'product2': qw.product2, 'product3': qw.product3, 'product4': qw.product4,
-            'condition': qw.condition
-        })
+        # 6. Статистика и сессии
+        correct = self.request.session.get('correct_count', 0) or 0
+        total = self.request.session.get('all_count', 0) or 0
+        data['percent'] = round((correct / total) * 100) if total > 0 else 0
 
-        # Статистика
-        correct_count = self.request.session.get('correct_count', 0) or 0
-        all_count = self.request.session.get('all_count', 0) or 0
-        context['percent'] = round((correct_count / all_count) * 100) if all_count > 0 else 0
+        # 7. Очередь
+        q_list = list(self.request.session.get('organic_question_list', []))
+        try:
+            next_idx = q_list.pop(0)
+        except:
+            next_idx = None
+        self.request.session['organic_question_list'] = q_list
+        data.update({'next_index': next_idx, 'count': len(q_list)})
 
-        # Очередь
-        last_list = self.request.session.get('organic_question_list', [])
-        question_list = list(last_list)
-        try: next_index = question_list.pop(0)
-        except: next_index = None
-        self.request.session['organic_question_list'] = question_list
-        context.update({'next_index': next_index, 'count': len(question_list), 'last_list': last_list})
-
+        # 8. Избранное
         if self.request.user.is_authenticated:
-            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(user=self.request.user).values_list('reaction_id', flat=True))
-            
+            data['favorite_ids'] = list(OrganicUserReaction.objects.filter(
+                user=self.request.user
+            ).values_list('reaction_id', flat=True))
+        
+        # 9. Объединяем всё в контекст
+        context.update(data)
         return context
 
 
