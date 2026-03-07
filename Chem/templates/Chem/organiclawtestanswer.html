@@ -38,7 +38,7 @@
         </p>
     {% endif %}
 
-    <!-- ФОРМУЛА РЕАКЦИИ (перенос разрешен после + и =) -->
+    <!-- ФОРМУЛА РЕАКЦИИ -->
     <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 23pt; margin: 20px auto; line-height: 1.5;">
         {% if reagent1 %}<span style="white-space: nowrap;">{{reagent1}}</span>{% endif %}
         {% if reagent2 %} + <wbr><span style="white-space: nowrap;">{{reagent2}}</span>{% endif %}
@@ -50,6 +50,18 @@
         {% if product4 %} + <wbr><span style="white-space: nowrap;">{{product4}}</span>{% endif %}
     </p>
 
+    <!-- НАЗВАНИЯ ИЗ МОДЕЛИ OrganicNames (name1) -->
+    <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 8pt; margin: -15px auto 20px auto; line-height: 1.4; color: #555;">
+        {% if reagent1 %}<span style="white-space: nowrap;">{{ html_name1 }}</span>{% endif %}
+        {% if reagent2 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name2 }}</span>{% endif %}
+        {% if reagent3 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name3 }}</span>{% endif %}
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        {% if product1 %}<span style="white-space: nowrap;">{{ html_name4 }}</span>{% endif %}
+        {% if product2 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name5 }}</span>{% endif %}
+        {% if product3 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name6 }}</span>{% endif %}
+        {% if product4 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name7 }}</span>{% endif %}
+    </p>
+
     <center>     
         <p style="text-align: center; font-family: Georgia, serif; font-size: 20pt;">
             {% if condition %}{{condition}}{% endif %}
@@ -58,7 +70,6 @@
 
     <br>  
 
-    <!-- БЛОК ПОДРОБНОСТЕЙ С ГОЛУБОЙ ПОЛОСКОЙ -->
     {% if obj.extra %}
     <center> 
         <div style="border-left: 6px solid #00aaff; background-color: #f8fdff; padding: 15px; text-align: left; max-width: 80%; border-radius: 4px; box-shadow: 2px 2px 8px rgba(0,0,0,0.05);">
