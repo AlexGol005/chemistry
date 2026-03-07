@@ -15,40 +15,51 @@ class OrganicChemTestAnswerView(TemplateView):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs.get('str') 
         qw = get_object_or_404(OrganicReaction, pk=ind)
-        context['obj'] = qw
         
-        # Функция-помощник для поиска данных внутри метода
-        def get_mol_data(text):
+        # Вспомогательный словарь для сбора данных
+        data = {'obj': qw}
+        
+        def get_mol_info(text):
             if not text: return "", 1, "", ""
             clean = text.strip()
-            # Поиск по molecule_short в справочнике
-            obj = OrganicNames.objects.filter(molecule_short__iexact=clean).first()
-            if obj:
-                return obj.molecule or "", obj.pk, obj.name1 or clean, clean
-            return "", 1, clean, clean # Если не нашли, возвращаем сам текст
+            res = OrganicNames.objects.filter(molecule_short__iexact=clean).first()
+            if res:
+                return res.molecule or "", res.pk, res.name1 or clean, clean
+            return "", 1, clean, clean
 
-        # Наполняем контекст ВРУЧНУЮ для каждого поля модели OrganicReaction
-        context['molecule4'], context['pkc4'], context['name4'], context['molecule_short4'] = get_mol_data(qw.product1)
-        context['molecule5'], context['pkc5'], context['name5'], context['molecule_short5'] = get_mol_data(qw.product2)
-        context['molecule6'], context['pkc6'], context['name6'], context['molecule_short6'] = get_mol_data(qw.product3)
-        context['molecule7'], context['pkc7'], context['name7'], context['molecule_short7'] = get_mol_data(qw.product4)
-        
-        context['molecule1'], context['pkc1'], context['name1'], context['molecule_short1'] = get_mol_data(qw.reagent1)
-        context['molecule2'], context['pkc2'], context['name2'], context['molecule_short2'] = get_mol_data(qw.reagent2)
-        context['molecule3'], context['pkc3'], context['name3'], context['molecule_short3'] = get_mol_data(qw.reagent3)
+        # Наполняем словарь данными вручную
+        m1, p1, n1, s1 = get_mol_info(qw.reagent1)
+        m2, p2, n2, s2 = get_mol_info(qw.reagent2)
+        m3, p3, n3, s3 = get_mol_info(qw.reagent3)
+        m4, p4, n4, s4 = get_mol_info(qw.product1)
+        m5, p5, n5, s5 = get_mol_info(qw.product2)
+        m6, p6, n6, s6 = get_mol_info(qw.product3)
+        m7, p7, n7, s7 = get_mol_info(qw.product4)
 
-        # Остальные данные
-        all_count = self.request.session.get('all_count', 0)
-        context['is_test'] = all_count > 0 
-        if context['is_test']:
+        data.update({
+            'molecule1': m1, 'pkc1': p1, 'name1': n1, 'molecule_short1': s1,
+            'molecule2': m2, 'pkc2': p2, 'name2': n2, 'molecule_short2': s2,
+            'molecule3': m3, 'pkc3': p3, 'name3': n3, 'molecule_short3': s3,
+            'molecule4': m4, 'pkc4': p4, 'name4': n4, 'molecule_short4': s4,
+            'molecule5': m5, 'pkc5': p5, 'name5': n5, 'molecule_short5': s5,
+            'molecule6': m6, 'pkc6': p6, 'name6': n6, 'molecule_short6': s6,
+            'molecule7': m7, 'pkc7': p7, 'name7': n7, 'molecule_short7': s7,
+            'condition': qw.condition,
+        })
+
+        # Тест и избранное
+        all_c = self.request.session.get('all_count', 0)
+        data['is_test'] = all_c > 0
+        if data['is_test']:
             correct = self.request.session.get('correct_count', 0)
-            context['percent'] = round((correct / all_count) * 100) if all_count > 0 else 0
-            context['next_index'] = self.request.session.get('question_list', [None])[0]
+            data['percent'] = round((correct / all_c) * 100) if all_c > 0 else 0
+            data['next_index'] = self.request.session.get('question_list', [None])[0]
 
         if self.request.user.is_authenticated:
-            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
+            data['favorite_ids'] = list(OrganicUserReaction.objects.filter(
                 user=self.request.user).values_list('reaction_id', flat=True))
-        
+
+        context.update(data)
         return context
 
 class OrganicChemTestQuestionView(TemplateView):
