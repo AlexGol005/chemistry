@@ -8,119 +8,127 @@
 {% autoescape off %}
 <div style="width: 100%; font-family: 'Georgia', serif;">
     
-    <!-- КНОПКИ УПРАВЛЕНИЯ (СЛЕВА) -->
-    <div style="text-align: left; margin-bottom: 30px; padding-left: 15px;">
+    <!-- БЛОК УПРАВЛЕНИЯ (СЛЕВА) -->
+    <div style="text-align: left; margin-bottom: 25px; padding-left: 10px;">
         {% if user.is_authenticated and obj %}
-            <div style="margin-bottom: 15px;">
+            <div style="margin-bottom: 10px;">
                 {% if obj.id in favorite_ids %}
-                    <span style="background: #28a745; color: white; padding: 6px 15px; border-radius: 20px; font-size: 14px; display: inline-block;">✅ В моем списке</span>
+                    <span style="background: #e8f5e9; color: #2e7d32; padding: 4px 12px; border-radius: 4px; font-size: 14px; border: 1px solid #c8e6c9;">✅ В моем списке</span>
                     <form action="{% url 'remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
                         {% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
                     </form>
                 {% else %}
                     <form action="{% url 'add_reaction' obj.id %}" method="post" style="display:inline;">
-                        {% csrf_token %}<button type="submit" class="btn btn-primary btn-sm px-4 shadow-sm">Добавить в мой список</button>
+                        {% csrf_token %}<button type="submit" class="btn btn-primary btn-sm px-3 shadow-sm">Добавить в мой список</button>
                     </form>
                 {% endif %}
             </div>
         {% endif %}
-        <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank" style="color: #007bff; text-decoration: underline; font-size: 13pt;">📖 Открыть теоретическое правило</a>
+        <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank" style="color: #007bff; text-decoration: underline; font-size: 12pt;">📖 Открыть теоретическое правило</a>
     </div>
 
-    <!-- СТАТИСТИКА (ЦЕНТР) -->
+    <!-- СТАТИСТИКА -->
     {% if is_test %}
-    <div style="text-align: center; margin-bottom: 30px;">
-        <div style="display: inline-block; background: #fdfdfd; padding: 12px 30px; border-radius: 35px; border: 1px solid #eee; shadow: 0 2px 5px rgba(0,0,0,0.05);">
-            <span style="font-size: 18pt;">Верно: <b style="color: #28a745;">{{ percent }}%</b></span>
-        </div>
+    <div style="text-align: center; margin-bottom: 25px;">
+        <span style="font-size: 16pt; background: #fdfdfd; padding: 10px 25px; border-radius: 30px; border: 1px solid #eee;">
+            Процент верных ответов: <b>{{ percent }} %</b>
+        </span>
     </div>
     {% endif %}
 
-    <!-- ДОСКА РЕАКЦИИ (ЖЕСТКОЕ ЦЕНТРИРОВАНИЕ) -->
-    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 15px; margin: 40px auto; width: 100%;">
+    <!-- ДОСКА РЕАКЦИИ (ЦЕНТРИРОВАННАЯ) -->
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 12px; margin: 30px auto; width: 100%; text-align: center;">
         
-        <!-- ВЕЩЕСТВО 1 -->
-        <div style="display: flex; flex-direction: column; align-items: center; width: 200px; text-align: center;">
-            <div style="font-size: 42pt; font-weight: bold; min-height: 85px; display: flex; align-items: center;">{{ reagent1 }}</div>
-            <div style="font-size: 13pt; min-height: 45px; margin-bottom: 10px;"><a href="{% url 'organiccompaund' pkc1 %}" target="_blank" style="color: #007bff;">{{ name1 }}</a></div>
-            <div style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 10px; shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                {% if molecule1 %}{% render_smiles molecule1 width=160 height=160 %}{% else %}<div style="width: 160px; height: 160px; color: #ccc; display: flex; align-items: center; justify-content: center;">нет структуры</div>{% endif %}
+        <!-- РЕАГЕНТ 1 -->
+        <div style="display: flex; flex-direction: column; align-items: center; width: 190px;">
+            <div style="font-size: 22pt; font-weight: bold; min-height: 50px; display: flex; align-items: center; white-space: nowrap;">{{ molecule_short1 }}</div>
+            <div style="font-size: 11pt; min-height: 40px; margin-bottom: 5px;"><a href="{% url 'organiccompaund' pkc1 %}" target="_blank" style="color: #007bff;">{{ name1 }}</a></div>
+            <div style="background: white; border: 1px solid #eee; border-radius: 8px; padding: 5px;">
+                {% if molecule1 %}{% render_smiles molecule1 width=160 height=160 %}{% endif %}
             </div>
         </div>
 
-        {% if reagent2 %}
-        <div style="font-size: 45pt; font-weight: bold; height: 85px; display: flex; align-items: center;">+</div>
-        <div style="display: flex; flex-direction: column; align-items: center; width: 200px; text-align: center;">
-            <div style="font-size: 42pt; font-weight: bold; min-height: 85px; display: flex; align-items: center;">{{ reagent2 }}</div>
-            <div style="font-size: 13pt; min-height: 45px; margin-bottom: 10px;"><a href="{% url 'organiccompaund' pkc2 %}" target="_blank" style="color: #007bff;">{{ name2 }}</a></div>
-            <div style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 10px;">
+        {% if name2 %}
+        <div style="font-size: 28pt; font-weight: bold; height: 50px; display: flex; align-items: center;">+</div>
+        <div style="display: flex; flex-direction: column; align-items: center; width: 190px;">
+            <div style="font-size: 22pt; font-weight: bold; min-height: 50px; display: flex; align-items: center; white-space: nowrap;">{{ molecule_short2 }}</div>
+            <div style="font-size: 11pt; min-height: 40px; margin-bottom: 5px;"><a href="{% url 'organiccompaund' pkc2 %}" target="_blank" style="color: #007bff;">{{ name2 }}</a></div>
+            <div style="background: white; border: 1px solid #eee; border-radius: 8px; padding: 5px;">
                 {% if molecule2 %}{% render_smiles molecule2 width=160 height=160 %}{% endif %}
             </div>
         </div>
         {% endif %}
 
-        {% if reagent3 %}
-        <div style="font-size: 45pt; font-weight: bold; height: 85px; display: flex; align-items: center;">+</div>
-        <div style="display: flex; flex-direction: column; align-items: center; width: 200px; text-align: center;">
-            <div style="font-size: 42pt; font-weight: bold; min-height: 85px; display: flex; align-items: center;">{{ reagent3 }}</div>
-            <div style="font-size: 13pt; min-height: 45px; margin-bottom: 10px;"><a href="{% url 'organiccompaund' pkc3 %}" target="_blank" style="color: #007bff;">{{ name3 }}</a></div>
-            <div style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 10px;">
+        {% if name3 %}
+        <div style="font-size: 28pt; font-weight: bold; height: 50px; display: flex; align-items: center;">+</div>
+        <div style="display: flex; flex-direction: column; align-items: center; width: 190px;">
+            <div style="font-size: 22pt; font-weight: bold; min-height: 50px; display: flex; align-items: center; white-space: nowrap;">{{ molecule_short3 }}</div>
+            <div style="font-size: 11pt; min-height: 40px; margin-bottom: 5px;"><a href="{% url 'organiccompaund' pkc3 %}" target="_blank" style="color: #007bff;">{{ name3 }}</a></div>
+            <div style="background: white; border: 1px solid #eee; border-radius: 8px; padding: 5px;">
                 {% if molecule3 %}{% render_smiles molecule3 width=160 height=160 %}{% endif %}
             </div>
         </div>
         {% endif %}
 
-        <div style="font-size: 45pt; font-weight: bold; height: 85px; display: flex; align-items: center;">=</div>
+        <div style="font-size: 28pt; font-weight: bold; height: 50px; display: flex; align-items: center;">=</div>
 
         <!-- ПРОДУКТ 1 -->
-        <div style="display: flex; flex-direction: column; align-items: center; width: 200px; text-align: center;">
-            <div style="font-size: 42pt; font-weight: bold; min-height: 85px; display: flex; align-items: center;">{{ product1 }}</div>
-            <div style="font-size: 13pt; min-height: 45px; margin-bottom: 10px;"><a href="{% url 'organiccompaund' pkc4 %}" target="_blank" style="color: #007bff;">{{ name4 }}</a></div>
-            <div style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 10px;">
+        <div style="display: flex; flex-direction: column; align-items: center; width: 190px;">
+            <div style="font-size: 22pt; font-weight: bold; min-height: 50px; display: flex; align-items: center; white-space: nowrap;">{{ molecule_short4 }}</div>
+            <div style="font-size: 11pt; min-height: 40px; margin-bottom: 5px;"><a href="{% url 'organiccompaund' pkc4 %}" target="_blank" style="color: #007bff;">{{ name4 }}</a></div>
+            <div style="background: white; border: 1px solid #eee; border-radius: 8px; padding: 5px;">
                 {% if molecule4 %}{% render_smiles molecule4 width=160 height=160 %}{% endif %}
             </div>
         </div>
 
-        {% if product2 %}
-        <div style="font-size: 45pt; font-weight: bold; height: 85px; display: flex; align-items: center;">+</div>
-        <div style="display: flex; flex-direction: column; align-items: center; width: 200px; text-align: center;">
-            <div style="font-size: 42pt; font-weight: bold; min-height: 85px; display: flex; align-items: center;">{{ product2 }}</div>
-            <div style="font-size: 13pt; min-height: 45px; margin-bottom: 10px;"><a href="{% url 'organiccompaund' pkc5 %}" target="_blank" style="color: #007bff;">{{ name5 }}</a></div>
-            <div style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 10px;">
+        {% if name5 %}
+        <div style="font-size: 28pt; font-weight: bold; height: 50px; display: flex; align-items: center;">+</div>
+        <div style="display: flex; flex-direction: column; align-items: center; width: 190px;">
+            <div style="font-size: 22pt; font-weight: bold; min-height: 50px; display: flex; align-items: center; white-space: nowrap;">{{ molecule_short5 }}</div>
+            <div style="font-size: 11pt; min-height: 40px; margin-bottom: 5px;"><a href="{% url 'organiccompaund' pkc5 %}" target="_blank" style="color: #007bff;">{{ name5 }}</a></div>
+            <div style="background: white; border: 1px solid #eee; border-radius: 8px; padding: 5px;">
                 {% if molecule5 %}{% render_smiles molecule5 width=160 height=160 %}{% endif %}
             </div>
         </div>
         {% endif %}
 
-        {% if product3 %}
-        <div style="font-size: 45pt; font-weight: bold; height: 85px; display: flex; align-items: center;">+</div>
-        <div style="display: flex; flex-direction: column; align-items: center; width: 200px; text-align: center;">
-            <div style="font-size: 42pt; font-weight: bold; min-height: 85px; display: flex; align-items: center;">{{ product3 }}</div>
-            <div style="font-size: 13pt; min-height: 45px; margin-bottom: 10px;"><a href="{% url 'organiccompaund' pkc6 %}" target="_blank" style="color: #007bff;">{{ name6 }}</a></div>
-            <div style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 10px;">
+        {% if name6 %}
+        <div style="font-size: 28pt; font-weight: bold; height: 50px; display: flex; align-items: center;">+</div>
+        <div style="display: flex; flex-direction: column; align-items: center; width: 190px;">
+            <div style="font-size: 22pt; font-weight: bold; min-height: 50px; display: flex; align-items: center; white-space: nowrap;">{{ molecule_short6 }}</div>
+            <div style="font-size: 11pt; min-height: 40px; margin-bottom: 5px;"><a href="{% url 'organiccompaund' pkc6 %}" target="_blank" style="color: #007bff;">{{ name6 }}</a></div>
+            <div style="background: white; border: 1px solid #eee; border-radius: 8px; padding: 5px;">
                 {% if molecule6 %}{% render_smiles molecule6 width=160 height=160 %}{% endif %}
             </div>
         </div>
         {% endif %}
 
+        {% if name7 %}
+        <div style="font-size: 28pt; font-weight: bold; height: 50px; display: flex; align-items: center;">+</div>
+        <div style="display: flex; flex-direction: column; align-items: center; width: 190px;">
+            <div style="font-size: 22pt; font-weight: bold; min-height: 50px; display: flex; align-items: center; white-space: nowrap;">{{ molecule_short7 }}</div>
+            <div style="font-size: 11pt; min-height: 40px; margin-bottom: 5px;"><a href="{% url 'organiccompaund' pkc7 %}" target="_blank" style="color: #007bff;">{{ name7 }}</a></div>
+            <div style="background: white; border: 1px solid #eee; border-radius: 8px; padding: 5px;">
+                {% if molecule7 %}{% render_smiles molecule7 width=160 height=160 %}{% endif %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     <!-- ДОП. ИНФОРМАЦИЯ -->
-    <div style="text-align: center; margin-top: 60px;">
-        {% if condition %}<p style="font-size: 26pt; color: #333; margin-bottom: 30px;">{{ condition }}</p>{% endif %}
+    <div style="text-align: center; margin-top: 40px;">
+        {% if condition %}<p style="font-size: 20pt; color: #333;">{{ condition }}</p>{% endif %}
         
         {% if obj.extra %}
-            <div style="max-width: 900px; margin: 0 auto 40px; padding: 30px; background: #fff; border-left: 10px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: left; font-size: 15pt; border-radius: 4px;">
+            <div style="max-width: 900px; margin: 20px auto; padding: 20px; background: #fff; border-left: 6px solid #007bff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: left; font-size: 14pt; border-radius: 4px;">
                 {{ obj.extra }}
             </div>
         {% endif %}
 
-        {% if obj.video %}<div style="margin-bottom: 40px;"><a href="{{ obj.video }}" target="_blank" class="btn btn-danger btn-lg px-5 shadow">🎬 Видеоурок</a></div>{% endif %}
-
         {% if is_test %}
-        <div style="margin-top: 60px; padding-top: 40px; border-top: 2px solid #f0f0f0;">
+        <div style="margin-top: 50px; padding-top: 30px; border-top: 1px solid #eee;">
             {% if next_index %}
-                <a href="{% url 'organiclawtestquestion' next_index %}" class="btn btn-primary btn-lg px-5 shadow" style="border-radius: 50px; font-size: 22pt;">Следующая реакция →</a>
+                <a href="{% url 'organiclawtestquestion' next_index %}" class="btn btn-primary btn-lg px-5 shadow" style="border-radius: 30px; font-size: 18pt;">Следующая реакция →</a>
             {% else %}
                 <a href="/chem/organiclaw" class="btn btn-success btn-lg px-5 shadow">✨ Тест завершен! В меню</a>
             {% endif %}
