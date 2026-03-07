@@ -1,6 +1,5 @@
 {% extends 'main/superbase.html' %}
 {% load crispy_forms_tags %}
-{% load mol_extras %} {# Загружаем ваш тег для отрисовки SMILES #}
 
 {% block title %}
     Тест: {{ obj.metatitle }} 
@@ -8,82 +7,87 @@
 
 {% block content %}
 <div class="col-12">
-    <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer">Открыть правило</a>     
-    
-    <center><h3 class="mt-3">Реагенты (структуры)</h3></center>
-    <br>
-
-    <!-- Контейнер для картинок молекул в один ряд -->
-    <div style="display: flex; align-items: center; justify-content: center; flex-wrap: nowrap; gap: 10px; margin-bottom: 20px;">
-        
-        <div class="mol-item" style="text-align: center;">
-            {% render_smiles molecule1 width=200 height=200 %}
-            <div style="font-size: 14pt;">{{ reagent1 }}</div>
-        </div>
-
-        {% if reagent2 %}
-        <div style="font-size: 24pt; font-weight: bold; margin-bottom: 30px;">+</div>
-        <div class="mol-item" style="text-align: center;">
-            {% render_smiles molecule2 width=200 height=200 %}
-            <div style="font-size: 14pt;">{{ reagent2 }}</div>
-        </div>
-        {% endif %}
-
-        {% if reagent3 %}
-        <div style="font-size: 24pt; font-weight: bold; margin-bottom: 30px;">+</div>
-        <div class="mol-item" style="text-align: center;">
-            {% render_smiles molecule3 width=200 height=200 %}
-            <div style="font-size: 14pt;">{{ reagent3 }}</div>
-        </div>
-        {% endif %}
-
-        <div style="font-size: 24pt; font-weight: bold; margin-bottom: 30px;">=</div>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <a href="{% url 'organiclawstr' obj.number.pk %}" class="btn btn-outline-secondary btn-sm" target="_blank" rel="noopener noreferrer">
+            <i class="bi bi-book"></i> Открыть правило
+        </a>
+        <span class="badge bg-info text-dark shadow-sm">Вопрос №{{ count|default:"1" }}</span>
     </div>
 
-    <!-- Условия реакции -->
-    <center>     
-        <p style="text-align: center; font-family: Georgia, serif; font-size: 18pt; color: #555;">
-            {% if condition %}
-                <span style="border-bottom: 1px solid #000; padding: 0 10px;">{{ condition }}</span>
+    <!-- Блок реагентов (Текстовые структурные формулы) -->
+    <div class="text-center my-5">
+        <h3 class="mb-4 text-muted" style="font-weight: 300;">Реагенты</h3>
+        
+        <div class="d-flex justify-content-center align-items-center flex-wrap" style="font-family: 'Courier New', Courier, monospace; font-size: 22pt; font-weight: bold;">
+            
+            <div class="px-3 py-2 border rounded bg-white shadow-sm">{{ reagent1 }}</div>
+
+            {% if reagent2 %}
+                <div class="mx-3 text-primary">+</div>
+                <div class="px-3 py-2 border rounded bg-white shadow-sm">{{ reagent2 }}</div>
             {% endif %}
-        </p>
-    </center>
 
-    <br>
-    <center>  
+            {% if reagent3 %}
+                <div class="mx-3 text-primary">+</div>
+                <div class="px-3 py-2 border rounded bg-white shadow-sm">{{ reagent3 }}</div>
+            {% endif %}
+
+            <div class="mx-4" style="position: relative; min-width: 80px;">
+                {% if condition %}
+                    <div style="position: absolute; top: -35px; left: 0; right: 0; font-family: Georgia, serif; font-size: 14pt; color: #666; border-bottom: 1px solid #ccc;">
+                        {{ condition }}
+                    </div>
+                {% endif %}
+                <span style="font-size: 30pt;">&rarr;</span>
+            </div>
+            
+            <div class="ms-2 text-muted" style="font-style: italic; font-weight: normal; font-size: 18pt;">?</div>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="text-center mt-4">
         <h4>Продукты реакции</h4>
-        <p class="text-muted">Введите названия или формулы продуктов</p>
+        <p class="text-muted">Введите <b>текстовые структурные формулы</b> продуктов (как в базе)</p>
 
-        <form method="post" class="form-register shadow-sm p-4 border rounded bg-light" style="max-width: 600px;">
+        <form method="post" class="form-register shadow-sm p-4 border rounded bg-white mx-auto" style="max-width: 650px;">
             {% csrf_token %}
-            {% crispy form %}
-            <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">Ответить</button>
+            <div class="row text-start">
+                <div class="col-12">
+                    {% crispy form %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success btn-lg w-100 mt-4 shadow">Отправить ответ</button>
         </form>
-    </center>
+    </div>
 </div>
 {% endblock %}
 
 {% block aside %}
-<div class="card p-3 shadow-sm">
-    <h5>Инструкция:</h5>
-    <ol>
-        <li>Все реакции приведены без коэффициентов!</li>
-        <li>Запишите от одного до четырех продуктов реакции (названия как в базе), без коэффициентов.</li>
-        <li>Если реакция не идет, напишите в одном из окон слово <b>"нет"</b>.</li>
+<div class="card p-3 shadow-sm border-0 bg-light">
+    <h5 class="border-bottom pb-2"><i class="bi bi-info-circle"></i> Инструкция:</h5>
+    <ol class="small mt-2">
+        <li>Указывайте продукты в виде <b>текстовых структурных формул</b> (например: CH3-CH3).</li>
+        <li>Все реакции приведены без коэффициентов.</li>
+        <li>Если продуктов несколько, порядок ввода не важен.</li>
+        <li>Если реакция не идет, введите слово <b>"нет"</b> в любое поле.</li>
     </ol>
+    <div class="mt-3 p-2 bg-white rounded border text-center">
+        <small class="text-muted">Всего попыток: <b>{{ items|length }}</b></small>
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Чтобы картинки не вылезали на маленьких экранах */
-    canvas, svg {
-        max-width: 100%;
-        height: auto !important;
+    .form-register .form-control {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
     }
-    .mol-item {
-        flex: 0 1 auto;
-        min-width: 100px;
+    .form-register .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
     }
 </style>
 {% endblock %}
