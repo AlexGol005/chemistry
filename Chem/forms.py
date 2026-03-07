@@ -53,13 +53,34 @@ class Unswer4Form(forms.Form):
 from crispy_forms.layout import Layout, Field, Submit, Row, Column
 
 class OrganicTestForm(forms.Form):
-    # ... поля field1, field2 и т.д. остаются те же ...
+    """ Форма для теста по органике: 4 длинных поля и кнопки сверху/снизу """
+    field1 = forms.CharField(
+        label='', 
+        required=False, 
+        widget=forms.TextInput(attrs={'placeholder': 'Продукт 1'})
+    )
+    field2 = forms.CharField(
+        label='', 
+        required=False, 
+        widget=forms.TextInput(attrs={'placeholder': 'Продукт 2'})
+    )
+    field3 = forms.CharField(
+        label='', 
+        required=False, 
+        widget=forms.TextInput(attrs={'placeholder': 'Продукт 3'})
+    )
+    field4 = forms.CharField(
+        label='', 
+        required=False, 
+        widget=forms.TextInput(attrs={'placeholder': 'Продукт 4'})
+    )
                            
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_tag = False 
+        self.helper.form_tag = False  # Отключаем автоматический тег <form>, так как он в шаблоне
 
+        # Стилизация: высота поля 65px, крупный шрифт Georgia
         custom_style = "height: 65px; font-size: 24pt; font-family: Georgia, serif; margin-bottom: 15px;"
         btn_style = "height: 60px; font-size: 18pt;"
         
@@ -67,7 +88,7 @@ class OrganicTestForm(forms.Form):
             # Кнопка СВЕРХУ
             Submit('submit_top', 'Отправить ответ', css_class='btn-success btn-lg w-100 mb-4', style=btn_style),
             
-            # Поля ввода
+            # Поля ввода в столбик (каждое на всю ширину - col-12)
             Row(Column(Field('field1', style=custom_style), css_class='col-12')),
             Row(Column(Field('field2', style=custom_style), css_class='col-12')),
             Row(Column(Field('field3', style=custom_style), css_class='col-12')),
@@ -75,5 +96,5 @@ class OrganicTestForm(forms.Form):
             
             # Кнопка СНИЗУ
             Submit('submit_bottom', 'Отправить ответ', css_class='btn-success btn-lg w-100 mt-2', style=btn_style)
-        ) # <--- ПЕРВАЯ скобка (закрывает Layout)
-    # <--- ВТОРАЯ скобка (неявная, завершает метод __init__)
+        )
+Используйте код с осторожностью.
