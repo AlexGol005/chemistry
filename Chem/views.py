@@ -10,62 +10,73 @@ from rdkit import Chem as Chemredactor
 
 
 class OrganicChemTestAnswerView(TemplateView):
+    """ Выводит ответ теста - реакцию со структурами и названиями """
     template_name = 'Chem/organiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ind = self.kwargs.get('str') 
         
+        # 1. Получаем ID реакции из URL (параметр 'str')
+        ind = self.kwargs.get('str') 
         qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
         
-        # Список текстовых названий из полей модели реакции
+        # Список текстовых значений из полей модели реакции (все 7 компонентов)
         components = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        # 2. Собираем данные через OrganicNames
+        # 2. Собираем данные через OrganicNames, используя поиск по molecule_short
         for i, item in enumerate(components, 1):
-            mol_val, pk_val, name_val, short_val = "", 1, item or "", item or ""
-            if item:
-                org_obj = OrganicNames.objects.filter(name1=item).first()
+            # Предварительная очистка текста
+            clean_item = item.strip() if item else ""
+            
+            # Дефолтные значения на случай, если в OrganicNames ничего не найдется
+            mol_val = ""
+            pk_val = 1
+            name_val = "Название не найдено"
+            short_val = clean_item  # Оставляем текст из реакции
+
+            if clean_item:
+                # ИЩЕМ В СПРАВОЧНИКЕ ПО ПОЛЮ molecule_short (без учета регистра)
+                org_obj = OrganicNames.objects.filter(molecule_short__iexact=clean_item).first()
                 
                 if org_obj:
-                    mol_val = org_obj.molecule or ""      # SMILES для картинки
-                    pk_val = org_obj.pk                   # ID для ссылки
-                    name_val = org_obj.name1              # Название 1
-                    short_val = org_obj.molecule_short or item # Строковая формула
-                else:
-                    # Если в справочнике нет, берем текст из самой реакции
-                    short_val = item 
-
+                    mol_val = org_obj.molecule or ""      # SMILES для рендеринга картинки
+                    pk_val = org_obj.pk                   # ID для ссылки на соединение
+                    name_val = org_obj.name1 or clean_item # Каноничное название
+                    short_val = org_obj.molecule_short    # Формула из справочника
+                
+            # Передаем в контекст под индексами 1-7
             context[f'molecule{i}'] = mol_val
             context[f'pkc{i}'] = pk_val
             context[f'name{i}'] = name_val
-            context[f'molecule_short{i}'] = short_val # ДОБАВЛЕНО для шаблона
+            context[f'molecule_short{i}'] = short_val
 
-        # 3. Базовые поля
-        context.update({
-            'condition': qw.condition,
-        })
+        # 3. Базовая информация о реакции
+        context['condition'] = qw.condition
 
-        # --- ЛОГИКА ТЕСТА ---
+        # --- ЛОГИКА ТЕСТА И СЕССИЙ ---
         all_count = self.request.session.get('all_count', 0)
         context['is_test'] = all_count > 0 
 
         if context['is_test']:
             correct = self.request.session.get('correct_count', 0)
+            # Безопасный расчет процента
             context['percent'] = round((correct / all_count) * 100) if all_count > 0 else 0
             
+            # Логика перехода к следующему вопросу
             question_list = self.request.session.get('question_list', [])
-            # Берем только первый ID из списка, если он есть
-            context['next_index'] = question_list[0] if question_list else None
+            if question_list and isinstance(question_list, list):
+                context['next_index'] = question_list[0]
+            else:
+                context['next_index'] = None
         else:
             context['percent'] = 0
             context['next_index'] = None
 
-        # 4. Избранное
+        # 4. Проверка "Избранного"
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
                 user=self.request.user
