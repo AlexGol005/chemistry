@@ -10,9 +10,28 @@ from rdkit import Chem as Chemredactor
 
 from django.http import Http404
 
+from rdkit.Chem.Draw import rdMolDraw2D
+
 class OrganicChemTestAnswerView(TemplateView):
-    """ выводит ответ теста - реакцию по органической химии """
+    """ выводит ответ теста - реакцию по органической химии с отрисовкой структур """
     template_name = 'Chem/organiclawtestanswer.html'
+
+    def get_svg_code(self, smiles):
+        """ Генерирует SVG код напрямую через Chemredactor """
+        if not smiles:
+            return ""
+        try:
+            # Используем ваш алиас Chemredactor
+            mol = Chemredactor.MolFromSmiles(str(smiles))
+            if mol:
+                # Создаем холст для рисования 300x300 для лучшего качества
+                drawer = rdMolDraw2D.MolDraw2DSvg(300, 300)
+                drawer.DrawMolecule(mol)
+                drawer.FinishDrawing()
+                return drawer.GetDrawingText()
+        except:
+            return ""
+        return ""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -33,20 +52,23 @@ class OrganicChemTestAnswerView(TemplateView):
         for i, val in enumerate(struct_list, 1):
             name_key = f'html_name{i}'
             pk_key = f'html_name_pk{i}'
+            svg_key = f'html_svg{i}'
+            
             if val:
                 target = str(val).strip()
                 found = OrganicNames.objects.filter(molecule_short__iexact=target).first()
                 if found:
                     context[name_key] = found.name1
                     context[pk_key] = found.pk
+                    # Генерируем SVG через наш метод
+                    context[svg_key] = self.get_svg_code(found.molecule)
                 else:
-                    context[name_key] = "" # Если не нашли, оставляем пустым
-                    context[pk_key] = None
+                    context[name_key] = f"({target}?)"
+                    context[svg_key] = ""
             else:
                 context[name_key] = ""
-                context[pk_key] = None
+                context[svg_key] = ""
 
-        # Базовые поля
         context.update({
             'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
             'product1': qw.product1, 'product2': qw.product2, 'product3': qw.product3, 'product4': qw.product4,
