@@ -9,81 +9,54 @@ from .forms import *
 from rdkit import Chem as Chemredactor
 
 class OrganicChemTestAnswerView(TemplateView):
-    """ Выводит ответ теста с визуализацией структур и проверкой совпадений """
     template_name = 'Chem/organiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # 1. Получаем объект реакции
         ind = self.kwargs.get('str') 
         qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
         
-        # Массив полей из модели реакции (все 7 возможных мест)
+        # Названия полей в модели OrganicReaction
         components = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        # 2. Перебор компонентов и поиск в справочнике OrganicNames
         for i, item in enumerate(components, 1):
-            # Очищаем входящий текст (например, 'CH3OH')
-            target_text = item.strip() if item else ""
-            
-            # Дефолтные значения (если поиск не удастся)
-            mol_val = ""
-            pk_val = 1
-            name_val = ""
-            short_val = target_text
-            debug_msg = ""
+            # Самое важное: текст формулы берем напрямую из поля реакции!
+            short_val = item if item else ""
+            mol_val, pk_val, name_val = "", 1, "" # Дефолты для ссылки и картинки
 
-            if target_text:
-                # Ищем строгое совпадение по полю molecule_short
-                org_obj = OrganicNames.objects.filter(molecule_short=target_text).first()
-                
+            if short_val:
+                # Ищем в справочнике, чтобы подтянуть SMILES и ID
+                org_obj = OrganicNames.objects.filter(molecule_short__iexact=short_val.strip()).first()
                 if org_obj:
-                    mol_val = org_obj.molecule or ""      # SMILES для картинки
-                    pk_val = org_obj.pk                   # Реальный ID из базы
-                    name_val = org_obj.name1 or target_text 
-                    short_val = org_obj.molecule_short
+                    mol_val = org_obj.molecule or ""
+                    pk_val = org_obj.pk
+                    name_val = org_obj.name1 or short_val
                 else:
-                    # Если не нашли — формируем сообщение для отладки на странице
-                    debug_msg = f"Не найдено в базе: '{target_text}'"
+                    # Если в справочнике нет, название будет равно формуле
+                    name_val = short_val
 
-            # Наполняем контекст для каждого i (1-7)
+            context[f'molecule_short{i}'] = short_val
             context[f'molecule{i}'] = mol_val
             context[f'pkc{i}'] = pk_val
             context[f'name{i}'] = name_val
-            context[f'molecule_short{i}'] = short_val
-            context[f'debug{i}'] = debug_msg
 
-        # 3. Логика условий и видео
-        context['condition'] = qw.condition
-
-        # 4. Логика теста (сессия)
+        # Логика теста
         all_count = self.request.session.get('all_count', 0)
         context['is_test'] = all_count > 0 
-        
         if context['is_test']:
             correct = self.request.session.get('correct_count', 0)
             context['percent'] = round((correct / all_count) * 100) if all_count > 0 else 0
-            
-            # Берем первый ID следующего вопроса
             q_list = self.request.session.get('question_list', [])
             context['next_index'] = q_list[0] if q_list and isinstance(q_list, list) else None
-        else:
-            context['percent'] = 0
-            context['next_index'] = None
 
-        # 5. Избранное
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
-                user=self.request.user
-            ).values_list('reaction_id', flat=True))
-        else:
-            context['favorite_ids'] = []
-
+                user=self.request.user).values_list('reaction_id', flat=True))
+        
         return context
 
 class OrganicChemTestQuestionView(TemplateView):
