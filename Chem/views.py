@@ -8,7 +8,7 @@ from .models import *
 from .forms import *
 from rdkit import Chem as Chemredactor
 
-
+import logging
 logger = logging.getLogger(__name__)
 
 class OrganicChemTestAnswerView(TemplateView):
