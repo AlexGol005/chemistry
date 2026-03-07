@@ -10,51 +10,50 @@ from rdkit import Chem as Chemredactor
 
 class OrganicChemTestAnswerView(TemplateView):
     """ выводит ответ теста - реакцию по органической химии """
-    
     template_name = 'Chem/organiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs['str']
         
-        # Получаем объект органической реакции
+        # Получаем объект органики
         qw = OrganicReaction.objects.get(pk=ind)
         context['obj'] = qw
         
-        # Список формул для поиска имен и PK
+        # Список формул для сопоставления с NamesCompaunds
         formulas = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        # Массово получаем названия и PK из справочника (используем ваш NamesCompaunds)
-        names = []
-        pks = []
-        for formula in formulas:
-            if formula:
-                found = NamesCompaunds.objects.filter(formula=formula).values('name', 'pk').first()
-                names.append(found['name'] if found else "")
-                pks.append(found['pk'] if found else 1)
+        # Собираем имена и PK
+        res_names = []
+        res_pks = []
+        for f in formulas:
+            if f:
+                item = NamesCompaunds.objects.filter(formula=f).values('name', 'pk').first()
+                res_names.append(item['name'] if item else "")
+                res_pks.append(item['pk'] if item else 1)
             else:
-                names.append("")
-                pks.append(1)
+                res_names.append("")
+                res_pks.append(1)
 
-        # Раскладываем по контексту (по аналогии с вашим кодом)
+        # Раскладываем по контексту для шаблона
         for i in range(1, 4):
             context[f'reagent{i}'] = getattr(qw, f'reagent{i}')
-            context[f'name{i}'] = names[i-1]
-            context[f'pkc{i}'] = pks[i-1]
+            context[f'name{i}'] = res_names[i-1]
+            context[f'pkc{i}'] = res_pks[i-1]
 
         for i in range(1, 5):
             context[f'product{i}'] = getattr(qw, f'product{i}')
-            context[f'name{i+3}'] = names[i+2]
-            context[f'pkc{i+3}'] = pks[i+2]
+            context[f'name{i+3}'] = res_names[i+2]
+            context[f'pkc{i+3}'] = res_pks[i+2]
 
         context['condition'] = qw.condition
 
-        # Работа с сессиями (логика очереди и статистики)
+        # Статистика и очередь
         last_list = self.request.session.get('organic_question_list', [])
-        question_list = list(last_list) # Копия для работы
+        question_list = list(last_list)
         
         try:
             next_index = question_list.pop(0)
@@ -65,16 +64,10 @@ class OrganicChemTestAnswerView(TemplateView):
 
         correct_count = self.request.session.get('correct_count', 0)
         all_count = self.request.session.get('all_count', 0)
-        percent = round((correct_count / all_count) * 100) if all_count > 0 else 0
-
-        context.update({
-            'my_answer': self.request.session.get('answer_list', []),
-            'next_index': next_index,
-            'items': question_list,
-            'count': len(question_list),
-            'last_list': last_list,
-            'percent': percent
-        })
+        context['percent'] = round((correct_count / all_count) * 100) if all_count > 0 else 0
+        
+        context['next_index'] = next_index
+        context['last_list'] = last_list
 
         # Избранное для органики
         if self.request.user.is_authenticated:
@@ -83,8 +76,6 @@ class OrganicChemTestAnswerView(TemplateView):
             ).values_list('reaction_id', flat=True))
         else:
             context['favorite_ids'] = []
-        
-        return context
 
 class OrganicChemTestQuestionView(TemplateView):
     """ Выводит вопрос теста - реакцию по органической химии со структурами """
