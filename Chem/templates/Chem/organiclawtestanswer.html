@@ -1,95 +1,75 @@
 {% extends 'main/superbase.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}реакция (органика){% endblock %}
-
 {% block content %}
 {% autoescape off %}
 
 <div class="col-12">
-    <!-- РАМКА ДЕБАГА -->
-    <div style="border: 2px dashed red; background: #fff; padding: 10px; font-family: monospace; font-size: 10pt; margin-bottom: 20px;">
-        <b style="color: red;">DEBUG SYSTEM:</b><br>
+    <!-- ДЕБАГ БЛОК -->
+    <div style="border: 2px solid green; background: #f0fff0; padding: 10px; font-family: monospace; margin-bottom: 20px;">
+        <b>ОТЛАДКА:</b><br>
         {% for line in debug_log %}
-            - {{ line }}<br>
+            {{ line }}<br>
+        {% empty %}
+            <span style="color:red;">СПИСОК ДЕБАГА ПУСТОЙ! (Вьюшка не обновилась?)</span>
         {% endfor %}
         <hr>
-        <b>Проверка переменных в шаблоне:</b><br>
-        html_name1: {{ html_name1 }}<br>
-        reagent1: {{ reagent1 }}
+        Прямая проверка html_name1: "{{ html_name1 }}"<br>
+        Прямая проверка reagent1: "{{ reagent1 }}"
     </div>
 
-{% if obj %}
-    {% if obj.id in favorite_ids %}
-        <div style="display:inline;">
-            <span>✅ В моем органическом списке</span>
-            <form action="{% url 'organic_remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
-            </form>
+    <!-- Избранное -->
+    {% if obj %}
+        <div style="margin-bottom: 20px;">
+            {% if obj.id in favorite_ids %}
+                <span>✅ В списке</span>
+                <form action="{% url 'organic_remove_reaction' obj.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                </form>
+            {% else %}
+                <form action="{% url 'organic_add_reaction' obj.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}<button type="submit" class="btn btn-primary">Добавить в мой список</button>
+                </form>
+            {% endif %}
         </div>
-    {% else %}
-        <form action="{% url 'organic_add_reaction' obj.id %}" method="post" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Добавить в мой список</button>
-        </form>
     {% endif %}
-{% endif %}
 
-    <br><br>
-    <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">открыть правило</a>            
-
-    {% if percent %}
-        <p>Процент верных ответов: {{percent}} %</p>
-    {% endif %}
+    <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">Открыть правило</a>
 
     <!-- ФОРМУЛА -->
-    <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 23pt; margin: 20px auto; line-height: 1.5;">
-        {% if reagent1 %}<span style="white-space: nowrap;">{{reagent1}}</span>{% endif %}
-        {% if reagent2 %} + <wbr><span style="white-space: nowrap;">{{reagent2}}</span>{% endif %}
-        {% if reagent3 %} + <wbr><span style="white-space: nowrap;">{{reagent3}}</span>{% endif %}
-        = <wbr>
-        {% if product1 %}<span style="white-space: nowrap;">{{product1}}</span>{% endif %}
-        {% if product2 %} + <wbr><span style="white-space: nowrap;">{{product2}}</span>{% endif %}
-        {% if product3 %} + <wbr><span style="white-space: nowrap;">{{product3}}</span>{% endif %}
-        {% if product4 %} + <wbr><span style="white-space: nowrap;">{{product4}}</span>{% endif %}
+    <p style="text-align: center; font-size: 23pt; margin: 20px 0;">
+        {% if reagent1 %}<span>{{reagent1}}</span>{% endif %}
+        {% if reagent2 %} + {{reagent2}}{% endif %}
+        = 
+        {% if product1 %}<span>{{product1}}</span>{% endif %}
     </p>
 
     <!-- НАЗВАНИЯ -->
-    <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 9pt; margin: -10px auto 20px auto; line-height: 1.4; color: #888;">
-        {% if reagent1 %}<span style="white-space: nowrap;">{{ html_name1 }}</span>{% endif %}
-        {% if reagent2 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name2 }}</span>{% endif %}
-        {% if reagent3 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name3 }}</span>{% endif %}
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        {% if product1 %}<span style="white-space: nowrap;">{{ html_name4 }}</span>{% endif %}
-        {% if product2 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name5 }}</span>{% endif %}
-        {% if product3 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name6 }}</span>{% endif %}
-        {% if product4 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name7 }}</span>{% endif %}
+    <p style="text-align: center; font-size: 10pt; color: #666; margin-top: -15px;">
+        {% if reagent1 %}<span>{{ html_name1 }}</span>{% endif %}
+        {% if reagent2 %}&nbsp;&nbsp;<span>{{ html_name2 }}</span>{% endif %}
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        {% if product1 %}<span>{{ html_name4 }}</span>{% endif %}
     </p>
 
-    <center><p style="font-size: 20pt;">{% if condition %}{{condition}}{% endif %}</p></center>
+    <center><p style="font-size: 20pt;">{{ condition }}</p></center>
 
     {% if obj.extra %}
-    <center> 
-        <div style="border-left: 6px solid #00aaff; background-color: #f8fdff; padding: 15px; text-align: left; max-width: 80%;">
-             <p style="font-size: 15pt; margin: 0;">{{ obj.extra }}</p>
+        <div style="border-left: 6px solid #00aaff; background: #f8fdff; padding: 15px; margin: 20px auto; max-width: 80%;">
+            <p style="font-size: 15pt; margin: 0;">{{ obj.extra }}</p>
         </div>
-    </center>                       
-    {% endif %}   
+    {% endif %}
 
     <br>
-    {% if obj.video %}<center><a href="{{ obj.video }}" target="_blank"><h3>Смотрите видео</h3></a></center>{% endif %}
-    
-    {% if obj.img1 %}<center><img style="width: 30%;" src="{{ obj.img1.url }}"></center>{% endif %}
-    {% if obj.img2 %}<center><img style="width: 30%;" src="{{ obj.img2.url }}"></center>{% endif %}
-    {% if obj.img3 %}<center><img style="width: 30%;" src="{{ obj.img3.url }}"></center>{% endif %}
+    {% if obj.img1 %}<center><img src="{{ obj.img1.url }}" style="width:30%;"></center>{% endif %}
 
     <br>
     {% if next_index %}
-       <center><a href="{% url 'organiclawtestanswer' next_index %}" class="btn btn-primary mt-2">Следующая реакция</a></center> 
+        <center><a href="{% url 'organiclawtestanswer' next_index %}" class="btn btn-primary">Следующая реакция</a></center>
     {% else %}
-       <center><a href="/chem/organiclaw" class="btn btn-primary mt-2">Тест завершен</a></center> 
-    {% endif %}   
+        <center><a href="/chem/organiclaw" class="btn btn-primary">Тест завершен</a></center>
+    {% endif %}
 </div>
+
 {% endautoescape %}
 {% endblock %}
