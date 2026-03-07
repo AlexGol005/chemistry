@@ -16,57 +16,53 @@ class OrganicChemTestAnswerView(TemplateView):
     template_name = 'Chem/organiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
-        # 1. СТРОГАЯ ПРОВЕРКА: Если вы видите страницу, но НЕ видите ошибку ниже — 
-        # значит Django вызывает ДРУГУЮ вьюшку, несмотря на ваши настройки.
-        # raise Exception("ПРОВЕРКА ВЫПОЛНЕНИЯ КОДА") 
-
         context = super().get_context_data(**kwargs)
         ind = self.kwargs.get('str')
         
-        # Получаем объект реакции
-        qw = OrganicReaction.objects.get(pk=ind)
+        try:
+            qw = OrganicReaction.objects.get(pk=ind)
+        except OrganicReaction.DoesNotExist:
+            raise Http404("Реакция не найдена")
+            
         context['obj'] = qw
         
-        # Список для поиска имен
         struct_list = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        log = [f"БД Names: {OrganicNames.objects.count()}"]
-        
-        # Ищем name1 в модели OrganicNames по molecule_short
+        log = []
+        try:
+            log.append(f"В базе имен: {OrganicNames.objects.count()}")
+        except:
+            log.append("Ошибка доступа к OrganicNames")
+
         for i, val in enumerate(struct_list, 1):
             name_key = f'html_name{i}'
             if val:
                 target = str(val).strip()
-                # Ищем точное совпадение
-                found = OrganicNames.objects.filter(molecule_short__iexact=target).first()
-                
+                found = OrganicNames.objects.filter(molecule_short=target).first()
                 if found:
                     context[name_key] = found.name1
-                    log.append(f"Элемент {i}: {found.name1}")
+                    log.append(f"Поле {i}: {found.name1}")
                 else:
                     context[name_key] = f"({target}?)"
-                    log.append(f"Элемент {i}: Не найдено")
+                    log.append(f"Поле {i}: Не найдено")
             else:
                 context[name_key] = ""
 
-        # Наполняем контекст базовыми полями
         context.update({
             'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
             'product1': qw.product1, 'product2': qw.product2, 'product3': qw.product3, 'product4': qw.product4,
             'condition': qw.condition,
             'debug_log_list': log,
-            'TEST_STR': "КОД ОБНОВЛЕН"
+            'TEST_STR': "КОД ОБНОВЛЕН И РАБОТАЕТ"
         })
 
-        # Статистика (безопасный расчет)
         all_c = self.request.session.get('all_count', 0) or 0
         corr_c = self.request.session.get('correct_count', 0) or 0
         context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else 0
 
-        # Очередь
         q = list(self.request.session.get('organic_question_list', []))
         context['next_index'] = q.pop(0) if q else None
         self.request.session['organic_question_list'] = q
