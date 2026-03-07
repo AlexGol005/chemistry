@@ -616,7 +616,14 @@ class ChemTestAnswerView(TemplateView):
 
         
         
-        context['next_index'] = next_index
+        correct_count = self.request.session.get('correct_count', 0) or 0
+        all_count = self.request.session.get('all_count', 0) or 0
+        
+        if all_count == 0:
+            percent = 0
+        else:
+            # Теперь TypeError не возникнет
+            percent = round((correct_count / all_count) * 100)
        
         context['items'] = question_list
         context['count'] = len(question_list)
