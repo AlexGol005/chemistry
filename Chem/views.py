@@ -8,66 +8,83 @@ from .models import *
 from .forms import *
 from rdkit import Chem as Chemredactor
 
-import logging
-logger = logging.getLogger(__name__)
-
 class OrganicChemTestAnswerView(TemplateView):
+    """ Выводит ответ теста с визуализацией структур и проверкой совпадений """
     template_name = 'Chem/organiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # 1. Получаем объект реакции
         ind = self.kwargs.get('str') 
         qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
         
-        # Массив полей из модели реакции
+        # Массив полей из модели реакции (все 7 возможных мест)
         components = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
+        # 2. Перебор компонентов и поиск в справочнике OrganicNames
         for i, item in enumerate(components, 1):
-            # Очищаем строку от возможных пробелов по краям
+            # Очищаем входящий текст (например, 'CH3OH')
             target_text = item.strip() if item else ""
             
-            # Значения по умолчанию
-            mol_val, pk_val, name_val, short_val = "", 1, "Не найдено", target_text
-            
+            # Дефолтные значения (если поиск не удастся)
+            mol_val = ""
+            pk_val = 1
+            name_val = ""
+            short_val = target_text
+            debug_msg = ""
+
             if target_text:
-                # Прямой поиск по molecule_short
+                # Ищем строгое совпадение по полю molecule_short
                 org_obj = OrganicNames.objects.filter(molecule_short=target_text).first()
                 
                 if org_obj:
-                    mol_val = org_obj.molecule or ""
-                    pk_val = org_obj.pk
-                    name_val = org_obj.name1 or target_text
+                    mol_val = org_obj.molecule or ""      # SMILES для картинки
+                    pk_val = org_obj.pk                   # Реальный ID из базы
+                    name_val = org_obj.name1 or target_text 
                     short_val = org_obj.molecule_short
                 else:
-                    # Если не нашли, пишем в лог сервера, что именно искали
-                    print(f"DEBUG: Не найдено в OrganicNames: '{target_text}'")
+                    # Если не нашли — формируем сообщение для отладки на странице
+                    debug_msg = f"Не найдено в базе: '{target_text}'"
 
+            # Наполняем контекст для каждого i (1-7)
             context[f'molecule{i}'] = mol_val
             context[f'pkc{i}'] = pk_val
             context[f'name{i}'] = name_val
             context[f'molecule_short{i}'] = short_val
+            context[f'debug{i}'] = debug_msg
 
-        # Логика теста
+        # 3. Логика условий и видео
+        context['condition'] = qw.condition
+
+        # 4. Логика теста (сессия)
         all_count = self.request.session.get('all_count', 0)
         context['is_test'] = all_count > 0 
+        
         if context['is_test']:
             correct = self.request.session.get('correct_count', 0)
             context['percent'] = round((correct / all_count) * 100) if all_count > 0 else 0
             
-            # Берем первый ID из списка в сессии
+            # Берем первый ID следующего вопроса
             q_list = self.request.session.get('question_list', [])
             context['next_index'] = q_list[0] if q_list and isinstance(q_list, list) else None
+        else:
+            context['percent'] = 0
+            context['next_index'] = None
 
+        # 5. Избранное
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
-                user=self.request.user).values_list('reaction_id', flat=True))
-        
-        return context
+                user=self.request.user
+            ).values_list('reaction_id', flat=True))
+        else:
+            context['favorite_ids'] = []
 
+        return context
 
 class OrganicChemTestQuestionView(TemplateView):
     """ Выводит вопрос теста - реакцию по органической химии со структурами """
