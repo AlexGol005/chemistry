@@ -14,68 +14,58 @@ class OrganicChemTestAnswerView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Получаем ID текущей реакции из URL
         ind = self.kwargs.get('str') 
         
-        # 1. Получаем объект реакции
         qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
         
-        # Список текстовых названий компонентов из модели реакции
+        # Список текстовых названий из полей модели реакции
         components = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        # 2. Собираем данные по каждому веществу через OrganicNames
+        # 2. Собираем данные через OrganicNames
         for i, item in enumerate(components, 1):
-            mol_val, pk_val, name_val = "", 1, item or ""
+            mol_val, pk_val, name_val, short_val = "", 1, item or "", item or ""
             if item:
-                # Ищем строго по полю name1
                 org_obj = OrganicNames.objects.filter(name1=item).first()
                 
                 if org_obj:
-                    mol_val = org_obj.molecule or ""
-                    pk_val = org_obj.pk
-                    name_val = org_obj.name1 # Берем каноничное имя из справочника
+                    mol_val = org_obj.molecule or ""      # SMILES для картинки
+                    pk_val = org_obj.pk                   # ID для ссылки
+                    name_val = org_obj.name1              # Название 1
+                    short_val = org_obj.molecule_short or item # Строковая формула
                 else:
-                    name_val = item # Если в справочнике нет, оставляем текст из реакции
+                    # Если в справочнике нет, берем текст из самой реакции
+                    short_val = item 
 
             context[f'molecule{i}'] = mol_val
             context[f'pkc{i}'] = pk_val
             context[f'name{i}'] = name_val
+            context[f'molecule_short{i}'] = short_val # ДОБАВЛЕНО для шаблона
 
-        # 3. Передаем основные поля реакции в контекст
+        # 3. Базовые поля
         context.update({
-            'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
-            'product1': qw.product1, 'product2': qw.product2, 
-            'product3': qw.product3, 'product4': qw.product4,
             'condition': qw.condition,
         })
 
-        # --- ЛОГИКА ТЕСТА (СЕССИИ) ---
+        # --- ЛОГИКА ТЕСТА ---
         all_count = self.request.session.get('all_count', 0)
-        # Если all_count > 0, значит пользователь пришел из теста
         context['is_test'] = all_count > 0 
 
         if context['is_test']:
             correct = self.request.session.get('correct_count', 0)
             context['percent'] = round((correct / all_count) * 100) if all_count > 0 else 0
             
-            # Извлекаем следующий ID из списка вопросов
             question_list = self.request.session.get('question_list', [])
-            if question_list:
-                # Берем первый элемент, не удаляя его из сессии прямо здесь, 
-                # чтобы при обновлении страницы кнопка не исчезла.
-                # Удаление лучше делать во вьюшке САМОГО вопроса (TestQuestionView).
-                context['next_index'] = question_list[0]
-            else:
-                context['next_index'] = None
+            # Берем только первый ID из списка, если он есть
+            context['next_index'] = question_list[0] if question_list else None
         else:
             context['percent'] = 0
             context['next_index'] = None
 
-        # 4. Проверка "Избранного" (используем модель OrganicUserReaction)
+        # 4. Избранное
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
                 user=self.request.user
