@@ -15,14 +15,12 @@
     {% if obj.id in favorite_ids %}
         <div style="display:inline;">
             <span>✅ В моем органическом списке</span>
-            <!-- Форма для удаления (используем ваш name='organic_remove_reaction') -->
             <form action="{% url 'organic_remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
             </form>
         </div>
     {% else %}
-        <!-- Форма для добавления (используем ваш name='organic_add_reaction') -->
         <form action="{% url 'organic_add_reaction' obj.id %}" method="post" style="display:inline;">
             {% csrf_token %}
             <button type="submit" class="btn btn-primary">Добавить в мой список</button>
@@ -32,7 +30,6 @@
 
     <br><br>
     
-    <!-- Ссылка на органическое правило -->
     <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer">открыть правило</a>            
 
     {% if percent %}
@@ -41,28 +38,28 @@
         </p>
     {% endif %}
 
-    <!-- Формула реакции (Органика) -->
-    <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 34pt; margin: 20px auto;">
-        {% if reagent1 %}{{reagent1}}{% endif %}
-        {% if reagent2 %} + {{reagent2}}{% endif %}
-        {% if reagent3 %} + {{reagent3}}{% endif %}
+    <!-- ФОРМУЛА РЕАКЦИИ (шрифт 23pt, без разрывов внутри формул, перенос после +) -->
+    <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 23pt; margin: 20px auto; line-height: 1.5;">
+        {% if reagent1 %}<span style="white-space: nowrap;">{{reagent1}}</span>{% endif %}
+        {% if reagent2 %} + <wbr><span style="white-space: nowrap;">{{reagent2}}</span>{% endif %}
+        {% if reagent3 %} + <wbr><span style="white-space: nowrap;">{{reagent3}}</span>{% endif %}
         =
-        {% if product1 %}{{product1}}{% endif %}
-        {% if product2 %} + {{product2}}{% endif %}
-        {% if product3 %} + {{product3}}{% endif %}
-        {% if product4 %} + {{product4}}{% endif %}
+        {% if product1 %}<span style="white-space: nowrap;">{{product1}}</span>{% endif %}
+        {% if product2 %} + <wbr><span style="white-space: nowrap;">{{product2}}</span>{% endif %}
+        {% if product3 %} + <wbr><span style="white-space: nowrap;">{{product3}}</span>{% endif %}
+        {% if product4 %} + <wbr><span style="white-space: nowrap;">{{product4}}</span>{% endif %}
     </p>
 
-    <!-- Названия со ссылками на вещества -->
-    <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 12pt; margin: 0 auto;">
-        {% if reagent1 %}<a href="{% url 'compaund' pkc1 %}" target="_blank">{{name1}}</a>{% endif %}
-        {% if reagent2 %} + <a href="{% url 'compaund' pkc2 %}" target="_blank">{{name2}}</a>{% endif %}
-        {% if reagent3 %} + <a href="{% url 'compaund' pkc3 %}" target="_blank">{{name3}}</a>{% endif %}
+    <!-- НАЗВАНИЯ ПОД ФОРМУЛОЙ (шрифт 8pt, ссылки на organiccompaund) -->
+    <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 8pt; margin: 0 auto; line-height: 1.4;">
+        {% if reagent1 %}<span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc1 %}" target="_blank">{{name1}}</a></span>{% endif %}
+        {% if reagent2 %} + <wbr><span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc2 %}" target="_blank">{{name2}}</a></span>{% endif %}
+        {% if reagent3 %} + <wbr><span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc3 %}" target="_blank">{{name3}}</a></span>{% endif %}
         =
-        {% if product1 %}<a href="{% url 'compaund' pkc4 %}" target="_blank">{{name4}}</a>{% endif %}
-        {% if product2 %} + <a href="{% url 'compaund' pkc5 %}" target="_blank">{{name5}}</a>{% endif %}
-        {% if product3 %} + <a href="{% url 'compaund' pkc6 %}" target="_blank">{{name6}}</a>{% endif %}
-        {% if product4 %} + <a href="{% url 'compaund' pkc7 %}" target="_blank">{{name7}}</a>{% endif %}
+        {% if product1 %}<span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc4 %}" target="_blank">{{name4}}</a></span>{% endif %}
+        {% if product2 %} + <wbr><span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc5 %}" target="_blank">{{name5}}</a></span>{% endif %}
+        {% if product3 %} + <wbr><span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc6 %}" target="_blank">{{name6}}</a></span>{% endif %}
+        {% if product4 %} + <wbr><span style="white-space: nowrap;"><a href="{% url 'organiccompaund' pkc7 %}" target="_blank">{{name7}}</a></span>{% endif %}
     </p>
     
     <center>     
@@ -92,12 +89,10 @@
     </center>
     {% endif %}
     
-    <!-- Фотографии из OrganicReaction -->
     {% if obj.img1 %}<center><div class="pt-3"><img style="width: 30%; height: auto;" src="{{ obj.img1.url }}"></div></center>{% endif %}
     {% if obj.img2 %}<center><div class="pt-3"><img style="width: 30%; height: auto;" src="{{ obj.img2.url }}"></div></center>{% endif %}
     {% if obj.img3 %}<center><div class="pt-3"><img style="width: 30%; height: auto;" src="{{ obj.img3.url }}"></div></center>{% endif %}
 
-    <!-- Кнопки навигации -->
     <br>
     {% if next_index %}
        <center><a href="{% url 'organiclawtestanswer' next_index %}" class="btn btn-primary mt-2">Следующая химическая реакция</a></center> 
