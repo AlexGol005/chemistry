@@ -17,41 +17,33 @@ class OrganicChemTestAnswerView(TemplateView):
         qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
         
-        # Названия полей в модели OrganicReaction
-        components = [
-            qw.reagent1, qw.reagent2, qw.reagent3, 
-            qw.product1, qw.product2, qw.product3, qw.product4
-        ]
+        # Функция-помощник для поиска данных внутри метода
+        def get_mol_data(text):
+            if not text: return "", 1, "", ""
+            clean = text.strip()
+            # Поиск по molecule_short в справочнике
+            obj = OrganicNames.objects.filter(molecule_short__iexact=clean).first()
+            if obj:
+                return obj.molecule or "", obj.pk, obj.name1 or clean, clean
+            return "", 1, clean, clean # Если не нашли, возвращаем сам текст
+
+        # Наполняем контекст ВРУЧНУЮ для каждого поля модели OrganicReaction
+        context['molecule4'], context['pkc4'], context['name4'], context['molecule_short4'] = get_mol_data(qw.product1)
+        context['molecule5'], context['pkc5'], context['name5'], context['molecule_short5'] = get_mol_data(qw.product2)
+        context['molecule6'], context['pkc6'], context['name6'], context['molecule_short6'] = get_mol_data(qw.product3)
+        context['molecule7'], context['pkc7'], context['name7'], context['molecule_short7'] = get_mol_data(qw.product4)
         
-        for i, item in enumerate(components, 1):
-            # Самое важное: текст формулы берем напрямую из поля реакции!
-            short_val = item if item else ""
-            mol_val, pk_val, name_val = "", 1, "" # Дефолты для ссылки и картинки
+        context['molecule1'], context['pkc1'], context['name1'], context['molecule_short1'] = get_mol_data(qw.reagent1)
+        context['molecule2'], context['pkc2'], context['name2'], context['molecule_short2'] = get_mol_data(qw.reagent2)
+        context['molecule3'], context['pkc3'], context['name3'], context['molecule_short3'] = get_mol_data(qw.reagent3)
 
-            if short_val:
-                # Ищем в справочнике, чтобы подтянуть SMILES и ID
-                org_obj = OrganicNames.objects.filter(molecule_short__iexact=short_val.strip()).first()
-                if org_obj:
-                    mol_val = org_obj.molecule or ""
-                    pk_val = org_obj.pk
-                    name_val = org_obj.name1 or short_val
-                else:
-                    # Если в справочнике нет, название будет равно формуле
-                    name_val = short_val
-
-            context[f'molecule_short{i}'] = short_val
-            context[f'molecule{i}'] = mol_val
-            context[f'pkc{i}'] = pk_val
-            context[f'name{i}'] = name_val
-
-        # Логика теста
+        # Остальные данные
         all_count = self.request.session.get('all_count', 0)
         context['is_test'] = all_count > 0 
         if context['is_test']:
             correct = self.request.session.get('correct_count', 0)
             context['percent'] = round((correct / all_count) * 100) if all_count > 0 else 0
-            q_list = self.request.session.get('question_list', [])
-            context['next_index'] = q_list[0] if q_list and isinstance(q_list, list) else None
+            context['next_index'] = self.request.session.get('question_list', [None])[0]
 
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
