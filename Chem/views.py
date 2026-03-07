@@ -1097,13 +1097,18 @@ class OrganicCompaundSearchResultView(TemplateView):
 def organic_add_to_list(request, reaction_id):
     """ Добавление органической реакции в список пользователя """
     if request.user.is_authenticated:
-        reaction = OrganicReaction.objects.get(pk=reaction_id)
-        OrganicUserReaction.objects.get_or_create(user=request.user, reaction=reaction)
-    # Возвращаемся обратно на страницу реакции
+        # Используем get_or_create, чтобы не плодить дубликаты
+        OrganicUserReaction.objects.get_or_create(
+            user=request.user, 
+            reaction_id=reaction_id
+        )
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def organic_remove_reaction(request, reaction_id):
     """ Удаление органической реакции из списка пользователя """
     if request.user.is_authenticated:
-        OrganicUserReaction.objects.filter(user=request.user, reaction_id=reaction_id).delete()
+        OrganicUserReaction.objects.filter(
+            user=request.user, 
+            reaction_id=reaction_id
+        ).delete()
     return redirect(request.META.get('HTTP_REFERER', '/'))
