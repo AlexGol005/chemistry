@@ -7,14 +7,16 @@
 {% autoescape off %}
 
 <div class="col-12">
-    <!-- КРАСНАЯ РАМКА ДЕБАГА -->
-    <div style="border: 2px solid red; background: #fff5f5; padding: 10px; font-family: monospace; font-size: 9pt; margin-bottom: 20px;">
-        <b style="color: red;">DEBUG LOG:</b><br>
-        {% for line in debug_info %}
-            {{ line }}<br>
+    <!-- РАМКА ДЕБАГА -->
+    <div style="border: 2px dashed red; background: #fff; padding: 10px; font-family: monospace; font-size: 10pt; margin-bottom: 20px;">
+        <b style="color: red;">DEBUG SYSTEM:</b><br>
+        {% for line in debug_log %}
+            - {{ line }}<br>
         {% endfor %}
         <hr>
-        <b>Текущие html_names:</b> 1:{{html_name1}} | 2:{{html_name2}} | 4:{{html_name4}}
+        <b>Проверка переменных в шаблоне:</b><br>
+        html_name1: {{ html_name1 }}<br>
+        reagent1: {{ reagent1 }}
     </div>
 
 {% if obj %}
@@ -49,6 +51,8 @@
         = <wbr>
         {% if product1 %}<span style="white-space: nowrap;">{{product1}}</span>{% endif %}
         {% if product2 %} + <wbr><span style="white-space: nowrap;">{{product2}}</span>{% endif %}
+        {% if product3 %} + <wbr><span style="white-space: nowrap;">{{product3}}</span>{% endif %}
+        {% if product4 %} + <wbr><span style="white-space: nowrap;">{{product4}}</span>{% endif %}
     </p>
 
     <!-- НАЗВАНИЯ -->
@@ -59,6 +63,8 @@
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         {% if product1 %}<span style="white-space: nowrap;">{{ html_name4 }}</span>{% endif %}
         {% if product2 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name5 }}</span>{% endif %}
+        {% if product3 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name6 }}</span>{% endif %}
+        {% if product4 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name7 }}</span>{% endif %}
     </p>
 
     <center><p style="font-size: 20pt;">{% if condition %}{{condition}}{% endif %}</p></center>
@@ -73,7 +79,10 @@
 
     <br>
     {% if obj.video %}<center><a href="{{ obj.video }}" target="_blank"><h3>Смотрите видео</h3></a></center>{% endif %}
+    
     {% if obj.img1 %}<center><img style="width: 30%;" src="{{ obj.img1.url }}"></center>{% endif %}
+    {% if obj.img2 %}<center><img style="width: 30%;" src="{{ obj.img2.url }}"></center>{% endif %}
+    {% if obj.img3 %}<center><img style="width: 30%;" src="{{ obj.img3.url }}"></center>{% endif %}
 
     <br>
     {% if next_index %}
