@@ -10,42 +10,42 @@ from rdkit import Chem as Chemredactor
 
 
 class OrganicChemTestAnswerView(TemplateView):
-    """ Выводит ответ теста - реакцию по органической химии со структурами """
     template_name = 'Chem/organiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ind = self.kwargs['str']
+        # Получаем ID текущей реакции из URL
+        ind = self.kwargs.get('str') 
         
         # 1. Получаем объект реакции
         qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
         
-        # Список всех компонентов реакции (3 реагента + 4 продукта)
+        # Список текстовых названий компонентов из модели реакции
         components = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        # 2. Собираем данные по каждому веществу (SMILES, Название, PK)
+        # 2. Собираем данные по каждому веществу через OrganicNames
         for i, item in enumerate(components, 1):
-            mol_val, pk_val, name_val = "", 1, ""
+            mol_val, pk_val, name_val = "", 1, item or ""
             if item:
-                org_obj = OrganicNames.objects.filter(
-                    Q(name1=item) | Q(name2=item) | Q(name3=item) | Q(name4=item)
-                ).first()
+                # Ищем строго по полю name1
+                org_obj = OrganicNames.objects.filter(name1=item).first()
+                
                 if org_obj:
                     mol_val = org_obj.molecule or ""
                     pk_val = org_obj.pk
-                    name_val = org_obj.name1 or item
+                    name_val = org_obj.name1 # Берем каноничное имя из справочника
                 else:
-                    name_val = item # Если в OrganicNames нет, оставляем текст из реакции
+                    name_val = item # Если в справочнике нет, оставляем текст из реакции
 
             context[f'molecule{i}'] = mol_val
             context[f'pkc{i}'] = pk_val
             context[f'name{i}'] = name_val
 
-        # 3. Базовые поля реакции
+        # 3. Передаем основные поля реакции в контекст
         context.update({
             'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
             'product1': qw.product1, 'product2': qw.product2, 
@@ -53,40 +53,31 @@ class OrganicChemTestAnswerView(TemplateView):
             'condition': qw.condition,
         })
 
-        # --- ЛОГИКА ТЕСТА И СЕССИЙ (БЕЗОПАСНАЯ) ---
-        my_answer = self.request.session.get('answer_list', [])
-        context['my_answer'] = my_answer
+        # --- ЛОГИКА ТЕСТА (СЕССИИ) ---
+        all_count = self.request.session.get('all_count', 0)
+        # Если all_count > 0, значит пользователь пришел из теста
+        context['is_test'] = all_count > 0 
 
-        question_list = self.request.session.get('question_list', [])
-        all_count = self.request.session.get('all_count', 0) or 0
-        correct = self.request.session.get('correct_count', 0) or 0
-        
-        # Флаг: находимся ли мы в режиме активного теста
-        # Показываем кнопки, если тест начат (all_count > 0)
-        context['is_test'] = all_count > 0
-
-        # Безопасный расчет процентов (исправление TypeError)
-        if all_count > 0:
-            context['percent'] = round((correct / all_count) * 100)
+        if context['is_test']:
+            correct = self.request.session.get('correct_count', 0)
+            context['percent'] = round((correct / all_count) * 100) if all_count > 0 else 0
+            
+            # Извлекаем следующий ID из списка вопросов
+            question_list = self.request.session.get('question_list', [])
+            if question_list:
+                # Берем первый элемент, не удаляя его из сессии прямо здесь, 
+                # чтобы при обновлении страницы кнопка не исчезла.
+                # Удаление лучше делать во вьюшке САМОГО вопроса (TestQuestionView).
+                context['next_index'] = question_list[0]
+            else:
+                context['next_index'] = None
         else:
             context['percent'] = 0
-        
-        # Извлекаем следующий индекс
-        try:
-            # Делаем копию списка, чтобы не портить сессию при простом просмотре
-            temp_list = list(question_list)
-            next_index = temp_list.pop(0) if temp_list else None
-            if context['is_test']:
-                self.request.session['question_list'] = temp_list # Сохраняем только в тесте
-        except (IndexError, AttributeError):
-            next_index = None
-            
-        context['next_index'] = next_index
-        context['count'] = len(question_list)
+            context['next_index'] = None
 
-        # Избранное
+        # 4. Проверка "Избранного" (используем модель OrganicUserReaction)
         if self.request.user.is_authenticated:
-            context['favorite_ids'] = list(UserReaction.objects.filter(
+            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
                 user=self.request.user
             ).values_list('reaction_id', flat=True))
         else:
