@@ -1,30 +1,58 @@
 {% extends 'main/superbase.html' %}
 {% load crispy_forms_tags %}
-{% load mol_extras %} <!-- Загружаем ваш тег -->
+{% load mol_extras %}
 
 {% block content %}
 {% autoescape off %}
 <style>
+    /* Контейнер для всей реакции с разрешением переноса блоков */
+    .chem-equation-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        margin: 40px 0;
+        width: 100%;
+    }
+    /* Блок: Формула + Название (неразрывный внутри) */
     .chem-item {
         display: inline-flex;
         flex-direction: column;
         align-items: center;
         vertical-align: middle;
-        margin: 0 10px;
+        margin: 10px;
+        flex-shrink: 0;
+    }
+    .chem-formula { 
+        font-size: 23pt; 
+        white-space: nowrap; /* Запрет переноса внутри формулы */
+        font-family: Georgia, serif; 
     }
     .chem-name {
         font-size: 16pt; 
         color: #444;
         margin-top: 5px;
         font-weight: bold;
+        text-align: center;
     }
-    .chem-formula { font-size: 23pt; white-space: nowrap; font-family: Georgia, serif; }
-    .chem-operator { font-size: 25pt; vertical-align: middle; margin: 0 15px; font-weight: bold; }
-    .mol-box { min-width: 150px; min-height: 150px; display: flex; align-items: center; justify-content: center; }
+    .chem-operator { 
+        font-size: 25pt; 
+        font-weight: bold; 
+        margin: 0 15px;
+        flex-shrink: 0;
+    }
+    .mol-box { 
+        min-width: 150px; 
+        min-height: 150px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+    }
 </style>
 
 <div class="col-12">
-    <!-- Избранное -->
+    <!-- Блок Избранного -->
     {% if obj %}
         <div style="margin-bottom: 20px;">
             {% if obj.id in favorite_ids %}
@@ -44,61 +72,70 @@
     {% if obj.number %}<a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">открыть правило</a>{% endif %}
     {% if percent %}<p>Процент верных ответов: {{percent}} %</p>{% endif %}
 
-   <!-- ЛИНИЯ 1: ТЕКСТОВЫЕ ФОРМУЛЫ (Берем напрямую из obj) -->
-    <div style="text-align: center; margin: 40px 0;">
+    <!-- ЛИНИЯ 1: ТЕКСТОВЫЕ ФОРМУЛЫ И НАЗВАНИЯ -->
+    <div class="chem-equation-container">
+        <!-- Реагенты (obj_n1 - obj_n3) -->
         <div class="chem-item">
-            <span class="chem-formula">{{ obj.reagent1 }}</span>
+            <span class="chem-formula">{{ reagent1 }}</span>
             <span class="chem-name">{% if obj_n1 %}<a href="/chem/organiccompaund/{{ obj_n1.pk }}/" target="_blank">{{ obj_n1.name1 }}</a>{% endif %}</span>
         </div>
-
-        {% if obj.reagent2 %}
-        <span class="chem-operator">+</span>
-        <div class="chem-item">
-            <span class="chem-formula">{{ obj.reagent2 }}</span>
-            <span class="chem-name">{% if obj_n2 %}<a href="/chem/organiccompaund/{{ obj_n2.pk }}/" target="_blank">{{ obj_n2.name1 }}</a>{% endif %}</span>
-        </div>
+        {% if reagent2 %}
+            <span class="chem-operator">+</span>
+            <div class="chem-item">
+                <span class="chem-formula">{{ reagent2 }}</span>
+                <span class="chem-name">{% if obj_n2 %}<a href="/chem/organiccompaund/{{ obj_n2.pk }}/" target="_blank">{{ obj_n2.name1 }}</a>{% endif %}</span>
+            </div>
+        {% endif %}
+        {% if reagent3 %}
+            <span class="chem-operator">+</span>
+            <div class="chem-item">
+                <span class="chem-formula">{{ reagent3 }}</span>
+                <span class="chem-name">{% if obj_n3 %}<a href="/chem/organiccompaund/{{ obj_n3.pk }}/" target="_blank">{{ obj_n3.name1 }}</a>{% endif %}</span>
+            </div>
         {% endif %}
 
         <span class="chem-operator">=</span>
 
-        <!-- Первый продукт -->
+        <!-- Продукты (obj_n4 - obj_n7) -->
         <div class="chem-item">
-            <span class="chem-formula">{{ obj.product1 }}</span>
+            <span class="chem-formula">{{ product1 }}</span>
             <span class="chem-name">{% if obj_n4 %}<a href="/chem/organiccompaund/{{ obj_n4.pk }}/" target="_blank">{{ obj_n4.name1 }}</a>{% endif %}</span>
         </div>
-
-        <!-- Второй продукт (Проверяем все возможные поля) -->
-        {% if obj.product2 %}
-        <span class="chem-operator">+</span>
-        <div class="chem-item">
-            <span class="chem-formula">{{ obj.product2 }}</span>
-            <span class="chem-name">{% if obj_n5 %}<a href="/chem/organiccompaund/{{ obj_n5.pk }}/" target="_blank">{{ obj_n5.name1 }}</a>{% endif %}</span>
-        </div>
+        {% if product2 %}
+            <span class="chem-operator">+</span>
+            <div class="chem-item">
+                <span class="chem-formula">{{ product2 }}</span>
+                <span class="chem-name">{% if obj_n5 %}<a href="/chem/organiccompaund/{{ obj_n5.pk }}/" target="_blank">{{ obj_n5.name1 }}</a>{% endif %}</span>
+            </div>
         {% endif %}
-
-        {% if obj.product3 %}
-        <span class="chem-operator">+</span>
-        <div class="chem-item">
-            <span class="chem-formula">{{ obj.product3 }}</span>
-            <span class="chem-name">{% if obj_n6 %}<a href="/chem/organiccompaund/{{ obj_n6.pk }}/" target="_blank">{{ obj_n6.name1 }}</a>{% endif %}</span>
-        </div>
+        {% if product3 %}
+            <span class="chem-operator">+</span>
+            <div class="chem-item">
+                <span class="chem-formula">{{ product3 }}</span>
+                <span class="chem-name">{% if obj_n6 %}<a href="/chem/organiccompaund/{{ obj_n6.pk }}/" target="_blank">{{ obj_n6.name1 }}</a>{% endif %}</span>
+            </div>
+        {% endif %}
+        {% if product4 %}
+            <span class="chem-operator">+</span>
+            <div class="chem-item">
+                <span class="chem-formula">{{ product4 }}</span>
+                <span class="chem-name">{% if obj_n7 %}<a href="/chem/organiccompaund/{{ obj_n7.pk }}/" target="_blank">{{ obj_n7.name1 }}</a>{% endif %}</span>
+            </div>
         {% endif %}
     </div>
 
-    <!-- ЛИНИЯ 2: КАРТИНКИ (SMILES) -->
-    <div style="text-align: center; margin: 40px 0; border-top: 1px solid #eee; padding-top: 30px;">
+    <!-- ЛИНИЯ 2: КАРТИНКИ (SMILES) С ПЕРЕНОСОМ -->
+    <div class="chem-equation-container" style="border-top: 1px solid #eee; padding-top: 30px;">
         <div class="chem-item">
             <div class="mol-box">{% if obj_n1.molecule %}{% render_smiles obj_n1.molecule width=180 height=180 %}{% endif %}</div>
         </div>
-        {% if obj_n2.molecule %}<span class="chem-operator">+</span>
-        <div class="chem-item">
-            <div class="mol-box">{% render_smiles obj_n2.molecule width=180 height=180 %}</div>
-        </div>
+        {% if obj_n2.molecule %}
+            <span class="chem-operator">+</span>
+            <div class="chem-item"><div class="mol-box">{% render_smiles obj_n2.molecule width=180 height=180 %}</div></div>
         {% endif %}
-        {% if obj_n3.molecule %}<span class="chem-operator">+</span>
-        <div class="chem-item">
-            <div class="mol-box">{% render_smiles obj_n3.molecule width=180 height=180 %}</div>
-        </div>
+        {% if obj_n3.molecule %}
+            <span class="chem-operator">+</span>
+            <div class="chem-item"><div class="mol-box">{% render_smiles obj_n3.molecule width=180 height=180 %}</div></div>
         {% endif %}
 
         <span class="chem-operator">=</span>
@@ -106,20 +143,17 @@
         <div class="chem-item">
             <div class="mol-box">{% if obj_n4.molecule %}{% render_smiles obj_n4.molecule width=180 height=180 %}{% endif %}</div>
         </div>
-        {% if obj_n5.molecule %}<span class="chem-operator">+</span>
-        <div class="chem-item">
-            <div class="mol-box">{% render_smiles obj_n5.molecule width=180 height=180 %}</div>
-        </div>
+        {% if obj_n5.molecule %}
+            <span class="chem-operator">+</span>
+            <div class="chem-item"><div class="mol-box">{% render_smiles obj_n5.molecule width=180 height=180 %}</div></div>
         {% endif %}
-        {% if obj_n6.molecule %}<span class="chem-operator">+</span>
-        <div class="chem-item">
-            <div class="mol-box">{% render_smiles obj_n6.molecule width=180 height=180 %}</div>
-        </div>
+        {% if obj_n6.molecule %}
+            <span class="chem-operator">+</span>
+            <div class="chem-item"><div class="mol-box">{% render_smiles obj_n6.molecule width=180 height=180 %}</div></div>
         {% endif %}
-        {% if obj_n7.molecule %}<span class="chem-operator">+</span>
-        <div class="chem-item">
-            <div class="mol-box">{% render_smiles obj_n7.molecule width=180 height=180 %}</div>
-        </div>
+        {% if obj_n7.molecule %}
+            <span class="chem-operator">+</span>
+            <div class="chem-item"><div class="mol-box">{% render_smiles obj_n7.molecule width=180 height=180 %}</div></div>
         {% endif %}
     </div>
 
