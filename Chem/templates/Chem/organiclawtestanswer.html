@@ -83,22 +83,25 @@
 
     <br>
 
-    <!-- Медиа-контент (видео и фото) -->
+    <!-- Видео -->
     {% if obj.video %}
     <center>
         <a href="{{ obj.video }}" target="_blank" rel="noopener noreferrer"><h3>Смотрите видео по ссылке</h3></a>
     </center>
     {% endif %}
     
-    {% for img in "123" %}
-        {% with image=obj|regattr:"img"|add:img %} {# предполагается кастомный фильтр или просто вызов напрямую #}
-        {% endwith %}
-    {% endfor %}
-
-    <!-- Ручной вывод фото, как в вашем оригинале -->
-    {% if obj.img1 %}<center><div class="pt-3"><img style="width: 30%; height: auto;" src="{{ obj.img1.url }}"></div></center>{% endif %}
-    {% if obj.img2 %}<center><div class="pt-3"><img style="width: 30%; height: auto;" src="{{ obj.img2.url }}"></div></center>{% endif %}
-    {% if obj.img3 %}<center><div class="pt-3"><img style="width: 30%; height: auto;" src="{{ obj.img3.url }}"></div></center>{% endif %}
+    <!-- Фотографии напрямую без циклов -->
+    {% if obj.img1 %}
+    <center><div class="pt-3"><img style="width: 30%; height: auto;" src="{{ obj.img1.url }}"></div></center>
+    {% endif %}
+    
+    {% if obj.img2 %}
+    <center><div class="pt-3"><img style="width: 30%; height: auto;" src="{{ obj.img2.url }}"></div></center>
+    {% endif %}
+    
+    {% if obj.img3 %}
+    <center><div class="pt-3"><img style="width: 30%; height: auto;" src="{{ obj.img3.url }}"></div></center>
+    {% endif %}
 
     <!-- Кнопки навигации -->
     <br>
