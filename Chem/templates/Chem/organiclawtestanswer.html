@@ -1,63 +1,40 @@
 {% extends 'main/superbase.html' %}
 {% load crispy_forms_tags %}
+{% load mol_extras %} <!-- Загружаем ваш тег -->
 
 {% block content %}
 {% autoescape off %}
 <style>
-    .chem-container {
-        text-align: center;
-        font-family: Georgia, serif;
-        margin: 40px 0;
-    }
     .chem-item {
         display: inline-flex;
         flex-direction: column;
         align-items: center;
         vertical-align: middle;
-        margin: 0 15px;
+        margin: 0 10px;
     }
     .chem-name {
-        font-size: 16pt; /* Увеличено в 2 раза от 8pt */
-        color: #333;
-        margin-top: 10px;
+        font-size: 16pt; /* Увеличено в 2 раза */
+        color: #444;
+        margin-top: 5px;
         font-weight: bold;
     }
-    .chem-formula {
-        font-size: 23pt;
-        white-space: nowrap;
-    }
-    .chem-operator {
-        font-size: 28pt;
-        vertical-align: middle;
-        margin: 0 10px;
-        font-weight: bold;
-    }
-    .svg-wrapper {
-        width: 200px;
-        height: 200px;
-        background: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .svg-wrapper svg {
-        width: 100%;
-        height: 100%;
-    }
+    .chem-formula { font-size: 23pt; white-space: nowrap; }
+    .chem-operator { font-size: 25pt; vertical-align: middle; margin: 0 15px; font-weight: bold; }
+    .mol-box { min-width: 150px; min-height: 150px; display: flex; align-items: center; justify-content: center; }
 </style>
 
 <div class="col-12">
     <!-- Избранное -->
     {% if obj %}
-        <div style="margin-bottom: 25px;">
+        <div style="margin-bottom: 20px;">
             {% if obj.id in favorite_ids %}
-                <span>✅ В моем списке</span>
+                <span>✅ В списке</span>
                 <form action="{% url 'organic_remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
                     {% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
                 </form>
             {% else %}
                 <form action="{% url 'organic_add_reaction' obj.id %}" method="post" style="display:inline;">
-                    {% csrf_token %}<button type="submit" class="btn btn-primary">Добавить в мой список</button>
+                    {% csrf_token %}<button type="submit" class="btn btn-primary">Добавить в список</button>
                 </form>
             {% endif %}
         </div>
@@ -65,87 +42,62 @@
 
     <br>
     {% if obj.number %}<a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">открыть правило</a>{% endif %}
-    {% if percent %}<p style="font-family: Georgia, serif; font-size: 13pt; margin-top:10px;">Процент верных ответов: {{percent}} %</p>{% endif %}
+    {% if percent %}<p>Процент верных ответов: {{percent}} %</p>{% endif %}
 
-    <!-- ЛИНИЯ 1: ТЕКСТОВАЯ ФОРМУЛА + НАЗВАНИЕ (16pt) -->
-    <div class="chem-container">
+    <!-- ЛИНИЯ 1: ТЕКСТОВАЯ -->
+    <div style="text-align: center; margin: 40px 0;">
         <div class="chem-item">
             <span class="chem-formula">{{reagent1}}</span>
-            <span class="chem-name">{% if html_name_pk1 %}<a href="/chem/organiccompaund/{{ html_name_pk1 }}/" target="_blank">{{ html_name1 }}</a>{% endif %}</span>
+            <span class="chem-name">{% if obj_n1 %}<a href="/chem/organiccompaund/{{ obj_n1.pk }}/" target="_blank">{{ obj_n1.name1 }}</a>{% endif %}</span>
         </div>
         {% if reagent2 %}<span class="chem-operator">+</span>
         <div class="chem-item">
             <span class="chem-formula">{{reagent2}}</span>
-            <span class="chem-name">{% if html_name_pk2 %}<a href="/chem/organiccompaund/{{ html_name_pk2 }}/" target="_blank">{{ html_name2 }}</a>{% endif %}</span>
+            <span class="chem-name">{% if obj_n2 %}<a href="/chem/organiccompaund/{{ obj_n2.pk }}/" target="_blank">{{ obj_n2.name1 }}</a>{% endif %}</span>
         </div>
         {% endif %}
-        {% if reagent3 %}<span class="chem-operator">+</span>
-        <div class="chem-item">
-            <span class="chem-formula">{{reagent3}}</span>
-            <span class="chem-name">{% if html_name_pk3 %}<a href="/chem/organiccompaund/{{ html_name_pk3 }}/" target="_blank">{{ html_name3 }}</a>{% endif %}</span>
-        </div>
-        {% endif %}
-
         <span class="chem-operator">=</span>
-
         <div class="chem-item">
             <span class="chem-formula">{{product1}}</span>
-            <span class="chem-name">{% if html_name_pk4 %}<a href="/chem/organiccompaund/{{ html_name_pk4 }}/" target="_blank">{{ html_name4 }}</a>{% endif %}</span>
+            <span class="chem-name">{% if obj_n4 %}<a href="/chem/organiccompaund/{{ obj_n4.pk }}/" target="_blank">{{ obj_n4.name1 }}</a>{% endif %}</span>
         </div>
-        {% if product2 %}<span class="chem-operator">+</span>
-        <div class="chem-item">
-            <span class="chem-formula">{{product2}}</span>
-            <span class="chem-name">{% if html_name_pk5 %}<a href="/chem/organiccompaund/{{ html_name_pk5 }}/" target="_blank">{{ html_name5 }}</a>{% endif %}</span>
-        </div>
-        {% endif %}
     </div>
 
-    <!-- ЛИНИЯ 2: СТРУКТУРНЫЕ ФОРМУЛЫ (SVG) -->
-    <div class="chem-container" style="background-color: #fcfcfc; padding: 25px; border-radius: 20px; border: 1px solid #f0f0f0;">
+    <!-- ЛИНИЯ 2: КАРТИНКИ (АНАЛОГИЧНО ВЕЩЕСТВУ) -->
+    <div style="text-align: center; margin: 40px 0; border-top: 1px solid #eee; padding-top: 30px;">
         <div class="chem-item">
-            <div class="svg-wrapper">{{ html_svg1 }}</div>
+            <div class="mol-box">{% if obj_n1.molecule %}{% render_smiles obj_n1.molecule width=180 height=180 %}{% endif %}</div>
         </div>
-        {% if html_svg2 %}<span class="chem-operator">+</span>
+        {% if obj_n2.molecule %}<span class="chem-operator">+</span>
         <div class="chem-item">
-            <div class="svg-wrapper">{{ html_svg2 }}</div>
-        </div>
-        {% endif %}
-        {% if html_svg3 %}<span class="chem-operator">+</span>
-        <div class="chem-item">
-            <div class="svg-wrapper">{{ html_svg3 }}</div>
+            <div class="mol-box">{% render_smiles obj_n2.molecule width=180 height=180 %}</div>
         </div>
         {% endif %}
-
         <span class="chem-operator">=</span>
-
         <div class="chem-item">
-            <div class="svg-wrapper">{{ html_svg4 }}</div>
+            <div class="mol-box">{% if obj_n4.molecule %}{% render_smiles obj_n4.molecule width=180 height=180 %}{% endif %}</div>
         </div>
-        {% if html_svg5 %}<span class="chem-operator">+</span>
+        {% if obj_n5.molecule %}<span class="chem-operator">+</span>
         <div class="chem-item">
-            <div class="svg-wrapper">{{ html_svg5 }}</div>
+            <div class="mol-box">{% render_smiles obj_n5.molecule width=180 height=180 %}</div>
         </div>
         {% endif %}
     </div>
 
-    <center><p style="font-family: Georgia, serif; font-size: 20pt; margin: 30px 0;">{{ condition }}</p></center>
+    <center><p style="font-size: 20pt; margin: 30px 0;">{{ condition }}</p></center>
 
     {% if obj.extra %}
-    <center> 
-        <div style="border-left: 6px solid #00aaff; background-color: #f8fdff; padding: 20px; text-align: left; max-width: 85%; border-radius: 5px; box-shadow: 2px 2px 10px rgba(0,0,0,0.05);">
-             <p style="font-family: Georgia, serif; font-size: 15pt; margin: 0;">{{ obj.extra }}</p>
+        <div style="border-left: 6px solid #00aaff; background: #f8fdff; padding: 15px; text-align: left; max-width: 80%; margin: 0 auto; border-radius: 4px;">
+             <p style="font-size: 15pt; margin: 0;">{{ obj.extra }}</p>
         </div>
-    </center>                       
     {% endif %}   
 
     <br>
     {% if next_index %}
-       <center><a href="{% url 'organiclawtestanswer' next_index %}" class="btn btn-primary btn-lg mt-3">Следующая реакция</a></center> 
+       <center><a href="{% url 'organiclawtestanswer' next_index %}" class="btn btn-primary mt-2">Следующая реакция</a></center> 
     {% else %}
-       <center><a href="/chem/organiclaw" class="btn btn-primary btn-lg mt-3">Тест завершен</a></center> 
+       <center><a href="/chem/organiclaw" class="btn btn-primary mt-2">Тест завершен</a></center> 
     {% endif %}   
-
-    <br><br>
 </div>
 {% endautoescape %}
 {% endblock %}
