@@ -1249,7 +1249,7 @@ class OrganicChemTestAnswerView(TemplateView):
     
         if self.request.user.is_authenticated:
         # Получаем плоский список ID реакций, которые добавил этот пользователь
-            context['favorite_ids'] = list(Organic.objects.filter(
+            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
                 user=self.request.user
             ).values_list('reaction_id', flat=True))
         else:
