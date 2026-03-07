@@ -5,71 +5,69 @@
 {% autoescape off %}
 
 <div class="col-12">
-    <!-- ДЕБАГ БЛОК -->
-    <div style="border: 2px solid green; background: #f0fff0; padding: 10px; font-family: monospace; margin-bottom: 20px;">
-        <b>ОТЛАДКА:</b><br>
-        {% for line in debug_log %}
-            {{ line }}<br>
+    <!-- КРИТИЧЕСКИЙ ТЕСТ ОБНОВЛЕНИЯ -->
+    <div style="background: black; color: yellow; padding: 10px; font-family: monospace; border: 3px solid yellow;">
+        СТАТУС КОДА: {{ TEST_STR|default:"СТАРЫЙ КОД (ВЬЮШКА НЕ ОБНОВЛЕНА)" }}<br>
+        <hr>
+        <b>ЛОГ ПОИСКА:</b><br>
+        {% for line in debug_log_list %}
+            • {{ line }}<br>
         {% empty %}
-            <span style="color:red;">СПИСОК ДЕБАГА ПУСТОЙ! (Вьюшка не обновилась?)</span>
+            <span style="color:red;">ДАННЫЕ ИЗ ВЬЮШКИ НЕ ПРИШЛИ!</span>
         {% endfor %}
         <hr>
-        Прямая проверка html_name1: "{{ html_name1 }}"<br>
-        Прямая проверка reagent1: "{{ reagent1 }}"
+        html_name1: "{{ html_name1 }}" | reagent1: "{{ reagent1 }}"
     </div>
 
-    <!-- Избранное -->
-    {% if obj %}
-        <div style="margin-bottom: 20px;">
-            {% if obj.id in favorite_ids %}
-                <span>✅ В списке</span>
-                <form action="{% url 'organic_remove_reaction' obj.id %}" method="post" style="display:inline;">
-                    {% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
-                </form>
-            {% else %}
-                <form action="{% url 'organic_add_reaction' obj.id %}" method="post" style="display:inline;">
-                    {% csrf_token %}<button type="submit" class="btn btn-primary">Добавить в мой список</button>
-                </form>
-            {% endif %}
-        </div>
-    {% endif %}
+{% if obj %}
+    <div style="margin-top: 15px;">
+        {% if obj.id in favorite_ids %}
+            <span>✅ В списке</span>
+            <form action="{% url 'organic_remove_reaction' obj.id %}" method="post" style="display:inline;">
+                {% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+            </form>
+        {% else %}
+            <form action="{% url 'organic_add_reaction' obj.id %}" method="post" style="display:inline;">
+                {% csrf_token %}<button type="submit" class="btn btn-primary">Добавить в мой список</button>
+            </form>
+        {% endif %}
+    </div>
+{% endif %}
 
-    <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">Открыть правило</a>
+    <br>
+    <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">открыть правило</a>            
 
     <!-- ФОРМУЛА -->
-    <p style="text-align: center; font-size: 23pt; margin: 20px 0;">
-        {% if reagent1 %}<span>{{reagent1}}</span>{% endif %}
-        {% if reagent2 %} + {{reagent2}}{% endif %}
-        = 
-        {% if product1 %}<span>{{product1}}</span>{% endif %}
+    <p style="text-align: center; font-size: 23pt; margin: 20px auto; line-height: 1.5;">
+        {% if reagent1 %}<span style="white-space: nowrap;">{{reagent1}}</span>{% endif %}
+        {% if reagent2 %} + <wbr><span style="white-space: nowrap;">{{reagent2}}</span>{% endif %}
+        = <wbr>
+        {% if product1 %}<span style="white-space: nowrap;">{{product1}}</span>{% endif %}
     </p>
 
     <!-- НАЗВАНИЯ -->
-    <p style="text-align: center; font-size: 10pt; color: #666; margin-top: -15px;">
-        {% if reagent1 %}<span>{{ html_name1 }}</span>{% endif %}
-        {% if reagent2 %}&nbsp;&nbsp;<span>{{ html_name2 }}</span>{% endif %}
+    <p style="text-align: center; font-size: 9pt; color: #888; margin-top: -15px;">
+        {% if reagent1 %}<span style="white-space: nowrap;">{{ html_name1 }}</span>{% endif %}
+        {% if reagent2 %}&nbsp;&nbsp;&nbsp;<span>{{ html_name2 }}</span>{% endif %}
         &nbsp;&nbsp;&nbsp;&nbsp;
-        {% if product1 %}<span>{{ html_name4 }}</span>{% endif %}
+        {% if product1 %}<span style="white-space: nowrap;">{{ html_name4 }}</span>{% endif %}
     </p>
 
-    <center><p style="font-size: 20pt;">{{ condition }}</p></center>
-
     {% if obj.extra %}
-        <div style="border-left: 6px solid #00aaff; background: #f8fdff; padding: 15px; margin: 20px auto; max-width: 80%;">
-            <p style="font-size: 15pt; margin: 0;">{{ obj.extra }}</p>
+    <center> 
+        <div style="border-left: 6px solid #00aaff; background-color: #f8fdff; padding: 15px; text-align: left; max-width: 80%;">
+             <p style="font-size: 15pt; margin: 0;">{{ obj.extra }}</p>
         </div>
-    {% endif %}
-
-    <br>
-    {% if obj.img1 %}<center><img src="{{ obj.img1.url }}" style="width:30%;"></center>{% endif %}
+    </center>                       
+    {% endif %}   
 
     <br>
     {% if next_index %}
-        <center><a href="{% url 'organiclawtestanswer' next_index %}" class="btn btn-primary">Следующая реакция</a></center>
+       <center><a href="{% url 'organiclawtestanswer' next_index %}" class="btn btn-primary mt-2">Следующая реакция</a></center> 
     {% else %}
-        <center><a href="/chem/organiclaw" class="btn btn-primary">Тест завершен</a></center>
-    {% endif %}
-</div>
+       <center><a href="/chem/organiclaw" class="btn btn-primary mt-2">Тест завершен</a></center> 
+    {% endif %}   
 
+    <br><br>
+</div>
 {% endautoescape %}
-{% endblock %}
