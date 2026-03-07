@@ -11,6 +11,11 @@
 {% autoescape off %}
 
 <div class="col-12">
+    <!-- ЖЕСТКИЙ ДЕБАГ: Если тут пусто, значит вьюшка не передала данные -->
+    <div style="color: red; border: 1px solid red; padding: 5px; margin-bottom: 10px;">
+        DEBUG: html_name1 = {{ html_name1 }} | reagent1 = {{ reagent1 }}
+    </div>
+
 {% if obj %}
     {% if obj.id in favorite_ids %}
         <div style="display:inline;">
@@ -50,7 +55,7 @@
         {% if product4 %} + <wbr><span style="white-space: nowrap;">{{product4}}</span>{% endif %}
     </p>
 
-    <!-- БЛОК ДЕБАГА (Названия name1 прямо под элементами) -->
+    <!-- НАЗВАНИЯ (name1) -->
     <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 9pt; margin: -10px auto 20px auto; line-height: 1.4; color: #888;">
         {% if reagent1 %}<span style="white-space: nowrap;">{{ html_name1 }}</span>{% endif %}
         {% if reagent2 %}&nbsp;&nbsp;&nbsp;<wbr><span style="white-space: nowrap;">{{ html_name2 }}</span>{% endif %}
@@ -70,7 +75,7 @@
 
     <br>  
 
-    <!-- БЛОК ПОДРОБНОСТЕЙ С ГОЛУБОЙ ПОЛОСКОЙ -->
+    <!-- БЛОК ПОДРОБНОСТЕЙ -->
     {% if obj.extra %}
     <center> 
         <div style="border-left: 6px solid #00aaff; background-color: #f8fdff; padding: 15px; text-align: left; max-width: 80%; border-radius: 4px; box-shadow: 2px 2px 8px rgba(0,0,0,0.05);">
