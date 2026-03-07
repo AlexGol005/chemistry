@@ -4,23 +4,12 @@
 {% block content %}
 {% autoescape off %}
 <div class="col-12">
-    <!-- КРИТИЧЕСКИЙ ТЕСТ ОБНОВЛЕНИЯ -->
-    <div style="background: black; color: yellow; padding: 10px; font-family: monospace; border: 3px solid yellow; margin-bottom: 20px;">
-        СТАТУС КОДА: {{ TEST_STR|default:"ОШИБКА ОБНОВЛЕНИЯ" }}<br>
-        <hr>
-        <b>ЛОГ ПОИСКА:</b><br>
-        {% for line in debug_log_list %}
-            • {{ line }}<br>
-        {% empty %}
-            <span style="color:red;">СПИСОК ПУСТ</span>
-        {% endfor %}
-    </div>
-
+    <!-- Избранное -->
     {% if obj %}
         <div style="margin-bottom: 20px;">
             {% if obj.id in favorite_ids %}
                 <span>✅ В списке</span>
-                <form action="{% url 'organic_remove_reaction' obj.id %}" method="post" style="display:inline;">
+                <form action="{% url 'organic_remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
                     {% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
                 </form>
             {% else %}
@@ -32,12 +21,12 @@
     {% endif %}
 
     <br>
-    {% if obj.number %}
-        <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">открыть правило</a>
-    {% endif %}
+    {% if obj.number %}<a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">открыть правило</a>{% endif %}
+
+    {% if percent %}<p style="font-family: Georgia, serif; font-size: 12pt;">Процент верных ответов: {{percent}} %</p>{% endif %}
 
     <!-- ФОРМУЛА -->
-    <p style="text-align: center; font-size: 23pt; margin: 20px auto; line-height: 1.5;">
+    <p style="text-align: center !important; font-family: Georgia, serif; font-size: 23pt; margin: 20px auto; line-height: 1.5;">
         {% if reagent1 %}<span style="white-space: nowrap;">{{reagent1}}</span>{% endif %}
         {% if reagent2 %} + <wbr><span style="white-space: nowrap;">{{reagent2}}</span>{% endif %}
         {% if reagent3 %} + <wbr><span style="white-space: nowrap;">{{reagent3}}</span>{% endif %}
@@ -47,20 +36,20 @@
     </p>
 
     <!-- НАЗВАНИЯ -->
-    <p style="text-align: center; font-size: 9pt; color: #888; margin-top: -15px;">
+    <p style="text-align: center !important; font-family: Georgia, serif; font-size: 9pt; margin: -10px auto 20px auto; line-height: 1.4; color: #888;">
         {% if reagent1 %}<span style="white-space: nowrap;">{{ html_name1 }}</span>{% endif %}
         {% if reagent2 %}&nbsp;&nbsp;&nbsp;<span>{{ html_name2 }}</span>{% endif %}
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         {% if product1 %}<span style="white-space: nowrap;">{{ html_name4 }}</span>{% endif %}
-        {% if product2 %}&nbsp;&nbsp;&nbsp;<span>{{ html_name5 }}</span>{% endif %}
     </p>
 
-    <center><p style="font-size: 20pt;">{{ condition }}</p></center>
+    <center><p style="font-family: Georgia, serif; font-size: 20pt;">{{ condition }}</p></center>
 
+    <!-- ПОДРОБНОСТИ С ГОЛУБОЙ ПОЛОСКОЙ -->
     {% if obj.extra %}
     <center> 
-        <div style="border-left: 6px solid #00aaff; background-color: #f8fdff; padding: 15px; text-align: left; max-width: 80%;">
-             <p style="font-size: 15pt; margin: 0;">{{ obj.extra }}</p>
+        <div style="border-left: 6px solid #00aaff; background-color: #f8fdff; padding: 15px; text-align: left; max-width: 80%; border-radius: 4px; box-shadow: 2px 2px 8px rgba(0,0,0,0.05);">
+             <p style="font-family: Georgia, serif; font-size: 15pt; margin: 0;">{{ obj.extra }}</p>
         </div>
     </center>                       
     {% endif %}   
