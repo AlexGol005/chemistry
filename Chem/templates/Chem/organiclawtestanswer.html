@@ -4,41 +4,121 @@
 
 {% block title %} Ответ: {{ obj.metatitle }} {% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Контейнер всей реакции: центрируем и схлопываем по ширине контента */
+    .reaction-flex-container { 
+        display: flex; 
+        flex-wrap: wrap; 
+        justify-content: center; 
+        align-items: flex-start; 
+        gap: 15px; 
+        margin: 30px auto; 
+        width: fit-content; 
+        max-width: 100%;
+    }
+
+    .mol-column { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        width: 180px; 
+        text-align: center; 
+    }
+
+    /* Очень крупные формулы */
+    .m-f { 
+        font-size: 38pt; 
+        font-weight: bold; 
+        font-family: "Georgia", serif; 
+        min-height: 80px; 
+        line-height: 1.1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Названия под формулами */
+    .m-n { 
+        font-size: 11pt; 
+        font-family: "Georgia", serif; 
+        min-height: 45px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        margin-bottom: 8px;
+    }
+    .m-n a { color: #007bff; text-decoration: underline; }
+
+    /* Изображения структур */
+    .m-s img, .m-s svg { 
+        max-width: 150px; 
+        height: auto; 
+        border: 1px solid #f4f4f4; 
+        border-radius: 10px; 
+        background: #fff; 
+        padding: 5px; 
+        shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    /* Операторы + и = в размер формул */
+    .m-operator { 
+        font-size: 38pt; 
+        font-weight: bold; 
+        height: 80px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+    }
+
+    /* Адаптив для мобильных устройств */
+    @media (max-width: 576px) { 
+        .mol-column { width: 130px; } 
+        .m-f, .m-operator { font-size: 26pt; height: 60px; min-height: 60px; } 
+        .reaction-flex-container { gap: 8px; }
+        .m-s img { max-width: 110px; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 {% autoescape off %}
 <div class="col-12">
-    <!-- Блок управления (слева) -->
-    <div class="admin-controls mb-3">
-        {% if obj %}
-            <div class="mb-2">
+    
+    <!-- ВЕРХНИЙ БЛОК: Управление и Избранное -->
+    <div class="admin-controls mb-4 text-center">
+        {% if user.is_authenticated and obj %}
+            <div class="mb-3">
                 {% if obj.id in favorite_ids %}
-                    <span>✅ В моем списке</span>
+                    <span class="badge badge-success p-2 mb-2" style="font-size: 11pt;">✅ В моем списке</span>
                     <form action="{% url 'remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
                         {% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
                     </form>
                 {% else %}
                     <form action="{% url 'add_reaction' obj.id %}" method="post" style="display:inline;">
-                        {% csrf_token %}<button type="submit" class="btn btn-primary">Добавить в мой список</button>
+                        {% csrf_token %}<button type="submit" class="btn btn-primary shadow-sm px-4">Добавить в мой список</button>
                     </form>
                 {% endif %}
             </div>
         {% endif %}
-        <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">Открыть правило</a>            
+        <div class="mb-2">
+            <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank" class="btn btn-link">📖 Открыть теоретическое правило</a>
+        </div>
     </div>
 
-    <!-- Статистика (только в тесте) -->
-    <div class="text-center">
-        {% if is_test and percent %}
-            <p class="mt-2" style="font-family: Georgia; font-size: 14pt;">
-                Процент верных ответов: <b>{{ percent }} %</b>
-            </p>
-        {% endif %}
+    <!-- СТАТИСТИКА: Только если это тест -->
+    {% if is_test %}
+    <div class="text-center mb-4">
+        <div class="d-inline-block p-3 bg-light rounded-pill shadow-sm">
+            <span style="font-family: Georgia; font-size: 15pt;">Процент верных ответов: <b>{{ percent }} %</b></span>
+        </div>
     </div>
+    {% endif %}
 
-    <!-- ТРЕХРЯДНАЯ ДОСКА РЕАКЦИИ (Адаптивная) -->
-    <div class="reaction-flex-container mt-4">
+    <!-- ЦЕНТРАЛЬНАЯ ДОСКА РЕАКЦИИ -->
+    <div class="reaction-flex-container">
         
-        <!-- Вещество 1 -->
+        <!-- Реагент 1 -->
         <div class="mol-column">
             <div class="m-f">{{ reagent1 }}</div>
             <div class="m-n"><a href="{% url 'organiccompaund' pkc1 %}" target="_blank">{{ name1 }}</a></div>
@@ -100,44 +180,45 @@
         {% endif %}
     </div>
 
-    <!-- Условия и доп. информация -->
-    <div class="text-center mt-4">
-        {% if condition %}<p style="font-size: 20pt; font-family: Georgia;">{{ condition }}</p>{% endif %}
-        {% if obj.extra %}
-            <div class="card p-3 bg-light text-left mx-auto shadow-sm" style="max-width: 900px; font-size: 14pt;">{{ obj.extra }}</div>
+    <!-- НИЖНИЙ БЛОК: Условия, Видео, Картинки -->
+    <div class="text-center mt-5">
+        {% if condition %}
+            <p class="mb-4" style="font-size: 24pt; font-family: Georgia; color: #2c3e50;">{{ condition }}</p>
         {% endif %}
-        {% if obj.video %}<div class="mt-4"><a href="{{ obj.video }}" target="_blank" class="btn btn-outline-danger">🎬 Видеоурок</a></div>{% endif %}
+        
+        {% if obj.extra %}
+            <div class="card p-4 bg-light text-left mx-auto shadow-sm border-0 mb-5" style="max-width: 900px; font-size: 14pt; border-radius: 15px; border-left: 6px solid #007bff !important;">
+                {{ obj.extra }}
+            </div>
+        {% endif %}
+
+        {% if obj.video %}
+            <div class="mb-5">
+                <a href="{{ obj.video }}" target="_blank" class="btn btn-danger btn-lg px-5 shadow">🎬 Посмотреть видеоурок</a>
+            </div>
+        {% endif %}
         
         <div class="mt-4">
-            {% if obj.img1 %}<img src="{{ obj.img1.url }}" class="img-fluid rounded mb-3 shadow-sm" style="width: 70%;">{% endif %}
-            {% if obj.img2 %}<img src="{{ obj.img2.url }}" class="img-fluid rounded mb-3 shadow-sm" style="width: 70%;">{% endif %}
-            {% if obj.img3 %}<img src="{{ obj.img3.url }}" class="img-fluid rounded mb-3 shadow-sm" style="width: 70%;">{% endif %}
+            {% if obj.img1 %}<img src="{{ obj.img1.url }}" class="img-fluid rounded mb-4 shadow-sm" style="max-width: 80%; border: 1px solid #eee;">{% endif %}
+            {% if obj.img2 %}<img src="{{ obj.img2.url }}" class="img-fluid rounded mb-4 shadow-sm" style="max-width: 80%; border: 1px solid #eee;">{% endif %}
         </div>
 
-        <!-- Навигация ТЕСТА (Скрывается, если это не тест) -->
+        <!-- КНОПКИ НАВИГАЦИИ ТЕСТА: Скрыты при прямом просмотре -->
         {% if is_test %}
-        <div class="mt-5 mb-5 pt-4 border-top">
+        <div class="mt-5 mb-5 pt-5 border-top">
             {% if next_index %}
-                <a href="{% url 'organiclawtestquestion' next_index %}" class="btn btn-primary btn-lg px-5 shadow rounded-pill">Следующая реакция</a>
+                <a href="{% url 'organiclawtestquestion' next_index %}" class="btn btn-primary btn-lg px-5 shadow-lg rounded-pill" style="font-size: 18pt;">
+                    Следующая реакция →
+                </a>
             {% else %}
-                <a href="/chem/organiclaw" class="btn btn-success btn-lg px-5 shadow rounded-pill">Тест завершен! В меню</a>
+                <div class="alert alert-success d-inline-block px-5 rounded-pill shadow">
+                    <h4 class="mb-0">✨ Тест завершен!</h4>
+                    <a href="/chem/organiclaw" class="btn btn-success mt-3 px-4">Вернуться в меню</a>
+                </div>
             {% endif %}
         </div>
         {% endif %}
     </div>
 </div>
 {% endautoescape %}
-{% endblock %}
-
-{% block extra_css %}
-<style>
-    .reaction-flex-container { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 10px; margin: 30px 0; }
-    .mol-column { display: flex; flex-direction: column; align-items: center; width: 170px; text-align: center; }
-    .m-f { font-size: 28pt; font-weight: bold; font-family: "Georgia", serif; min-height: 55px; }
-    .m-n { font-size: 11pt; font-family: "Georgia", serif; min-height: 45px; display: flex; align-items: center; justify-content: center; }
-    .m-n a { color: #007bff; text-decoration: underline; }
-    .m-s img, .m-s svg { max-width: 150px; height: auto; border: 1px solid #f0f0f0; border-radius: 8px; background: #fff; padding: 5px; }
-    .m-operator { font-size: 30pt; font-weight: bold; height: 55px; display: flex; align-items: center; }
-    @media (max-width: 576px) { .mol-column { width: 140px; } .m-f, .m-operator { font-size: 22pt; } }
-</style>
 {% endblock %}
