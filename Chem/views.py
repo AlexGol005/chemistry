@@ -14,19 +14,28 @@ class OrganicChemTestAnswerView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ind = self.kwargs['str']
         
-        # Получаем объект органики
-        qw = OrganicReaction.objects.get(pk=ind)
+        # Получаем ID из URL (используем имя 'str', как прописано в urls.py)
+        ind = self.kwargs.get('str') 
+        
+        # ИСПРАВЛЕНИЕ ОШИБКИ 1298: 
+        # Вместо OrganicNames.objects.get(pk=ind) используем OrganicReaction
+        try:
+            qw = OrganicReaction.objects.get(pk=ind)
+        except OrganicReaction.DoesNotExist:
+            # Если вдруг ID битый, чтобы сайт не падал
+            from django.http import Http404
+            raise Http404("Реакция не найдена")
+
         context['obj'] = qw
         
-        # Список формул для сопоставления с NamesCompaunds
+        # Список формул для сопоставления с именами
         formulas = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        # Собираем имена и PK
+        # Собираем имена и PK (используем ваш NamesCompaunds)
         res_names = []
         res_pks = []
         for f in formulas:
@@ -38,7 +47,7 @@ class OrganicChemTestAnswerView(TemplateView):
                 res_names.append("")
                 res_pks.append(1)
 
-        # Раскладываем по контексту для шаблона
+        # Раскладываем по контексту (по аналогии с неорганикой)
         for i in range(1, 4):
             context[f'reagent{i}'] = getattr(qw, f'reagent{i}')
             context[f'name{i}'] = res_names[i-1]
@@ -51,13 +60,13 @@ class OrganicChemTestAnswerView(TemplateView):
 
         context['condition'] = qw.condition
 
-        # Статистика и очередь
+        # Логика сессий (статистика и очередь)
         last_list = self.request.session.get('organic_question_list', [])
         question_list = list(last_list)
         
         try:
             next_index = question_list.pop(0)
-        except:
+        except (IndexError, AttributeError):
             next_index = None
             
         self.request.session['organic_question_list'] = question_list
@@ -67,15 +76,19 @@ class OrganicChemTestAnswerView(TemplateView):
         context['percent'] = round((correct_count / all_count) * 100) if all_count > 0 else 0
         
         context['next_index'] = next_index
+        context['items'] = question_list
+        context['count'] = len(question_list)
         context['last_list'] = last_list
 
-        # Избранное для органики
+        # Избранное (используем OrganicUserReaction)
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
                 user=self.request.user
             ).values_list('reaction_id', flat=True))
         else:
             context['favorite_ids'] = []
+            
+        return context
 
 class OrganicChemTestQuestionView(TemplateView):
     """ Выводит вопрос теста - реакцию по органической химии со структурами """
