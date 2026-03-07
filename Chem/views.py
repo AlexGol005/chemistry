@@ -16,78 +16,66 @@ class OrganicChemTestAnswerView(TemplateView):
     template_name = 'Chem/organiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
-        # 1. Получаем базу
+        # ЭТОТ ПРИНТ ДОЛЖЕН ПОЯВИТЬСЯ В КОНСОЛИ СЕРВЕРА
+        print("!!! ВЬЮШКА ЗАПУЩЕНА !!!") 
+        
         context = super().get_context_data(**kwargs)
         ind = self.kwargs.get('str')
         
-        try:
-            qw = OrganicReaction.objects.get(pk=ind)
-        except OrganicReaction.DoesNotExist:
-            from django.http import Http404
-            raise Http404("Реакция не найдена")
-            
-        # 2. Подготавливаем словарь для контекста (сразу со всеми данными)
-        data = {
-            'obj': qw,
-            'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
-            'product1': qw.product1, 'product2': qw.product2, 
-            'product3': qw.product3, 'product4': qw.product4,
-            'condition': qw.condition,
-            'debug_log': []
-        }
-
-        # 3. Дебаг счетчик
-        data['debug_log'].append(f"Всего в OrganicNames: {OrganicNames.objects.count()}")
-
-        # 4. Список для поиска имен
-        struct_list = [
-            qw.reagent1, qw.reagent2, qw.reagent3, 
-            qw.product1, qw.product2, qw.product3, qw.product4
-        ]
+        qw = OrganicReaction.objects.get(pk=ind)
         
-        # 5. Цикл поиска
+        # Собираем все данные в один словарь СРАЗУ
+        struct_list = [qw.reagent1, qw.reagent2, qw.reagent3, qw.product1, qw.product2, qw.product3, qw.product4]
+        
+        results = {}
+        debug_lines = []
+        debug_lines.append(f"Записей в базе имен: {OrganicNames.objects.count()}")
+
         for i, s_val in enumerate(struct_list, 1):
-            key = f'html_name{i}'
             if s_val:
                 target = str(s_val).strip()
-                # Ищем объект (сначала точное совпадение)
-                res_obj = OrganicNames.objects.filter(molecule_short=target).first()
+                # Ищем по molecule_short
+                name_obj = OrganicNames.objects.filter(molecule_short__iexact=target).first()
                 
-                # Если не нашли точно, ищем без регистра
-                if not res_obj:
-                    res_obj = OrganicNames.objects.filter(molecule_short__iexact=target).first()
-                
-                if res_obj:
-                    data[key] = res_obj.name1
-                    data['debug_log'].append(f"Поле {i} [{target}]: НАЙДЕНО ({res_obj.name1})")
+                if name_obj:
+                    results[f'html_name{i}'] = name_obj.name1
+                    debug_lines.append(f"Поле {i}: НАЙДЕНО ({name_obj.name1})")
                 else:
-                    data[key] = f"({target}?)"
-                    data['debug_log'].append(f"Поле {i} [{target}]: НЕ НАЙДЕНО")
+                    results[f'html_name{i}'] = f"({target}?)"
+                    debug_lines.append(f"Поле {i}: НЕ НАЙДЕНО [{target}]")
             else:
-                data[key] = ""
+                results[f'html_name{i}'] = ""
 
-        # 6. Статистика и сессии
+        # Наполняем контекст напрямую
+        context['obj'] = qw
+        context['reagent1'] = qw.reagent1
+        context['reagent2'] = qw.reagent2
+        context['reagent3'] = qw.reagent3
+        context['product1'] = qw.product1
+        context['product2'] = qw.product2
+        context['product3'] = qw.product3
+        context['product4'] = qw.product4
+        context['condition'] = qw.condition
+        context['debug_log'] = debug_lines
+        
+        # Добавляем найденные имена
+        context.update(results)
+
+        # Статистика
         correct = self.request.session.get('correct_count', 0) or 0
         total = self.request.session.get('all_count', 0) or 0
-        data['percent'] = round((correct / total) * 100) if total > 0 else 0
+        context['percent'] = round((correct / total) * 100) if total > 0 else 0
 
-        # 7. Очередь
+        # Очередь
         q_list = list(self.request.session.get('organic_question_list', []))
-        try:
-            next_idx = q_list.pop(0)
-        except:
-            next_idx = None
+        try: next_idx = q_list.pop(0)
+        except: next_idx = None
         self.request.session['organic_question_list'] = q_list
-        data.update({'next_index': next_idx, 'count': len(q_list)})
+        context['next_index'] = next_idx
 
-        # 8. Избранное
         if self.request.user.is_authenticated:
-            data['favorite_ids'] = list(OrganicUserReaction.objects.filter(
-                user=self.request.user
-            ).values_list('reaction_id', flat=True))
-        
-        # 9. Объединяем всё в контекст
-        context.update(data)
+            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(user=self.request.user).values_list('reaction_id', flat=True))
+            
         return context
 
 
