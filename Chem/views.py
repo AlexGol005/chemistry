@@ -10,7 +10,6 @@ from rdkit import Chem as Chemredactor
 
 from .models import OrganicReaction, OrganicNames, OrganicUserReaction
 
-from .models import OrganicReaction, OrganicNames, OrganicUserReaction
 
 class OrganicChemTestAnswerView(TemplateView):
     template_name = 'Chem/organiclawtestanswer.html'
