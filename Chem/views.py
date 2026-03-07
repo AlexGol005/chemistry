@@ -10,28 +10,9 @@ from rdkit import Chem as Chemredactor
 
 from django.http import Http404
 
-from rdkit.Chem.Draw import rdMolDraw2D
-
 class OrganicChemTestAnswerView(TemplateView):
-    """ выводит ответ теста - реакцию по органической химии с отрисовкой структур """
+    """ выводит ответ теста - реакцию по органической химии с объектами для отрисовки """
     template_name = 'Chem/organiclawtestanswer.html'
-
-    def get_svg_code(self, smiles):
-        """ Генерирует SVG код напрямую через Chemredactor """
-        if not smiles:
-            return ""
-        try:
-            # Используем ваш алиас Chemredactor
-            mol = Chemredactor.MolFromSmiles(str(smiles))
-            if mol:
-                # Создаем холст для рисования 300x300 для лучшего качества
-                drawer = rdMolDraw2D.MolDraw2DSvg(300, 300)
-                drawer.DrawMolecule(mol)
-                drawer.FinishDrawing()
-                return drawer.GetDrawingText()
-        except:
-            return ""
-        return ""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -40,47 +21,39 @@ class OrganicChemTestAnswerView(TemplateView):
         try:
             qw = OrganicReaction.objects.get(pk=ind)
         except OrganicReaction.DoesNotExist:
+            from django.http import Http404
             raise Http404("Реакция не найдена")
             
         context['obj'] = qw
 
+        # Список полей из реакции
         struct_list = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
+        # Находим полные объекты OrganicNames для каждого элемента
         for i, val in enumerate(struct_list, 1):
-            name_key = f'html_name{i}'
-            pk_key = f'html_name_pk{i}'
-            svg_key = f'html_svg{i}'
-            
             if val:
                 target = str(val).strip()
-                found = OrganicNames.objects.filter(molecule_short__iexact=target).first()
-                if found:
-                    context[name_key] = found.name1
-                    context[pk_key] = found.pk
-                    # Генерируем SVG через наш метод
-                    context[svg_key] = self.get_svg_code(found.molecule)
-                else:
-                    context[name_key] = f"({target}?)"
-                    context[svg_key] = ""
+                # Ищем объект по molecule_short (точное совпадение)
+                found_obj = OrganicNames.objects.filter(molecule_short__iexact=target).first()
+                context[f'obj_n{i}'] = found_obj
             else:
-                context[name_key] = ""
-                context[svg_key] = ""
+                context[f'obj_n{i}'] = None
 
+        # Проброс самих строк (для текстовой формулы)
         context.update({
             'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
             'product1': qw.product1, 'product2': qw.product2, 'product3': qw.product3, 'product4': qw.product4,
             'condition': qw.condition,
         })
 
-        # Статистика
+        # Статистика и очередь
         all_c = self.request.session.get('all_count', 0) or 0
         corr_c = self.request.session.get('correct_count', 0) or 0
         context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else 0
-
-        # Очередь
+        
         q_list = list(self.request.session.get('organic_question_list', []))
         context['next_index'] = q_list.pop(0) if q_list else None
         self.request.session['organic_question_list'] = q_list
