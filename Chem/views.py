@@ -9,57 +9,81 @@ from .forms import *
 from rdkit import Chem as Chemredactor
 
 class OrganicChemTestAnswerView(TemplateView):
+    """ выводит ответ теста - реакцию по органической химии """
+    
     template_name = 'Chem/organiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ind = self.kwargs.get('str') 
-        qw = get_object_or_404(OrganicReaction, pk=ind)
+        ind = self.kwargs['str']
         
-        # Вспомогательный словарь для сбора данных
-        data = {'obj': qw}
+        # Получаем объект органической реакции
+        qw = OrganicReaction.objects.get(pk=ind)
+        context['obj'] = qw
         
-        def get_mol_info(text):
-            if not text: return "", 1, "", ""
-            clean = text.strip()
-            res = OrganicNames.objects.filter(molecule_short__iexact=clean).first()
-            if res:
-                return res.molecule or "", res.pk, res.name1 or clean, clean
-            return "", 1, clean, clean
+        # Список формул для поиска имен и PK
+        formulas = [
+            qw.reagent1, qw.reagent2, qw.reagent3, 
+            qw.product1, qw.product2, qw.product3, qw.product4
+        ]
+        
+        # Массово получаем названия и PK из справочника (используем ваш NamesCompaunds)
+        names = []
+        pks = []
+        for formula in formulas:
+            if formula:
+                found = NamesCompaunds.objects.filter(formula=formula).values('name', 'pk').first()
+                names.append(found['name'] if found else "")
+                pks.append(found['pk'] if found else 1)
+            else:
+                names.append("")
+                pks.append(1)
 
-        # Наполняем словарь данными вручную
-        m1, p1, n1, s1 = get_mol_info(qw.reagent1)
-        m2, p2, n2, s2 = get_mol_info(qw.reagent2)
-        m3, p3, n3, s3 = get_mol_info(qw.reagent3)
-        m4, p4, n4, s4 = get_mol_info(qw.product1)
-        m5, p5, n5, s5 = get_mol_info(qw.product2)
-        m6, p6, n6, s6 = get_mol_info(qw.product3)
-        m7, p7, n7, s7 = get_mol_info(qw.product4)
+        # Раскладываем по контексту (по аналогии с вашим кодом)
+        for i in range(1, 4):
+            context[f'reagent{i}'] = getattr(qw, f'reagent{i}')
+            context[f'name{i}'] = names[i-1]
+            context[f'pkc{i}'] = pks[i-1]
 
-        data.update({
-            'molecule1': m1, 'pkc1': p1, 'name1': n1, 'molecule_short1': s1,
-            'molecule2': m2, 'pkc2': p2, 'name2': n2, 'molecule_short2': s2,
-            'molecule3': m3, 'pkc3': p3, 'name3': n3, 'molecule_short3': s3,
-            'molecule4': m4, 'pkc4': p4, 'name4': n4, 'molecule_short4': s4,
-            'molecule5': m5, 'pkc5': p5, 'name5': n5, 'molecule_short5': s5,
-            'molecule6': m6, 'pkc6': p6, 'name6': n6, 'molecule_short6': s6,
-            'molecule7': m7, 'pkc7': p7, 'name7': n7, 'molecule_short7': s7,
-            'condition': qw.condition,
+        for i in range(1, 5):
+            context[f'product{i}'] = getattr(qw, f'product{i}')
+            context[f'name{i+3}'] = names[i+2]
+            context[f'pkc{i+3}'] = pks[i+2]
+
+        context['condition'] = qw.condition
+
+        # Работа с сессиями (логика очереди и статистики)
+        last_list = self.request.session.get('organic_question_list', [])
+        question_list = list(last_list) # Копия для работы
+        
+        try:
+            next_index = question_list.pop(0)
+        except:
+            next_index = None
+            
+        self.request.session['organic_question_list'] = question_list
+
+        correct_count = self.request.session.get('correct_count', 0)
+        all_count = self.request.session.get('all_count', 0)
+        percent = round((correct_count / all_count) * 100) if all_count > 0 else 0
+
+        context.update({
+            'my_answer': self.request.session.get('answer_list', []),
+            'next_index': next_index,
+            'items': question_list,
+            'count': len(question_list),
+            'last_list': last_list,
+            'percent': percent
         })
 
-        # Тест и избранное
-        all_c = self.request.session.get('all_count', 0)
-        data['is_test'] = all_c > 0
-        if data['is_test']:
-            correct = self.request.session.get('correct_count', 0)
-            data['percent'] = round((correct / all_c) * 100) if all_c > 0 else 0
-            data['next_index'] = self.request.session.get('question_list', [None])[0]
-
+        # Избранное для органики
         if self.request.user.is_authenticated:
-            data['favorite_ids'] = list(OrganicUserReaction.objects.filter(
-                user=self.request.user).values_list('reaction_id', flat=True))
-
-        context.update(data)
+            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
+                user=self.request.user
+            ).values_list('reaction_id', flat=True))
+        else:
+            context['favorite_ids'] = []
+        
         return context
 
 class OrganicChemTestQuestionView(TemplateView):
