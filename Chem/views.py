@@ -8,8 +8,9 @@ from .models import *
 from .forms import *
 from rdkit import Chem as Chemredactor
 
+from .models import OrganicReaction, OrganicNames, OrganicUserReaction
+
 class OrganicChemTestAnswerView(TemplateView):
-    """ выводит ответ теста - реакцию по органической химии """
     template_name = 'Chem/organiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
@@ -23,29 +24,41 @@ class OrganicChemTestAnswerView(TemplateView):
             raise Http404("Реакция не найдена")
             
         context['obj'] = qw
-
-        # Списки для поиска
-        structures = [
+        
+        # --- БЛОК ГЛУБОКОГО ДЕБАГА ---
+        debug_log = []
+        total_names = OrganicNames.objects.count()
+        debug_log.append(f"Всего записей в OrganicNames: {total_names}")
+        
+        struct_list = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        # ПОИСК
-        for i, struct in enumerate(structures, 1):
-            if struct:
-                clean_struct = str(struct).strip()
-                # Ищем объект
-                name_obj = OrganicNames.objects.filter(molecule_short=clean_struct).first()
+        for i, s_val in enumerate(struct_list, 1):
+            if s_val:
+                target = str(s_val).strip()
+                # Прямой запрос к БД для дебага: ищем любые похожие
+                similar_exists = OrganicNames.objects.filter(molecule_short__icontains=target).exists()
+                exact_match = OrganicNames.objects.filter(molecule_short=target).first()
+                iexact_match = OrganicNames.objects.filter(molecule_short__iexact=target).first()
                 
-                if name_obj and name_obj.name1:
-                    context[f'html_name{i}'] = name_obj.name1
+                status = "OK" if exact_match else ("IE_OK" if iexact_match else "FAIL")
+                debug_log.append(f"Поле {i} [{target}]: точное={bool(exact_match)}, без_регистра={bool(iexact_match)}, похожие={similar_exists}")
+                
+                # Приоритет поиска
+                res_obj = exact_match or iexact_match or OrganicNames.objects.filter(molecule_short__icontains=target).first()
+                
+                if res_obj:
+                    context[f'html_name{i}'] = res_obj.name1
                 else:
-                    # Если не нашли в базе, пишем это явно
-                    context[f'html_name{i}'] = f"Нет в БД: {clean_struct}"
+                    context[f'html_name{i}'] = f"({target}?)"
             else:
                 context[f'html_name{i}'] = ""
+        
+        context['debug_info'] = debug_log
+        # --- КОНЕЦ ДЕБАГА ---
 
-        # Проброс данных реакции
         context.update({
             'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
             'product1': qw.product1, 'product2': qw.product2, 'product3': qw.product3, 'product4': qw.product4,
@@ -60,22 +73,19 @@ class OrganicChemTestAnswerView(TemplateView):
         # Очередь
         last_list = self.request.session.get('organic_question_list', [])
         question_list = list(last_list)
-        try:
-            next_index = question_list.pop(0)
-        except:
-            next_index = None
+        try: next_index = question_list.pop(0)
+        except: next_index = None
         self.request.session['organic_question_list'] = question_list
-        
-        context.update({
-            'next_index': next_index,
-            'count': len(question_list),
-            'last_list': last_list,
-        })
+        context.update({'next_index': next_index, 'count': len(question_list), 'last_list': last_list})
 
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(OrganicUserReaction.objects.filter(user=self.request.user).values_list('reaction_id', flat=True))
             
         return context
+
+
+
+
 class OrganicChemTestQuestionView(TemplateView):
     """ Выводит вопрос теста - реакцию по органической химии со структурами """
     template_name = 'Chem/organiclawtestquestion.html'
