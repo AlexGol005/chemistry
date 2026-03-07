@@ -17,20 +17,22 @@ class OrganicChemTestAnswerView(TemplateView):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs['str']
         
-        # Получаем объект реакции (используем get_object_or_404 для безопасности)
+        # Получаем объект реакции
         qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
         
-        # Список всех компонентов реакции для обработки
+        # Собираем все компоненты: 3 реагента и 4 продукта
         components = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
-        molecules = []
-        pks = []
-
-        for item in components:
+        # Проходим циклом по всем 7 компонентам
+        for i, item in enumerate(components, 1):
+            mol_val = ""
+            pk_val = 1
+            name_val = ""
+            
             if item:
                 # Ищем по 4 полям имен в OrganicNames
                 org_obj = OrganicNames.objects.filter(
@@ -38,55 +40,55 @@ class OrganicChemTestAnswerView(TemplateView):
                 ).first()
                 
                 if org_obj:
-                    molecules.append(org_obj.molecule or "")
-                    pks.append(org_obj.pk)
+                    mol_val = org_obj.molecule or ""
+                    pk_val = org_obj.pk
+                    name_val = org_obj.name1 or item # Берем name1 из базы или само название из реакции
                 else:
-                    molecules.append("")
-                    pks.append(1) # Дефолтный PK если не найдено
-            else:
-                molecules.append("")
-                pks.append(1)
+                    name_val = item # Если в базе орг. соединений нет, просто выводим текст из реакции
 
-        # Раскладываем SMILES (molecule) в контекст
-        for i, mol in enumerate(molecules, 1):
-            context[f'molecule{i}'] = mol
-
-        # Раскладываем PK в контекст
-        for i, pk_val in enumerate(pks, 1):
+            # Наполняем контекст динамически: molecule1, name1, pkc1 ... molecule7, name7, pkc7
+            context[f'molecule{i}'] = mol_val
             context[f'pkc{i}'] = pk_val
+            context[f'name{i}'] = name_val
 
-        # Прочие данные реакции
+        # Условия и базовые поля (для совместимости с шаблоном)
         context.update({
             'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
-            'condition': qw.condition,
             'product1': qw.product1, 'product2': qw.product2, 
             'product3': qw.product3, 'product4': qw.product4,
+            'condition': qw.condition,
         })
 
-        # --- Логика тестов и сессий ---
+        # --- ЛОГИКА ТЕСТОВ И СЕССИЙ (ИСПРАВЛЕННАЯ) ---
         my_answer = self.request.session.get('answer_list', [])
         context['my_answer'] = my_answer
 
+        # Работа со списком вопросов
         question_list = self.request.session.get('question_list', [])
-        context['last_list'] = list(question_list) # Копия для отладки
+        context['last_list'] = list(question_list)
         
         try:
-            # Извлекаем следующий ID из списка
-            next_index = question_list.pop(0)
+            next_index = question_list.pop(0) if question_list else None
         except (IndexError, AttributeError):
             next_index = None
             
         self.request.session['question_list'] = question_list
         
-        # Расчет статистики
+        # --- ИСПРАВЛЕНИЕ ОШИБКИ TypeError (NoneType / NoneType) ---
+        # Используем 0 как значение по умолчанию, чтобы избежать None
         correct = self.request.session.get('correct_count', 0)
         total = self.request.session.get('all_count', 0)
-        context['percent'] = round((correct / total) * 100) if total > 0 else 0
+
+        # Проверяем на 0, чтобы не было ZeroDivisionError, и на None для безопасности
+        if total and total > 0 and correct is not None:
+            context['percent'] = round((correct / total) * 100)
+        else:
+            context['percent'] = 0
         
         context['next_index'] = next_index
         context['count'] = len(question_list)
 
-        # Избранное (UserReaction)
+        # Избранное
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(UserReaction.objects.filter(
                 user=self.request.user
@@ -95,7 +97,6 @@ class OrganicChemTestAnswerView(TemplateView):
             context['favorite_ids'] = []
 
         return context
-
 
 
 class OrganicChemTestQuestionView(TemplateView):
