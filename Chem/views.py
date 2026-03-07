@@ -8,8 +8,7 @@ from .models import *
 from .forms import *
 from rdkit import Chem as Chemredactor
 
-from .models import OrganicReaction, OrganicNames, OrganicUserReaction
-
+from django.http import Http404
 
 class OrganicChemTestAnswerView(TemplateView):
     """ выводит ответ теста - реакцию по органической химии """
@@ -26,24 +25,28 @@ class OrganicChemTestAnswerView(TemplateView):
             
         context['obj'] = qw
 
-        # Поиск названий (name1) в модели OrganicNames по полю molecule_short
         struct_list = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
         ]
         
         for i, val in enumerate(struct_list, 1):
-            html_key = f'html_name{i}'
+            name_key = f'html_name{i}'
+            pk_key = f'html_name_pk{i}'
             if val:
                 target = str(val).strip()
-                # Ищем точное совпадение без учета регистра
                 found = OrganicNames.objects.filter(molecule_short__iexact=target).first()
-                # Если не нашли, выводим саму формулу как заглушку
-                context[html_key] = found.name1 if found else f"({target}?)"
+                if found:
+                    context[name_key] = found.name1
+                    context[pk_key] = found.pk
+                else:
+                    context[name_key] = "" # Если не нашли, оставляем пустым
+                    context[pk_key] = None
             else:
-                context[html_key] = ""
+                context[name_key] = ""
+                context[pk_key] = None
 
-        # Базовые поля для формулы
+        # Базовые поля
         context.update({
             'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
             'product1': qw.product1, 'product2': qw.product2, 'product3': qw.product3, 'product4': qw.product4,
@@ -55,16 +58,13 @@ class OrganicChemTestAnswerView(TemplateView):
         corr_c = self.request.session.get('correct_count', 0) or 0
         context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else 0
 
-        # Очередь вопросов
+        # Очередь
         q_list = list(self.request.session.get('organic_question_list', []))
         context['next_index'] = q_list.pop(0) if q_list else None
         self.request.session['organic_question_list'] = q_list
         
-        # Избранное
         if self.request.user.is_authenticated:
-            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
-                user=self.request.user
-            ).values_list('reaction_id', flat=True))
+            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(user=self.request.user).values_list('reaction_id', flat=True))
             
         return context
 
