@@ -326,8 +326,8 @@ class Atomlaw(models.Model):
         return f'{self.pk}'
 
     class Meta:
-        verbose_name = 'Закон строения атомов и периодичности'
-        verbose_name_plural = 'Законы строения атомов и периодичности'
+        verbose_name = 'Закон общей химии'
+        verbose_name_plural = 'Законы общей химии'
 
 
 class AtomTest(models.Model):
@@ -356,8 +356,8 @@ class AtomTest(models.Model):
         return f'{self.pk}'
     
     class Meta:
-        verbose_name = 'Вопросы к разделу: законы строения атомов и периодичности'
-        verbose_name_plural = 'Вопросы к разделу: законы строения атомов и периодичности'
+        verbose_name = 'Вопрос к разделу: законы общей химии'
+        verbose_name_plural = 'Вопросы к разделу: законы общей химии'
 
 
 class Table(models.Model):
