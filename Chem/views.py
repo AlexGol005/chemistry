@@ -1112,3 +1112,14 @@ def organic_remove_reaction(request, reaction_id):
             reaction_id=reaction_id
         ).delete()
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+def organic_my_reactions_list(request):
+    """Выводит список всех избранных органических реакций пользователя"""
+    # Получаем все объекты связей пользователя с реакциями
+    my_reactions = OrganicUserReaction.objects.filter(user=request.user).select_related('reaction')
+    
+    return render(request, 'Chem/organic_my_list.html', {
+        'my_reactions': my_reactions
+    })
