@@ -1,171 +1,124 @@
-<!-- """страница вывода вещества""" -->
 {% extends 'main/superbase.html' %}
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 {% load mol_extras %}
 
 {#название страницы#}
-{#стандартная#}
-{% block title %}
-Вещество
-{% endblock %}
-{#конец названия страницы#}
+{% block title %}Вещество{% endblock %}
 
-    {% block metaname %}<meta name="description" content="{{objcontent.metatitle}}" >{% endblock %}
-    {% block keywords %}<meta name="keywords" content="{{objcontent.keywords}}">{% endblock %}
-    {% block description %}<meta name="description" content="{{objcontent.description}}">{% endblock %}
+{% block metaname %}<meta name="description" content="{{objcontent.metatitle}}" >{% endblock %}
+{% block keywords %}<meta name="keywords" content="{{objcontent.keywords}}">{% endblock %}
+{% block description %}<meta name="description" content="{{objcontent.description}}">{% endblock %}
     
 {% block content %}
 {% autoescape off %}
 <div class="col-12">
 
- <center><h4>
-    <a href="{% url 'organiccompaunds' %}">Органическое вещество</a>
-</h4> </center>
+    <center>
+        <h4><a href="{% url 'organiccompaunds' %}">Органическое вещество</a></h4>
+        <!-- Вывод molecule_short сразу после заголовка -->
+        {% if objcontent.molecule_short %}
+            <p style="font-family: Georgia, serif; font-size: 18pt; color: #555;">{{ objcontent.molecule_short }}</p>
+        {% endif %}
+    </center>
 
+    <center>
+        <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin: auto;"> 
+            {{objcontent.name1}} 
+        </p>
+    </center>
     
-   <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
-       {{objcontent.name1}} </p>    </center>
-    <br>
-    
-{% if objcontent.name2 %}
+    {% if objcontent.name2 %}
+        <center><div style="margin: 10px 0;">или</div></center>
+        <center>
+            <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin: auto;"> 
+                {{objcontent.name2}} 
+            </p>
+        </center>
+    {% endif %}
 
-    или
-    <br>
-       <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
-       {{objcontent.name2}} </p>    </center>
-    <br>
-{% endif %}
     {% if objcontent.name3 %}
+        <center><div style="margin: 10px 0;">или</div></center>
+        <center>
+            <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin: auto;"> 
+                {{objcontent.name3}} 
+            </p>
+        </center>
+    {% endif %}
 
-    или
-    <br>
-       <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
-       {{objcontent.name3}} </p>    </center>
-    <br>
-{% endif %}
     {% if objcontent.name4 %}
+        <center><div style="margin: 10px 0;">или</div></center>
+        <center>
+            <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin: auto;"> 
+                {{objcontent.name4}} 
+            </p>
+        </center>
+    {% endif %}
 
-    или
-    <br>
-       <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
-       {{objcontent.name4}} </p>    </center>
-    <br>
-{% endif %}
-     {% if objcontent.formula %}
+    {% if objcontent.formula %}
+        <center>
+            <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 38pt; margin: 20px auto;"> 
+                {{objcontent.formula}} 
+            </p>
+        </center>
+    {% endif %}
 
-<center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 38pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
-     {{objcontent.formula}} </p>    </center>
+    {% if objcontent.molecule %}
+        <br>
+        <center> {% render_smiles objcontent.molecule width=200 height=200 %} </center>
+        <br>
+    {% endif %}
+
+    {% if objcontent.appearance %}
+        <center>
+            <!-- Блок подробностей с синей полоской -->
+            <div style="border-left: 6px solid #00aaff; background-color: #f8fdff; padding: 15px; text-align: left; max-width: 80%; border-radius: 4px; box-shadow: 2px 2px 8px rgba(0,0,0,0.05); margin: 20px auto;">
+                <div style="font-family: Georgia, serif; font-size: 12pt; color: #333;">
+                    {{objcontent.appearance}}
+                </div>
+            </div>
+        </center>
+    {% endif %}   
+
+    <!-- Блок для видео -->
+    {% if objcontent.video %}
+        <br>
+        <center>
+            <a href="{{ objcontent.video }}" target="_blank" rel="noopener noreferrer">
+                <h3>Смотрите видео по ссылке</h3>
+            </a>
+        </center>
+    {% endif %}
     
-{% endif %}
+    <!-- Изображения -->
+    {% if objcontent.img1 %}
+        <center><div class="pt-3"><img style="width: 60%; height: auto;" src="{{ objcontent.img1.url }}" class="rounded"></div></center>
+    {% endif %}
+    {% if objcontent.img2 %}
+        <center><div class="pt-3"><img style="width: 60%; height: auto;" src="{{ objcontent.img2.url }}" class="rounded"></div></center>
+    {% endif %}
+    {% if objcontent.img3 %}
+        <center><div class="pt-3"><img style="width: 60%; height: auto;" src="{{ objcontent.img3.url }}" class="rounded"></div></center>
+    {% endif %}
 
- {% if objcontent.molecule %}
-<br>
-
-   <center> {% render_smiles objcontent.molecule width=200 height=200 %} </center>
-  
-      
- <br>
-
-{% endif %}
-
-<br>
-    
-
-  
-                 {% if objcontent.appearance %}
-            <center> 
-
-            <table class="table table-bordered flexy1">
-                <td>
-                     <div style="font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums; text-align: left !important; ">
-                  {{objcontent.appearance}}
-                          </div>
-                                 </td>
-            </table>
-</center>                       
-                 {% endif %}   
-
-<!-- Блок для видео -->
-{% if objcontent.video %}
-<br>
-<center>
-    <a href="{{ objcontent.video }}" target="_blank" rel="noopener noreferrer">
-        <h3>Смотрите видео по ссылке</h3>
-    </a>
-</center>
-{% endif %}
-    
-   
-<!-- Блок для первого изображения -->
-{% if objcontent.img1 %}
-<center>
-    <div class="media text-muted flex-column align-items-center pt-3">
-        <img class="bd-placeholder-img mr-2 rounded" style="width: 60%; height: auto;" src="{{ objcontent.img1.url }}">
-    </div>
-</center>
-{% endif %}
-
-<!-- Блок для второго изображения -->
-{% if objcontent.img2 %}
-<center>
-    <div class="media text-muted flex-column align-items-center pt-3">
-        <img class="bd-placeholder-img mr-2 rounded" style="width: 60%; height: auto;" src="{{ objcontent.img2.url }}">
-    </div>
-</center>
-{% endif %}
-
-<!-- Блок для третьего изображения -->
-{% if objcontent.img3 %}
-<center>
-    <div class="media text-muted flex-column align-items-center pt-3">
-        <img class="bd-placeholder-img mr-2 rounded" style="width: 60%; height: auto;" src="{{ objcontent.img3.url }}">
-    </div>
-</center>
-{% endif %}
-
-  <hr>
+    <hr>
     <br>
-<!-- {% for j in qw %} -->
 
-
-             <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
-<a href="{% url 'inorganiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
-           {% if j.reagent1 %}       
-       {{j.reagent1}} 
-         {% endif %}
-                 
-         {% if j.reagent2 %}
-          +  {{j.reagent2}}
-         {% endif %}
-
-        {% if j.reagent3 %}
-          +  {{j.reagent3}}
-         {% endif %}
-
-         =
-{% if j.product1 %}
-{{j.product1}} 
-                  {% endif %}
-     {% if j.product2 %}
-          + {{j.product2}}
-         {% endif %}
-      {% if j.product3 %}
-          + {{j.product3}}
-         {% endif %}
-      {% if j.product4 %}
-          +{{j.product4}}
-         {% endif %}
-
-</a>
-</p>
-
-
-  
- <!-- {% endfor %} -->
-
+    {% for j in qw %}
+        <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin: auto;">
+            <a href="{% url 'organiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
+                {% if j.reagent1 %}{{j.reagent1}}{% endif %}
+                {% if j.reagent2 %} + {{j.reagent2}}{% endif %}
+                {% if j.reagent3 %} + {{j.reagent3}}{% endif %}
+                =
+                {% if j.product1 %}{{j.product1}}{% endif %}
+                {% if j.product2 %} + {{j.product2}}{% endif %}
+                {% if j.product3 %} + {{j.product3}}{% endif %}
+                {% if j.product4 %} + {{j.product4}}{% endif %}
+            </a>
+        </p>
+    {% endfor %}
 
 </div>
-
 {% endautoescape %}
 {% endblock %}
