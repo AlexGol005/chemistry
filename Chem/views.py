@@ -11,6 +11,49 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import Http404
 
+class OrganicChemTestAnswerView(TemplateView):
+    template_name = 'Chem/organiclawtestanswer.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ind = self.kwargs.get('str')
+        
+        # 1. Получаем объект
+        qw = get_object_or_404(OrganicReaction, pk=ind)
+        context['obj'] = qw
+
+        # 2. ИСПРАВЛЕНИЕ ИЗБРАННОГО (Конвертируем список в INT)
+        # Получаем список из сессии (например, ['1', '2', '5'])
+        raw_favorites = self.request.session.get('favorite_reactions', [])
+        # Превращаем в [1, 2, 5], чтобы сравнение с obj.id (числом) сработало
+        context['favorite_ids'] = [int(fav_id) for fav_id in raw_favorites if str(fav_id).isdigit()]
+
+        # 3. Статистика (обработка 0% как числа)
+        all_c = self.request.session.get('all_count', 0)
+        corr_c = self.request.session.get('correct_count', 0)
+        if all_c > 0:
+            context['percent'] = round((corr_c / all_c) * 100)
+        else:
+            context['percent'] = None # Чтобы не показывать блок в HTML
+
+        # 4. Логика очереди
+        q_list = self.request.session.get('question_list', [])
+        if q_list:
+            # Если вы хотите, чтобы вопрос удалялся сразу при показе ответа:
+            next_id = q_list.pop(0)
+            self.request.session['question_list'] = q_list
+            self.request.session.modified = True 
+            context['next_index'] = next_id
+            context['is_test'] = True
+        else:
+            context['next_index'] = None
+            context['is_test'] = False
+            
+        return context
+
+
+
+
 class OrganicLawTestHeadView(TemplateView):
     template_name = 'Chem/organiclawtesthead.html'
 
@@ -122,60 +165,6 @@ class OrganicChemTestQuestionView(TemplateView):
 
 
 
-
-
-
-
-class OrganicChemTestAnswerView(TemplateView):
-    template_name = 'Chem/organiclawtestanswer.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Получаем ID из URL (убеждаемся, что это int для сравнения)
-        try:
-            ind = int(self.kwargs.get('str'))
-        except (ValueError, TypeError):
-            ind = self.kwargs.get('str')
-        
-        # 1. Объект реакции
-        qw = get_object_or_404(OrganicReaction, pk=ind)
-        context['obj'] = qw
-
-        # 2. ИСПРАВЛЕНИЕ ИЗБРАННОГО
-        # Извлекаем список и гарантируем, что все ID — числа
-        favs = self.request.session.get('favorite_reactions', [])
-        context['favorite_ids'] = [int(i) for i in favs if str(i).isdigit()]
-
-        # 3. Статистика
-        all_c = self.request.session.get('all_count', 0)
-        corr_c = self.request.session.get('correct_count', 0)
-        # Передаем None, если вопросов не было, чтобы в HTML сработало {% if percent is not None %}
-        context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else None
-        
-        # 4. ЛОГИКА ОЧЕРЕДИ
-        q_list = self.request.session.get('question_list', [])
-        
-        if q_list:
-            # Используем .get(0), но НЕ удаляем через .pop(), 
-            # пока пользователь не перейдет по ссылке.
-            # Если вы хотите удалять именно здесь, оставьте .pop(0)
-            next_id = q_list[0] 
-            
-            # Если нужно удалять сразу при просмотре ответа:
-            # next_id = q_list.pop(0)
-            # self.request.session['question_list'] = q_list
-            # self.request.session.modified = True 
-            
-            context['next_index'] = next_id
-            context['is_test'] = True
-        else:
-            context['next_index'] = None
-            context['is_test'] = False
-            
-        # Здесь должны быть ваши obj_n1, obj_n2 и т.д.
-        # context.update(get_organic_names(qw)) 
-            
-        return context
 
 
 
