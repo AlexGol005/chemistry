@@ -18,28 +18,28 @@ class OrganicChemTestAnswerView(TemplateView):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs.get('str')
         
-        # 1. Получаем объект
+        # 1. Объект реакции
         qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
 
-        # 2. ИСПРАВЛЕНИЕ ИЗБРАННОГО (Конвертируем список в INT)
-        # Получаем список из сессии (например, ['1', '2', '5'])
-        raw_favorites = self.request.session.get('favorite_reactions', [])
-        # Превращаем в [1, 2, 5], чтобы сравнение с obj.id (числом) сработало
-        context['favorite_ids'] = [int(fav_id) for fav_id in raw_favorites if str(fav_id).isdigit()]
+        # 2. ИСПРАВЛЕНИЕ ИЗБРАННОГО (Запрос к БД вместо сессии)
+        if self.request.user.is_authenticated:
+            # Получаем все ID реакций, которые этот пользователь добавил в список
+            context['favorite_ids'] = OrganicUserReaction.objects.filter(
+                user=self.request.user
+            ).values_list('reaction_id', flat=True)
+        else:
+            context['favorite_ids'] = []
 
-        # 3. Статистика (обработка 0% как числа)
+        # 3. Статистика
         all_c = self.request.session.get('all_count', 0)
         corr_c = self.request.session.get('correct_count', 0)
-        if all_c > 0:
-            context['percent'] = round((corr_c / all_c) * 100)
-        else:
-            context['percent'] = None # Чтобы не показывать блок в HTML
-
+        # Используем default=None для корректной проверки в HTML
+        context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else None
+        
         # 4. Логика очереди
         q_list = self.request.session.get('question_list', [])
         if q_list:
-            # Если вы хотите, чтобы вопрос удалялся сразу при показе ответа:
             next_id = q_list.pop(0)
             self.request.session['question_list'] = q_list
             self.request.session.modified = True 
@@ -50,7 +50,6 @@ class OrganicChemTestAnswerView(TemplateView):
             context['is_test'] = False
             
         return context
-
 
 
 
