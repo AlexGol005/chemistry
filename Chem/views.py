@@ -963,45 +963,7 @@ class OrganicChemSearchResultView(TemplateView):
         return context
 
 
-class OrganicLawTestHeadView(TemplateView):
-    template_name = 'Chem/organiclawtesthead.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # Берем num из URL (теперь ключи совпадают)
-        num = self.kwargs['num'] 
-        
-        # Получаем объект темы для заголовков
-        # (Замените OrganicLaw на ваше название модели тем)
-        topic = get_object_or_404(Organiclaw, pk=num) 
-        
-        # 1. Формируем список ID реакций, привязанных к этой теме
-        # Убедитесь, что поле связи в OrganicReaction называется 'number'
-        question_list = list(OrganicReaction.objects.filter(number=topic).values_list('pk', flat=True))
-        
-        import random
-        random.shuffle(question_list)
-
-        # 2. Инициализируем сессию для органики
-        self.request.session['question_list'] = question_list
-        self.request.session['all_count'] = 0
-        self.request.session['correct_count'] = 0
-        self.request.session['incorrect_count'] = 0
-
-        # 3. Передаем данные в шаблон
-        if question_list:
-            # Извлекаем первый ID для кнопки "Перейти к вопросам"
-            # Важно: используем копию, чтобы не испортить список в сессии раньше времени
-            context['q1'] = question_list[0]
-        else:
-            context['q1'] = None
-
-        context['count'] = len(question_list)
-        context['numbertitle'] = topic.metatitle # Название темы
-        context['obj'] = topic
-        
-        return context
 
 
 class OrganicChemMyTestHeadView(ListView):
