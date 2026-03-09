@@ -1131,3 +1131,31 @@ def organic_my_reactions_list(request):
     return render(request, 'Chem/organic_my_list.html', {
         'my_reactions': my_reactions
     })
+
+
+
+class OrganicFavoritesTestHeadView(LoginRequiredMixin, View):
+    """Голова теста для избранных реакций по органике"""
+    
+    def get(self, request):
+        # Получаем список ID реакций через related_name
+        fav_ids = list(request.user.organic_favorite_reactions.values_list('reaction_id', flat=True))
+        
+        if not fav_ids:
+            # Если список пуст, можно выкинуть сообщение или просто вернуть в профиль
+            return redirect('profile')
+
+        # Перемешиваем список для эффекта теста
+        random.shuffle(fav_ids)
+
+        # Инициализируем стандартную сессию для органического теста
+        request.session['question_list'] = fav_ids
+        request.session['all_count'] = 0
+        request.session['correct_count'] = 0
+        request.session['incorrect_count'] = 0
+        
+        # Берем первый ID из списка
+        first_question_id = fav_ids[0]
+        
+        # Перенаправляем на стандартную вьюшку вопроса (которую мы правили ранее)
+        return redirect('organiclawtestquestion', str=first_question_id)
