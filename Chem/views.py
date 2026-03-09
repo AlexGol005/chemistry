@@ -49,6 +49,8 @@ class OrganicLawTestHeadView(TemplateView):
         context['numbertitle'] = topic.title # Название темы
         context['obj'] = topic
         
+        return context
+        
 
 class OrganicChemTestQuestionView(TemplateView):
     """ Выводит вопрос теста — только текст реакции и условия """
