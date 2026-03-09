@@ -13,23 +13,26 @@
 
     <!-- Блок реакции (Формулы) -->
     <div class="text-center my-5">
-        <div class="d-flex justify-content-center align-items-center flex-wrap" style="font-family: 'Courier New', Courier, monospace; font-size: 26pt; font-weight: bold;">
+        <!-- row-gap создает отступ между строками при переносе блоков на мобилках -->
+        <div class="d-flex justify-content-center align-items-center flex-wrap" 
+             style="font-family: 'Courier New', Courier, monospace; font-size: clamp(16pt, 4vw, 26pt); font-weight: bold; row-gap: 3rem;">
             
             <div class="p-2 border rounded shadow-sm bg-white">{{ reagent1 }}</div>
 
             {% if reagent2 %}
-                <div class="mx-3 text-secondary">+</div>
+                <div class="mx-2 text-secondary">+</div>
                 <div class="p-2 border rounded shadow-sm bg-white">{{ reagent2 }}</div>
             {% endif %}
 
             {% if reagent3 %}
-                <div class="mx-3 text-secondary">+</div>
+                <div class="mx-2 text-secondary">+</div>
                 <div class="p-2 border rounded shadow-sm bg-white">{{ reagent3 }}</div>
             {% endif %}
 
-            <div class="mx-4" style="position: relative; min-width: 120px;">
+            <!-- Контейнер стрелки и условий: теперь это единый блок-колонна -->
+            <div class="mx-3 d-inline-flex flex-column align-items-center" style="min-width: 100px; vertical-align: middle;">
                 {% if condition %}
-                    <div style="position: absolute; top: -38px; left: 0; right: 0; font-family: Georgia, serif; font-size: 15pt; color: #444; border-bottom: 2px solid #666; padding-bottom: 2px;">
+                    <div style="font-family: Georgia, serif; font-size: clamp(10pt, 3vw, 15pt); color: #444; border-bottom: 2px solid #666; padding: 0 5px 2px 5px; margin-bottom: -10px; white-space: nowrap;">
                         {{ condition }}
                     </div>
                 {% endif %}
