@@ -18,36 +18,44 @@ class OrganicChemTestAnswerView(TemplateView):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs.get('str')
         
-        # 1. Объект реакции
+        # 1. Получаем саму реакцию
         qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
 
-        # 2. ИСПРАВЛЕНИЕ ИЗБРАННОГО (Запрос к БД вместо сессии)
+        # 2. ВОССТАНОВЛЕНИЕ ИМЕН И ФОРМУЛ (SMILES)
+        # Сопоставляем текстовые поля реакции с объектами из OrganicNames
+        mapping = {
+            'obj_n1': qw.reagent1, 'obj_n2': qw.reagent2, 'obj_n3': qw.reagent3,
+            'obj_n4': qw.product1, 'obj_n5': qw.product2, 'obj_n6': qw.product3, 'obj_n7': qw.product4
+        }
+        
+        for key, val in mapping.items():
+            if val:
+                # Важно: ищем объект OrganicNames, где name1 совпадает со строкой из реакции
+                context[key] = OrganicNames.objects.filter(name1=val).first()
+
+        # 3. ИСПРАВЛЕННОЕ ИЗБРАННОЕ (из Базы Данных)
         if self.request.user.is_authenticated:
-            # Получаем все ID реакций, которые этот пользователь добавил в список
-            context['favorite_ids'] = OrganicUserReaction.objects.filter(
+            # Получаем список ID и принудительно делаем его списком чисел
+            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
                 user=self.request.user
-            ).values_list('reaction_id', flat=True)
+            ).values_list('reaction_id', flat=True))
         else:
             context['favorite_ids'] = []
 
-        # 3. Статистика
+        # 4. СТАТИСТИКА И ОЧЕРЕДЬ
         all_c = self.request.session.get('all_count', 0)
         corr_c = self.request.session.get('correct_count', 0)
-        # Используем default=None для корректной проверки в HTML
         context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else None
         
-        # 4. Логика очереди
         q_list = self.request.session.get('question_list', [])
         if q_list:
             next_id = q_list.pop(0)
             self.request.session['question_list'] = q_list
             self.request.session.modified = True 
             context['next_index'] = next_id
-            context['is_test'] = True
         else:
             context['next_index'] = None
-            context['is_test'] = False
             
         return context
 
