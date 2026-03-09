@@ -18,37 +18,43 @@ class OrganicChemTestAnswerView(TemplateView):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs.get('str')
         
-        # 1. Получаем саму реакцию
+        # 1. Получаем реакцию
         qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
 
-        # 2. ВОССТАНОВЛЕНИЕ ИМЕН И ФОРМУЛ (SMILES)
-        # Сопоставляем текстовые поля реакции с объектами из OrganicNames
-        mapping = {
-            'obj_n1': qw.reagent1, 'obj_n2': qw.reagent2, 'obj_n3': qw.reagent3,
-            'obj_n4': qw.product1, 'obj_n5': qw.product2, 'obj_n6': qw.product3, 'obj_n7': qw.product4
-        }
+        # 2. ПОИСК СОЕДИНЕНИЙ (Имена и SMILES)
+        # В этой версии поиск идет по molecule_short__iexact
+        struct_list = [
+            qw.reagent1, qw.reagent2, qw.reagent3, 
+            qw.product1, qw.product2, qw.product3, qw.product4
+        ]
         
-        for key, val in mapping.items():
+        for i, val in enumerate(struct_list, 1):
             if val:
-                # Важно: ищем объект OrganicNames, где name1 совпадает со строкой из реакции
-                context[key] = OrganicNames.objects.filter(name1=val).first()
+                target = str(val).strip()
+                # Ищем по molecule_short, как в вашей проверенной версии
+                found_obj = OrganicNames.objects.filter(molecule_short__iexact=target).first()
+                context[f'obj_n{i}'] = found_obj
+            else:
+                context[f'obj_n{i}'] = None
 
-        # 3. ИСПРАВЛЕННОЕ ИЗБРАННОЕ (из Базы Данных)
+        # 3. ИЗБРАННОЕ (Для работы {% if obj.id in favorite_ids %})
         if self.request.user.is_authenticated:
-            # Получаем список ID и принудительно делаем его списком чисел
-            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(
-                user=self.request.user
-            ).values_list('reaction_id', flat=True))
+            # Получаем список ID из базы данных
+            context['favorite_ids'] = list(
+                OrganicUserReaction.objects.filter(user=self.request.user)
+                .values_list('reaction_id', flat=True)
+            )
         else:
             context['favorite_ids'] = []
 
-        # 4. СТАТИСТИКА И ОЧЕРЕДЬ
-        all_c = self.request.session.get('all_count', 0)
-        corr_c = self.request.session.get('correct_count', 0)
-        context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else None
+        # 4. СТАТИСТИКА
+        all_c = self.request.session.get('all_count', 0) or 0
+        corr_c = self.request.session.get('correct_count', 0) or 0
+        context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else 0
         
-        q_list = self.request.session.get('question_list', [])
+        # 5. ОЧЕРЕДЬ ТЕСТА
+        q_list = list(self.request.session.get('question_list', []))
         if q_list:
             next_id = q_list.pop(0)
             self.request.session['question_list'] = q_list
