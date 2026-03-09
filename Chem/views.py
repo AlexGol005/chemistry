@@ -46,10 +46,9 @@ class OrganicLawTestHeadView(TemplateView):
             context['q1'] = None
 
         context['count'] = len(question_list)
-        context['numbertitle'] =  topic_data['title'] if topic_data else "Тема не найдена"
+        context['numbertitle'] = topic.title # Название темы
         context['obj'] = topic
         
-        return context
 
 class OrganicChemTestQuestionView(TemplateView):
     """ Выводит вопрос теста — только текст реакции и условия """
