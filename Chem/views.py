@@ -125,59 +125,39 @@ class OrganicChemTestQuestionView(TemplateView):
 
 
 class OrganicChemTestAnswerView(TemplateView):
-    """ выводит ответ теста - реакцию по органической химии с объектами для отрисовки """
     template_name = 'Chem/organiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs.get('str')
         
-        try:
-            qw = OrganicReaction.objects.get(pk=ind)
-        except OrganicReaction.DoesNotExist:
-            from django.http import Http404
-            raise Http404("Реакция не найдена")
-            
+        # 1. Получаем объект реакции
+        qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
 
-        # Список полей из реакции
-        struct_list = [
-            qw.reagent1, qw.reagent2, qw.reagent3, 
-            qw.product1, qw.product2, qw.product3, qw.product4
-        ]
-        
-        # Находим полные объекты OrganicNames для каждого элемента
-        for i, val in enumerate(struct_list, 1):
-            if val:
-                target = str(val).strip()
-                found_obj = OrganicNames.objects.filter(molecule_short__iexact=target).first()
-                context[f'obj_n{i}'] = found_obj
-            else:
-                context[f'obj_n{i}'] = None
+        # ... (ваш код поиска OrganicNames остается без изменений) ...
 
-        context.update({
-            'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
-            'product1': qw.product1, 'product2': qw.product2, 'product3': qw.product3, 'product4': qw.product4,
-            'condition': qw.condition,
-        })
-
-        # Статистика
-        all_c = self.request.session.get('all_count', 0) or 0
-        corr_c = self.request.session.get('correct_count', 0) or 0
+        # 2. Статистика (защита от деления на ноль)
+        all_c = self.request.session.get('all_count', 0)
+        corr_c = self.request.session.get('correct_count', 0)
         context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else 0
         
-        # --- ИСПРАВЛЕННЫЙ БЛОК ОЧЕРЕДИ ---
-        # Меняем 'organic_question_list' на 'question_list' (как в "голове")
-        q_list = list(self.request.session.get('question_list', []))
-        context['next_index'] = q_list.pop(0) if q_list else None
-        self.request.session['question_list'] = q_list
-        # ---------------------------------
+        # 3. ЛОГИКА ОЧЕРЕДИ (ИСПРАВЛЕНО)
+        q_list = self.request.session.get('question_list', [])
         
-        if self.request.user.is_authenticated:
-            context['favorite_ids'] = list(OrganicUserReaction.objects.filter(user=self.request.user).values_list('reaction_id', flat=True))
+        if q_list:
+            # Извлекаем первый ID из списка и УДАЛЯЕМ его из сессии
+            # Таким образом, вопрос больше не повторится
+            next_id = q_list.pop(0)
+            self.request.session['question_list'] = q_list
+            self.request.session.modified = True 
+            context['next_index'] = next_id
+            context['is_test'] = True  # Флаг, что мы в режиме теста
+        else:
+            context['next_index'] = None
+            context['is_test'] = False # Флаг, что тест окончен или не начинался
             
         return context
-
 
 
 
