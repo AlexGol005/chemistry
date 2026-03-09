@@ -1,212 +1,141 @@
-<!-- """страница вывода химреакции по неорганике""" -->
-
 {% extends 'main/superbase.html' %}
 {% load crispy_forms_tags %}
 
-{#название страницы#}
-{#стандартная#}
-{% block title %}
-реакция
-{% endblock %}
-{#конец названия страницы#}
-
-
-    {% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
-    {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
-    {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
-
+{% block title %}Тест: {{ obj.metatitle }}{% endblock %}
 
 {% block content %}
 {% autoescape off %}
-
 <div class="col-12">
-{% if obj %}
-    {% if obj.id in favorite_ids %}
-        <div style="display:inline;">
-            <span>✅ В моем списке</span>
-            <!-- Форма для удаления из списка -->
-            <form action="{% url 'remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-outline-danger">
-                    Удалить
-                </button>
-            </form>
-        </div>
-    {% else %}
-        <!-- Форма для добавления в список -->
-        <form action="{% url 'add_reaction' obj.id %}" method="post" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary">
-                Добавить в мой список
-            </button>
-        </form>
+    <!-- Блок управления избранным -->
+    <div class="mb-4">
+        {% if obj %}
+            {% if obj.id in favorite_ids %}
+                <div class="d-inline-flex align-items-center">
+                    <span class="badge bg-success me-2">✅ В моем списке</span>
+                    <form action="{% url 'remove_reaction' obj.id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                    </form>
+                </div>
+            {% else %}
+                <form action="{% url 'add_reaction' obj.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Добавить в мой список</button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer" class="btn btn-link px-0 text-decoration-none">
+            <i class="bi bi-arrow-left-circle"></i> Открыть правило
+        </a>     
+    </div>
+
+    {% if percent %}
+        <p class="text-muted" style="font-family: Georgia, serif; font-size: 12pt;">
+            Процент верных ответов: <b>{{ percent }} %</b>
+        </p>
     {% endif %}
-{% endif %}
 
-    <br>
-    <br>
+    <!-- ОСНОВНОЙ БЛОК РЕАКЦИИ (Адаптивный Flexbox) -->
+    <div class="d-flex justify-content-center align-items-center flex-wrap text-center my-5" 
+         style="font-family: 'Courier New', Courier, monospace; font-weight: bold; row-gap: 40px; column-gap: 10px;">
+        
+        <!-- Реагенты -->
+        <div class="d-flex align-items-center flex-wrap justify-content-center">
+            <div class="p-2 border rounded shadow-sm bg-white">{{ reagent1 }}</div>
 
+            {% if reagent2 %}
+                <div class="mx-2 text-secondary" style="font-size: 24pt;">+</div>
+                <div class="p-2 border rounded shadow-sm bg-white">{{ reagent2 }}</div>
+            {% endif %}
 
-    
-   <a href="{% url 'inorganiclawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer">открыть правило</a>            
- {% if percent %}
-     <p style="width: 100%;  font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums;">
-  Процент верных ответов  {{percent}} %
-     </p>
-{% endif %}
-             <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 34pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
+            {% if reagent3 %}
+                <div class="mx-2 text-secondary" style="font-size: 24pt;">+</div>
+                <div class="p-2 border rounded shadow-sm bg-white">{{ reagent3 }}</div>
+            {% endif %}
+        </div>
 
-           {% if reagent1 %}       
-       {{reagent1}} 
-         {% endif %}
-                 
-         {% if reagent2 %}
-          +  {{reagent2}}
-         {% endif %}
+        <!-- Стрелка и условие (Единый блок, чтобы не наезжало) -->
+        <div class="mx-3 d-inline-flex flex-column align-items-center" style="min-width: 120px;">
+            {% if condition %}
+                <div style="font-family: Georgia, serif; font-size: 14pt; color: #444; border-bottom: 2px solid #666; padding: 0 5px 2px 5px; white-space: nowrap; margin-bottom: -10px;">
+                    {{ condition }}
+                </div>
+            {% endif %}
+            <span style="font-size: 40pt; line-height: 1;">&rarr;</span>
+        </div>
 
-        {% if reagent3 %}
-          +  {{reagent3}}
-         {% endif %}
+        <!-- Продукты -->
+        <div class="d-flex align-items-center flex-wrap justify-content-center">
+            <div class="p-2 border rounded shadow-sm bg-light">{{ product1 }}</div>
 
-         =
-{% if product1 %}
-{{product1}} 
-                  {% endif %}
-     {% if product2 %}
-          + {{product2}}
-         {% endif %}
-      {% if product3 %}
-          + {{product3}}
-         {% endif %}
-      {% if product4 %}
-          +{{product4}}
-         {% endif %}
+            {% if product2 %}
+                <div class="mx-2 text-secondary" style="font-size: 24pt;">+</div>
+                <div class="p-2 border rounded shadow-sm bg-light">{{ product2 }}</div>
+            {% endif %}
 
+            {% if product3 %}
+                <div class="mx-2 text-secondary" style="font-size: 24pt;">+</div>
+                <div class="p-2 border rounded shadow-sm bg-light">{{ product3 }}</div>
+            {% endif %}
 
-</p>
-
-
-           <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
-
-           {% if reagent1 %}       
-  <a href="{% url 'compaund' pkc1 %}" target="_blank" rel="noopener noreferrer">       {{name1}}</a>
-         {% endif %}
-                 
-         {% if reagent2 %}
-          + <a href="{% url 'compaund' pkc2 %}" target="_blank" rel="noopener noreferrer">{{name2}}</a>
-         {% endif %}
-
-        {% if reagent3 %}
-          + <a href="{% url 'compaund' pkc3 %}" target="_blank" rel="noopener noreferrer">{{name3}}</a>
-         {% endif %}
-
-         =
-{% if product1 %}
-<a href="{% url 'compaund' pkc4 %}" target="_blank" rel="noopener noreferrer"> {{name4}} </a>
-                  {% endif %}
-     {% if product2 %}
-          + <a href="{% url 'compaund' pkc5 %}" target="_blank" rel="noopener noreferrer">{{name5}}</a>
-         {% endif %}
-      {% if product3 %}
-          + <a href="{% url 'compaund' pkc6 %}" target="_blank" rel="noopener noreferrer">{{name6}}</a>
-         {% endif %}
-      {% if product4 %}
-          + <a href="{% url 'compaund' pkc7 %}" target="_blank" rel="noopener noreferrer">{{name7}}</a>
-         {% endif %}
-
-
-</p>
-    
-    
-<center>     
-
-         <p style="text-align: center; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums; font-size: 20pt;">
- 
-         {% if condition %}
-                   {{condition}}
-         {% endif %}
-
- </p>
-
-
-
-</center>
-
-
-      <br>  
-
-
-
-                 {% if obj.extra %}
-            <center> 
-
-            <table class="table table-bordered flexy1">
-                <td>
-                     <p style="width: 100%; text-align: left !important; font-family: Georgia, serif; font-size: 15pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
-                  {{ obj.extra}}
-                          </p>
-                                 </td>
-            </table>
-</center>                       
-                 {% endif %}   
-
- <br> <br>
-
-
-
-    <!-- Блок для видео -->
-{% if obj.video %}
-<br>
-<center>
-    <a href="{{ obj.video }}" target="_blank" rel="noopener noreferrer">
-        <h3>Смотрите видео по ссылке</h3>
-    </a>
-</center>
-{% endif %}
-    
-<!-- Блок для первого изображения -->
-{% if obj.img1 %}
-<center>
-    <div class="media text-muted flex-column align-items-center pt-3">
-        <img class="bd-placeholder-img mr-2 rounded" style="width: 30%; height: auto;" src="{{ obj.img1.url }}">
+            {% if product4 %}
+                <div class="mx-2 text-secondary" style="font-size: 24pt;">+</div>
+                <div class="p-2 border rounded shadow-sm bg-light">{{ product4 }}</div>
+            {% endif %}
+        </div>
     </div>
-</center>
-{% endif %}
 
-<!-- Блок для второго изображения -->
-{% if obj.img2 %}
-<center>
-    <div class="media text-muted flex-column align-items-center pt-3">
-        <img class="bd-placeholder-img mr-2 rounded" style="width: 30%; height: auto;" src="{{ obj.img2.url }}">
+    <!-- Дополнительная информация -->
+    {% if obj.extra %}
+        <div class="card my-4 shadow-sm border-0 bg-light">
+            <div class="card-body" style="font-family: Georgia, serif; font-size: 15pt;">
+                {{ obj.extra }}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Медиа-контент -->
+    <div class="text-center my-4">
+        {% if obj.video %}
+            <a href="{{ obj.video }}" target="_blank" class="btn btn-outline-danger mb-3">
+                <i class="bi bi-play-circle"></i> Смотреть видеоурок
+            </a>
+        {% endif %}
+
+        <div class="row justify-content-center">
+            {% if obj.img1 %}<div class="col-md-4 mb-2"><img src="{{ obj.img1.url }}" class="img-fluid rounded shadow-sm"></div>{% endif %}
+            {% if obj.img2 %}<div class="col-md-4 mb-2"><img src="{{ obj.img2.url }}" class="img-fluid rounded shadow-sm"></div>{% endif %}
+            {% if obj.img3 %}<div class="col-md-4 mb-2"><img src="{{ obj.img3.url }}" class="img-fluid rounded shadow-sm"></div>{% endif %}
+        </div>
     </div>
-</center>
-{% endif %}
 
-<!-- Блок для третьего изображения -->
-{% if obj.img3 %}
-<center>
-    <div class="media text-muted flex-column align-items-center pt-3">
-        <img class="bd-placeholder-img mr-2 rounded" style="width: 30%; height: auto;" src="{{ obj.img3.url }}">
+    <!-- НАВИГАЦИЯ (Только если зашли через тест) -->
+    <div class="text-center my-5">
+        {% if is_test %}
+            {% if next_index %}
+                <a href="{% url 'organiclawtestquestion' next_index %}" class="btn btn-lg btn-primary px-5 shadow">
+                    Следующая химическая реакция <i class="bi bi-arrow-right"></i>
+                </a>
+            {% else %}
+                <div class="alert alert-success d-inline-block px-5">
+                    <h5>🎉 Тест завершен, спасибо!</h5>
+                    <a href="/chem/organiclaw" class="btn btn-success mt-2">Вернуться в тему</a>
+                </div>
+            {% endif %}
+        {% endif %}
     </div>
-</center>
-{% endif %}
 
-    
-    {% if next_index %}
-       <center>   <a href="{% url 'inorganiclawtestquestion' next_index %}"  class="btn btn-primary  mt-2 mr-2 ml-2"> 
-       Следующая химическая реакция
-   </a></center> 
-
-{% elif not next_index %}
-  
-  <center>   <a href="/chem/inorganiclaw"  class="btn btn-primary  mt-2 mr-2 ml-2">   Тест завершен, спасибо! Перейти в тему
-   </a></center> 
- {% endif %}   
-
-
-  <br>   <br>
+</div>
 {% endautoescape %}
 {% endblock %}
-            {% block aside %}
-<i>*Все реакции приведены без коэффициентов! </i><br>
-      {% endblock %}
+
+{% block aside %}
+<div class="card p-3 shadow-sm border-0 bg-white">
+    <h5 class="text-primary"><i class="bi bi-info-circle"></i> Примечание</h5>
+    <hr class="my-2">
+    <p class="small mb-0"><i>*Все реакции приведены без коэффициентов!</i></p>
+</div>
+{% endblock %}
