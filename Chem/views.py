@@ -46,7 +46,7 @@ class OrganicLawTestHeadView(TemplateView):
             context['q1'] = None
 
         context['count'] = len(question_list)
-        context['numbertitle'] = topic.title # Название темы
+        context['numbertitle'] =  topic_data['title'] if topic_data else "Тема не найдена"
         context['obj'] = topic
         
         return context
