@@ -18,11 +18,16 @@
 
        <br>
     <center>
-<a href="{% url 'my_reactions_test' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%">
-    📚 Мои карточки для повторения ({{ request.user.favorite_reactions.count }})
-</a>
-        
-    </center>
+    <!-- Кнопка для Неорганики (была) -->
+    <a href="{% url 'my_reactions_test' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%">
+        📚 Мои карточки: Неорганика ({{ request.user.favorite_reactions.count }})
+    </a>
+
+    <!-- Кнопка для Органики (НОВАЯ) -->
+    <a href="{% url 'organic_favorites_test_head' %}" class="btn btn-success mr-2 ml-2 mt-2" style="width: 80%">
+        🧪 Мои карточки: Органика ({{ request.user.organic_favorite_reactions.count }})
+    </a>
+</center>
     <br>
 
 
