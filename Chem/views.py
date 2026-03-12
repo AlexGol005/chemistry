@@ -226,22 +226,24 @@ class OrganicLawTestHeadView(TemplateView):
         num = self.kwargs['num'] 
         topic = get_object_or_404(Organiclaw, pk=num) 
         
-        # Получаем все ID реакций для этой темы
-        all_reactions = OrganicReaction.objects.filter(number=topic)
-        question_ids = list(all_reactions.values_list('pk', flat=True))
+        # Получаем текущий список и состояние
+        current_list = self.request.session.get('question_list', [])
+        current_next = self.request.session.get('next_index')
         
-        # Если тест еще не начат (all_count == 0) — перемешиваем и ставим на старт
-        if self.request.session.get('all_count', 0) == 0:
-            import random
-            random.shuffle(question_ids)
+        # Инициализируем ТОЛЬКО если список пуст И мы еще не начинали отвечать
+        if not current_list and not current_next:
+            all_reactions = OrganicReaction.objects.filter(number=topic)
+            question_ids = list(all_reactions.values_list('pk', flat=True))
             
             if question_ids:
-                # Копируем список, чтобы не портить оригинал для q1
-                temp_list = list(question_ids)
-                q1 = temp_list.pop(0)
+                import random
+                random.shuffle(question_ids)
                 
-                # Сохраняем в сессию
-                self.request.session['question_list'] = temp_list
+                # Извлекаем первый ID
+                q1 = question_ids.pop(0)
+                
+                # Записываем в сессию начальное состояние
+                self.request.session['question_list'] = question_ids
                 self.request.session['next_index'] = q1
                 self.request.session['all_count'] = 0
                 self.request.session['correct_count'] = 0
@@ -250,48 +252,38 @@ class OrganicLawTestHeadView(TemplateView):
             else:
                 context['q1'] = None
         else:
-            # Если тест уже в процессе, берем сохраненный следующий ID
-            context['q1'] = self.request.session.get('next_index')
+            # Тест уже идет — берем текущий ID из сессии для кнопки
+            context['q1'] = current_next
 
-        context['count'] = all_reactions.count()
+        context['count'] = OrganicReaction.objects.filter(number=topic).count()
         context['numbertitle'] = topic.title 
         context['obj'] = topic
         
         return context
 
-
 class OrganicFavoritesTestHeadView(LoginRequiredMixin, View):
-    """Голова теста для избранных реакций по органике"""
-    
     def get(self, request):
-        # 1. ПРОВЕРКА: Если тест уже запущен — не сбрасываем, а идем к текущему вопросу
+        # Если в сессии уже есть текущий вопрос — идем к нему
         current_next = request.session.get('next_index')
-        if request.session.get('all_count', 0) > 0 and current_next:
+        if current_next:
             return redirect('organiclawtestquestion', str=current_next)
 
-        # 2. Если тест новый (или all_count == 0) — инициализируем
-        # Получаем список ID избранных реакций
+        # Иначе — создаем новый тест по избранному
         fav_ids = list(request.user.organic_favorite_reactions.values_list('reaction_id', flat=True))
         
         if not fav_ids:
-            # Если избранного нет, возвращаем на страницу списка (или профиль)
-            messages.info(request, "В вашем списке пока нет органических реакций")
             return redirect('organic_my_reactions_list')
 
         import random
         random.shuffle(fav_ids)
 
-        # Извлекаем первый вопрос сразу для старта
         first_id = fav_ids.pop(0)
-        
-        # Сохраняем начальное состояние в сессию
         request.session['question_list'] = fav_ids
         request.session['next_index'] = first_id
         request.session['all_count'] = 0
         request.session['correct_count'] = 0
         request.session['incorrect_count'] = 0
         
-        # Перенаправляем на первый вопрос
         return redirect('organiclawtestquestion', str=first_id)
 
 
