@@ -11,6 +11,41 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import Http404
 
+class OrganicLawTestHeadView(TemplateView):
+    template_name = 'Chem/organiclawtesthead.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        num = self.kwargs['num']
+        
+        topic = get_object_or_404(Organiclaw, pk=num)
+        reactions = OrganicReaction.objects.filter(number=topic)
+        
+        # Уникальный ключ для органики (например, "org_12")
+        current_test_id = f"org_{num}"
+        session = self.request.session
+
+        # ПРОВЕРКА: Если в сессии пусто или зашли в другой раздел — создаем список
+        if 'question_list' not in session or session.get('active_test') != current_test_id:
+            question_ids = list(reactions.values_list('pk', flat=True))
+            random.shuffle(question_ids)
+            
+            session['question_list'] = question_ids
+            session['active_test'] = current_test_id
+            session['all_count'] = 0
+            session['correct_count'] = 0
+            session['incorrect_count'] = 0
+            session.modified = True
+
+        current_list = session.get('question_list', [])
+
+        context['numbertitle'] = topic.title
+        context['count'] = reactions.count()
+        context['obj'] = topic
+        context['q1'] = current_list[0] if current_list else 0
+        
+        return context
+
 class OrganicChemTestQuestionView(TemplateView):
     """ Выводит вопрос теста — только текст реакции и условия """
     template_name = 'Chem/organiclawtestquestion.html'
@@ -122,7 +157,7 @@ class OrganicChemTestAnswerView(TemplateView):
 
 # тесты на названия органики
 # 1. ВЫБОР РЕЖИМА (Пульт управления)
-class OrganicNamesTestHeadView(View):
+class OrganicNames(View):
     def get(self, request):
         return render(request, 'Chem/organicnames_test_head.html')
 
