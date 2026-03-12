@@ -226,29 +226,34 @@ class OrganicLawTestHeadView(TemplateView):
         num = self.kwargs['num'] 
         topic = get_object_or_404(Organiclaw, pk=num) 
         
-        # 1. ПРОВЕРКА: Инициализируем сессию только если тест еще не начат
+        # Получаем все ID реакций для этой темы
+        all_reactions = OrganicReaction.objects.filter(number=topic)
+        question_ids = list(all_reactions.values_list('pk', flat=True))
+        
+        # Если тест еще не начат (all_count == 0) — перемешиваем и ставим на старт
         if self.request.session.get('all_count', 0) == 0:
-            question_list = list(OrganicReaction.objects.filter(number=topic).values_list('pk', flat=True))
             import random
-            random.shuffle(question_list)
-
-            if question_list:
-                # Извлекаем первый ID для кнопки
-                q1 = question_list.pop(0)
-                context['q1'] = q1
-                # Сохраняем ОСТАТОК списка и текущий ID в сессию
-                self.request.session['question_list'] = question_list
+            random.shuffle(question_ids)
+            
+            if question_ids:
+                # Копируем список, чтобы не портить оригинал для q1
+                temp_list = list(question_ids)
+                q1 = temp_list.pop(0)
+                
+                # Сохраняем в сессию
+                self.request.session['question_list'] = temp_list
                 self.request.session['next_index'] = q1
                 self.request.session['all_count'] = 0
                 self.request.session['correct_count'] = 0
                 self.request.session['incorrect_count'] = 0
+                context['q1'] = q1
             else:
                 context['q1'] = None
         else:
-            # Если тест уже идет, берем текущий сохраненный ID из сессии
+            # Если тест уже в процессе, берем сохраненный следующий ID
             context['q1'] = self.request.session.get('next_index')
 
-        context['count'] = OrganicReaction.objects.filter(number=topic).count()
+        context['count'] = all_reactions.count()
         context['numbertitle'] = topic.title 
         context['obj'] = topic
         
@@ -259,29 +264,34 @@ class OrganicFavoritesTestHeadView(LoginRequiredMixin, View):
     """Голова теста для избранных реакций по органике"""
     
     def get(self, request):
-        # 1. ПРОВЕРКА: Если тест уже запущен — перенаправляем на текущий ID
+        # 1. ПРОВЕРКА: Если тест уже запущен — не сбрасываем, а идем к текущему вопросу
         current_next = request.session.get('next_index')
         if request.session.get('all_count', 0) > 0 and current_next:
             return redirect('organiclawtestquestion', str=current_next)
 
-        # 2. Если тест новый — инициализируем
+        # 2. Если тест новый (или all_count == 0) — инициализируем
+        # Получаем список ID избранных реакций
         fav_ids = list(request.user.organic_favorite_reactions.values_list('reaction_id', flat=True))
         
         if not fav_ids:
-            return redirect('profile')
+            # Если избранного нет, возвращаем на страницу списка (или профиль)
+            messages.info(request, "В вашем списке пока нет органических реакций")
+            return redirect('organic_my_reactions_list')
 
         import random
         random.shuffle(fav_ids)
 
-        # Извлекаем первый вопрос сразу
+        # Извлекаем первый вопрос сразу для старта
         first_id = fav_ids.pop(0)
+        
+        # Сохраняем начальное состояние в сессию
         request.session['question_list'] = fav_ids
         request.session['next_index'] = first_id
         request.session['all_count'] = 0
         request.session['correct_count'] = 0
         request.session['incorrect_count'] = 0
         
-        # Перенаправляем на вопрос
+        # Перенаправляем на первый вопрос
         return redirect('organiclawtestquestion', str=first_id)
 
 
