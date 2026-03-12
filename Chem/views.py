@@ -863,10 +863,28 @@ def my_favorites_view(request):
 
 def remove_reaction(request, reaction_id):
     if request.method == 'POST':
-        # Находим и удаляем связь текущего пользователя с этой реакцией
+        # 1. Удаляем из базы данных (избранное)
         UserReaction.objects.filter(user=request.user, reaction_id=reaction_id).delete()
 
-    # Возвращаем пользователя туда, откуда он пришел
+        # 2. Удаляем из текущей очереди теста в сессии
+        q_list = request.session.get('question_list', [])
+        
+        # Приводим к int, так как в сессии обычно хранятся числа
+        r_id = int(reaction_id)
+        
+        if r_id in q_list:
+            q_list.remove(r_id)
+            request.session['question_list'] = q_list
+            request.session.modified = True # Сообщаем Django о переменах
+
+    # 3. Редирект
+    # Если мы удалили карточку прямо в процессе теста, лучше 
+    # перенаправить на СЛЕДУЮЩИЙ вопрос, а не на ту же (удаленную) страницу
+    if q_list:
+        # Редирект на первый доступный вопрос в обновленном списке
+        return redirect('inorganiclawtestquestion', str=q_list[0])
+    
+    # Если это была последняя карточка, возвращаемся на главную
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
@@ -1049,14 +1067,34 @@ def organic_add_to_list(request, reaction_id):
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def organic_remove_reaction(request, reaction_id):
-    """ Удаление органической реакции из списка пользователя """
+    """ Удаление органической реакции из списка пользователя и из текущего теста """
     if request.user.is_authenticated:
+        # 1. Удаляем из базы (избранное)
         OrganicUserReaction.objects.filter(
             user=request.user, 
             reaction_id=reaction_id
         ).delete()
-    return redirect(request.META.get('HTTP_REFERER', '/'))
 
+        # 2. Синхронизируем с текущим тестом в сессии
+        session = request.session
+        q_list = session.get('question_list', [])
+        
+        # Приводим к int для надежного сравнения
+        r_id = int(reaction_id)
+        
+        if r_id in q_list:
+            q_list.remove(r_id)
+            session['question_list'] = q_list
+            session.modified = True  # Важно: заставляем Django сохранить изменения
+
+    # 3. Редирект
+    # Если мы удалили карточку, на которой находимся, 
+    # лучше сразу перекинуть на СЛЕДУЮЩИЙ вопрос из обновленного списка
+    if q_list:
+        return redirect('organiclawtestanswer', str=q_list[0])
+    
+    # Если это была последняя карточка в списке — на главную страницу раздела
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 @login_required
 def organic_my_reactions_list(request):
