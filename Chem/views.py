@@ -226,23 +226,20 @@ class OrganicLawTestHeadView(TemplateView):
         num = self.kwargs['num'] 
         topic = get_object_or_404(Organiclaw, pk=num) 
         
-        # Получаем текущий список и состояние
         current_list = self.request.session.get('question_list', [])
         current_next = self.request.session.get('next_index')
         
-        # Инициализируем ТОЛЬКО если список пуст И мы еще не начинали отвечать
-        if not current_list and not current_next:
+        # Если зашли в НОВУЮ тему (текущий id не из этой темы), тоже сбрасываем
+        # Но для простоты: если нет текущего индекса — инициируем
+        if not current_next:
             all_reactions = OrganicReaction.objects.filter(number=topic)
             question_ids = list(all_reactions.values_list('pk', flat=True))
             
             if question_ids:
                 import random
                 random.shuffle(question_ids)
-                
-                # Извлекаем первый ID
                 q1 = question_ids.pop(0)
                 
-                # Записываем в сессию начальное состояние
                 self.request.session['question_list'] = question_ids
                 self.request.session['next_index'] = q1
                 self.request.session['all_count'] = 0
@@ -252,32 +249,28 @@ class OrganicLawTestHeadView(TemplateView):
             else:
                 context['q1'] = None
         else:
-            # Тест уже идет — берем текущий ID из сессии для кнопки
             context['q1'] = current_next
 
         context['count'] = OrganicReaction.objects.filter(number=topic).count()
         context['numbertitle'] = topic.title 
         context['obj'] = topic
-        
         return context
 
 class OrganicFavoritesTestHeadView(LoginRequiredMixin, View):
     def get(self, request):
-        # Если в сессии уже есть текущий вопрос — идем к нему
-        current_next = request.session.get('next_index')
-        if current_next:
-            return redirect('organiclawtestquestion', str=current_next)
-
-        # Иначе — создаем новый тест по избранному
+        # Получаем актуальный список избранного
         fav_ids = list(request.user.organic_favorite_reactions.values_list('reaction_id', flat=True))
         
         if not fav_ids:
             return redirect('organic_my_reactions_list')
 
+        # ВСЕГДА перемешиваем заново при входе в этот режим
         import random
         random.shuffle(fav_ids)
 
         first_id = fav_ids.pop(0)
+        
+        # Перезаписываем сессию свежими данными
         request.session['question_list'] = fav_ids
         request.session['next_index'] = first_id
         request.session['all_count'] = 0
@@ -285,7 +278,6 @@ class OrganicFavoritesTestHeadView(LoginRequiredMixin, View):
         request.session['incorrect_count'] = 0
         
         return redirect('organiclawtestquestion', str=first_id)
-
 
 
 class OrganicChemTestQuestionView(TemplateView):
