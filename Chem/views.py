@@ -257,6 +257,18 @@ class ChemTestAnswerView(TemplateView):
         
         return context
 
+
+@login_required
+def add_to_list(request, reaction_id):
+    """ Добавляет реакцию в список избранного текущего пользователя """
+    if request.method == 'POST':
+        reaction = get_object_or_404(InorganicReaction, id=reaction_id)
+        # get_or_create предотвращает дубликаты
+        UserReaction.objects.get_or_create(user=request.user, reaction=reaction)
+    
+    # Возвращаем пользователя на ту же страницу, где он нажал кнопку
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
 @login_required
 def my_favorites_view(request):
     # Получаем все объекты UserReaction для текущего пользователя
@@ -272,6 +284,9 @@ def remove_reaction(request, reaction_id):
 
     # Возвращаем пользователя туда, откуда он пришел
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+
 
 
 # конец вьюшек тест реакции неорганики - головы для теста по законам и вопрос-ответ
