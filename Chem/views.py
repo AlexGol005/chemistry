@@ -1132,3 +1132,33 @@ class OrganicFavoritesTestHeadView(LoginRequiredMixin, View):
         
         # Перенаправляем на стандартную вьюшку вопроса (которую мы правили ранее)
         return redirect('organiclawtestquestion', str=first_question_id)
+
+def organic_remove_reaction(request, reaction_id):
+    if request.user.is_authenticated:
+        # 1. Удаляем из базы
+        OrganicUserReaction.objects.filter(
+            user=request.user, 
+            reaction_id=reaction_id
+        ).delete()
+
+        # 2. Чистим сессию (жесткий метод)
+        q_list = request.session.get('question_list', [])
+        
+        if q_list:
+            # Превращаем всё в строки для надежного сравнения, 
+            # так как reaction_id из URL часто приходит строкой
+            str_id = str(reaction_id)
+            
+            # Фильтруем список: оставляем только те ID, которые НЕ равны удаляемому
+            new_list = [item for item in q_list if str(item) != str_id]
+            
+            # Сохраняем обновленный список
+            request.session['question_list'] = new_list
+            request.session.modified = True
+            
+            # Если список изменился и еще не пуст — редирект на следующий вопрос
+            if new_list and len(new_list) != len(q_list):
+                return redirect('organiclawtestanswer', str=new_list[0])
+
+    # Если список пуст или мы удалили последнюю карточку
+    return redirect(request.META.get('HTTP_REFERER', '/'))
