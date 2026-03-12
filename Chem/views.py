@@ -296,6 +296,32 @@ class ChemTestAnswerView(TemplateView):
         
         return context
 
+def add_to_list(request, reaction_id):
+    if request.method == 'POST':
+        reaction = get_object_or_404(InorganicReaction, id=reaction_id)
+        # get_or_create гарантирует отсутствие дублей (UniqueTogether)
+        UserReaction.objects.get_or_create(user=request.user, reaction=reaction)
+    
+    # Возвращаем пользователя обратно
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+def my_favorites_view(request):
+    # Получаем все объекты UserReaction для текущего пользователя
+    # select_related('reaction') подтянет данные о самих реакциях одним запросом
+    user_items = UserReaction.objects.filter(user=request.user).select_related('reaction')
+    
+    return render(request, 'my_list.html', {'user_items': user_items})
+
+def remove_reaction(request, reaction_id):
+    if request.method == 'POST':
+        # Находим и удаляем связь текущего пользователя с этой реакцией
+        UserReaction.objects.filter(user=request.user, reaction_id=reaction_id).delete()
+
+    # Возвращаем пользователя туда, откуда он пришел
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
 # конец вьюшек тест реакции неорганики - головы для теста по законам и вопрос-ответ
 
 # начало вьюшек тест реакции органики - головы для теста по законам и вопрос-ответ
@@ -340,44 +366,33 @@ class OrganicLawTestHeadView(TemplateView):
         
         return context
 
-class OrganicChemMyTestHeadView(ListView):
-    template_name = 'Chem/organiclawtesthead.html'
-    context_object_name = 'objects'
 
-    def get_queryset(self):
-        # Получаем только те реакции, которые есть в списке текущего юзера
-        return OrganicReaction.objects.filter(
-            organic_userreaction__user=self.request.user
-        )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        queryset = self.get_queryset()
+class OrganicFavoritesTestHeadView(LoginRequiredMixin, View):
+    """Голова теста для избранных реакций по органике"""
+    
+    def get(self, request):
+        # Получаем список ID реакций через related_name
+        fav_ids = list(request.user.organic_favorite_reactions.values_list('reaction_id', flat=True))
         
-        if queryset.exists():
-            # Заголовок теперь логичнее сделать общим, так как это "Мой список"
-            context['numbertitle'] = "Мои сохраненные реакции"
-            context['count'] = queryset.count()
-            
-            # Работа с ID для теста
-            question_ids = list(queryset.values_list('id', flat=True))
-            random.shuffle(question_ids)
-            
-            q1_id = question_ids.pop(0)
-            context['q1'] = q1_id
-            
-            # Обновляем сессию
-            context['question_ids'] = question_ids           
-            self.request.session['question_list'] = question_ids
-            self.request.session['correct_count'] = 0
-            self.request.session['incorrect_count'] = 0
-            self.request.session['all_count'] = 0
-        else:
-            context['numbertitle'] = 'В вашем списке пока нет реакций'
-            context['count'] = 0
-            context['q1'] = 0
-            
-        return context
+        if not fav_ids:
+            # Если список пуст, можно выкинуть сообщение или просто вернуть в профиль
+            return redirect('profile')
+
+        # Перемешиваем список для эффекта теста
+        random.shuffle(fav_ids)
+
+        # Инициализируем стандартную сессию для органического теста
+        request.session['question_list'] = fav_ids
+        request.session['all_count'] = 0
+        request.session['correct_count'] = 0
+        request.session['incorrect_count'] = 0
+        
+        # Берем первый ID из списка
+        first_question_id = fav_ids[0]
+        
+        # Перенаправляем на стандартную вьюшку вопроса (которую мы правили ранее)
+        return redirect('organiclawtestquestion', str=first_question_id)
+
 
 
 class OrganicChemTestQuestionView(TemplateView):
@@ -505,9 +520,51 @@ class OrganicChemTestAnswerView(TemplateView):
 
 
 
+def organic_add_to_list(request, reaction_id):
+    """ Добавление органической реакции в список пользователя """
+    if request.user.is_authenticated:
+        # Используем get_or_create, чтобы не плодить дубликаты
+        OrganicUserReaction.objects.get_or_create(
+            user=request.user, 
+            reaction_id=reaction_id
+        )
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+def organic_remove_reaction(request, reaction_id):
+    """ Удаление органической реакции из списка пользователя """
+    if request.user.is_authenticated:
+        OrganicUserReaction.objects.filter(
+            user=request.user, 
+            reaction_id=reaction_id
+        ).delete()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+def organic_my_reactions_list(request):
+    """Выводит список всех избранных органических реакций пользователя"""
+    # Получаем все объекты связей пользователя с реакциями
+    my_reactions = OrganicUserReaction.objects.filter(user=request.user).select_related('reaction')
+    
+    return render(request, 'Chem/organic_my_list.html', {
+        'my_reactions': my_reactions
+    })
+
+
 
         
 # конец вьюшек тест - реакции органики - головы для теста по законам и вопрос-ответ
+
+
+
+
+@login_required
+def my_reactions_list(request):
+    # Получаем все связи текущего пользователя с реакциями
+    # select_related('reaction') подгрузит данные InorganicReaction одним запросом
+    user_items = UserReaction.objects.filter(user=request.user).select_related('reaction')
+    
+    return render(request, 'Chem/my_reactions.html', {'user_items': user_items})
 
 
 
@@ -636,9 +693,11 @@ class OrganicNamesTestFinishedView(View):
             'percent': percent
         })
 
+# конец тесты на названия органики
 
 
-# начало
+
+# справочные страницы:таблицы, ссылки, заглавная страница
 class ChemView(View):
     """выводит страницу химия"""
     def get(self, request):
@@ -657,6 +716,11 @@ class LinkView(ListView):
     template_name = 'Chem/link.html'
     context_object_name = 'objects'
     ordering = ['pk']
+
+#конец  справочные страницы:таблицы, ссылки, заглавная страница
+
+
+#законы химии общие, органика, неорганика: главная, поиск, персональная и еще тест по общей химии, и списка веществ орг,неорг с поиском
 
 
 class InorganiclawView(ListView):
@@ -935,39 +999,7 @@ class AtomTestQuestionView(TemplateView):
 
         return redirect('atomlawtestanswer', str=ind)
 
-def add_to_list(request, reaction_id):
-    if request.method == 'POST':
-        reaction = get_object_or_404(InorganicReaction, id=reaction_id)
-        # get_or_create гарантирует отсутствие дублей (UniqueTogether)
-        UserReaction.objects.get_or_create(user=request.user, reaction=reaction)
-    
-    # Возвращаем пользователя обратно
-    return redirect(request.META.get('HTTP_REFERER', '/'))
 
-@login_required
-def my_favorites_view(request):
-    # Получаем все объекты UserReaction для текущего пользователя
-    # select_related('reaction') подтянет данные о самих реакциях одним запросом
-    user_items = UserReaction.objects.filter(user=request.user).select_related('reaction')
-    
-    return render(request, 'my_list.html', {'user_items': user_items})
-
-def remove_reaction(request, reaction_id):
-    if request.method == 'POST':
-        # Находим и удаляем связь текущего пользователя с этой реакцией
-        UserReaction.objects.filter(user=request.user, reaction_id=reaction_id).delete()
-
-    # Возвращаем пользователя туда, откуда он пришел
-    return redirect(request.META.get('HTTP_REFERER', '/'))
-
-
-@login_required
-def my_reactions_list(request):
-    # Получаем все связи текущего пользователя с реакциями
-    # select_related('reaction') подгрузит данные InorganicReaction одним запросом
-    user_items = UserReaction.objects.filter(user=request.user).select_related('reaction')
-    
-    return render(request, 'Chem/my_reactions.html', {'user_items': user_items})
 
 
 # органика
@@ -1025,15 +1057,6 @@ class OrganicChemSearchResultView(TemplateView):
 
 
 
-
-
-
-
-
-
-    
-
-
 # органические вещества
 class OrganicCompaundView(ListView):
     """ Выводит список всех всех веществ """
@@ -1086,60 +1109,6 @@ class OrganicCompaundSearchResultView(TemplateView):
 
 
 
-def organic_add_to_list(request, reaction_id):
-    """ Добавление органической реакции в список пользователя """
-    if request.user.is_authenticated:
-        # Используем get_or_create, чтобы не плодить дубликаты
-        OrganicUserReaction.objects.get_or_create(
-            user=request.user, 
-            reaction_id=reaction_id
-        )
-    return redirect(request.META.get('HTTP_REFERER', '/'))
-
-def organic_remove_reaction(request, reaction_id):
-    """ Удаление органической реакции из списка пользователя """
-    if request.user.is_authenticated:
-        OrganicUserReaction.objects.filter(
-            user=request.user, 
-            reaction_id=reaction_id
-        ).delete()
-    return redirect(request.META.get('HTTP_REFERER', '/'))
-
-
-@login_required
-def organic_my_reactions_list(request):
-    """Выводит список всех избранных органических реакций пользователя"""
-    # Получаем все объекты связей пользователя с реакциями
-    my_reactions = OrganicUserReaction.objects.filter(user=request.user).select_related('reaction')
-    
-    return render(request, 'Chem/organic_my_list.html', {
-        'my_reactions': my_reactions
-    })
 
 
 
-class OrganicFavoritesTestHeadView(LoginRequiredMixin, View):
-    """Голова теста для избранных реакций по органике"""
-    
-    def get(self, request):
-        # Получаем список ID реакций через related_name
-        fav_ids = list(request.user.organic_favorite_reactions.values_list('reaction_id', flat=True))
-        
-        if not fav_ids:
-            # Если список пуст, можно выкинуть сообщение или просто вернуть в профиль
-            return redirect('profile')
-
-        # Перемешиваем список для эффекта теста
-        random.shuffle(fav_ids)
-
-        # Инициализируем стандартную сессию для органического теста
-        request.session['question_list'] = fav_ids
-        request.session['all_count'] = 0
-        request.session['correct_count'] = 0
-        request.session['incorrect_count'] = 0
-        
-        # Берем первый ID из списка
-        first_question_id = fav_ids[0]
-        
-        # Перенаправляем на стандартную вьюшку вопроса (которую мы правили ранее)
-        return redirect('organiclawtestquestion', str=first_question_id)
