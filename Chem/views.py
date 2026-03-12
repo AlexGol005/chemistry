@@ -1066,35 +1066,34 @@ def organic_add_to_list(request, reaction_id):
         )
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
-def organic_remove_reaction(request, reaction_id):
-    """ Удаление органической реакции из списка пользователя и из текущего теста """
-    if request.user.is_authenticated:
-        # 1. Удаляем из базы (избранное)
-        OrganicUserReaction.objects.filter(
-            user=request.user, 
-            reaction_id=reaction_id
-        ).delete()
+def remove_reaction(request, reaction_id):
+    if request.method == 'POST':
+        # 1. Удаляем из базы данных
+        UserReaction.objects.filter(user=request.user, reaction_id=reaction_id).delete()
 
-        # 2. Синхронизируем с текущим тестом в сессии
-        session = request.session
-        q_list = session.get('question_list', [])
+        # 2. Получаем список из сессии
+        q_list = request.session.get('question_list', [])
         
-        # Приводим к int для надежного сравнения
-        r_id = int(reaction_id)
-        
-        if r_id in q_list:
-            q_list.remove(r_id)
-            session['question_list'] = q_list
-            session.modified = True  # Важно: заставляем Django сохранить изменения
+        if q_list:
+            # Превращаем всё в int для гарантии (reaction_id из URL — это строка)
+            target_id = int(reaction_id)
+            
+            # Создаем новый список БЕЗ удаленного ID
+            new_list = [item for item in q_list if int(item) != target_id]
+            
+            # Сохраняем обновленный список в сессию
+            request.session['question_list'] = new_list
+            request.session.modified = True
+            
+            # 3. Редирект на СЛЕДУЮЩИЙ вопрос
+            if new_list:
+                # Берем первый элемент из ОБНОВЛЕННОГО списка
+                next_id = new_list[0]
+                return redirect('inorganiclawtestquestion', str=next_id)
 
-    # 3. Редирект
-    # Если мы удалили карточку, на которой находимся, 
-    # лучше сразу перекинуть на СЛЕДУЮЩИЙ вопрос из обновленного списка
-    if q_list:
-        return redirect('organiclawtestanswer', str=q_list[0])
-    
-    # Если это была последняя карточка в списке — на главную страницу раздела
-    return redirect(request.META.get('HTTP_REFERER', '/'))
+    # Если список пуст или это была последняя карточка
+    # Возвращаемся на страницу со списком всех правил/тем
+    return redirect('inorganiclawstr_list') # Замените на ваш URL главной страницы тем
 
 @login_required
 def organic_my_reactions_list(request):
