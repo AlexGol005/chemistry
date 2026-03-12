@@ -157,7 +157,7 @@ class OrganicChemTestAnswerView(TemplateView):
 
 # тесты на названия органики
 # 1. ВЫБОР РЕЖИМА (Пульт управления)
-class OrganicNames(View):
+class OrganicNamesTestHeadView(View):
     def get(self, request):
         return render(request, 'Chem/organicnames_test_head.html')
 
