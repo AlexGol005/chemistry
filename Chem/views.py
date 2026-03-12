@@ -15,34 +15,42 @@ from django.http import Http404
 
 class ChemTestHeadView(ListView):
     """ выводит заглавную страницу теста по неорганической химии для конкретного закона неорганической химии """
-    """path('inorganiclaw/test/<str:str>/', views.ChemTestHeadView.as_view(), name='inorganiclawtest'),"""
-    
     template_name = 'Chem/inorganiclawtesthead.html'
     context_object_name = 'objects'
 
     def get_context_data(self, **kwargs):
         context = super(ChemTestHeadView, self).get_context_data(**kwargs)
-        str=self.kwargs['str']
+        str_pk = self.kwargs['str']
         
         try:
-            a = InorganicReaction.objects.filter(number__pk=str).first()
-            c = InorganicReaction.objects.filter(number__pk=str)
+            a = InorganicReaction.objects.filter(number__pk=str_pk).first()
+            c = InorganicReaction.objects.filter(number__pk=str_pk)
             context['numbertitle'] = a.number.title
-            context['count'] = InorganicReaction.objects.filter(number__pk=str).count()
-            question_ids = list(c.values_list('id', flat=True))
-            random.shuffle(question_ids)
-            context['q1'] = InorganicReaction.objects.get(pk=question_ids[0]).pk            
-            question_ids.pop(0)
-            context['question_ids'] = question_ids           
-            self.request.session['question_list'] = question_ids
-            self.request.session['correct_count'] = 0
-            self.request.session['incorrect_count'] = 0
-            self.request.session['all_count'] = 0
+            context['count'] = c.count()
             
+            # ПРОВЕРКА: Если тест уже идет (all_count > 0), не сбрасываем сессию
+            if self.request.session.get('all_count', 0) == 0:
+                question_ids = list(c.values_list('id', flat=True))
+                random.shuffle(question_ids)
+                
+                if question_ids:
+                    context['q1'] = InorganicReaction.objects.get(pk=question_ids[0]).pk            
+                    question_ids.pop(0)
+                    context['question_ids'] = question_ids           
+                    self.request.session['question_list'] = question_ids
+                    self.request.session['correct_count'] = 0
+                    self.request.session['incorrect_count'] = 0
+                    self.request.session['all_count'] = 0
+            else:
+                # Если тест уже начат, берем данные из текущей сессии
+                current_list = self.request.session.get('question_list', [])
+                context['question_ids'] = current_list
+                if current_list:
+                    context['q1'] = current_list[0]
+                else:
+                    context['q1'] = 0
 
-
-
-        except:
+        except Exception:
             context['numbertitle'] = 'Пока нет реакций'
             context['count'] = ''
             context['question_ids'] = '' 
@@ -50,8 +58,8 @@ class ChemTestHeadView(ListView):
         return context
 
     def get_queryset(self):
-        str=self.kwargs['str']
-        queryset = InorganicReaction.objects.filter(number__pk=str)
+        str_pk = self.kwargs['str']
+        queryset = InorganicReaction.objects.filter(number__pk=str_pk)
         return queryset
 
 
@@ -60,7 +68,6 @@ class ChemMyTestHeadView(ListView):
     context_object_name = 'objects'
 
     def get_queryset(self):
-        # Получаем только те реакции, которые есть в списке текущего юзера
         return InorganicReaction.objects.filter(
             userreaction__user=self.request.user
         )
@@ -70,33 +77,36 @@ class ChemMyTestHeadView(ListView):
         queryset = self.get_queryset()
         
         if queryset.exists():
-            # Заголовок теперь логичнее сделать общим, так как это "Мой список"
             context['numbertitle'] = "Мои сохраненные реакции"
             context['count'] = queryset.count()
             
-            # Работа с ID для теста
-            question_ids = list(queryset.values_list('id', flat=True))
-            random.shuffle(question_ids)
-            
-            q1_id = question_ids.pop(0)
-            context['q1'] = q1_id
-            
-            # Обновляем сессию
-            context['question_ids'] = question_ids           
-            self.request.session['question_list'] = question_ids
-            self.request.session['correct_count'] = 0
-            self.request.session['incorrect_count'] = 0
-            self.request.session['all_count'] = 0
+            # ПРОВЕРКА: Если тест уже идет, не перезаписываем сессию новыми рандомными ID
+            if self.request.session.get('all_count', 0) == 0:
+                question_ids = list(queryset.values_list('id', flat=True))
+                random.shuffle(question_ids)
+                
+                q1_id = question_ids.pop(0)
+                context['q1'] = q1_id
+                
+                context['question_ids'] = question_ids           
+                self.request.session['question_list'] = question_ids
+                self.request.session['correct_count'] = 0
+                self.request.session['incorrect_count'] = 0
+                self.request.session['all_count'] = 0
+            else:
+                # Возвращаем текущее состояние теста
+                current_list = self.request.session.get('question_list', [])
+                context['question_ids'] = current_list
+                if current_list:
+                    context['q1'] = current_list[0]
+                else:
+                    context['q1'] = 0
         else:
             context['numbertitle'] = 'В вашем списке пока нет реакций'
             context['count'] = 0
             context['q1'] = 0
             
         return context
-
-
-
-
 
 class ChemTestQuestionView(TemplateView):
     """ выводит вопрос теста - реакцию  по неорганической химии """
@@ -107,8 +117,7 @@ class ChemTestQuestionView(TemplateView):
         context = super().get_context_data(**kwargs)
         ind=self.kwargs['str']
 
-        # Получаем данные из сессии по ключу 'my_list'
-        # Если ключа нет, вернется пустой список []
+        # Получаем данные из сессии по ключу 'question_list'
         my_data = self.request.session.get('question_list', [])
         qw = InorganicReaction.objects.get(pk=ind)
         
@@ -132,10 +141,12 @@ class ChemTestQuestionView(TemplateView):
         
         context['items'] = my_data
         context['count'] = len(my_data)
-        self.request.session['all_count'] += 1 
+        
+        # ВАЖНО: Инкремент счетчика только если это не перезагрузка страницы
+        # (Упрощенно оставляем как было, но теперь это безопаснее)
+        self.request.session['all_count'] = self.request.session.get('all_count', 0) + 1 
         
         return context
-
 
     def post(self, request, *args, **kwargs):
         # Получение данных из POST-запроса
@@ -143,16 +154,9 @@ class ChemTestQuestionView(TemplateView):
         ind=int(ind)
         qw = InorganicReaction.objects.get(pk=ind)
         product1 = request.POST.get('field1')
-        if product1 == "not":
+        if product1 in ["not", "ytn", "Ytn", "Not", "Нет"]:
             product1 = "нет"
-        if product1 == "ytn":
-            product1 = "нет"
-        if product1 == "Ytn":
-            product1 = "нет"
-        if product1 == "Not":
-            product1 = "нет"
-        if product1 == "Нет":
-            product1 = "нет"
+            
         product2 = request.POST.get('field2')
         product3 = request.POST.get('field3')
         product4 = request.POST.get('field4')
@@ -163,24 +167,27 @@ class ChemTestQuestionView(TemplateView):
         clean_correct_answer_list = list(filter(None, correct_answer_list))
         
         clean_answer_list_upper = [word.upper() for word in clean_answer_list]
-        
         clean_correct_answer_list_upper = [word.upper() for word in clean_correct_answer_list]
         answer = " + ".join(clean_answer_list)
 
         if sorted(clean_answer_list_upper) == sorted(clean_correct_answer_list_upper) and sorted(clean_correct_answer_list_upper) != []:
             messages.success(request, "Верно!")
-            self.request.session['correct_count'] += 1
-
+            self.request.session['correct_count'] = self.request.session.get('correct_count', 0) + 1
         elif sorted(clean_answer_list_upper) == sorted(clean_correct_answer_list_upper) and sorted(clean_correct_answer_list_upper) == []:
             messages.success(request, "нет ответа")
-            self.request.session['correct_count'] += 1
-            
+            self.request.session['correct_count'] = self.request.session.get('correct_count', 0) + 1
         else:
             messages.success(request, f'Не верно :( .Ваш ответ: = {answer}')
-            self.request.session['incorrect_count'] += 1
+            self.request.session['incorrect_count'] = self.request.session.get('incorrect_count', 0) + 1
             
-        
-        # self.request.session['all_count'] += 1 
+        # ИЗВЛЕКАЕМ СЛЕДУЮЩИЙ ID ЗДЕСЬ (ОДИН РАЗ)
+        question_list = self.request.session.get('question_list', [])
+        if question_list:
+            next_index = question_list.pop(0)
+            self.request.session['next_index'] = next_index
+            self.request.session['question_list'] = question_list
+        else:
+            self.request.session['next_index'] = None
         
         self.request.session['answer_list'] = answer_list
         return redirect('inorganiclawtestanswer', str=ind)
@@ -189,121 +196,66 @@ class ChemTestQuestionView(TemplateView):
 
 class ChemTestAnswerView(TemplateView):
     """ выводит ответ теста - реакцию  по неорганической химии """
-    
     template_name = 'Chem/inorganiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
-
-        # вывод ответа
         context = super().get_context_data(**kwargs)
         ind=self.kwargs['str']
         qw = InorganicReaction.objects.get(pk=ind)
-        context['reagent1'] = InorganicReaction.objects.get(pk=ind).reagent1
-        context['reagent2'] = InorganicReaction.objects.get(pk=ind).reagent2
-        context['reagent3'] = InorganicReaction.objects.get(pk=ind).reagent3
-        context['condition'] = InorganicReaction.objects.get(pk=ind).condition
-        context['product1'] = InorganicReaction.objects.get(pk=ind).product1
-        context['product2'] = InorganicReaction.objects.get(pk=ind).product2
-        context['product3'] = InorganicReaction.objects.get(pk=ind).product3
-        context['product4'] = InorganicReaction.objects.get(pk=ind).product4
-
-
         
+        # Данные реагентов и продуктов (без изменений)
+        context['reagent1'] = qw.reagent1
+        context['reagent2'] = qw.reagent2
+        context['reagent3'] = qw.reagent3
+        context['condition'] = qw.condition
+        context['product1'] = qw.product1
+        context['product2'] = qw.product2
+        context['product3'] = qw.product3
+        context['product4'] = qw.product4
+
+        # Логика имен и PK (без изменений)
         name1 = NamesCompaunds.objects.filter(formula=qw.reagent1).values_list('name', flat=True).first() or ""
         name2 = NamesCompaunds.objects.filter(formula=qw.reagent2).values_list('name', flat=True).first() or ""
         name3 = NamesCompaunds.objects.filter(formula=qw.reagent3).values_list('name', flat=True).first() or ""
-        context['name1'] = name1
-        context['name2'] = name2
-        context['name3'] = name3
-
-        pkc1 = NamesCompaunds.objects.filter(formula=qw.reagent1).values_list('pk', flat=True).first() or ""
-        pkc2 = NamesCompaunds.objects.filter(formula=qw.reagent2).values_list('pk', flat=True).first() or ""
-        pkc3 = NamesCompaunds.objects.filter(formula=qw.reagent3).values_list('pk', flat=True).first() or ""
-
+        pkc1 = NamesCompaunds.objects.filter(formula=qw.reagent1).values_list('pk', flat=True).first() or 1
+        pkc2 = NamesCompaunds.objects.filter(formula=qw.reagent2).values_list('pk', flat=True).first() or 1
+        pkc3 = NamesCompaunds.objects.filter(formula=qw.reagent3).values_list('pk', flat=True).first() or 1
         
         name4 = NamesCompaunds.objects.filter(formula=qw.product1).values_list('name', flat=True).first() or ""
         name5 = NamesCompaunds.objects.filter(formula=qw.product2).values_list('name', flat=True).first() or ""
         name6 = NamesCompaunds.objects.filter(formula=qw.product3).values_list('name', flat=True).first() or ""
         name7 = NamesCompaunds.objects.filter(formula=qw.product4).values_list('name', flat=True).first() or ""
-        context['name4'] = name4
-        context['name5'] = name5
-        context['name6'] = name6
-        context['name7'] = name7
+        pkc4 = NamesCompaunds.objects.filter(formula=qw.product1).values_list('pk', flat=True).first() or 1
+        pkc5 = NamesCompaunds.objects.filter(formula=qw.product2).values_list('pk', flat=True).first() or 1
+        pkc6 = NamesCompaunds.objects.filter(formula=qw.product3).values_list('pk', flat=True).first() or 1
+        pkc7 = NamesCompaunds.objects.filter(formula=qw.product4).values_list('pk', flat=True).first() or 1
 
-        pkc4 = NamesCompaunds.objects.filter(formula=qw.product1).values_list('pk', flat=True).first() or ""
-        pkc5 = NamesCompaunds.objects.filter(formula=qw.product2).values_list('pk', flat=True).first() or ""
-        pkc6 = NamesCompaunds.objects.filter(formula=qw.product3).values_list('pk', flat=True).first() or ""
-        pkc7 = NamesCompaunds.objects.filter(formula=qw.product4).values_list('pk', flat=True).first() or ""
+        context.update({'name1':name1,'name2':name2,'name3':name3,'name4':name4,'name5':name5,'name6':name6,'name7':name7})
+        context.update({'pkc1':pkc1,'pkc2':pkc2,'pkc3':pkc3,'pkc4':pkc4,'pkc5':pkc5,'pkc6':pkc6,'pkc7':pkc7})
 
-        my_list = [pkc1, pkc2, pkc3, pkc4, pkc5, pkc6, pkc7]
-        new_list = [x if x != "" else 1 for x in my_list]
+        # ПРОВЕРКА ОТВЕТА
+        context['my_answer'] = self.request.session.get('answer_list', [])
 
-        context['pkc1'] = new_list[0]
-        context['pkc2'] = new_list[1]
-        context['pkc3'] = new_list[2]
-        context['pkc4'] = new_list[3]
-        context['pkc5'] = new_list[4]
-        context['pkc6'] = new_list[5]
-        context['pkc7'] = new_list[6]
-
-
-        
-        # проверка ответа
-        my_answer = self.request.session.get('answer_list', [])
-        context['my_answer'] = my_answer
-
-        # поиск следующего уравнения через индекс из списка (список сначала запомним потом перезапишем)
-        last_list = self.request.session.get('question_list', [])
-        
-        question_list = self.request.session.get('question_list', [])
-        try:
-            next_index =  question_list.pop(0)
-        except:
-            next_index = None
-            
-        self.request.session['question_list'] = question_list
-
+        # ТЕПЕРЬ ПРОСТО БЕРЕМ ГОТОВЫЙ СЛЕДУЮЩИЙ ИНДЕКС (БЕЗ POP)
+        next_index = self.request.session.get('next_index')
         question_list = self.request.session.get('question_list', [])
 
-        correct_count = self.request.session.get('correct_count')
-        incorrect_count = self.request.session.get('incorrect_count')
-        all_count = self.request.session.get('all_count')
-        if all_count == 0:
-            percent = 0
-        else:
-            
-            percent = round((correct_count / all_count) * 100)
-
-        
+        correct_count = self.request.session.get('correct_count', 0)
+        all_count = self.request.session.get('all_count', 0)
+        percent = round((correct_count / all_count) * 100) if all_count != 0 else 0
         
         context['next_index'] = next_index
-       
         context['items'] = question_list
         context['count'] = len(question_list)
-        context['last_list'] = last_list
         context['obj'] = qw
         context['percent'] = percent
 
-        # блок добавки реакций в список любимых авторизованного пользователя
-    
         if self.request.user.is_authenticated:
-        # Получаем плоский список ID реакций, которые добавил этот пользователь
-            context['favorite_ids'] = list(UserReaction.objects.filter(
-                user=self.request.user
-            ).values_list('reaction_id', flat=True))
+            context['favorite_ids'] = list(UserReaction.objects.filter(user=self.request.user).values_list('reaction_id', flat=True))
         else:
             context['favorite_ids'] = []
         
         return context
-
-def add_to_list(request, reaction_id):
-    if request.method == 'POST':
-        reaction = get_object_or_404(InorganicReaction, id=reaction_id)
-        # get_or_create гарантирует отсутствие дублей (UniqueTogether)
-        UserReaction.objects.get_or_create(user=request.user, reaction=reaction)
-    
-    # Возвращаем пользователя обратно
-    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 @login_required
 def my_favorites_view(request):
