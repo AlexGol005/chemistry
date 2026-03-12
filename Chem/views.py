@@ -223,37 +223,30 @@ class OrganicLawTestHeadView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Берем num из URL (теперь ключи совпадают)
         num = self.kwargs['num'] 
-        
-        # Получаем объект темы для заголовков
-        # (Замените OrganicLaw на ваше название модели тем)
         topic = get_object_or_404(Organiclaw, pk=num) 
         
-        # 1. Формируем список ID реакций, привязанных к этой теме
-        # Убедитесь, что поле связи в OrganicReaction называется 'number'
-        question_list = list(OrganicReaction.objects.filter(number=topic).values_list('pk', flat=True))
-        
-        import random
-        random.shuffle(question_list)
+        # ПРОВЕРКА: Инициализируем сессию только если тест еще не начат
+        if self.request.session.get('all_count', 0) == 0:
+            question_list = list(OrganicReaction.objects.filter(number=topic).values_list('pk', flat=True))
+            import random
+            random.shuffle(question_list)
 
-        # 2. Инициализируем сессию для органики
-        self.request.session['question_list'] = question_list
-        self.request.session['all_count'] = 0
-        self.request.session['correct_count'] = 0
-        self.request.session['incorrect_count'] = 0
+            self.request.session['question_list'] = question_list
+            self.request.session['all_count'] = 0
+            self.request.session['correct_count'] = 0
+            self.request.session['incorrect_count'] = 0
+        else:
+            # Если тест уже идет, берем текущий список из сессии
+            question_list = self.request.session.get('question_list', [])
 
-        # 3. Передаем данные в шаблон
         if question_list:
-            # Извлекаем первый ID для кнопки "Перейти к вопросам"
-            # Важно: используем копию, чтобы не испортить список в сессии раньше времени
             context['q1'] = question_list[0]
         else:
             context['q1'] = None
 
         context['count'] = len(question_list)
-        context['numbertitle'] = topic.title # Название темы
+        context['numbertitle'] = topic.title 
         context['obj'] = topic
         
         return context
@@ -263,26 +256,26 @@ class OrganicFavoritesTestHeadView(LoginRequiredMixin, View):
     """Голова теста для избранных реакций по органике"""
     
     def get(self, request):
-        # Получаем список ID реакций через related_name
+        # ПРОВЕРКА: Если тест уже запущен, просто идем к текущему вопросу
+        current_list = request.session.get('question_list', [])
+        if request.session.get('all_count', 0) > 0 and current_list:
+            return redirect('organiclawtestquestion', str=current_list[0])
+
+        # Если тест новый — инициализируем
         fav_ids = list(request.user.organic_favorite_reactions.values_list('reaction_id', flat=True))
         
         if not fav_ids:
-            # Если список пуст, можно выкинуть сообщение или просто вернуть в профиль
             return redirect('profile')
 
-        # Перемешиваем список для эффекта теста
+        import random
         random.shuffle(fav_ids)
 
-        # Инициализируем стандартную сессию для органического теста
         request.session['question_list'] = fav_ids
         request.session['all_count'] = 0
         request.session['correct_count'] = 0
         request.session['incorrect_count'] = 0
         
-        # Берем первый ID из списка
         first_question_id = fav_ids[0]
-        
-        # Перенаправляем на стандартную вьюшку вопроса (которую мы правили ранее)
         return redirect('organiclawtestquestion', str=first_question_id)
 
 
@@ -304,10 +297,9 @@ class OrganicChemTestQuestionView(TemplateView):
             'reagent2': qw.reagent2,
             'reagent3': qw.reagent3,
             'condition': qw.condition,
-            'form': OrganicTestForm(), # Используем новую форму с кнопками Сверху и Снизу
+            'form': OrganicTestForm(), 
             'q1': ind,
             'obj': qw,
-            # Список оставшихся вопросов для инфо (опционально)
             'items': self.request.session.get('question_list', []),
         })
 
@@ -330,18 +322,14 @@ class OrganicChemTestQuestionView(TemplateView):
         for f in raw_fields:
             val = request.POST.get(f, '').strip()
             if val:
-                # Если введено "нет", приводим к единому виду
                 if val.lower() in no_ans:
                     user_answers.append("нет")
                 else:
                     user_answers.append(val)
 
-        # Продукты из базы (поля в OrganicReaction уже содержат molecule_short)
         correct_answers = [qw.product1, qw.product2, qw.product3, qw.product4]
-        # Очищаем от пустых значений и приводим к строкам
         correct_list = [str(c).strip() for c in correct_answers if c]
         
-        # Сравнение без учета регистра и порядка
         user_upper = sorted([a.upper() for a in user_answers])
         correct_upper = sorted([c.upper() for c in correct_list])
 
@@ -351,8 +339,16 @@ class OrganicChemTestQuestionView(TemplateView):
         else:
             messages.error(request, 'Не верно :(')
             self.request.session['incorrect_count'] = self.request.session.get('incorrect_count', 0) + 1
+
+        # ИЗВЛЕКАЕМ СЛЕДУЮЩИЙ ID ЗДЕСЬ (ОДИН РАЗ ПРИ ОТВЕТЕ)
+        question_list = self.request.session.get('question_list', [])
+        if question_list:
+            next_index = question_list.pop(0)
+            self.request.session['next_index'] = next_index
+            self.request.session['question_list'] = question_list
+        else:
+            self.request.session['next_index'] = None
             
-        # Редирект на вьюшку ответа, которая "проест" следующий ID из сессии
         return redirect('organiclawtestanswer', str=ind)
 
 
@@ -368,7 +364,6 @@ class OrganicChemTestAnswerView(TemplateView):
         context['obj'] = qw
 
         # 2. ПОИСК СОЕДИНЕНИЙ (Имена и SMILES)
-        # В этой версии поиск идет по molecule_short__iexact
         struct_list = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
@@ -377,15 +372,13 @@ class OrganicChemTestAnswerView(TemplateView):
         for i, val in enumerate(struct_list, 1):
             if val:
                 target = str(val).strip()
-                # Ищем по molecule_short, как в вашей проверенной версии
                 found_obj = OrganicNames.objects.filter(molecule_short__iexact=target).first()
                 context[f'obj_n{i}'] = found_obj
             else:
                 context[f'obj_n{i}'] = None
 
-        # 3. ИЗБРАННОЕ (Для работы {% if obj.id in favorite_ids %})
+        # 3. ИЗБРАННОЕ
         if self.request.user.is_authenticated:
-            # Получаем список ID из базы данных
             context['favorite_ids'] = list(
                 OrganicUserReaction.objects.filter(user=self.request.user)
                 .values_list('reaction_id', flat=True)
@@ -399,17 +392,16 @@ class OrganicChemTestAnswerView(TemplateView):
         context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else 0
         
         # 5. ОЧЕРЕДЬ ТЕСТА
-        q_list = list(self.request.session.get('question_list', []))
-        if q_list:
-            next_id = q_list.pop(0)
-            self.request.session['question_list'] = q_list
-            self.request.session.modified = True 
-            context['next_index'] = next_id
-        else:
-            context['next_index'] = None
+        # ТЕПЕРЬ ПРОСТО БЕРЕМ ГОТОВЫЙ СЛЕДУЮЩИЙ ИНДЕКС (БЕЗ POP)
+        # Это защищает от удаления вопроса при обновлении страницы или добавлении в избранное
+        next_id = self.request.session.get('next_index')
+        q_list = self.request.session.get('question_list', [])
+        
+        context['next_index'] = next_id
+        context['items'] = q_list
+        context['count'] = len(q_list)
             
         return context
-
 
 
 def organic_add_to_list(request, reaction_id):
