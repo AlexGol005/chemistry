@@ -80,6 +80,5 @@ urlpatterns = [
     path('organic_add-reaction/<int:reaction_id>/', views.organic_add_to_list, name='organic_add_reaction'),
     path('chem/organic_remove_reaction-reaction/<int:reaction_id>/', views.organic_remove_reaction, name='organic_remove_reaction'),
     path('chem/oganic_my-list/', views.organic_my_reactions_list, name='organic_my_reactions_list'),
-    path('organic_my-reactions-test/', views.OrganicChemMyTestHeadView.as_view(), name='organic_my_reactions_test'),
     path('profile/organic-test/', views.OrganicFavoritesTestHeadView.as_view(), name='organic_favorites_test_head'),
     ]
