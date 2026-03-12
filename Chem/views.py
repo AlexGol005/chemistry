@@ -547,14 +547,22 @@ class ChemTestAnswerView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs['str']
-        qw = get_object_or_404(InorganicReaction, pk=ind)
         
-        # 1. Заполнение данных реакции (используем вспомогательную функцию для чистоты)
-        def get_comp_info(formula):
-            if not formula: return {"name": "", "pk": 1}
-            obj = NamesCompaunds.objects.filter(formula=formula).first()
-            return {"name": obj.name if obj else "", "pk": obj.pk if obj else 1}
+        # Получаем текущую реакцию
+        qw = get_object_or_404(InorganicReaction, pk=ind)
+        context['obj'] = qw # Важно для шаблона!
 
+        # 1. Вспомогательная функция для названий соединений
+        def get_comp_info(formula):
+            if not formula: 
+                return {"name": "", "pk": 1}
+            obj = NamesCompaunds.objects.filter(formula=formula).first()
+            return {
+                "name": obj.name if obj else formula, # если нет в базе, вернет формулу
+                "pk": obj.pk if obj else 1
+            }
+
+        # Наполняем контекст реагентами и продуктами
         reagents = [qw.reagent1, qw.reagent2, qw.reagent3]
         products = [qw.product1, qw.product2, qw.product3, qw.product4]
         
@@ -571,24 +579,21 @@ class ChemTestAnswerView(TemplateView):
             context[f'pkc{i+3}'] = info['pk']
 
         context['condition'] = qw.condition
-        context['obj'] = qw
-        context['my_answer'] = self.request.session.get('answer_list', [])
 
-        # 2. РАБОТА СО СПИСКОМ ВОПРОСОВ (БЕЗ УДАЛЕНИЯ ПРИ ОБНОВЛЕНИИ)
+        # 2. Логика навигации (следующий вопрос)
         question_list = self.request.session.get('question_list', [])
-        
-        # Мы НЕ делаем pop(0). Мы ищем текущий ID в списке и берем СЛЕДУЮЩИЙ за ним.
         next_index = None
+        
         if question_list:
             try:
-                # Находим, где в списке текущий вопрос
-                current_pos = question_list.index(int(ind))
-                # Если после него что-то есть — это и есть наш следующий вопрос
-                if current_pos + 1 < len(question_list):
-                    next_index = question_list[current_pos + 1]
-            except ValueError:
-                # Если текущего ID нет в списке (например, тест начат заново), берем первый доступный
-                next_index = question_list[0]
+                # Преобразуем ind в int, так как в сессии хранятся числа
+                current_id = int(ind)
+                if current_id in question_list:
+                    current_pos = question_list.index(current_id)
+                    if current_pos + 1 < len(question_list):
+                        next_index = question_list[current_pos + 1]
+            except (ValueError, TypeError):
+                pass
 
         # 3. Статистика
         correct_count = self.request.session.get('correct_count', 0)
@@ -597,16 +602,19 @@ class ChemTestAnswerView(TemplateView):
 
         context.update({
             'next_index': next_index,
-            'items': question_list,
-            'count': len(question_list),
-            'percent': percent
+            'percent': percent,
+            'count': len(question_list)
         })
 
-        # 4. Избранное
+        # 4. ИЗБРАННОЕ (Чтобы кнопки "Удалить/Добавить" работали)
         if self.request.user.is_authenticated:
-            context['favorite_ids'] = list(UserReaction.objects.filter(
+            # Получаем список ID всех реакций, которые этот юзер сохранил
+            # ВАЖНО: убедитесь, что поле в UserReaction называется 'reaction'
+            fav_ids = UserReaction.objects.filter(
                 user=self.request.user
-            ).values_list('reaction_id', flat=True))
+            ).values_list('reaction_id', flat=True)
+            
+            context['favorite_ids'] = list(fav_ids) # Превращаем QuerySet в список
         else:
             context['favorite_ids'] = []
         
