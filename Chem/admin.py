@@ -55,9 +55,20 @@ class JSMEWidget(forms.Widget):
         """
         return mark_safe(html)
 
-class OrganicClassFilter(admin.SimpleListFilter):
-    title = 'Наличие класса' # Заголовок в колонке фильтров
-    parameter_name = 'has_class' # Параметр в URL
+# 1. Форма для админки (должна быть объявлена ПЕРЕД классом OrganicNamesAdmin)
+class OrganicNamesAdminForm(forms.ModelForm):
+    class Meta:
+        model = OrganicNames
+        fields = '__all__'
+        widgets = {
+            'molecule': JSMEWidget(), 
+            'appearance': CKEditorUploadingWidget(),
+        }
+
+# 2. Фильтр для поиска записей с пустым полем organic_class
+class OrganicClassEmptyFilter(admin.SimpleListFilter):
+    title = 'Наличие класса (organic_class)' # Заголовок в правой панели
+    parameter_name = 'empty_class'
 
     def lookups(self, request, model_admin):
         return (
@@ -67,25 +78,37 @@ class OrganicClassFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'empty':
-            # Фильтруем и NULL (None), и пустые строки ('')
-            return queryset.filter(organic_class__in=[None, ''])
+            # Фильтруем и NULL, и пустые строки
+            return queryset.filter(organic_class__isnull=True) | queryset.filter(organic_class='')
         if self.value() == 'filled':
-            return queryset.exclude(organic_class__in=[None, ''])
+            # Исключаем все пустые варианты
+            return queryset.exclude(organic_class__isnull=True).exclude(organic_class='')
         return queryset
 
+# 3. Основной класс админки
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
     search_fields = ['name1', 'name2', 'name3']
-    list_display = ('pk', 'name1', 'molecule_short', 'organic_class') # Добавил в список для наглядности
     
-    # Добавляем наш созданный фильтр в список фильтров
-    list_filter = (OrganicClassFilter,)
+    # Добавил organic_class в список, чтобы вы видели результат фильтрации
+    list_display = ('pk', 'name1', 'molecule_short', 'organic_class')
+    
+    # Подключаем созданный фильтр
+    list_filter = (OrganicClassEmptyFilter,)
 
     def save_model(self, request, obj, form, change):
+        # Сначала вызываем стандартное сохранение
         super().save_model(request, obj, form, change)
-        msg = f"Редактирована запись № {obj.pk}" if change else f"Создана запись № {obj.pk}"
+        
+        # Формируем и выводим ваше кастомное сообщение
+        if change:
+            msg = f"Редактирована запись № {obj.pk}"
+        else:
+            msg = f"Создана запись № {obj.pk}"
+        
         messages.success(request, msg)
+        
 # знх классы для отображения в админке
 
 # класс для загрузки/выгрузки знх
