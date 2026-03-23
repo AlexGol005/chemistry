@@ -55,23 +55,37 @@ class JSMEWidget(forms.Widget):
         """
         return mark_safe(html)
 
-class OrganicNamesAdminForm(forms.ModelForm):
-    class Meta:
-        model = OrganicNames
-        fields = '__all__'
-        widgets = {'molecule': JSMEWidget(), 'appearance' : CKEditorUploadingWidget(),}
+class OrganicClassFilter(admin.SimpleListFilter):
+    title = 'Наличие класса' # Заголовок в колонке фильтров
+    parameter_name = 'has_class' # Параметр в URL
+
+    def lookups(self, request, model_admin):
+        return (
+            ('empty', 'Не заполнено'),
+            ('filled', 'Заполнено'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'empty':
+            # Фильтруем и NULL (None), и пустые строки ('')
+            return queryset.filter(organic_class__in=[None, ''])
+        if self.value() == 'filled':
+            return queryset.exclude(organic_class__in=[None, ''])
+        return queryset
 
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
     search_fields = ['name1', 'name2', 'name3']
-    list_display = ('pk', 'name1', 'molecule_short')
+    list_display = ('pk', 'name1', 'molecule_short', 'organic_class') # Добавил в список для наглядности
     
+    # Добавляем наш созданный фильтр в список фильтров
+    list_filter = (OrganicClassFilter,)
+
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         msg = f"Редактирована запись № {obj.pk}" if change else f"Создана запись № {obj.pk}"
         messages.success(request, msg)
-
 # знх классы для отображения в админке
 
 # класс для загрузки/выгрузки знх
