@@ -1,0 +1,79 @@
+{% extends 'main/superbase.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+Химические вещества
+{% endblock %}
+{#конец названия страницы#}
+
+
+    
+{% block content %}
+{% autoescape off %}
+<div class="col-8">
+         
+   <center>  <h3><a href="/chem/"> Видео популярных зрелищных реакций </a></h3>     </center>
+{#основная таблица#}
+
+{% for obj in objects %}
+   
+    <table class="table table-bordered flexy1">
+    <tbody>
+    <tr>
+        <td class="ind1"> 
+           <h4>{{ obj.formula }}. {{ obj.name }}</h4>
+            <br>
+
+        <a href="{% url 'compaund' obj.pk %}" class="btn btn-outline-primary mt-3" style="width: 180px">читать далее</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+ {% endfor %}
+{#конец основной таблицы#}
+
+  
+{#пагинация#}
+{# стандартная #}
+{% if is_paginated %}
+    <div class="pagination-container">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="btn btn-outline-primary mt-1">Начало</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary mt-1">«</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <!-- Активная страница -->
+                <span class="btn btn-primary mt-1 disabled">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-10' and num < page_obj.number|add:'10' %}
+                <!-- Соседние страницы (в радиусе 2 от текущей) -->
+                <a href="?page={{ num }}" class="btn btn-outline-primary mt-1">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary mt-1">»</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-primary mt-1">Последняя</a>
+        {% endif %}
+    </div>
+{% endif %}
+
+
+</div>
+<div class="col-4">
+    <center>   <h4>Поиск</h4>  </center>
+        <form action="{% url 'compaundsearchresult' %}" method="GET">
+         {% csrf_token %}
+         {% crispy form %}
+         </form>
+<br>
+
+
+    
+    </div>
+{% endautoescape %}
+{% endblock %}
