@@ -27,22 +27,10 @@ class VideorView(ListView):
         return context
 
 
-class VideorStrView(TemplateView):
-    """ выводит отдельную реакцию с видео """
+class VideorStrView(DetailView):
     model = Videor
     template_name = 'Chem/videorstr.html'
-
-
-    def get_object(self, queryset=None):
-        return Videor.objects.get(pk=self.kwargs.get("pk"))
-
-    def get_context_data(self, **kwargs):
-        context = super(VideorStrView, self).get_context_data(**kwargs)
-        obj = Videor.objects.get(pk=self.kwargs.get("pk"))
-        
-        context['objcontent'] = obj
-      
-        return context
+    context_object_name = 'objcontent'
 
 
 class VideorSearchResultView(TemplateView):
