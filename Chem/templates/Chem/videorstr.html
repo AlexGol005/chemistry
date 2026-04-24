@@ -1,0 +1,96 @@
+<!-- """страница вывода вещества""" -->
+{% extends 'main/superbase.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+Видео реакции
+{% endblock %}
+{#конец названия страницы#}
+
+    {% block metaname %}<meta name="description" content="{{objcontent.metatitle}}" >{% endblock %}
+    {% block keywords %}<meta name="keywords" content="{{objcontent.keywords}}">{% endblock %}
+    {% block description %}<meta name="description" content="{{objcontent.description}}">{% endblock %}
+    
+{% block content %}
+{% autoescape off %}
+<div class="col-12">
+         
+   <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
+       {{objcontent.title}} </p>    </center>
+    <br>
+
+                 {% if objcontent.text %}
+            <center> 
+
+            <table class="table table-bordered flexy1">
+                <td>
+                     <div style="font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums; text-align: left !important; ">
+                  {{objcontent.text}}
+                          </div>
+                                 </td>
+            </table>
+</center>                       
+                 {% endif %}   
+
+<!-- Блок для видео -->
+{% if objcontent.video %}
+<br>
+<center>
+    <a href="{{ objcontent.video }}" target="_blank" rel="noopener noreferrer">
+        <h3>Смотрите видео по ссылке</h3>
+    </a>
+</center>
+{% endif %}
+
+  <!-- Блок для презентации -->
+{% if objcontent.presentation %}
+<center>    <div style="margin-top: 20px;">
+        <a href="{{ objcontent.presentation.url }}" target="_blank" class="btn btn-primary">
+            👁 Посмотреть презентацию в новом окне
+        </a>
+    </div>
+    </center>
+{% endif %}
+    
+   
+<!-- Блок для первого изображения -->
+{% if objcontent.img1 %}
+<center>
+    <div class="media text-muted flex-column align-items-center pt-3">
+        <img class="bd-placeholder-img mr-2 rounded" style="width: 60%; height: auto;" src="{{ objcontent.img1.url }}">
+    </div>
+</center>
+{% endif %}
+
+<!-- Блок для второго изображения -->
+{% if objcontent.img2 %}
+<center>
+    <div class="media text-muted flex-column align-items-center pt-3">
+        <img class="bd-placeholder-img mr-2 rounded" style="width: 60%; height: auto;" src="{{ objcontent.img2.url }}">
+    </div>
+</center>
+{% endif %}
+
+<!-- Блок для третьего изображения -->
+{% if objcontent.img3 %}
+<center>
+    <div class="media text-muted flex-column align-items-center pt-3">
+        <img class="bd-placeholder-img mr-2 rounded" style="width: 60%; height: auto;" src="{{ objcontent.img3.url }}">
+    </div>
+</center>
+{% endif %}
+
+
+
+
+  
+ <!-- {% endfor %} -->
+
+
+</div>
+
+{% endautoescape %}
+{% endblock %}
