@@ -14,7 +14,41 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
+# видеореакции классы для отображения в админке
 
+# класс для загрузки/выгрузки видеореакции
+class VideorResource(resources.ModelResource):
+    class Meta:
+        model = Videor
+        skip_unchanged = True
+        report_skipped = True 
+
+
+# класс добавления стилей к окну видеореакции
+class VideorAdminForm(forms.ModelForm):
+    text = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+
+
+    class Meta:
+        model = Videor
+        fields = '__all__'
+        
+# класс подробностей видеореакции   
+class VideordsAdmin(ImportExportActionModelAdmin):
+    resource_class = VideorResource
+    form = VideorAdminForm
+    search_fields = ['pk', 'title', 'text'] 
+    save_as = True
+    list_display = ('pk', 'title')
+    
+        
+# фиксация формы в админке видеореакции
+admin.site.register(Videor, VideorAdmin)
+
+# окончание видеореакции
+
+
+                    
 class JSMEWidget(forms.Widget):
     template_name = 'admin/widgets/jsme_editor.html'
 
