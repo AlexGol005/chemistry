@@ -7,7 +7,7 @@ from . import views
 urlpatterns = [
     path('videor', views.VideorView.as_view(), name='videor'),
     path('videor/searchresult/', views.VideorSearchResultView.as_view(), name='videorsearchresult'),
-    path('videorstr/<str:str>/', views.VideorStrView.as_view(), name='videorstr'),
+    path('videorstr/<int:pk>/', views.VideorStrView.as_view(), name='videorstr'),
     
     path('', views.ChemView.as_view(), name='chem'),
     path('inorganiclaw', views.InorganiclawView.as_view(), name='inorganiclaw'),
