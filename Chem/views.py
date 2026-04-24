@@ -40,7 +40,7 @@ class VideorStrView(TemplateView):
         context = super(VideorStrView, self).get_context_data(**kwargs)
         obj = Videor.objects.get(pk=self.kwargs.get("pk"))
         
-        context['obj'] = obj
+        context['objcontent'] = obj
       
         return context
 
