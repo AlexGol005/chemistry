@@ -34,7 +34,7 @@ class VideorAdminForm(forms.ModelForm):
         fields = '__all__'
         
 # класс подробностей видеореакции   
-class VideordsAdmin(ImportExportActionModelAdmin):
+class VideorAdmin(ImportExportActionModelAdmin):
     resource_class = VideorResource
     form = VideorAdminForm
     search_fields = ['pk', 'title', 'text'] 
