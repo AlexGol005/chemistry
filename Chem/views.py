@@ -11,6 +11,61 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import Http404
 
+# начало вьюшек раздел реакции с видео
+
+class VideorView(ListView):
+    """ Выводит список всех всех реакций с видео """
+    model = Videor
+    template_name = 'Chem/videors.html'
+    context_object_name = 'objects'
+    ordering = ['number']
+    paginate_by = 6
+
+    def get_context_data(self, **kwargs):
+        context = super(VideorView, self).get_context_data(**kwargs)
+        context['form'] = SearchForm()
+        return context
+
+
+class VideorStrView(TemplateView):
+    """ выводит отдельную реакцию с видео """
+    model = Videor
+    template_name = 'Chem/videorstr.html'
+
+
+    def get_object(self, queryset=None):
+        return Videor.objects.get(pk=self.kwargs.get("pk"))
+
+    def get_context_data(self, **kwargs):
+        context = super(VideorStrView, self).get_context_data(**kwargs)
+        obj = Videor.objects.get(pk=self.kwargs.get("pk"))
+        
+        context['obj'] = obj
+      
+        return context
+
+
+class VideorSearchResultView(TemplateView):
+    """ Представление, которое выводит результаты поиска по видеореакциям """
+
+    template_name = 'Chem/videors.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(VideorSearchResultView, self).get_context_data(**kwargs)
+        searchword = self.request.GET['searchword']
+        if self.request.GET['searchword']:
+            searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
+        if searchword:
+            objects = Videor.objects.\
+            filter(Q(title__icontains=searchword)|Q(title__icontains=searchword1)|Q(text__icontains=searchword)|Q(text__icontains=searchword1)).order_by('pk')
+            context['objects'] = objects
+            context['form'] = SearchForm(initial={'searchword': searchword})
+        return context
+
+
+
+
+
 # начало вьюшек тест реакции неорганики - головы для теста по законам и вопрос-ответ
 
 class ChemTestHeadView(ListView):
