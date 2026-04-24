@@ -53,6 +53,30 @@ ORGANIC_CLASSES = [
     ('inorganic_compounds', 'Неорганические соединения'),
 ] 
 
+class Videor(models.Model):
+    """ видеореакции """
+    date = models.DateField('Дата', auto_now_add=True)
+    metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
+    description = models.TextField('Метаописание страницы', blank=True, null=True)    
+    keywords = models.TextField('Ключевые слова', blank=True, null=True)
+    
+    title = models.TextField('Заголовок', blank=True, null=True)
+    text = models.TextField('Описание', blank=True, null=True)
+    video = models.CharField('Видео', max_length=10000, blank=True, null=True)
+    presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
+                                        
+    def __str__(self):
+        return f'{self.title}'
+
+    class Meta:
+        verbose_name = 'Видеореакция'
+        verbose_name_plural = 'Видеореакции'
+
+
+
+
+
+
 
 class OrganicNames(models.Model): # Используем стандартный models.Model
     name1 = models.CharField('Название 1', max_length=255, blank=True, null=True, unique=True)
