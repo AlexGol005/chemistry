@@ -5,8 +5,9 @@ from . import views
 
 
 urlpatterns = [
-    # path('organicnamestesthead', views.OrganicNamesHomeView.as_view(), name='organicnamestesthead'),
-    # path('organicnamestest/<int:pk>/', views.OrganicNamesTestView.as_view(), name='organicnamestest'),
+    path('videor', views.VideorView.as_view(), name='videor'),
+    path('videor/searchresult/', views.VideorSearchResultView.as_view(), name='videorsearchresult'),
+    path('videorstr/<str:str>/', views.VideorStrView.as_view(), name='videorstr'),
     
     path('', views.ChemView.as_view(), name='chem'),
     path('inorganiclaw', views.InorganiclawView.as_view(), name='inorganiclaw'),
@@ -41,6 +42,8 @@ urlpatterns = [
     path('organiccompaunds', views.OrganicCompaundView.as_view(), name='organiccompaunds'),
     path('organiccompaunds/searchresult/', views.OrganicCompaundSearchResultView.as_view(), name='organiccompaundsearchresult'),
     path('organiccompaund/<str:str>/', views.OrganicCompaundStrView.as_view(), name='organiccompaund'),
+
+    
 
 # 1. Главная страница выбора режима (Пульт управления с 3 кнопками)
     path('organicnamestest/head/', 
