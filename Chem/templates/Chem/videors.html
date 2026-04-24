@@ -24,10 +24,10 @@
     <tbody>
     <tr>
         <td class="ind1"> 
-           <h4>{{ obj.formula }}. {{ obj.name }}</h4>
+           <h4> {{ obj.title }}</h4>
             <br>
 
-        <a href="{% url 'compaund' obj.pk %}" class="btn btn-outline-primary mt-3" style="width: 180px">читать далее</a>
+        <a href="{% url 'videorstr' obj.pk %}" class="btn btn-outline-primary mt-3" style="width: 180px">читать далее</a>
         </td>
     </tr>
     </tbody>
@@ -66,7 +66,7 @@
 </div>
 <div class="col-4">
     <center>   <h4>Поиск</h4>  </center>
-        <form action="{% url 'compaundsearchresult' %}" method="GET">
+        <form action="{% url 'videorsearchresult' %}" method="GET">
          {% csrf_token %}
          {% crispy form %}
          </form>
