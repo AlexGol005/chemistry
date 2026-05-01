@@ -192,6 +192,23 @@
 {% endif %}
 
     
+               <center>  <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img4 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img4.url }}">{% endif %}
+
+</div></center> 
+    <br> 
+               <center>  <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img5 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img5.url }}">{% endif %}
+
+</div></center> 
+    <br> 
+                   <center>  <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img6 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img6.url }}">{% endif %}
+
+</div></center> 
+    <br> 
+
+    
     {% if next_index %}
        <center>   <a href="{% url 'inorganiclawtestquestion' next_index %}"  class="btn btn-primary  mt-2 mr-2 ml-2"> 
        Следующая химическая реакция
