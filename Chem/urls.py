@@ -5,6 +5,8 @@ from . import views
 
 
 urlpatterns = [
+    path('pictures', views.PicturesView.as_view(), name='pictures'),
+    
     path('videor', views.VideorView.as_view(), name='videor'),
     path('videor/searchresult/', views.VideorSearchResultView.as_view(), name='videorsearchresult'),
     path('videorstr/<int:pk>/', views.VideorStrView.as_view(), name='videorstr'),
