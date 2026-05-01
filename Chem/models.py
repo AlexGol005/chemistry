@@ -53,6 +53,20 @@ ORGANIC_CLASSES = [
     ('inorganic_compounds', 'Неорганические соединения'),
 ] 
 
+class Pictures(models.Model):
+    """ картинки """
+
+    img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
+
+                                        
+
+
+    class Meta:
+        verbose_name = 'картинки'
+        verbose_name_plural = 'картинки'
+
+
+
 class Videor(models.Model):
     """ видеореакции """
     date = models.DateField('Дата', auto_now_add=True)
