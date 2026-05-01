@@ -97,6 +97,11 @@ class OrganicNames(models.Model): # Используем стандартный 
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
+                                        
+    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
+                                      
+    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
     organic_class = models.CharField('Класс', blank=True, null=True, default='ЕГЭ', choices=ORGANIC_CLASSES)
 
@@ -143,6 +148,11 @@ class Organiclaw(models.Model):
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
+                                        
+    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
+                                      
+    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
     presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
                                         
@@ -187,6 +197,11 @@ class OrganicReaction(models.Model):
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
+                                        
+    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
+                                      
+    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
 
     def __str__(self):
@@ -236,6 +251,11 @@ class Inorganiclaw(models.Model):
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
+                                        
+    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
+                                      
+    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
     presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
                                         
@@ -280,6 +300,11 @@ class InorganicReaction(models.Model):
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
+                                        
+    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
+                                      
+    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
 
     def __str__(self):
@@ -319,6 +344,11 @@ class NamesCompaunds(models.Model):
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
+                                        
+    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
+                                      
+    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
 
     class Meta:
@@ -356,6 +386,11 @@ class Atomlaw(models.Model):
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
+                                        
+    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
+                                      
+    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
 
@@ -391,6 +426,11 @@ class AtomTest(models.Model):
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
+                                        
+    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
+                                      
+    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
 
     def __str__(self):
