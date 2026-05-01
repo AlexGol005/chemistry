@@ -460,5 +460,5 @@ class OrganicReactionAdmin(ImportExportActionModelAdmin):
 admin.site.register(OrganicReaction, OrganicReactionAdmin)
 
 
-
+admin.site.register(Pictures)
 
