@@ -11,6 +11,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import Http404
 
+
+class PicturesView(ListView):
+    """ Выводит список всех картинок """
+    model = Pictures
+    template_name = 'Chem/pictures.html'
+    context_object_name = 'objects'
+    ordering = ['-pk']
+    paginate_by = 20
+
+
+
 # начало вьюшек раздел реакции с видео
 
 class VideorView(ListView):
