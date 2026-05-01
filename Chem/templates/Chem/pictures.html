@@ -1,0 +1,65 @@
+{% extends 'main/superbase.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+Химические мемы
+{% endblock %}
+{#конец названия страницы#}
+
+
+    
+{% block content %}
+{% autoescape off %}
+<div class="col-8">
+         
+
+
+{% for obj in objects %}
+
+    <br> 
+                   <center>  <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img1 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img1.url }}">{% endif %}
+
+</div></center> 
+
+
+  
+
+ {% endfor %}
+
+
+  
+{#пагинация#}
+{# стандартная #}
+{% if is_paginated %}
+    <div class="pagination-container">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="btn btn-outline-primary mt-1">Начало</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary mt-1">«</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <!-- Активная страница -->
+                <span class="btn btn-primary mt-1 disabled">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-10' and num < page_obj.number|add:'10' %}
+                <!-- Соседние страницы (в радиусе 2 от текущей) -->
+                <a href="?page={{ num }}" class="btn btn-outline-primary mt-1">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary mt-1">»</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-primary mt-1">Последняя</a>
+        {% endif %}
+    </div>
+{% endif %}
+
+
+</div>
+
+{% endautoescape %}
+{% endblock %}
