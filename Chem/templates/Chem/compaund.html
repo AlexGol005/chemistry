@@ -79,6 +79,23 @@
     <br>
 <!-- {% for j in qw %} -->
 
+    
+               <center>  <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img4 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img4.url }}">{% endif %}
+
+</div></center> 
+    <br> 
+               <center>  <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img5 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img5.url }}">{% endif %}
+
+</div></center> 
+    <br> 
+                   <center>  <div class="media text-muted flex-column align-items-center pt-3">
+       {% if obj.img6 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img6.url }}">{% endif %}
+
+</div></center> 
+    <br> 
+
 
              <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
 <a href="{% url 'inorganiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
