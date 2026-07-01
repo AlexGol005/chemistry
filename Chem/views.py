@@ -250,24 +250,25 @@ class ChemTestAnswerView(TemplateView):
         context['items'] = q_list
         context['count'] = len(q_list)
 
-        # ИСПРАВЛЕННАЯ ЛОГИКА СЧЕТЧИКА "Х из Y" ДЛЯ СТРАНИЦЫ ОТВЕТА
+        # ИСПРАВЛЕННАЯ ЛОГИКА СЧЕТЧИКА "Х из Y"
         total_questions = self.request.session.get('total_test_questions', 0)
         current_num = self.request.session.get('all_count', 1)
-        
         context['question_progress'] = f"реакция № {current_num} из {total_questions}"
 
+        # ИСПРАВЛЕННАЯ ЛОГИКА ПРОЦЕНТОВ (считает от пройденных, а не от all_count)
+        answered_questions = total_questions - len(q_list)
         cor = self.request.session.get('correct_count', 0)
-        total = self.request.session.get('all_count', 0)
-        context['percent'] = round((cor / total) * 100) if total > 0 else 0
+        context['percent'] = round((cor / answered_questions) * 100) if answered_questions > 0 else 0
 
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(UserReaction.objects.filter(user=self.request.user).values_list('reaction_id', flat=True))
         
         return context
 
+
+# ФУНКЦИИ ИЗБРАННОГО
 @login_required
 def add_to_list(request, reaction_id):
-    """ Добавляет реакцию в список избранного текущего пользователя """
     if request.method == 'POST':
         reaction = get_object_or_404(InorganicReaction, id=reaction_id)
         UserReaction.objects.get_or_create(user=request.user, reaction=reaction)
@@ -275,12 +276,10 @@ def add_to_list(request, reaction_id):
 
 @login_required
 def my_favorites_view(request):
-    """ Отображает список избранных реакций пользователя """
     user_items = UserReaction.objects.filter(user=request.user).select_related('reaction')
     return render(request, 'my_list.html', {'user_items': user_items})
 
 def remove_reaction(request, reaction_id):
-    """ Удаляет реакцию из списка избранного """
     if request.method == 'POST':
         UserReaction.objects.filter(user=request.user, reaction_id=reaction_id).delete()
     return redirect(request.META.get('HTTP_REFERER', '/'))
