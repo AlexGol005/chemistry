@@ -56,6 +56,25 @@
   <div class="test-progress" style="margin: 15px 0; padding: 10px; background-color: #f8f9fa; border-left: 4px solid #007bff; font-weight: bold;">
     {{ question_progress }}
 </div>
+
+    <div class="level-badge-container" style="margin: 15px 0; display: inline-flex; align-items: center; font-family: sans-serif;">
+    <span style="font-size: 14px; color: #5a626a; margin-right: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
+        Уровень:
+    </span>
+    {% if level == "ОГЭ" %}
+        <span style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; letter-spacing: 1px; box-shadow: 0 2px 6px rgba(0,123,255,0.2); border: 1px solid rgba(0,0,0,0.05);">
+            ОГЭ
+        </span>
+    {% elif level == "ЕГЭ" %}
+        <span style="background: linear-gradient(135deg, #dc3545, #bd2130); color: white; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; letter-spacing: 1px; box-shadow: 0 2px 6px rgba(220,53,69,0.2); border: 1px solid rgba(0,0,0,0.05);">
+            ЕГЭ
+        </span>
+    {% else %}
+        <span style="background: #e9ecef; color: #495057; padding: 5px 14px; border-radius: 20px; font-weight: 600; font-size: 13px;">
+            {{ level|default:"Не указан" }}
+        </span>
+    {% endif %}
+</div>
 {% endif %}
              <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 34pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
 
