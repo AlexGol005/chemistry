@@ -156,6 +156,16 @@ class ChemTestQuestionView(TemplateView):
         context['name1'] = NamesCompaunds.objects.filter(formula=qw.reagent1).values_list('name', flat=True).first() or ""
         context['name2'] = NamesCompaunds.objects.filter(formula=qw.reagent2).values_list('name', flat=True).first() or ""
         context['name3'] = NamesCompaunds.objects.filter(formula=qw.reagent3).values_list('name', flat=True).first() or ""
+
+        q_list = self.request.session.get('question_list', [])
+        if 'total_test_questions' not in self.request.session or not self.request.session.get('all_count'):
+            self.request.session['total_test_questions'] = len(q_list) + 1
+            self.request.session['all_count'] = 0 
+
+        total_questions = self.request.session.get('total_test_questions', len(q_list) + 1)
+        remaining_questions = len(q_list) + 1 
+        
+        context['question_progress'] = f"реакция № {remaining_questions} из {total_questions}"
         
         context.update({
             'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
@@ -226,6 +236,13 @@ class ChemTestAnswerView(TemplateView):
         q_list = self.request.session.get('question_list', [])
         context['items'] = q_list
         context['count'] = len(q_list)
+
+        # Вычисление прогресса для страницы ответа
+        q_list = self.request.session.get('question_list', [])
+        total_questions = self.request.session.get('total_test_questions', len(q_list) + 1)
+        remaining_questions = len(q_list) + 1
+        
+        context['question_progress'] = f"реакция № {remaining_questions} из {total_questions}"
 
         cor = self.request.session.get('correct_count', 0)
         total = self.request.session.get('all_count', 0)
