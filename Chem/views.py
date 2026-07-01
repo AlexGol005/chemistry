@@ -79,26 +79,29 @@ class ChemTestHeadView(ListView):
             reactions = InorganicReaction.objects.filter(number__pk=str_pk)
             a = reactions.first()
             context['numbertitle'] = a.number.title if a else 'Пока нет реакций'
-            context['count'] = reactions.count()
             
-            # Если тест еще не начат или список пуст — инициализируем
-            if self.request.session.get('all_count', 0) == 0 or not self.request.session.get('question_list'):
-                question_ids = list(reactions.values_list('id', flat=True))
-                random.shuffle(question_ids)
+            total_db_count = reactions.count()
+            context['count'] = total_db_count
+            
+            # ВСЕГДА генерируем новый тест при заходе на эту страницу
+            question_ids = list(reactions.values_list('id', flat=True))
+            random.shuffle(question_ids)
+            
+            if question_ids:
+                q1 = question_ids.pop(0)
+                context['q1'] = q1
                 
-                if question_ids:
-                    q1 = question_ids.pop(0)
-                    context['q1'] = q1
-                    self.request.session['question_list'] = question_ids
-                    self.request.session['correct_count'] = 0
-                    self.request.session['incorrect_count'] = 0
-                    self.request.session['all_count'] = 0
-                else:
-                    context['q1'] = 0
+                # Записываем свежие данные в сессию, затирая старые
+                self.request.session['question_list'] = question_ids
+                self.request.session['correct_count'] = 0
+                self.request.session['incorrect_count'] = 0
+                self.request.session['all_count'] = 0
+                
+                # Фиксируем общее количество вопросов для счетчика "X из Y"
+                self.request.session['total_test_questions'] = total_db_count
             else:
-                # Если тест в процессе, берем текущий первый ID из списка
-                current_list = self.request.session.get('question_list', [])
-                context['q1'] = current_list[0] if current_list else 0
+                context['q1'] = 0
+                self.request.session['total_test_questions'] = 0
                 
         except Exception:
             context['numbertitle'] = 'Ошибка загрузки'
@@ -122,24 +125,34 @@ class ChemMyTestHeadView(ListView):
         
         if queryset.exists():
             context['numbertitle'] = "Мои сохраненные реакции"
-            context['count'] = queryset.count()
             
-            if self.request.session.get('all_count', 0) == 0 or not self.request.session.get('question_list'):
-                question_ids = list(queryset.values_list('id', flat=True))
-                random.shuffle(question_ids)
+            total_db_count = queryset.count()
+            context['count'] = total_db_count
+            
+            # ВСЕГДА генерируем новый тест с нуля при заходе на эту страницу
+            question_ids = list(queryset.values_list('id', flat=True))
+            random.shuffle(question_ids)
+            
+            if question_ids:
                 q1 = question_ids.pop(0)
-                
                 context['q1'] = q1
+                
+                # Полный сброс сессии и запись свежих данных
                 self.request.session['question_list'] = question_ids
                 self.request.session['correct_count'] = 0
                 self.request.session['incorrect_count'] = 0
                 self.request.session['all_count'] = 0
+                
+                # Фиксируем общее количество сохраненных реакций для счетчика "X из Y"
+                self.request.session['total_test_questions'] = total_db_count
             else:
-                current_list = self.request.session.get('question_list', [])
-                context['q1'] = current_list[0] if current_list else 0
+                context['q1'] = 0
+                self.request.session['total_test_questions'] = 0
         else:
             context['numbertitle'] = 'В вашем списке пока нет реакций'
             context['q1'] = 0
+            context['count'] = 0
+            self.request.session['total_test_questions'] = 0
             
         return context
 
@@ -152,20 +165,20 @@ class ChemTestQuestionView(TemplateView):
         ind = self.kwargs['str']
         qw = InorganicReaction.objects.get(pk=ind)
         
-        # Получение имен
+        # Получение имен (Ваш оригинальный код)
         context['name1'] = NamesCompaunds.objects.filter(formula=qw.reagent1).values_list('name', flat=True).first() or ""
         context['name2'] = NamesCompaunds.objects.filter(formula=qw.reagent2).values_list('name', flat=True).first() or ""
         context['name3'] = NamesCompaunds.objects.filter(formula=qw.reagent3).values_list('name', flat=True).first() or ""
 
-        q_list = self.request.session.get('question_list', [])
-        if 'total_test_questions' not in self.request.session or not self.request.session.get('all_count'):
-            self.request.session['total_test_questions'] = len(q_list) + 1
-            self.request.session['all_count'] = 0 
-
-        total_questions = self.request.session.get('total_test_questions', len(q_list) + 1)
-        remaining_questions = len(q_list) + 1 
+        # ИСПРАВЛЕННАЯ ЛОГИКА СЧЕТЧИКА "Х из Y" (1 из 48, 2 из 48 и т.д.)
+        total_questions = self.request.session.get('total_test_questions', 0)
+        current_num = self.request.session.get('all_count', 0) + 1
         
-        context['question_progress'] = f"реакция № {remaining_questions} из {total_questions}"
+        # Защита от переполнения счетчика при случайных обновлениях страницы
+        if current_num > total_questions and total_questions > 0:
+            current_num = total_questions
+            
+        context['question_progress'] = f"реакция № {current_num} из {total_questions}"
         
         context.update({
             'reagent1': qw.reagent1, 'reagent2': qw.reagent2, 'reagent3': qw.reagent3,
@@ -174,7 +187,7 @@ class ChemTestQuestionView(TemplateView):
             'count': len(self.request.session.get('question_list', []))
         })
         
-        # Увеличиваем счетчик общего количества вопросов только при GET (показе вопроса)
+        # Увеличиваем счетчик общего количества вопросов только после расчета прогресса
         self.request.session['all_count'] = self.request.session.get('all_count', 0) + 1
         return context
 
@@ -237,12 +250,11 @@ class ChemTestAnswerView(TemplateView):
         context['items'] = q_list
         context['count'] = len(q_list)
 
-        # Вычисление прогресса для страницы ответа
-        q_list = self.request.session.get('question_list', [])
-        total_questions = self.request.session.get('total_test_questions', len(q_list) + 1)
-        remaining_questions = len(q_list) + 1
+        # ИСПРАВЛЕННАЯ ЛОГИКА СЧЕТЧИКА "Х из Y" ДЛЯ СТРАНИЦЫ ОТВЕТА
+        total_questions = self.request.session.get('total_test_questions', 0)
+        current_num = self.request.session.get('all_count', 1)
         
-        context['question_progress'] = f"реакция № {remaining_questions} из {total_questions}"
+        context['question_progress'] = f"реакция № {current_num} из {total_questions}"
 
         cor = self.request.session.get('correct_count', 0)
         total = self.request.session.get('all_count', 0)
@@ -252,35 +264,6 @@ class ChemTestAnswerView(TemplateView):
             context['favorite_ids'] = list(UserReaction.objects.filter(user=self.request.user).values_list('reaction_id', flat=True))
         
         return context
-
-
-@login_required
-def add_to_list(request, reaction_id):
-    """ Добавляет реакцию в список избранного текущего пользователя """
-    if request.method == 'POST':
-        reaction = get_object_or_404(InorganicReaction, id=reaction_id)
-        # get_or_create предотвращает дубликаты
-        UserReaction.objects.get_or_create(user=request.user, reaction=reaction)
-    
-    # Возвращаем пользователя на ту же страницу, где он нажал кнопку
-    return redirect(request.META.get('HTTP_REFERER', '/'))
-
-@login_required
-def my_favorites_view(request):
-    # Получаем все объекты UserReaction для текущего пользователя
-    # select_related('reaction') подтянет данные о самих реакциях одним запросом
-    user_items = UserReaction.objects.filter(user=request.user).select_related('reaction')
-    
-    return render(request, 'my_list.html', {'user_items': user_items})
-
-def remove_reaction(request, reaction_id):
-    if request.method == 'POST':
-        # Находим и удаляем связь текущего пользователя с этой реакцией
-        UserReaction.objects.filter(user=request.user, reaction_id=reaction_id).delete()
-
-    # Возвращаем пользователя туда, откуда он пришел
-    return redirect(request.META.get('HTTP_REFERER', '/'))
-
 
 
 
