@@ -19,7 +19,9 @@
 
 <div class="col-12">
     <a href="{% url 'inorganiclawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer">открыть правило</a>  
-<br> <center>{{q_list}}</center>
+<div class="test-progress" style="margin: 15px 0; padding: 10px; background-color: #f8f9fa; border-left: 4px solid #007bff; font-weight: bold;">
+    {{ question_progress }}
+</div>
     
   <br> <center>  <h3>Реагенты</h3>     </center>
     <br>
