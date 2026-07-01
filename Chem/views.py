@@ -265,7 +265,25 @@ class ChemTestAnswerView(TemplateView):
         
         return context
 
+@login_required
+def add_to_list(request, reaction_id):
+    """ Добавляет реакцию в список избранного текущего пользователя """
+    if request.method == 'POST':
+        reaction = get_object_or_404(InorganicReaction, id=reaction_id)
+        UserReaction.objects.get_or_create(user=request.user, reaction=reaction)
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
+@login_required
+def my_favorites_view(request):
+    """ Отображает список избранных реакций пользователя """
+    user_items = UserReaction.objects.filter(user=request.user).select_related('reaction')
+    return render(request, 'my_list.html', {'user_items': user_items})
+
+def remove_reaction(request, reaction_id):
+    """ Удаляет реакцию из списка избранного """
+    if request.method == 'POST':
+        UserReaction.objects.filter(user=request.user, reaction_id=reaction_id).delete()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 # конец вьюшек тест реакции не - головы для теста по законам и вопрос-ответ
