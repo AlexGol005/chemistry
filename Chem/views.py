@@ -164,6 +164,7 @@ class ChemTestQuestionView(TemplateView):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs['str']
         qw = InorganicReaction.objects.get(pk=ind)
+        context['level'] = qw.level
         
         # Получение имен (Ваш оригинальный код)
         context['name1'] = NamesCompaunds.objects.filter(formula=qw.reagent1).values_list('name', flat=True).first() or ""
@@ -231,6 +232,7 @@ class ChemTestAnswerView(TemplateView):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs['str']
         qw = InorganicReaction.objects.get(pk=ind)
+        context['level'] = qw.level
         
         # Заполнение данных реагентов/продуктов и их имен
         formulas = [qw.reagent1, qw.reagent2, qw.reagent3, qw.product1, qw.product2, qw.product3, qw.product4]
