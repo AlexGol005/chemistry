@@ -206,10 +206,26 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
     resource_class = InorganicReactionResource
     form = InorganicReactionAdminForm
     autocomplete_fields = ['number']
-    list_display = ('pk', 'metatitle')
+    
+    # 1. ОБНОВИЛИ: добавили 'level' в список, чтобы видеть его в админке
+    list_display = ('pk', 'metatitle', 'level') 
     search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
     save_as = True
 
+    # 2. ДОБАВИЛИ: зарегистрировали новое массовое действие
+    actions = ['mass_set_level_ege']
+
+    # 3. ДОБАВИЛИ: саму функцию массового изменения поля level
+    @admin.action(description='Установить уровень "ЕГЭ" для выбранных реакций')
+    def mass_set_level_ege(self, request, queryset):
+        updated_count = queryset.update(level='ЕГЭ') # Меняет поле level на 'ЕГЭ'
+        self.message_user(
+            request, 
+            f'Успешно изменен уровень для {updated_count} реакций.', 
+            messages.SUCCESS
+        )
+
+    # Ваш оригинальный метод сохранения (остался без изменений)
     def save_model(self, request, obj, form, change):
         # 1. Проверка наличия веществ в модели названий (через цикл для краткости)
         items_to_check = [
@@ -232,7 +248,6 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
 
 # фиксация формы в админке реакции
 admin.site.register(InorganicReaction, InorganicReactionAdmin)
-
 
 # вещества классы для отображения в админке
 
