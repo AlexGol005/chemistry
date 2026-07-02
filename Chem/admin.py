@@ -186,14 +186,15 @@ admin.site.register(Inorganiclaw, InorganiclawAdmin)
 
 
 
-# класс для загрузки/выгрузки реакции
+# 1. Класс для загрузки/выгрузки реакции
 class InorganicReactionResource(resources.ModelResource):
     class Meta:
         model = InorganicReaction
         skip_unchanged = True
         report_skipped = True   
 
-# класс добавления стилей к окну реакции
+
+# 2. Класс добавления стилей к окну реакции (CKEditor)
 class InorganicReactionAdminForm(forms.ModelForm):
     extra = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
 
@@ -201,33 +202,44 @@ class InorganicReactionAdminForm(forms.ModelForm):
         model = InorganicReaction
         fields = '__all__'
         
-# класс подробностей реакции   
+
+# 3. Основной класс админки реакции   
 class InorganicReactionAdmin(ImportExportActionModelAdmin):
     resource_class = InorganicReactionResource
     form = InorganicReactionAdminForm
     autocomplete_fields = ['number']
     
-    # 1. ОБНОВИЛИ: добавили 'level' в список, чтобы видеть его в админке
+    # Добавили 'level' в список отображения, чтобы сразу видеть результат
     list_display = ('pk', 'metatitle', 'level') 
     search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
     save_as = True
 
-    # 2. ДОБАВИЛИ: зарегистрировали новое массовое действие
-    actions = ['mass_set_level_ege']
+    # Регистрируем ДВА отдельных действия в выпадающем меню списка
+    actions = ['mass_set_level_oge', 'mass_set_level_ege']
 
-    # 3. ДОБАВИЛИ: саму функцию массового изменения поля level
-    @admin.action(description='Установить уровень "ЕГЭ" для выбранных реакций')
-    def mass_set_level_ege(self, request, queryset):
-        updated_count = queryset.update(level='ЕГЭ') # Меняет поле level на 'ЕГЭ'
+    # Действие №1: Мгновенная установка уровня ОГЭ
+    @admin.action(description='Установить уровень "ОГЭ" для выбранных реакций')
+    def mass_set_level_oge(self, request, queryset):
+        updated_count = queryset.update(level='ОГЭ') 
         self.message_user(
             request, 
-            f'Успешно изменен уровень для {updated_count} реакций.', 
+            f'Успешно установлен уровень "ОГЭ" для {updated_count} реакций.', 
             messages.SUCCESS
         )
 
-    # Ваш оригинальный метод сохранения (остался без изменений)
+    # Действие №2: Мгновенная установка уровня ЕГЭ
+    @admin.action(description='Установить уровень "ЕГЭ" для выбранных реакций')
+    def mass_set_level_ege(self, request, queryset):
+        updated_count = queryset.update(level='ЕГЭ') 
+        self.message_user(
+            request, 
+            f'Успешно установлен уровень "ЕГЭ" для {updated_count} реакций.', 
+            messages.SUCCESS
+        )
+
+    # Ваш оригинальный метод сохранения с валидацией веществ
     def save_model(self, request, obj, form, change):
-        # 1. Проверка наличия веществ в модели названий (через цикл для краткости)
+        # 1. Проверка наличия веществ в модели названий
         items_to_check = [
             obj.reagent1, obj.reagent2, obj.reagent3, 
             obj.product1, obj.product2, obj.product3, obj.product4
@@ -246,7 +258,8 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
         else:
             messages.success(request, f"Создана новая запись № {obj.pk}")
 
-# фиксация формы в админке реакции
+
+# 4. Фиксация формы в админке реакции
 admin.site.register(InorganicReaction, InorganicReactionAdmin)
 
 # вещества классы для отображения в админке
