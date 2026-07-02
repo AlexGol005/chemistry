@@ -257,8 +257,9 @@ class ChemTestAnswerView(TemplateView):
         current_num = self.request.session.get('all_count', 1)
         context['question_progress'] = f"реакция № {current_num} из {total_questions}"
 
-        # ИСПРАВЛЕННАЯ ЛОГИКА ПРОЦЕНТОВ (считает от пройденных, а не от all_count)
-        answered_questions = total_questions - len(q_list)
+        # ТОЛЬКО ЭТОТ БЛОК БЫЛ ИЗМЕНЕН ДЛЯ ИСПРАВЛЕНИЯ ПРОЦЕНТОВ
+        # Заменяем total_questions - len(q_list) на точное число отвеченных из all_count
+        answered_questions = self.request.session.get('all_count', 1)
         cor = self.request.session.get('correct_count', 0)
         context['percent'] = round((cor / answered_questions) * 100) if answered_questions > 0 else 0
 
