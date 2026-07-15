@@ -839,17 +839,45 @@ class AtomTestAnswerView(TemplateView):
 
 
 
+# class CompaundView(ListView):
+#     """ Выводит список неорганические вещества всех всех веществ """
+#     model = NamesCompaunds
+#     template_name = 'Chem/compaunds.html'
+#     context_object_name = 'objects'
+#     ordering = ['pk']
+#     paginate_by = 6
+
+#     def get_context_data(self, **kwargs):
+#         context = super(CompaundView, self).get_context_data(**kwargs)
+#         context['form'] = SearchForm()
+#         return context
+
 class CompaundView(ListView):
-    """ Выводит список всех всех веществ """
+    """ Выводит список неорганических веществ (все или только интересные) """
     model = NamesCompaunds
     template_name = 'Chem/compaunds.html'
     context_object_name = 'objects'
     ordering = ['pk']
     paginate_by = 6
 
+    def get_queryset(self):
+        # Получаем базовый упорядоченный список всех веществ
+        queryset = super().get_queryset()
+        
+        # Проверяем, передан ли в URL параметр ?filter=interesting
+        show_filter = self.request.GET.get('filter')
+        
+        if show_filter == 'interesting':
+            # Фильтруем: оставляем только те, где галочка (True)
+            return queryset.filter(is_interesting=True)
+            
+        return queryset
+
     def get_context_data(self, **kwargs):
-        context = super(CompaundView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['form'] = SearchForm()
+        # Передаем текущий фильтр в контекст, чтобы подсветить активную кнопку
+        context['current_filter'] = self.request.GET.get('filter', 'all')
         return context
 
 
