@@ -122,6 +122,7 @@ class OrganicNames(models.Model): # Используем стандартный 
     test_name_to_structure = models.BooleanField('тест название-структура да', default=True)
     test_structure_to_name = models.BooleanField('тест структура-название да', default=True)
     test_formula_to_class = models.BooleanField('тест формула-класс веществ да', default=True)
+    is_interesting = models.BooleanField('вещество о котором надо узнать больше', default=False)
 
     @property
     def mol_object(self):
