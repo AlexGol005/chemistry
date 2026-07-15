@@ -51,20 +51,17 @@ admin.site.register(Videor, VideorAdmin)
                     
 class JSMEWidget(forms.Widget):
     template_name = 'admin/widgets/jsme_editor.html'
-
+    
     def render(self, name, value, attrs=None, renderer=None):
-        # Если значение None, заменяем на пустую строку
         value = value or ""
         final_attrs = self.build_attrs(attrs)
         id_name = final_attrs.get('id', 'id_molecule')
         
-        # Мы вставляем HTML напрямую, чтобы избежать ошибок поиска шаблона в циклах
         html = f"""
         <div class="jsme-admin-wrapper" style="margin-bottom: 20px;">
             <div style="margin-bottom: 10px;">
                 <label style="font-weight: bold;">SMILES строка:</label>
-                <input type="text" name="{name}" id="{id_name}" value='{value}' 
-                       style="width: 100%; font-family: monospace; padding: 8px; border: 1px solid #ccc;">
+                <input type="text" name="{name}" id="{id_name}" value='{value}' style="width: 100%; font-family: monospace; padding: 8px; border: 1px solid #ccc;">
             </div>
             <div id="jsme_container_{id_name}" style="width: 500px; height: 350px; border: 1px solid #999; background: #fff;"></div>
         </div>
@@ -72,9 +69,7 @@ class JSMEWidget(forms.Widget):
         <script type="text/javascript">
             function startJSME_{id_name.replace('-', '_')}() {{
                 var field = document.getElementById("{id_name}");
-                var applet = new JSApplet.JSME("jsme_container_{id_name}", "500px", "350px", {{
-                    "options": "oldLook,paste,autocenter"
-                }});
+                var applet = new JSApplet.JSME("jsme_container_{id_name}", "500px", "350px", {{ "options": "oldLook,paste,autocenter" }});
                 if (field.value) applet.readGenericMolecularInput(field.value);
                 applet.setCallBack("AfterStructureModified", function(event) {{
                     field.value = event.src.smiles();
@@ -84,38 +79,38 @@ class JSMEWidget(forms.Widget):
                 }});
             }}
             window.jsmeOnLoad = startJSME_{id_name.replace('-', '_')};
-            setTimeout(function() {{ if (typeof JSApplet !== 'undefined') startJSME_{id_name.replace('-', '_')}(); }}, 1000);
+            setTimeout(function() {{
+                if (typeof JSApplet !== 'undefined') startJSME_{id_name.replace('-', '_')}();
+            }}, 1000);
         </script>
         """
         return mark_safe(html)
 
-# 1. Форма для админки (должна быть объявлена ПЕРЕД классом OrganicNamesAdmin)
+# 1. Форма для админки
 class OrganicNamesAdminForm(forms.ModelForm):
     class Meta:
         model = OrganicNames
         fields = '__all__'
         widgets = {
-            'molecule': JSMEWidget(), 
+            'molecule': JSMEWidget(),
             'appearance': CKEditorUploadingWidget(),
         }
 
 # 2. Фильтр для поиска записей с пустым полем organic_class
 class OrganicClassEmptyFilter(admin.SimpleListFilter):
-    title = 'Наличие класса (organic_class)' # Заголовок в правой панели
+    title = 'Наличие класса (organic_class)'
     parameter_name = 'empty_class'
-
+    
     def lookups(self, request, model_admin):
         return (
             ('empty', 'Не заполнено'),
             ('filled', 'Заполнено'),
         )
-
+        
     def queryset(self, request, queryset):
         if self.value() == 'empty':
-            # Фильтруем и NULL, и пустые строки
             return queryset.filter(organic_class__isnull=True) | queryset.filter(organic_class='')
         if self.value() == 'filled':
-            # Исключаем все пустые варианты
             return queryset.exclude(organic_class__isnull=True).exclude(organic_class='')
         return queryset
 
@@ -123,24 +118,46 @@ class OrganicClassEmptyFilter(admin.SimpleListFilter):
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
-    search_fields = ['name1', 'name2', 'name3']
     
-    # Добавил organic_class в список, чтобы вы видели результат фильтрации
-    list_display = ('pk', 'name1', 'molecule_short', 'organic_class')
+    # Расширяем поиск, чтобы искать и по формуле
+    search_fields = ['name1', 'name2', 'name3', 'formula'] 
     
-    # Подключаем созданный фильтр
-    list_filter = (OrganicClassEmptyFilter,)
+    # Выводим новые чекбоксы в общую таблицу
+    list_display = (
+        'pk', 
+        'name1', 
+        'molecule_short', 
+        'organic_class', 
+        'is_interesting', 
+        'test_name_to_structure', 
+        'test_structure_to_name', 
+        'test_formula_to_class'
+    )
+    
+    # Позволяет быстро проставлять тесты кликами прямо в списке
+    list_editable = (
+        'is_interesting', 
+        'test_name_to_structure', 
+        'test_structure_to_name', 
+        'test_formula_to_class'
+    )
+    
+    # Объединяем ваш фильтр пустых классов и новые фильтры тестов
+    list_filter = (
+        OrganicClassEmptyFilter,
+        'organic_class',
+        'is_interesting',
+        'test_name_to_structure',
+        'test_structure_to_name',
+        'test_formula_to_class'
+    )
 
     def save_model(self, request, obj, form, change):
-        # Сначала вызываем стандартное сохранение
         super().save_model(request, obj, form, change)
-        
-        # Формируем и выводим ваше кастомное сообщение
         if change:
             msg = f"Редактирована запись № {obj.pk}"
         else:
             msg = f"Создана запись № {obj.pk}"
-        
         messages.success(request, msg)
         
 # знх классы для отображения в админке
