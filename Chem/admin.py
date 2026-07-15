@@ -67,16 +67,12 @@ class JSMEWidget(forms.Widget):
             <div id="jsme_container_{id_name}" style="width: 500px; height: 350px; border: 1px solid #999; background: #fff;"></div>
         </div>
         
-        <!-- Скрипт загрузки ядра JSME -->
-        <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
-        
         <script type="text/javascript">
-            // Изолированная функция запуска конкретной рисовалки
-            function run_init_jsme_{js_safe_id}() {{
+            // 1. Создаем функцию инициализации конкретного редактора на странице
+            function init_single_jsme_{js_safe_id}() {{
                 var field = document.getElementById("{id_name}");
                 var container = document.getElementById("jsme_container_{id_name}");
                 
-                // Проверяем, что контейнер отрисовался на экране и библиотека JSME уже загружена в память
                 if (container && typeof JSApplet !== 'undefined') {{
                     try {{
                         var applet = new JSApplet.JSME("jsme_container_{id_name}", "500px", "350px", {{
@@ -87,41 +83,44 @@ class JSMEWidget(forms.Widget):
                             applet.readGenericMolecularInput(field.value);
                         }}
                         
-                        // Привязываем обновление строки SMILES при рисовании
                         applet.setCallBack("AfterStructureModified", function(event) {{
                             field.value = event.src.smiles();
                         }});
                         
-                        // Привязываем обновление редактора при ручном вводе строки в текстовое поле
                         field.addEventListener('input', function() {{
                             try {{ applet.readGenericMolecularInput(this.value); }} catch (e) {{}}
                         }});
-                        
-                        console.log("JSME для {id_name} успешно запущен!");
-                        return true; // Успешно инициализировано
-                    }} catch (err) {{
-                        console.error("Ошибка инициализации JSME:", err);
+                        return true;
+                    }} catch (e) {{
+                        console.error("Ошибка при сборке JSME апплета:", e);
                     }}
                 }}
                 return false;
             }}
 
-            // Запускаем циклический таймер, который будет пытаться включить рисовалку каждые 200 миллисекунд,
-            // пока страница и скрипты окончательно не подгрузятся
-            (function() {{
-                var attempts = 0;
-                var interval = setInterval(function() {{
-                    attempts++;
-                    var is_done = run_init_jsme_{js_safe_id}();
-                    if (is_done || attempts > 25) {{
-                        clearInterval(interval); // Останавливаем таймер после успеха или 25 неудачных попыток
-                    }}
-                }}, 200);
-            }})();
+            // 2. Умное перехватывание глобального колбэка JSME для Bootstrap 5
+            if (typeof JSApplet !== 'undefined') {{
+                // Если ядро JSME уже загружено в память, инициализируем окно мгновенно
+                init_single_jsme_{js_safe_id}();
+            }} else {{
+                // Если ядро еще не загружено, регистрируем каноничную функцию для загрузчика
+                var oldOnLoad = window.jsmeOnLoad;
+                window.jsmeOnLoad = function() {{
+                    if (typeof oldOnLoad === 'function') oldOnLoad();
+                    init_single_jsme_{js_safe_id}();
+                }};
+            }}
+
+            // Резервный таймер на случай, если разметка формы во фронтенде генерируется динамически
+            setTimeout(function() {{
+                init_single_jsme_{js_safe_id}();
+            }}, 1200);
         </script>
+        
+        <!-- Скрипт загрузки самого ядра JSME подключается строго ПОСЛЕ объявления колбэка -->
+        <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
         """
         return mark_safe(html)
-
 # 1. Форма для админки
 class OrganicNamesAdminForm(forms.ModelForm):
     class Meta:
