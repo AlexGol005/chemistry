@@ -263,33 +263,36 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
 admin.site.register(InorganicReaction, InorganicReactionAdmin)
 
 # вещества классы для отображения в админке
-
 # класс для загрузки/выгрузки вещества
 class NamesCompaundsResource(resources.ModelResource):
     class Meta:
         model = NamesCompaunds
         skip_unchanged = True
-        report_skipped = True 
-
+        report_skipped = True
 
 # класс добавления стилей к окну вещества
 class NamesCompaundsAdminForm(forms.ModelForm):
     appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
-
-
     class Meta:
         model = NamesCompaunds
         fields = '__all__'
-        
-# класс подробностей вещества   
+
+# класс подробностей вещества
 class NamesCompaundsAdmin(ImportExportActionModelAdmin):
     resource_class = NamesCompaundsResource
     form = NamesCompaundsAdminForm
-    search_fields = ['pk', 'formula', 'name'] 
+    search_fields = ['pk', 'formula', 'name']
     save_as = True
-    list_display = ('pk', 'formula', 'name')
     
-        
+    # Выводим новые поля в общую таблицу админки
+    list_display = ('pk', 'formula', 'name', 'is_interesting', 'test_name_to_structure', 'test_structure_to_name', 'test_formula_to_class')
+    
+    # Позволяет ставить и снимать галочку "интересное" прямо из общего списка, не заходя внутрь вещества
+    list_editable = ('is_interesting',)
+    
+    # Добавляет удобный блок фильтрации в правой колонке админки
+    list_filter = ('is_interesting', 'test_name_to_structure', 'test_structure_to_name', 'test_formula_to_class')
+
 # фиксация формы в админке вещества
 admin.site.register(NamesCompaunds, NamesCompaundsAdmin)
 
