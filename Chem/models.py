@@ -364,7 +364,8 @@ class NamesCompaunds(models.Model):
                                       
     img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
-
+    is_interesting = models.BooleanField('вещество о котором надо узнать больше', default=False)
+    
     class Meta:
         verbose_name = 'Название химического вещества'
         verbose_name_plural = 'Названия химических веществ'
