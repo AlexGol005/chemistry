@@ -122,13 +122,14 @@ class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
     search_fields = ['name1', 'name2', 'name3', 'formula'] 
     
-    # 1. ЗАМЕНЯЕМ оригинальные поля в таблице на наши кастомные методы
+    # 1. Возвращаем оригинальные поля из модели, чтобы работали чекбоксы
     list_display = (
         'pk', 'name1', 'molecule_short', 'organic_class', 
-        'interesting_col', 'test_name_col', 'test_structure_col', 'test_class_col'
+        'is_interesting', 'test_name_to_structure', 
+        'test_structure_to_name', 'test_formula_to_class'
     )
     
-    # 2. Оставляем возможность редактирования прямо в списке
+    # 2. Оставляем массовое редактирование в списке
     list_editable = (
         'is_interesting', 'test_name_to_structure', 
         'test_structure_to_name', 'test_formula_to_class'
@@ -139,30 +140,26 @@ class OrganicNamesAdmin(admin.ModelAdmin):
         'test_name_to_structure', 'test_structure_to_name', 'test_formula_to_class'
     )
 
-    # 3. КАСТОМНЫЕ МЕТОДЫ ДЛЯ ПЕРЕНОСА ЗАГОЛОВКОВ В ТАБЛИЦЕ
-    def interesting_col(self, obj):
-        return obj.is_interesting
-    interesting_col.short_description = format_html("вещество о котором<br>надо узнать больше")
-    interesting_col.admin_order_field = 'is_interesting'
-    interesting_col.boolean = True
-
-    def test_name_col(self, obj):
-        return obj.test_name_to_structure
-    test_name_col.short_description = format_html("тест<br>название-структура<br>да")
-    test_name_col.admin_order_field = 'test_name_to_structure'
-    test_name_col.boolean = True
-
-    def test_structure_col(self, obj):
-        return obj.test_structure_to_name
-    test_structure_col.short_description = format_html("тест<br>структура-название<br>да")
-    test_structure_col.admin_order_field = 'test_structure_to_name'
-    test_structure_col.boolean = True
-
-    def test_class_col(self, obj):
-        return obj.test_formula_to_class
-    test_class_col.short_description = format_html("тест<br>формула-класс<br>веществ да")
-    test_class_col.admin_order_field = 'test_formula_to_class'
-    test_class_col.boolean = True
+    # 3. Перехватываем генерацию полей списка и принудительно заменяем их заголовки на многострочный HTML
+    def get_changelist_instance(self, request):
+        changelist = super().get_changelist_instance(request)
+        
+        # Переименовываем заголовки колонок прямо перед выводом таблицы на экран
+        titles = {
+            'is_interesting': "вещество о котором<br>надо узнать больше",
+            'test_name_to_structure': "тест<br>название-структура<br>да",
+            'test_structure_to_name': "тест<br>структура-название<br>да",
+            'test_formula_to_class': "тест<br>формула-класс<br>веществ да",
+        }
+        
+        # Внедряем HTML-переносы строк в заголовки
+        for field, html_title in titles.items():
+            if field in changelist.list_display:
+                # Находим поле в метаданных и подменяем его отображаемое имя
+                model_field = self.model._meta.get_field(field)
+                model_field.verbose_name = format_html(html_title)
+                
+        return changelist
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
