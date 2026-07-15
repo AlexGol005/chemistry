@@ -352,7 +352,7 @@ class InorganicReaction(models.Model):
 
 
 class NamesCompaunds(models.Model):
-    """ Названия веществ неорганических """
+    """ Названия веществ неорганических веществ"""
     date = models.DateField('Дата', auto_now_add=True)
     formula = models.CharField('Формула', max_length=10000, blank=True, null=True, unique=True)
     name = models.TextField('Все названия этого соединения', blank=True, null=True)    
