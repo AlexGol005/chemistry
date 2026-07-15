@@ -65,8 +65,8 @@ class JSMEWidget(forms.Widget):
             </div>
             <div id="jsme_container_{id_name}" style="width: 500px; height: 350px; border: 1px solid #999; background: #fff;"></div>
         </div>
-        <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
-        <script type="text/javascript">
+        <script type="text/vascript" src="/static/jsme/jsme.nocache.js"></script>
+        <script type="text/vascript">
             function startJSME_{id_name.replace('-', '_')}() {{
                 var field = document.getElementById("{id_name}");
                 var applet = new JSApplet.JSME("jsme_container_{id_name}", "500px", "350px", {{ "options": "oldLook,paste,autocenter" }});
@@ -137,8 +137,8 @@ class OrganicNamesAdmin(admin.ModelAdmin):
     )
 
     # ВСТАВЬТЕ ЭТОТ БЛОК внутрь класса OrganicNamesAdmin:
-class Media:
-        js = ('data:text/javascript,document.head.insertAdjacentHTML("beforeend", "<style>.results table th, .results table th * { white-space: normal !important; word-wrap: break-word !important; overflow-wrap: break-word !important; min-width: 100px !important; display: inline-block !important; }</style>");',)
+    class Media:
+        js = ('data:text/vascript,document.head.insertAdcentHTML("beforeend", "<style>.results table th, .results table th * { white-space: normal !important; word-wrap: break-word !important; overflow-wrap: break-word !important; min-width: 100px !important; display: inline-block !important; }</style>");',)
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
