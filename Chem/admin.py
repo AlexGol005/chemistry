@@ -118,39 +118,31 @@ class OrganicClassEmptyFilter(admin.SimpleListFilter):
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
-    
-    # Расширяем поиск, чтобы искать и по формуле
     search_fields = ['name1', 'name2', 'name3', 'formula'] 
     
-    # Выводим новые чекбоксы в общую таблицу
     list_display = (
-        'pk', 
-        'name1', 
-        'molecule_short', 
-        'organic_class', 
-        'is_interesting', 
-        'test_name_to_structure', 
-        'test_structure_to_name', 
-        'test_formula_to_class'
+        'pk', 'name1', 'molecule_short', 'organic_class', 
+        'is_interesting', 'test_name_to_structure', 
+        'test_structure_to_name', 'test_formula_to_class'
     )
     
-    # Позволяет быстро проставлять тесты кликами прямо в списке
     list_editable = (
-        'is_interesting', 
-        'test_name_to_structure', 
-        'test_structure_to_name', 
-        'test_formula_to_class'
+        'is_interesting', 'test_name_to_structure', 
+        'test_structure_to_name', 'test_formula_to_class'
     )
     
-    # Объединяем ваш фильтр пустых классов и новые фильтры тестов
     list_filter = (
-        OrganicClassEmptyFilter,
-        'organic_class',
-        'is_interesting',
-        'test_name_to_structure',
-        'test_structure_to_name',
-        'test_formula_to_class'
+        OrganicClassEmptyFilter, 'organic_class', 'is_interesting',
+        'test_name_to_structure', 'test_structure_to_name', 'test_formula_to_class'
     )
+
+    # ВСТАВЬТЕ ЭТОТ БЛОК внутрь класса OrganicNamesAdmin:
+    class Media:
+        css = {
+            'all': ('admin/css/custom_admin.css',)
+        }
+        # Если не хотите создавать отдельный файл, можно внедрить стили прямо через JavaScript инлайново:
+        js = ('data:text/javascript,document.head.insertAdjacentHTML("beforeend", "<style>.results table th .text a { white-space: normal !important; display: block; min-width: 120px; }</style>");',)
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
