@@ -219,23 +219,20 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
 })($)
 </script>
 {% endblock %}
-</div>
-    </div>
-</body> 
 
-<br><br>
+    </div> <!-- Закрывает .inner-page-body -->
     
-<footer class="bg-body-tertiary text-center text-lg-start">
-    
-  <!-- Copyright -->
-  <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-      © 2023-2025 СЗ Головкина Александра Борисовна
-       &nbsp&nbsp&nbsp&nbsp
-      Все права защищены.
-       &nbsp&nbsp&nbsp&nbsp
-    <a class="text-body" href="{% url "politycaconfident" %}">Политика конфиденциальности</a>
-      &nbsp&nbsp&nbsp&nbsp
-    <a class="text-body" href="{% url "oferta" %}">Условия предоставления услуг</a>
-  </div>
-  <!-- Copyright -->
-</footer>
+    <!-- Переносим футер СЮДА, внутрь body -->
+    <footer class="bg-body-tertiary text-center text-lg-start">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2023-2026 СЗ Головкина Александра Борисовна
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            Все права защищены.
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="text-body" href="{% url 'politycaconfident' %}">Политика конфиденциальности</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="text-body" href="{% url 'oferta' %}">Условия предоставления услуг</a>
+        </div>
+    </footer>
+
+</body> <!-- ТЕГ BODY ТЕПЕРЬ В САМОМ КОНЦЕ -->
