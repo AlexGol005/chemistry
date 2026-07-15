@@ -98,6 +98,7 @@ class Videor(models.Model):
 
 
 class OrganicNames(models.Model): # Используем стандартный models.Model
+    """ названия органических веществ """
     name1 = models.CharField('Название 1', max_length=255, blank=True, null=True, unique=True)
     name2 = models.CharField('Название 2', max_length=255, blank=True, null=True)
     name3 = models.CharField('Название 3', max_length=255, blank=True, null=True)
@@ -118,6 +119,9 @@ class OrganicNames(models.Model): # Используем стандартный 
     img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
     organic_class = models.CharField('Класс', blank=True, null=True, default='ЕГЭ', choices=ORGANIC_CLASSES)
+    test_name_to_structure = models.BooleanField('тест название-структура да', default=True)
+    test_structure_to_name = models.BooleanField('тест структура-название да', default=True)
+    test_formula_to_class = models.BooleanField('тест формула-класс веществ да', default=True)
 
     @property
     def mol_object(self):
