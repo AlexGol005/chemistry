@@ -179,24 +179,27 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
 </main> <!-- Закрываем container и сам main строго вместе -->
 
 {% block footer %} 
-    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script> 
+    <!-- Мы убрали повторный скрипт jQuery, чтобы он не затирал JSME -->
     {{ form.media }} 
-    <script> 
-        (function($) { 
-            $('#add-form').click(function() { 
-                var index = $('#id_inline_test_models-TOTAL_FORMS').val() 
-                var newTable = $('#id_inline_test_models-__prefix__-DELETE').parents('table').clone() 
-                newTable.find(':input').each(function() { 
-                    for (attr of ['name', 'id']) 
-                        $(this).attr( attr, $(this).attr(attr).replace('__prefix__', index) ) 
-                }) 
-                newTable.insertBefore($(this)) 
-                $('#id_inline_test_models-TOTAL_FORMS').val( parseInt($('#id_inline_test_models-TOTAL_FORMS').val()) + 1 ) 
-                newTable.slideDown() 
-            }) 
-        })($) 
+    <script type="text/javascript"> 
+        // Безопасный вызов, который дождётся загрузки встроенного jQuery
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof jQuery !== 'undefined') {
+                jQuery('#add-form').click(function() { 
+                    var index = jQuery('#id_inline_test_models-TOTAL_FORMS').val();
+                    var newTable = jQuery('#id_inline_test_models-__prefix__-DELETE').parents('table').clone();
+                    newTable.find(':input').each(function() { 
+                        for (attr of ['name', 'id']) 
+                            jQuery(this).attr(attr, jQuery(this).attr(attr).replace('__prefix__', index));
+                    });
+                    newTable.insertBefore(jQuery(this));
+                    jQuery('#id_inline_test_models-TOTAL_FORMS').val( parseInt(jQuery('#id_inline_test_models-TOTAL_FORMS').val()) + 1 );
+                    newTable.slideDown();
+                });
+            }
+        });
     </script> 
-{% endblock %} 
+{% endblock %}
 
 <footer class="bg-body-tertiary text-center text-lg-start mt-auto py-3 border-top"> 
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);"> 
