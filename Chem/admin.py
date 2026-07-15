@@ -56,6 +56,7 @@ class JSMEWidget(forms.Widget):
         value = value or ""
         final_attrs = self.build_attrs(attrs)
         id_name = final_attrs.get('id', 'id_molecule')
+        js_safe_id = id_name.replace('-', '_')
         
         html = f"""
         <div class="jsme-admin-wrapper" style="margin-bottom: 20px;">
@@ -65,23 +66,58 @@ class JSMEWidget(forms.Widget):
             </div>
             <div id="jsme_container_{id_name}" style="width: 500px; height: 350px; border: 1px solid #999; background: #fff;"></div>
         </div>
-        <script type="text/vascript" src="/static/jsme/jsme.nocache.js"></script>
-        <script type="text/vascript">
-            function startJSME_{id_name.replace('-', '_')}() {{
+        
+        <!-- Скрипт загрузки ядра JSME -->
+        <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
+        
+        <script type="text/javascript">
+            // Изолированная функция запуска конкретной рисовалки
+            function run_init_jsme_{js_safe_id}() {{
                 var field = document.getElementById("{id_name}");
-                var applet = new JSApplet.JSME("jsme_container_{id_name}", "500px", "350px", {{ "options": "oldLook,paste,autocenter" }});
-                if (field.value) applet.readGenericMolecularInput(field.value);
-                applet.setCallBack("AfterStructureModified", function(event) {{
-                    field.value = event.src.smiles();
-                }});
-                field.addEventListener('input', function() {{
-                    try {{ applet.readGenericMolecularInput(this.value); }} catch (e) {{}}
-                }});
+                var container = document.getElementById("jsme_container_{id_name}");
+                
+                // Проверяем, что контейнер отрисовался на экране и библиотека JSME уже загружена в память
+                if (container && typeof JSApplet !== 'undefined') {{
+                    try {{
+                        var applet = new JSApplet.JSME("jsme_container_{id_name}", "500px", "350px", {{
+                            "options": "oldLook,paste,autocenter"
+                        }});
+                        
+                        if (field.value) {{
+                            applet.readGenericMolecularInput(field.value);
+                        }}
+                        
+                        // Привязываем обновление строки SMILES при рисовании
+                        applet.setCallBack("AfterStructureModified", function(event) {{
+                            field.value = event.src.smiles();
+                        }});
+                        
+                        // Привязываем обновление редактора при ручном вводе строки в текстовое поле
+                        field.addEventListener('input', function() {{
+                            try {{ applet.readGenericMolecularInput(this.value); }} catch (e) {{}}
+                        }});
+                        
+                        console.log("JSME для {id_name} успешно запущен!");
+                        return true; // Успешно инициализировано
+                    }} catch (err) {{
+                        console.error("Ошибка инициализации JSME:", err);
+                    }}
+                }}
+                return false;
             }}
-            window.jsmeOnLoad = startJSME_{id_name.replace('-', '_')};
-            setTimeout(function() {{
-                if (typeof JSApplet !== 'undefined') startJSME_{id_name.replace('-', '_')}();
-            }}, 1000);
+
+            // Запускаем циклический таймер, который будет пытаться включить рисовалку каждые 200 миллисекунд,
+            // пока страница и скрипты окончательно не подгрузятся
+            (function() {{
+                var attempts = 0;
+                var interval = setInterval(function() {{
+                    attempts++;
+                    var is_done = run_init_jsme_{js_safe_id}();
+                    if (is_done || attempts > 25) {{
+                        clearInterval(interval); // Останавливаем таймер после успеха или 25 неудачных попыток
+                    }}
+                }}, 200);
+            }})();
         </script>
         """
         return mark_safe(html)
