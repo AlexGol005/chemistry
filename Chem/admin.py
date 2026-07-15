@@ -51,149 +51,96 @@ admin.site.register(Videor, VideorAdmin)
                     
 class JSMEWidget(forms.Widget):
     template_name = 'admin/widgets/jsme_editor.html'
-    
+
     def render(self, name, value, attrs=None, renderer=None):
+        # Если значение None, заменяем на пустую строку
         value = value or ""
         final_attrs = self.build_attrs(attrs)
         id_name = final_attrs.get('id', 'id_molecule')
-        js_safe_id = id_name.replace('-', '_')
         
+        # Мы вставляем HTML напрямую, чтобы избежать ошибок поиска шаблона в циклах
         html = f"""
         <div class="jsme-admin-wrapper" style="margin-bottom: 20px;">
             <div style="margin-bottom: 10px;">
                 <label style="font-weight: bold;">SMILES строка:</label>
-                <input type="text" name="{name}" id="{id_name}" value='{value}' style="width: 100%; font-family: monospace; padding: 8px; border: 1px solid #ccc;">
+                <input type="text" name="{name}" id="{id_name}" value='{value}' 
+                       style="width: 100%; font-family: monospace; padding: 8px; border: 1px solid #ccc;">
             </div>
             <div id="jsme_container_{id_name}" style="width: 500px; height: 350px; border: 1px solid #999; background: #fff;"></div>
         </div>
-        
-        <script type="text/javascript">
-            // 1. Создаем функцию инициализации конкретного редактора на странице
-            function init_single_jsme_{js_safe_id}() {{
-                var field = document.getElementById("{id_name}");
-                var container = document.getElementById("jsme_container_{id_name}");
-                
-                if (container && typeof JSApplet !== 'undefined') {{
-                    try {{
-                        var applet = new JSApplet.JSME("jsme_container_{id_name}", "500px", "350px", {{
-                            "options": "oldLook,paste,autocenter"
-                        }});
-                        
-                        if (field.value) {{
-                            applet.readGenericMolecularInput(field.value);
-                        }}
-                        
-                        applet.setCallBack("AfterStructureModified", function(event) {{
-                            field.value = event.src.smiles();
-                        }});
-                        
-                        field.addEventListener('input', function() {{
-                            try {{ applet.readGenericMolecularInput(this.value); }} catch (e) {{}}
-                        }});
-                        return true;
-                    }} catch (e) {{
-                        console.error("Ошибка при сборке JSME апплета:", e);
-                    }}
-                }}
-                return false;
-            }}
-
-            // 2. Умное перехватывание глобального колбэка JSME для Bootstrap 5
-            if (typeof JSApplet !== 'undefined') {{
-                // Если ядро JSME уже загружено в память, инициализируем окно мгновенно
-                init_single_jsme_{js_safe_id}();
-            }} else {{
-                // Если ядро еще не загружено, регистрируем каноничную функцию для загрузчика
-                var oldOnLoad = window.jsmeOnLoad;
-                window.jsmeOnLoad = function() {{
-                    if (typeof oldOnLoad === 'function') oldOnLoad();
-                    init_single_jsme_{js_safe_id}();
-                }};
-            }}
-
-            // Резервный таймер на случай, если разметка формы во фронтенде генерируется динамически
-            setTimeout(function() {{
-                init_single_jsme_{js_safe_id}();
-            }}, 1200);
-        </script>
-        
-        <!-- Скрипт загрузки самого ядра JSME подключается строго ПОСЛЕ объявления колбэка -->
         <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
+        <script type="text/javascript">
+            function startJSME_{id_name.replace('-', '_')}() {{
+                var field = document.getElementById("{id_name}");
+                var applet = new JSApplet.JSME("jsme_container_{id_name}", "500px", "350px", {{
+                    "options": "oldLook,paste,autocenter"
+                }});
+                if (field.value) applet.readGenericMolecularInput(field.value);
+                applet.setCallBack("AfterStructureModified", function(event) {{
+                    field.value = event.src.smiles();
+                }});
+                field.addEventListener('input', function() {{
+                    try {{ applet.readGenericMolecularInput(this.value); }} catch (e) {{}}
+                }});
+            }}
+            window.jsmeOnLoad = startJSME_{id_name.replace('-', '_')};
+            setTimeout(function() {{ if (typeof JSApplet !== 'undefined') startJSME_{id_name.replace('-', '_')}(); }}, 1000);
+        </script>
         """
         return mark_safe(html)
-# 1. Форма для админки
+
+# 1. Форма для админки (должна быть объявлена ПЕРЕД классом OrganicNamesAdmin)
 class OrganicNamesAdminForm(forms.ModelForm):
     class Meta:
         model = OrganicNames
         fields = '__all__'
         widgets = {
-            'molecule': JSMEWidget(),
+            'molecule': JSMEWidget(), 
             'appearance': CKEditorUploadingWidget(),
         }
 
 # 2. Фильтр для поиска записей с пустым полем organic_class
 class OrganicClassEmptyFilter(admin.SimpleListFilter):
-    title = 'Наличие класса (organic_class)'
+    title = 'Наличие класса (organic_class)' # Заголовок в правой панели
     parameter_name = 'empty_class'
-    
+
     def lookups(self, request, model_admin):
         return (
             ('empty', 'Не заполнено'),
             ('filled', 'Заполнено'),
         )
-        
+
     def queryset(self, request, queryset):
         if self.value() == 'empty':
+            # Фильтруем и NULL, и пустые строки
             return queryset.filter(organic_class__isnull=True) | queryset.filter(organic_class='')
         if self.value() == 'filled':
+            # Исключаем все пустые варианты
             return queryset.exclude(organic_class__isnull=True).exclude(organic_class='')
         return queryset
 
 # 3. Основной класс админки
-from django.utils.html import format_html
-
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
-    search_fields = ['name1', 'name2', 'name3', 'formula'] 
+    search_fields = ['name1', 'name2', 'name3']
     
-    list_display = (
-        'pk', 'name1', 'molecule_short', 'organic_class', 
-        'is_interesting', 'test_name_to_structure', 
-        'test_structure_to_name', 'test_formula_to_class'
-    )
+    # Добавил organic_class в список, чтобы вы видели результат фильтрации
+    list_display = ('pk', 'name1', 'molecule_short', 'organic_class')
     
-    list_editable = (
-        'is_interesting', 'test_name_to_structure', 
-        'test_structure_to_name', 'test_formula_to_class'
-    )
-    
-    list_filter = (
-        OrganicClassEmptyFilter, 'organic_class', 'is_interesting',
-        'test_name_to_structure', 'test_structure_to_name', 'test_formula_to_class'
-    )
-
-    # Идеальный способ переноса строк: меняет заголовки ТОЛЬКО в шапке таблицы, не трогая модель и форму
-    def changelist_view(self, request, extra_context=None):
-        # На лету меняем заголовки прямо в разметке таблицы перед отправкой в браузер
-        response = super().changelist_view(request, extra_context=extra_context)
-        try:
-            cl = response.context_data['cl']
-            # Создаем кастомный список заголовков с поддержкой тега <br>
-            cl.model_admin.is_interesting.short_description = format_html("вещество о котором<br>надо узнать больше")
-            cl.model_admin.test_name_to_structure.short_description = format_html("тест<br>название-структура<br>да")
-            cl.model_admin.test_structure_to_name.short_description = format_html("тест<br>структура-название<br>да")
-            cl.model_admin.test_formula_to_class.short_description = format_html("тест<br>формула-класс<br>веществ да")
-        except (AttributeError, KeyError):
-            pass
-        return response
+    # Подключаем созданный фильтр
+    list_filter = (OrganicClassEmptyFilter,)
 
     def save_model(self, request, obj, form, change):
+        # Сначала вызываем стандартное сохранение
         super().save_model(request, obj, form, change)
+        
+        # Формируем и выводим ваше кастомное сообщение
         if change:
             msg = f"Редактирована запись № {obj.pk}"
         else:
             msg = f"Создана запись № {obj.pk}"
+        
         messages.success(request, msg)
         
 # знх классы для отображения в админке
@@ -337,14 +284,14 @@ class NamesCompaundsAdmin(ImportExportActionModelAdmin):
     search_fields = ['pk', 'formula', 'name']
     save_as = True
     
-    # Выводим галочку в таблицу
-    list_display = ('pk', 'formula', 'name', 'is_interesting')
+    # Выводим новые поля в общую таблицу админки
+    list_display = ('pk', 'formula', 'name', 'is_interesting', 'test_name_to_structure', 'test_structure_to_name', 'test_formula_to_class')
     
-    # Позволяет отмечать интересные вещества прямо из списка
+    # Позволяет ставить и снимать галочку "интересное" прямо из общего списка, не заходя внутрь вещества
     list_editable = ('is_interesting',)
     
-    # Фильтр справа только по этому полю
-    list_filter = ('is_interesting',)
+    # Добавляет удобный блок фильтрации в правой колонке админки
+    list_filter = ('is_interesting', 'test_name_to_structure', 'test_structure_to_name', 'test_formula_to_class')
 
 # фиксация формы в админке вещества
 admin.site.register(NamesCompaunds, NamesCompaundsAdmin)
@@ -545,4 +492,3 @@ admin.site.register(OrganicReaction, OrganicReactionAdmin)
 
 
 admin.site.register(Pictures)
-
