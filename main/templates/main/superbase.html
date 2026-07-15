@@ -207,7 +207,9 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
 </footer>
 
 <!-- Подключаем скрипты только современного Bootstrap 5 перед закрытием тела -->
-<script src="https://jsdelivr.net" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-
+<!-- <script src="https://jsdelivr.net" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+{% block scripts %}
+    {{ form.media }}
+{% endblock %}
 </body> 
 </html>
