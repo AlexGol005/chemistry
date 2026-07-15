@@ -137,12 +137,8 @@ class OrganicNamesAdmin(admin.ModelAdmin):
     )
 
     # ВСТАВЬТЕ ЭТОТ БЛОК внутрь класса OrganicNamesAdmin:
-    class Media:
-        css = {
-            'all': ('admin/css/custom_admin.css',)
-        }
-        # Если не хотите создавать отдельный файл, можно внедрить стили прямо через JavaScript инлайново:
-        js = ('data:text/javascript,document.head.insertAdjacentHTML("beforeend", "<style>.results table th .text a { white-space: normal !important; display: block; min-width: 120px; }</style>");',)
+class Media:
+        js = ('data:text/javascript,document.head.insertAdjacentHTML("beforeend", "<style>.results table th, .results table th * { white-space: normal !important; word-wrap: break-word !important; overflow-wrap: break-word !important; min-width: 100px !important; display: inline-block !important; }</style>");',)
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
