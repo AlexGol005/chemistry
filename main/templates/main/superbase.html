@@ -1,6 +1,7 @@
 {% load static %}
 {% load qr_code %}
 <html lang="ru">
+ 
 <head>
 <meta name="referrer" content="no-referrer-when-downgrade">
     <meta charset="UTF-8">
@@ -58,7 +59,7 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
 </head>
 
     
-<body class="main-page-body h-100">
+<body class="main-page-body d-flex flex-column min-height-100" style="min-height: 100vh;">
     
     {# здесь рисуем шапку сайта #}
     <!-- <div class="container">
@@ -97,145 +98,116 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
                                     <a class="nav-link" href="{% url 'blog' %}">Про оборудование</a>
                                 </li>
 
-               {% endif %}                  
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{% url 'chem' %}">Химия</a>
-                                </li>
+                {% endif %} 
+                <li class="nav-item"> 
+                    <a class="nav-link" href="{% url 'chem' %}">Химия</a> 
+                </li> 
+                <li class="nav-item"> 
+                    <a href="{% url 'contact_page' %}" class="btn btn-warning mx-2 my-2" style="width: 210px">Форма обратной связи</a> 
+                </li> 
+                <li> 
+                    <hr class="dropdown-divider"> 
+                </li> 
+                
+                {% if 'chem' not in request.path %} 
+                    {% if not user.is_authenticated %} 
+                        <li class="nav-item"> 
+                            <a href="{% url 'heademployeereg' %}" class="btn btn-outline-success mx-2 my-2">попробовать бесплатно</a> 
+                        </li> 
+                        <li class="nav-item"> 
+                            <a href="{% url 'user' %}" class="btn btn-outline-info mx-2 my-2">войти</a> 
+                        </li> 
+                    {% else %} 
+                        <li class="nav-item"> 
+                            {% if request.user.profile.userid != "chem" %} 
+                                {% if request.user.profile.short_name %} 
+                                    <a href="{% url 'profile' %}" class="btn btn-outline-warning mx-2 my-2"> ЛК Управление Лабораторией {{ request.user.profile.short_name }}</a> 
+                                {% else %} 
+                                    <a href="{% url 'profile' %}" class="btn btn-outline-warning mx-2 my-2"> ЛК Управление Лабораторией</a> 
+                                {% endif %} 
+                            {% endif %}
+                        </li> 
+                        <li class="nav-item"> 
+                            <a href="{% url 'exit' %}" class="btn btn-outline-warning mx-2 my-2"> выйти</a> 
+                        </li> 
+                    {% endif %} 
+                {% endif %} 
 
-                            
-                                <li class="nav-item">               
-                                    <a href="{% url 'contact_page' %}" class="btn btn-warning  mr-2 ml-2 mt-2" style="width: 210px">Форма обратной связи</a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
- {% if 'chem' not in request.path %}   
-                            
-                            {% if not user.is_authenticated %}
-                                <li class="nav-item">
-                                    <a href="{% url 'heademployeereg' %}" class="btn btn-outline-success mr-2 ml-2  mt-2">попробовать бесплатно</a>
-                                </li>
-                                <li class="nav-item">
-                                        <a href="{% url 'user' %}" class="btn btn-outline-info mr-2 ml-2  mt-2">войти</a>
-                                </li>
-                            {% else %}
-                                <li class="nav-item">
-
-                    {% if request.user.profile.userid != "chem" %}
-                                    
-                                    {% if request.user.profile.short_name %}
-                                         <a href="{% url 'profile' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> ЛК Управление Лабораторией {{ request.user.profile.short_name }}</a>
-                                    {% else %}
-                                     <a href="{% url 'profile' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> ЛК Управление Лабораторией</a>
-                                    {% endif %}
-                                </li>
-                                <li class="nav-item">
-                                         <a href="{% url 'exit' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> выйти</a>
-                                </li>
-                            {% endif %} 
- {% endif %} 
-                             {% endif %} 
-
-{% if 'chem' in request.path %}   
-                            
-                            {% if not user.is_authenticated %}
-                                <li class="nav-item">
-                                        <a href="{% url 'chemuser' %}" class="btn btn-outline-info mr-2 ml-2  mt-2">войти</a>
-                                </li>
-                            {% else %}
-                                <li class="nav-item">
-
-                                     <a href="{% url 'chemprofile' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> ЛК Изучение Химии</a>
-       
-                                </li>
-                                <li class="nav-item">
-                                         <a href="{% url 'chemexit' %}" class="btn btn-outline-warning mr-2 ml-2  mt-2"> выйти</a>
-                                </li>
-                            {% endif %} 
- {% endif %} 
-                        </ul>
-                    </div>
-                </nav>
-    <!--         </div>
-        </div>
-    </div> -->
- 
-    {# конец шапки #}
-       
-
-    {# здесь рисуем всплывающие при разных действиях сообщения  #}       
-    <div class="container mt-5 table-list no-gutters">
-        <div class="row no-gutters">
-            <div class="col-md-12 no-gutters">
-            {% if messages %}
-                {% for mess in messages %}
-                <div class="TransactionAmount Badresult">
-                    <div class="alert alert=success"><b><font color="red"  size="5">* {{ mess }}</font></b></div>
-                </div>
-                {% endfor %}
-            {% endif %}
-            </div>
-         </div>
+                {% if 'chem' in request.path %} 
+                    {% if not user.is_authenticated %} 
+                        <li class="nav-item"> 
+                            <a href="{% url 'chemuser' %}" class="btn btn-outline-info mx-2 my-2">войти</a> 
+                        </li> 
+                    {% else %} 
+                        <li class="nav-item"> 
+                            <a href="{% url 'chemprofile' %}" class="btn btn-outline-warning mx-2 my-2"> ЛК Изучение Химии</a> 
+                        </li> 
+                        <li class="nav-item"> 
+                            <a href="{% url 'chemexit' %}" class="btn btn-outline-warning mx-2 my-2"> выйти</a> 
+                        </li> 
+                    {% endif %} 
+                {% endif %} 
+            </ul> 
+        </div> 
     </div>
-    {# конец сообщений #}           
- <main>    
-    <div class="container table-list no-gutters">
-      <div class="row"> 
+</nav> 
+{# конец шапки #} 
 
-                {% block content %}
-                {% endblock %}
+{# Системные уведомления #} 
+<div class="container mt-4"> 
+    <div class="row"> 
+        <div class="col-12"> 
+            {% if messages %} 
+                {% for mess in messages %} 
+                    <div class="alert alert-danger font-weight-bold fs-5 text-danger" role="alert">
+                        * {{ mess }}
+                    </div> 
+                {% endfor %} 
+            {% endif %} 
+        </div> 
+    </div> 
+</div> 
+{# конец сообщений #} 
 
-            
-            {% block uniccontent %}
-            {% endblock %}
-                  
-            
-            {% block aside %}
-            {% endblock %}
- </main>          
-{% block footer %}
-<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+<!-- ОСНОВНОЙ КОНТЕНТ САЙТА -->
+<main class="container-fluid my-4px px-4">
+    <div class="row"> 
+        {% block content %}{% endblock %} 
+        {% block uniccontent %}{% endblock %} 
+        {% block aside %}{% endblock %} 
+    </div> <!-- Закрываем row контента -->
+</main> <!-- Закрываем container и сам main строго вместе -->
 
-{{ form.media }}
+{% block footer %} 
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script> 
+    {{ form.media }} 
+    <script> 
+        (function($) { 
+            $('#add-form').click(function() { 
+                var index = $('#id_inline_test_models-TOTAL_FORMS').val() 
+                var newTable = $('#id_inline_test_models-__prefix__-DELETE').parents('table').clone() 
+                newTable.find(':input').each(function() { 
+                    for (attr of ['name', 'id']) 
+                        $(this).attr( attr, $(this).attr(attr).replace('__prefix__', index) ) 
+                }) 
+                newTable.insertBefore($(this)) 
+                $('#id_inline_test_models-TOTAL_FORMS').val( parseInt($('#id_inline_test_models-TOTAL_FORMS').val()) + 1 ) 
+                newTable.slideDown() 
+            }) 
+        })($) 
+    </script> 
+{% endblock %} 
 
-<script>
-(function($) {
-    $('#add-form').click(function() {
-        var index = $('#id_inline_test_models-TOTAL_FORMS').val()
-        var newTable = $('#id_inline_test_models-__prefix__-DELETE').parents('table').clone()
-        newTable.find(':input').each(function() {
-            for (attr of ['name', 'id'])
-                $(this).attr(
-                    attr,
-                    $(this).attr(attr).replace('__prefix__', index)
-                )
-        })
-        newTable.insertBefore($(this))
-        $('#id_inline_test_models-TOTAL_FORMS').val(
-            parseInt($('#id_inline_test_models-TOTAL_FORMS').val()) + 1
-        )
-        newTable.slideDown()
-    })
-})($)
-</script>
-{% endblock %}
-</div>
-    </div>
-</body> 
-
-<br><br>
-    
-<footer class="bg-body-tertiary text-center text-lg-start">
-    
-  <!-- Copyright -->
-  <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-      © 2023-2025 СЗ Головкина Александра Борисовна
-       &nbsp&nbsp&nbsp&nbsp
-      Все права защищены.
-       &nbsp&nbsp&nbsp&nbsp
-    <a class="text-body" href="{% url "politycaconfident" %}">Политика конфиденциальности</a>
-      &nbsp&nbsp&nbsp&nbsp
-    <a class="text-body" href="{% url "oferta" %}">Условия предоставления услуг</a>
-  </div>
-  <!-- Copyright -->
+<footer class="bg-body-tertiary text-center text-lg-start mt-auto py-3 border-top"> 
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);"> 
+        © 2023-2025 СЗ Головкина Александра Борисовна &nbsp;&nbsp;&nbsp;&nbsp; Все права защищены. &nbsp;&nbsp;&nbsp;&nbsp; 
+        <a class="text-body" href="{% url 'politycaconfident' %}">Политика конфиденциальности</a> &nbsp;&nbsp;&nbsp;&nbsp; 
+        <a class="text-body" href="{% url 'oferta' %}">Условия предоставления услуг</a> 
+    </div> 
 </footer>
+
+<!-- Подключаем скрипты только современного Bootstrap 5 перед закрытием тела -->
+<script src="https://jsdelivr.net" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+</body> 
+</html>
