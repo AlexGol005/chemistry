@@ -65,7 +65,7 @@ class VideorSearchResultView(TemplateView):
 
 
 
-# начало вьюшек тест реакции неорганики - головы для теста по законам и вопрос-ответ
+# начало вьюшек тест реакции ики - головы для теста по законам и вопрос-ответ
 
 class ChemTestHeadView(ListView):
     template_name = 'Chem/inorganiclawtesthead.html'
@@ -678,11 +678,11 @@ class LinkView(ListView):
 #конец  справочные страницы:таблицы, ссылки, заглавная страница
 
 
-#законы химии общие, органика, неорганика: главная, поиск, персональная и еще тест по общей химии, и списка веществ орг,неорг с поиском
+#законы химии общие, органика, ика: главная, поиск, персональная и еще тест по общей химии, и списка веществ орг,неорг с поиском
 
 
 class InorganiclawView(ListView):
-    """ Выводит список всех всех законов неорганической химии """
+    """ Выводит список всех всех законов ической химии """
     model = Inorganiclaw
     template_name = 'Chem/inorganiclaw.html'
     context_object_name = 'objects'
@@ -696,7 +696,7 @@ class InorganiclawView(ListView):
 
 
 class InorganiclawStrView(TemplateView):
-    """ выводит отдельный закон неорганической химии """
+    """ выводит отдельный закон ической химии """
     model = Inorganiclaw
     template_name = 'Chem/inorganiclawstr.html'
 
@@ -853,7 +853,7 @@ class AtomTestAnswerView(TemplateView):
 #         return context
 
 class CompaundView(ListView):
-    """ Выводит список неорганических веществ (все или только интересные) """
+    """ Выводит список неорганических веществ без инструкции """
     model = NamesCompaunds
     template_name = 'Chem/compaunds.html'
     context_object_name = 'objects'
@@ -861,14 +861,12 @@ class CompaundView(ListView):
     paginate_by = 6
 
     def get_queryset(self):
-        # Получаем базовый упорядоченный список всех веществ
-        queryset = super().get_queryset()
+        # Получаем базовый список и сразу исключаем вещество с названием "инструкция вещество"
+        queryset = super().get_queryset().exclude(name__iexact='инструкция вещество')
         
-        # Проверяем, передан ли в URL параметр ?filter=interesting
+        # Проверяем фильтр «интересных» веществ
         show_filter = self.request.GET.get('filter')
-        
         if show_filter == 'interesting':
-            # Фильтруем: оставляем только те, где галочка (True)
             return queryset.filter(is_interesting=True)
             
         return queryset
@@ -876,7 +874,6 @@ class CompaundView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = SearchForm()
-        # Передаем текущий фильтр в контекст, чтобы подсветить активную кнопку
         context['current_filter'] = self.request.GET.get('filter', 'all')
         return context
 
