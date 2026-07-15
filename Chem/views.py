@@ -862,7 +862,7 @@ class CompaundView(ListView):
 
     def get_queryset(self):
         # Получаем базовый список и сразу исключаем вещество с названием "инструкция вещество"
-        queryset = super().get_queryset().exclude(name__iexact='инструкция вещество')
+        queryset = super().get_queryset().exclude(name__iexact='инструкция')
         
         # Проверяем фильтр «интересных» веществ
         show_filter = self.request.GET.get('filter')
