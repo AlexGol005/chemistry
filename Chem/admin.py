@@ -122,14 +122,12 @@ class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
     search_fields = ['name1', 'name2', 'name3', 'formula'] 
     
-    # 1. Возвращаем оригинальные поля из модели, чтобы работали чекбоксы
     list_display = (
         'pk', 'name1', 'molecule_short', 'organic_class', 
         'is_interesting', 'test_name_to_structure', 
         'test_structure_to_name', 'test_formula_to_class'
     )
     
-    # 2. Оставляем массовое редактирование в списке
     list_editable = (
         'is_interesting', 'test_name_to_structure', 
         'test_structure_to_name', 'test_formula_to_class'
@@ -140,26 +138,20 @@ class OrganicNamesAdmin(admin.ModelAdmin):
         'test_name_to_structure', 'test_structure_to_name', 'test_formula_to_class'
     )
 
-    # 3. Перехватываем генерацию полей списка и принудительно заменяем их заголовки на многострочный HTML
-    def get_changelist_instance(self, request):
-        changelist = super().get_changelist_instance(request)
-        
-        # Переименовываем заголовки колонок прямо перед выводом таблицы на экран
-        titles = {
-            'is_interesting': "вещество о котором<br>надо узнать больше",
-            'test_name_to_structure': "тест<br>название-структура<br>да",
-            'test_structure_to_name': "тест<br>структура-название<br>да",
-            'test_formula_to_class': "тест<br>формула-класс<br>веществ да",
-        }
-        
-        # Внедряем HTML-переносы строк в заголовки
-        for field, html_title in titles.items():
-            if field in changelist.list_display:
-                # Находим поле в метаданных и подменяем его отображаемое имя
-                model_field = self.model._meta.get_field(field)
-                model_field.verbose_name = format_html(html_title)
-                
-        return changelist
+    # Идеальный способ переноса строк: меняет заголовки ТОЛЬКО в шапке таблицы, не трогая модель и форму
+    def changelist_view(self, request, extra_context=None):
+        # На лету меняем заголовки прямо в разметке таблицы перед отправкой в браузер
+        response = super().changelist_view(request, extra_context=extra_context)
+        try:
+            cl = response.context_data['cl']
+            # Создаем кастомный список заголовков с поддержкой тега <br>
+            cl.model_admin.is_interesting.short_description = format_html("вещество о котором<br>надо узнать больше")
+            cl.model_admin.test_name_to_structure.short_description = format_html("тест<br>название-структура<br>да")
+            cl.model_admin.test_structure_to_name.short_description = format_html("тест<br>структура-название<br>да")
+            cl.model_admin.test_formula_to_class.short_description = format_html("тест<br>формула-класс<br>веществ да")
+        except (AttributeError, KeyError):
+            pass
+        return response
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
