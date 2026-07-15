@@ -284,14 +284,14 @@ class NamesCompaundsAdmin(ImportExportActionModelAdmin):
     search_fields = ['pk', 'formula', 'name']
     save_as = True
     
-    # Выводим новые поля в общую таблицу админки
-    list_display = ('pk', 'formula', 'name', 'is_interesting', 'test_name_to_structure', 'test_structure_to_name', 'test_formula_to_class')
+    # Выводим галочку в таблицу
+    list_display = ('pk', 'formula', 'name', 'is_interesting')
     
-    # Позволяет ставить и снимать галочку "интересное" прямо из общего списка, не заходя внутрь вещества
+    # Позволяет отмечать интересные вещества прямо из списка
     list_editable = ('is_interesting',)
     
-    # Добавляет удобный блок фильтрации в правой колонке админки
-    list_filter = ('is_interesting', 'test_name_to_structure', 'test_structure_to_name', 'test_formula_to_class')
+    # Фильтр справа только по этому полю
+    list_filter = ('is_interesting',)
 
 # фиксация формы в админке вещества
 admin.site.register(NamesCompaunds, NamesCompaundsAdmin)
