@@ -1,21 +1,7 @@
 {% load static %}
 {% load qr_code %}
 <html lang="ru">
-   <style>
-    /* Ограничиваем картинки, но сохраняем их пропорции */
-    img {
-        max-width: 95vw !important;
-        max-height: 80vh !important;
-        width: auto !important;
-        height: auto !important;
-        object-fit: contain !important;
-    }
-
-    /* Разрешаем перенос строк ТОЛЬКО внутри тех ячеек таблиц, где есть картинки */
-    td:has(img), th:has(img) {
-        white-space: normal !important;
-    }
-</style>
+ 
 <head>
 <meta name="referrer" content="no-referrer-when-downgrade">
     <meta charset="UTF-8">
