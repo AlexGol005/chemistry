@@ -97,26 +97,18 @@
                         </div>
                     </div>
 
-<!-- ИНФОРМАЦИЯ О ВЕЩЕСТВЕ (Названия и Ссылка) -->
-<div class="card border-success mx-auto mt-4 text-start shadow-sm" style="max-width: 600px;">
-    <div class="card-body p-3">
-        <p class="mb-1 text-muted small">Названия этого вещества в базе:</p>
-        <h5 class="text-dark mb-3"><strong>{{ molecule.all_names_string }}</strong></h5>
-        
-        <!-- ОБНОВИТЬ НУЖНО ЭТУ ССЫЛКУ (ТЕПЕРЬ ПО ИМЕНИ ВЕЩЕСТВА) -->
-        <a href="/organiccompaund/{{ molecule.name1 }}/" target="_blank" class="btn btn-outline-success btn-sm w-100">
-            <i class="fas fa-external-link-alt me-1"></i> Перейти на страницу вещества
-        </a>
-    </div>
-</div>
-
-
+                    <!-- ИНФОРМАЦИЯ О ВЕЩЕСТВЕ (Только названия) -->
+                    <div class="card border-success mx-auto mt-4 text-start shadow-sm" style="max-width: 600px;">
+                        <div class="card-body p-3">
+                            <p class="mb-1 text-muted small">Названия этого вещества в базе:</p>
+                            <h5 class="text-dark m-0"><strong>{{ molecule.all_names_string }}</strong></h5>
+                        </div>
+                    </div>
 
                     <!-- ХИМИЧЕСКАЯ СПРАВКА: КРУПНАЯ ФОРМУЛА И ИЗОМЕРЫ -->
                     {% if general_formula or both_answers_text %}
                         <div class="alert alert-success border-success text-center mx-auto mt-4 p-4 shadow-sm" style="max-width: 600px; background-color: #f4faf4;">
                             
-                            <!-- Крупный и красивый вынос общей формулы -->
                             {% if general_formula %}
                                 <div class="mb-2 text-muted small uppercase font-weight-bold" style="letter-spacing: 1px;">
                                     Общая формула класса:
@@ -125,6 +117,19 @@
                                     {{ general_formula|safe }}
                                 </div>
                             {% endif %}
+                            
+                            {% if both_answers_text %}
+                                {% if general_formula %}<hr class="my-3" style="border-top: 1px solid #c3e6cb;">{% endif %}
+                                <div class="text-muted text-start small">
+                                    <i class="fas fa-info-circle me-1 text-success"></i> {{ both_answers_text }}
+                                </div>
+                            {% endif %}
+                            
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
                             
                             <!-- Текст про изомеры (если они есть), отделенный чертой -->
                             {% if both_answers_text %}
