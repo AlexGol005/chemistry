@@ -673,6 +673,28 @@ CLASS_ISOMERS = {
     'nitro_compounds': 'amino_acids',
 }
 
+# Словарь общих формул классов углеводородов и их производных
+CLASS_GENERAL_FORMULAS = {
+    'alkanes': 'CnH2n+2',
+    'alkenes': 'CnH2n',
+    'alkynes': 'CnH2n-2',
+    'alkadienes': 'CnH2n-2',
+    'cycloalkanes': 'CnH2n',
+    'arenes': 'CnH2n-6',
+    'alcohols': 'CnH2n+1OH (или CnH2n+2O)',
+    'phenols': 'CnH2n-7OH (или CnH2n-6O)',
+    'ethers': 'CnH2n+2O',
+    'aldehydes': 'CnH2nO',
+    'ketones': 'CnH2nO',
+    'carboxylic_acids': 'CnH2nO2',
+    'esters': 'CnH2nO2',
+    'amines': 'CnH2n+1NH2 (или CnH2n+3N)',
+    'amino_acids': 'NH2-CH(R)-COOH',
+    'halogen_derivatives': 'CnH2n+1X',
+    'Ангидриды': '(RCO)2O',
+}
+
+
 # тесты на названия органики
 # 1. ВЫБОР РЕЖИМА (Пульт управления)
 class OrganicNamesTestHeadView(View):
@@ -800,6 +822,9 @@ class OrganicNamesTestAnswerView(View):
             correct_label = classes_dict.get(correct_class, "Неизвестный класс")
             isomer_label = classes_dict.get(isomer_class, "")
             
+            # Находим общую формулу для правильного класса
+            general_formula = CLASS_GENERAL_FORMULAS.get(correct_class, "")
+            
             # Проверка ответа студента
             if user_ans == correct_class:
                 is_correct = True
@@ -808,14 +833,18 @@ class OrganicNamesTestAnswerView(View):
                 
             user_label = classes_dict.get(user_ans, "Не выбрано")
             
+            # Добавляем общую формулу в текст химической справки
+            formula_info = f"Общая формула этого класса: {general_formula}." if general_formula else ""
+            
             if isomer_label:
-                both_answers_text = f"У данных классов одинаковая брутто-формула. Верны оба ответа: {correct_label} и {isomer_label}."
+                both_answers_text = f"У данных классов одинаковая брутто-формула. Верны оба ответа: {correct_label} и {isomer_label}. {formula_info}"
+            else:
+                both_answers_text = formula_info
 
-            # === НОВАЯ ЛОГИКА: СОБИРАЕМ ВСЕ НАЗВАНИЯ ДЛЯ ОТОБРАЖЕНИЯ ===
+            # Собираем все названия для отображения
             molecule_all_names = ", ".join([
                 name.strip() for name in [obj.name1, obj.name2, obj.name3, obj.name4] if name
             ])
-            # Записываем собранную строку в объект, чтобы легко забрать в HTML
             obj.all_names_string = molecule_all_names
 
 
