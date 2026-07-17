@@ -787,7 +787,6 @@ class OrganicNamesTestQuestionView(View):
 class OrganicNamesTestAnswerView(View):
     def post(self, request, index):
         mode = request.session.get('organicnamestest_mode', 'name_to_mol')
-        # Собираем ответ из разных типов полей
         user_ans = request.POST.get('user_answer') or request.POST.get('user_smiles') or ""
         user_ans = user_ans.strip()
         
@@ -796,10 +795,9 @@ class OrganicNamesTestAnswerView(View):
         
         is_correct = False
         user_label = user_ans
-        both_answers_text = ""  # Текст об изомерах
-        general_formula = ""    # Красивая общая формула
+        both_answers_text = ""
+        general_formula = ""
 
-        # Логика сравнения
         if mode == 'name_to_mol':
             m1 = Chemredactor.MolFromSmiles(user_ans)
             m2 = Chemredactor.MolFromSmiles(obj.molecule)
@@ -822,34 +820,30 @@ class OrganicNamesTestAnswerView(View):
             correct_label = classes_dict.get(correct_class, "Неизвестный класс")
             isomer_label = classes_dict.get(isomer_class, "")
             
-            # Извлекаем красивую общую формулу
             general_formula = CLASS_GENERAL_FORMULAS.get(correct_class, "")
             
-            # Проверка ответа студента
             if user_ans == correct_class:
                 is_correct = True
             elif isomer_class and user_ans == isomer_class:
                 is_correct = True
                 
-            # Заменяем код (alkanes) на название (Алканы) для отображения
             user_label = classes_dict.get(user_ans, "Не выбрано")
             
-            # Формируем строку-пояснение про изомеры
             if isomer_label:
                 both_answers_text = f"У данных классов одинаковая брутто-формула. Верны оба ответа: {correct_label} и {isomer_label}."
 
-            # Собираем все названия для отображения
-            molecule_all_names = ", ".join([
-                name.strip() for name in [obj.name1, obj.name2, obj.name3, obj.name4] if name
-            ])
-            obj.all_names_string = molecule_all_names
+            # Безопасный сбор названий (Защита от None и чисел)
+            names_list = []
+            for name in [obj.name1, obj.name2, obj.name3, obj.name4]:
+                if name is not None and str(name).strip() != "":
+                    names_list.append(str(name).strip())
+            
+            obj.all_names_string = ", ".join(names_list) if names_list else "Название отсутствует"
 
-        # Начисляем баллы
         if is_correct:
             request.session['organicnamestest_score'] = request.session.get('organicnamestest_score', 0) + 1
             request.session.modified = True
 
-        # ЕДИНЫЙ ТОЧНЫЙ ВЫВОД ДЛЯ ВСЕХ РЕЖИМОВ
         return render(request, 'Chem/organicnamestest_answer.html', {
             'molecule': obj,
             'is_correct': is_correct,
@@ -860,6 +854,7 @@ class OrganicNamesTestAnswerView(View):
             'total_questions': len(test_ids),
             'mode': mode
         })
+
 
 
 # 5. ФИНАЛ
