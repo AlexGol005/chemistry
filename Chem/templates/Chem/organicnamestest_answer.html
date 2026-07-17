@@ -70,7 +70,7 @@
                 <!-- РЕЖИМ 3: ФОРМУЛА -> КЛАСС -->
                 <div class="col-12">
                     <h2 class="display-3 mb-4 font-weight-bold">{{ molecule.formula }}</h2>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-12 col-md-6 mb-2">
                             <div class="p-3 border rounded bg-light h-100">
                                 <p class="mb-1 text-muted small">Ваш выбор:</p>
@@ -88,6 +88,14 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Вывод сообщения о межклассовых изомерах (Оба ответа верны) -->
+                    {% if both_answers_text %}
+                        <div class="alert alert-success border-success text-start mx-auto mt-4 p-3 shadow-sm" style="max-width: 600px;">
+                            <i class="fas fa-info-circle me-2 text-success"></i> 
+                            <strong>Химическая справка:</strong> {{ both_answers_text }}
+                        </div>
+                    {% endif %}
                 </div>
             {% endif %}
 
