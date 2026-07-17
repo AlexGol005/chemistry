@@ -65,7 +65,7 @@ class VideorSearchResultView(TemplateView):
 
 
 
-# начало вьюшек тест реакции ики - головы для теста по законам и вопрос-ответ
+# начало вьюшек тест реакции неорганики - головы для теста по законам и вопрос-ответ
 
 class ChemTestHeadView(ListView):
     template_name = 'Chem/inorganiclawtesthead.html'
@@ -288,7 +288,7 @@ def remove_reaction(request, reaction_id):
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-# конец вьюшек тест реакции не - головы для теста по законам и вопрос-ответ
+# конец вьюшек тест реакции неорганики - головы для теста по законам и вопрос-ответ
 
 # начало вьюшек тест реакции органики - головы для теста по законам и вопрос-ответ
 
@@ -529,6 +529,150 @@ def my_reactions_list(request):
 
 
 
+# # тесты на названия органики
+# # 1. ВЫБОР РЕЖИМА (Пульт управления)
+# class OrganicNamesTestHeadView(View):
+#     def get(self, request):
+#         return render(request, 'Chem/organicnames_test_head.html')
+
+# # 2. ПОДГОТОВКА (Превью и инициализация сессии)
+# class OrganicNamesTestStartView(View):
+#     def get(self, request):
+#         # Принудительно берем режим из URL
+#         mode = request.GET.get('mode', 'name_to_mol')
+#         # Сохраняем его временно, чтобы показать в шаблоне
+#         return render(request, 'Chem/organicnamestest_start.html', {'mode': mode})
+
+#     def post(self, request):
+#         # 1. Получаем режим из скрытого поля формы или из URL
+#         mode = request.POST.get('mode') or request.GET.get('mode') or 'name_to_mol'
+        
+#         # 2. ПОЛНОЕ УДАЛЕНИЕ СТАРОЙ СЕССИИ (Чистим 8/4 и прочее)
+#         request.session.flush() 
+        
+#         # 3. Начинаем выборку заново
+#         queryset = OrganicNames.objects.all()
+#         if mode == 'form_to_class':
+#             queryset = queryset.exclude(formula__isnull=True).exclude(formula__exact='')
+        
+#         ids = list(queryset.values_list('id', flat=True))
+#         random.shuffle(ids)
+        
+#         # 4. ЗАПИСЫВАЕМ ЧИСТЫЕ ДАННЫЕ
+#         request.session['organicnamestest_ids'] = ids[:10] # Строго 10 вопросов
+#         request.session['organicnamestest_score'] = 0      # Строго НОЛЬ баллов
+#         request.session['organicnamestest_mode'] = mode
+        
+#         # 5. Принудительно сохраняем
+#         request.session.modified = True
+        
+#         return redirect('organicnamestest_question', index=0)
+
+# # 3. СТРАНИЦА ВОПРОСА
+# class OrganicNamesTestQuestionView(View):
+#     def get(self, request, index):
+#         test_ids = request.session.get('organicnamestest_ids', [])
+#         mode = request.session.get('organicnamestest_mode', 'name_to_mol')
+
+#         if not test_ids or index >= len(test_ids):
+#             return redirect('organicnamestest_finished')
+
+#         obj = get_object_or_404(OrganicNames, id=test_ids[index])
+        
+#         context = {
+#             'molecule': obj,
+#             'index': index,
+#             'mode': mode,
+#             'total_questions': len(test_ids),
+#             'organic_classes': ORGANIC_CLASSES
+#         }
+        
+#         template_name = f'Chem/organicnamestest_question_{mode}.html'
+#         return render(request, template_name, context)
+
+# # 4. ПРОВЕРКА ОТВЕТА
+# class OrganicNamesTestAnswerView(View):
+#     def post(self, request, index):
+#         mode = request.session.get('organicnamestest_mode', 'name_to_mol')
+#         # Собираем ответ из разных типов полей
+#         user_ans = request.POST.get('user_answer') or request.POST.get('user_smiles') or ""
+#         user_ans = user_ans.strip()
+        
+#         test_ids = request.session.get('organicnamestest_ids', [])
+#         obj = get_object_or_404(OrganicNames, id=test_ids[index])
+        
+#         is_correct = False
+#         user_label = user_ans
+
+#         # Логика сравнения
+#         if mode == 'name_to_mol':
+#             m1 = Chemredactor.MolFromSmiles(user_ans)
+#             m2 = Chemredactor.MolFromSmiles(obj.molecule)
+#             if m1 and m2:
+#                 is_correct = Chemredactor.MolToSmiles(m1) == Chemredactor.MolToSmiles(m2)
+        
+#         elif mode == 'mol_to_name':
+#             is_correct = user_ans.lower() == obj.name1.lower()
+            
+#         elif mode == 'form_to_class':
+#             is_correct = (user_ans == obj.organic_class)
+#             # Заменяем код (alkanes) на название (Алканы) для отображения
+#             user_label = dict(ORGANIC_CLASSES).get(user_ans, "Не выбрано")
+
+#         # Начисляем баллы
+#         if is_correct:
+#             request.session['organicnamestest_score'] = request.session.get('organicnamestest_score', 0) + 1
+#             request.session.modified = True
+
+#         return render(request, 'Chem/organicnamestest_answer.html', {
+#             'molecule': obj,
+#             'is_correct': is_correct,
+#             'user_answer_label': user_label,
+#             'next_index': index + 1,
+#             'total_questions': len(test_ids),
+#             'mode': mode
+#         })
+
+# # 5. ФИНАЛ
+# class OrganicNamesTestFinishedView(View):
+#     def get(self, request):
+#         score = request.session.get('organicnamestest_score', 0)
+#         test_ids = request.session.get('organicnamestest_ids', [])
+#         total = len(test_ids)
+        
+#         if total == 0:
+#             return redirect('organicnamestest_head')
+
+#         percent = int((score / total) * 100)
+        
+#         return render(request, 'Chem/organicnamestest_finished.html', {
+#             'score': score,
+#             'total': total,
+#             'percent': percent
+#         })
+
+# # конец тесты на названия органики
+
+import random
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
+
+# Словарь межклассовых изомеров для теста "Формула -> Класс"
+CLASS_ISOMERS = {
+    'alkenes': 'cycloalkanes',                       # Алкены и Циклоалканы
+    'cycloalkanes': 'alkenes',
+    'alkynes': 'alkadienes',                         # Алкины и Алкадиены
+    'alkadienes': 'alkynes',
+    'alcohols': 'ethers',                            # Предельные спирты и Простые эфиры
+    'ethers': 'alcohols',
+    'aldehydes': 'ketones',                          # Альдегиды и Кетоны
+    'ketones': 'aldehydes',
+    'carboxylic_acids': 'esters',                    # Карбоновые кислоты и Сложные эфиры
+    'esters': 'carboxylic_acids',
+    'amino_acids': 'nitro_compounds',                # Аминокислоты и Нитросоединения
+    'nitro_compounds': 'amino_acids',
+}
+
 # тесты на названия органики
 # 1. ВЫБОР РЕЖИМА (Пульт управления)
 class OrganicNamesTestHeadView(View):
@@ -550,20 +694,33 @@ class OrganicNamesTestStartView(View):
         # 2. ПОЛНОЕ УДАЛЕНИЕ СТАРОЙ СЕССИИ (Чистим 8/4 и прочее)
         request.session.flush() 
         
-        # 3. Начинаем выборку заново
-        queryset = OrganicNames.objects.all()
-        if mode == 'form_to_class':
-            queryset = queryset.exclude(formula__isnull=True).exclude(formula__exact='')
+        # 3. Список строго разрешенных классов для ВСЕХ тестов
+        allowed_classes = [
+            'alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 'arenes',
+            'alcohols', 'phenols', 'ethers', 'aldehydes', 'ketones', 'carboxylic_acids',
+            'esters', 'amines', 'amino_acids', 'halogen_derivatives', 'Ангидриды'
+        ]
+        
+        # 4. Начинаем выборку с фильтрацией по разрешенным классам
+        queryset = OrganicNames.objects.filter(organic_class__in=allowed_classes)
+        
+        # 5. Проверяем индивидуальные флаги (должно быть True для каждого теста)
+        if mode == 'name_to_mol':
+            queryset = queryset.filter(test_name_to_structure=True)
+        elif mode == 'mol_to_name':
+            queryset = queryset.filter(test_structure_to_name=True)
+        elif mode == 'form_to_class':
+            queryset = queryset.filter(test_formula_to_class=True).exclude(formula__isnull=True).exclude(formula__exact='')
         
         ids = list(queryset.values_list('id', flat=True))
         random.shuffle(ids)
         
-        # 4. ЗАПИСЫВАЕМ ЧИСТЫЕ ДАННЫЕ
+        # 6. ЗАПИСЫВАЕМ ЧИСТЫЕ ДАННЫЕ
         request.session['organicnamestest_ids'] = ids[:10] # Строго 10 вопросов
         request.session['organicnamestest_score'] = 0      # Строго НОЛЬ баллов
         request.session['organicnamestest_mode'] = mode
         
-        # 5. Принудительно сохраняем
+        # 7. Принудительно сохраняем
         request.session.modified = True
         
         return redirect('organicnamestest_question', index=0)
@@ -603,6 +760,7 @@ class OrganicNamesTestAnswerView(View):
         
         is_correct = False
         user_label = user_ans
+        both_answers_text = ""  # Переменная для хранения текста об изомерах
 
         # Логика сравнения
         if mode == 'name_to_mol':
@@ -615,9 +773,25 @@ class OrganicNamesTestAnswerView(View):
             is_correct = user_ans.lower() == obj.name1.lower()
             
         elif mode == 'form_to_class':
-            is_correct = (user_ans == obj.organic_class)
+            correct_class = obj.organic_class
+            isomer_class = CLASS_ISOMERS.get(correct_class)
+            
+            classes_dict = dict(ORGANIC_CLASSES)
+            correct_label = classes_dict.get(correct_class, "Неизвестный класс")
+            isomer_label = classes_dict.get(isomer_class, "")
+            
+            # Если ответ совпал строго или совпал с межклассовым изомером
+            if user_ans == correct_class:
+                is_correct = True
+            elif isomer_class and user_ans == isomer_class:
+                is_correct = True
+                
             # Заменяем код (alkanes) на название (Алканы) для отображения
-            user_label = dict(ORGANIC_CLASSES).get(user_ans, "Не выбрано")
+            user_label = classes_dict.get(user_ans, "Не выбрано")
+            
+            # Формируем строку-пояснение, если у класса существует изомер
+            if isomer_label:
+                both_answers_text = f"У данных классов одинаковая брутто-формула. Верны оба ответа: {correct_label} и {isomer_label}."
 
         # Начисляем баллы
         if is_correct:
@@ -628,6 +802,7 @@ class OrganicNamesTestAnswerView(View):
             'molecule': obj,
             'is_correct': is_correct,
             'user_answer_label': user_label,
+            'both_answers_text': both_answers_text,  # Отправляем текст в HTML-шаблон
             'next_index': index + 1,
             'total_questions': len(test_ids),
             'mode': mode
@@ -652,6 +827,8 @@ class OrganicNamesTestFinishedView(View):
         })
 
 # конец тесты на названия органики
+
+
 
 
 
