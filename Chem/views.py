@@ -796,7 +796,8 @@ class OrganicNamesTestAnswerView(View):
         
         is_correct = False
         user_label = user_ans
-        both_answers_text = ""  # Переменная для хранения текста об изомерах
+        both_answers_text = ""  # Текст об изомерах
+        general_formula = ""    # Красивая общая формула
 
         # Логика сравнения
         if mode == 'name_to_mol':
@@ -806,14 +807,12 @@ class OrganicNamesTestAnswerView(View):
                 is_correct = Chemredactor.MolToSmiles(m1) == Chemredactor.MolToSmiles(m2)
         
         elif mode == 'mol_to_name':
-            # === ВОТ ЭТОТ БЛОК ИСПРАВЛЕН ДЛЯ СВЕРКИ СО ВСЕМИ НАЗВАНИЯМИ ===
             valid_names = [
                 name.strip().lower() 
                 for name in [obj.name1, obj.name2, obj.name3, obj.name4] 
                 if name
             ]
             is_correct = user_ans.lower() in valid_names
-            # =============================================================
             
         elif mode == 'form_to_class':
             correct_class = obj.organic_class
@@ -823,52 +822,40 @@ class OrganicNamesTestAnswerView(View):
             correct_label = classes_dict.get(correct_class, "Неизвестный класс")
             isomer_label = classes_dict.get(isomer_class, "")
             
-            # Извлекаем красивую формулу
+            # Извлекаем красивую общую формулу
             general_formula = CLASS_GENERAL_FORMULAS.get(correct_class, "")
             
-            # Проверка ответа
+            # Проверка ответа студента
             if user_ans == correct_class:
                 is_correct = True
             elif isomer_class and user_ans == isomer_class:
                 is_correct = True
                 
+            # Заменяем код (alkanes) на название (Алканы) для отображения
             user_label = classes_dict.get(user_ans, "Не выбрано")
             
-            # В both_answers_text оставляем ТОЛЬКО текст про изомеры
+            # Формируем строку-пояснение про изомеры
             if isomer_label:
                 both_answers_text = f"У данных классов одинаковая брутто-формула. Верны оба ответа: {correct_label} и {isomer_label}."
-            else:
-                both_answers_text = ""
 
             # Собираем все названия для отображения
             molecule_all_names = ", ".join([
                 name.strip() for name in [obj.name1, obj.name2, obj.name3, obj.name4] if name
             ])
             obj.all_names_string = molecule_all_names
-            
-            # Передаем всё в рендер (добавлен general_formula)
-            return render(request, 'Chem/organicnamestest_answer.html', {
-                'molecule': obj,
-                'is_correct': is_correct,
-                'user_answer_label': user_label,
-                'both_answers_text': both_answers_text,
-                'general_formula': general_formula,  # ПЕРЕДАЕМ КРАСИВУЮ ФОРМУЛУ СЮДА
-                'next_index': index + 1,
-                'total_questions': len(test_ids),
-                'mode': mode
-            })
-
 
         # Начисляем баллы
         if is_correct:
             request.session['organicnamestest_score'] = request.session.get('organicnamestest_score', 0) + 1
             request.session.modified = True
 
+        # ЕДИНЫЙ ТОЧНЫЙ ВЫВОД ДЛЯ ВСЕХ РЕЖИМОВ
         return render(request, 'Chem/organicnamestest_answer.html', {
             'molecule': obj,
             'is_correct': is_correct,
             'user_answer_label': user_label,
-            'both_answers_text': both_answers_text,  # Отправляем текст в HTML-шаблон
+            'both_answers_text': both_answers_text,
+            'general_formula': general_formula,
             'next_index': index + 1,
             'total_questions': len(test_ids),
             'mode': mode
