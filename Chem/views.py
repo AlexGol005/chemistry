@@ -673,26 +673,27 @@ CLASS_ISOMERS = {
     'nitro_compounds': 'amino_acids',
 }
 
-# Словарь общих формул классов углеводородов и их производных
+# Словарь общих формул с HTML-тегами нижних индексов
 CLASS_GENERAL_FORMULAS = {
-    'alkanes': 'CnH2n+2',
-    'alkenes': 'CnH2n',
-    'alkynes': 'CnH2n-2',
-    'alkadienes': 'CnH2n-2',
-    'cycloalkanes': 'CnH2n',
-    'arenes': 'CnH2n-6',
-    'alcohols': 'CnH2n+1OH (или CnH2n+2O)',
-    'phenols': 'CnH2n-7OH (или CnH2n-6O)',
-    'ethers': 'CnH2n+2O',
-    'aldehydes': 'CnH2nO',
-    'ketones': 'CnH2nO',
-    'carboxylic_acids': 'CnH2nO2',
-    'esters': 'CnH2nO2',
-    'amines': 'CnH2n+1NH2 (или CnH2n+3N)',
-    'amino_acids': 'NH2-CH(R)-COOH',
-    'halogen_derivatives': 'CnH2n+1X',
-    'Ангидриды': '(RCO)2O',
+    'alkanes': 'C<sub>n</sub>H<sub>2n+2</sub>',
+    'alkenes': 'C<sub>n</sub>H<sub>2n</sub>',
+    'alkynes': 'C<sub>n</sub>H<sub>2n-2</sub>',
+    'alkadienes': 'C<sub>n</sub>H<sub>2n-2</sub>',
+    'cycloalkanes': 'C<sub>n</sub>H<sub>2n</sub>',
+    'arenes': 'C<sub>n</sub>H<sub>2n-6</sub>',
+    'alcohols': 'C<sub>n</sub>H<sub>2n+1</sub>OH',
+    'phenols': 'C<sub>n</sub>H<sub>2n-7</sub>OH',
+    'ethers': 'C<sub>n</sub>H<sub>2n+2</sub>O',
+    'aldehydes': 'C<sub>n</sub>H<sub>2n</sub>O',
+    'ketones': 'C<sub>n</sub>H<sub>2n</sub>O',
+    'carboxylic_acids': 'C<sub>n</sub>H<sub>2n</sub>O<sub>2</sub>',
+    'esters': 'C<sub>n</sub>H<sub>2n</sub>O<sub>2</sub>',
+    'amines': 'C<sub>n</sub>H<sub>2n+1</sub>NH<sub>2</sub>',
+    'amino_acids': 'NH<sub>2</sub>-CH(R)-COOH',
+    'halogen_derivatives': 'C<sub>n</sub>H<sub>2n+1</sub>X',
+    'Ангидриды': '(RCO)<sub>2</sub>O',
 }
+
 
 
 # тесты на названия органики
