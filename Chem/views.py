@@ -823,10 +823,10 @@ class OrganicNamesTestAnswerView(View):
             correct_label = classes_dict.get(correct_class, "Неизвестный класс")
             isomer_label = classes_dict.get(isomer_class, "")
             
-            # Находим общую формулу для правильного класса
+            # Извлекаем красивую формулу
             general_formula = CLASS_GENERAL_FORMULAS.get(correct_class, "")
             
-            # Проверка ответа студента
+            # Проверка ответа
             if user_ans == correct_class:
                 is_correct = True
             elif isomer_class and user_ans == isomer_class:
@@ -834,19 +834,29 @@ class OrganicNamesTestAnswerView(View):
                 
             user_label = classes_dict.get(user_ans, "Не выбрано")
             
-            # Добавляем общую формулу в текст химической справки
-            formula_info = f"Общая формула этого класса: {general_formula}." if general_formula else ""
-            
+            # В both_answers_text оставляем ТОЛЬКО текст про изомеры
             if isomer_label:
-                both_answers_text = f"У данных классов одинаковая брутто-формула. Верны оба ответа: {correct_label} и {isomer_label}. {formula_info}"
+                both_answers_text = f"У данных классов одинаковая брутто-формула. Верны оба ответа: {correct_label} и {isomer_label}."
             else:
-                both_answers_text = formula_info
+                both_answers_text = ""
 
             # Собираем все названия для отображения
             molecule_all_names = ", ".join([
                 name.strip() for name in [obj.name1, obj.name2, obj.name3, obj.name4] if name
             ])
             obj.all_names_string = molecule_all_names
+            
+            # Передаем всё в рендер (добавлен general_formula)
+            return render(request, 'Chem/organicnamestest_answer.html', {
+                'molecule': obj,
+                'is_correct': is_correct,
+                'user_answer_label': user_label,
+                'both_answers_text': both_answers_text,
+                'general_formula': general_formula,  # ПЕРЕДАЕМ КРАСИВУЮ ФОРМУЛУ СЮДА
+                'next_index': index + 1,
+                'total_questions': len(test_ids),
+                'mode': mode
+            })
 
 
         # Начисляем баллы
