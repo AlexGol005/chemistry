@@ -800,18 +800,24 @@ class OrganicNamesTestAnswerView(View):
             correct_label = classes_dict.get(correct_class, "Неизвестный класс")
             isomer_label = classes_dict.get(isomer_class, "")
             
-            # Если ответ совпал строго или совпал с межклассовым изомером
+            # Проверка ответа студента
             if user_ans == correct_class:
                 is_correct = True
             elif isomer_class and user_ans == isomer_class:
                 is_correct = True
                 
-            # Заменяем код (alkanes) на название (Алканы) для отображения
             user_label = classes_dict.get(user_ans, "Не выбрано")
             
-            # Формируем строку-пояснение, если у класса существует изомер
             if isomer_label:
                 both_answers_text = f"У данных классов одинаковая брутто-формула. Верны оба ответа: {correct_label} и {isomer_label}."
+
+            # === НОВАЯ ЛОГИКА: СОБИРАЕМ ВСЕ НАЗВАНИЯ ДЛЯ ОТОБРАЖЕНИЯ ===
+            molecule_all_names = ", ".join([
+                name.strip() for name in [obj.name1, obj.name2, obj.name3, obj.name4] if name
+            ])
+            # Записываем собранную строку в объект, чтобы легко забрать в HTML
+            obj.all_names_string = molecule_all_names
+
 
         # Начисляем баллы
         if is_correct:
