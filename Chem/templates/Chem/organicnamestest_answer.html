@@ -103,12 +103,13 @@
                             <p class="mb-1 text-muted small">Названия этого вещества в базе:</p>
                             <h5 class="text-dark mb-3"><strong>{{ molecule.all_names_string }}</strong></h5>
                             
-                            <!-- Ссылка на страницу вещества (замените 'molecule_detail', если имя URL отличается) -->
-                            <a href="{% url 'molecule_detail' molecule.pk %}" target="_blank" class="btn btn-outline-success btn-sm w-100">
+                            <!-- ИСПРАВЛЕННАЯ ССЫЛКА ПОД ВАШ URLS.PY -->
+                            <a href="{% url 'organiclawstr' molecule.pk %}" target="_blank" class="btn btn-outline-success btn-sm w-100">
                                 <i class="fas fa-external-link-alt me-1"></i> Перейти на страницу вещества
                             </a>
                         </div>
                     </div>
+
 
                     <!-- Вывод сообщения о межклассовых изомерах (Оба ответа верны) -->
                     {% if both_answers_text %}
