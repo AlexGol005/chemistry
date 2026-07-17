@@ -61,10 +61,18 @@
                         </h4>
                     </div>
                     <div class="p-3 border rounded bg-white shadow-sm border-success">
-                        <p class="mb-1 text-muted small">Правильное название:</p>
-                        <h4 class="text-success"><strong>{{ molecule.name1 }}</strong></h4>
+                        <p class="mb-1 text-muted small">Допустимые названия вещества:</p>
+                        <h4 class="text-success">
+                            <strong>
+                                {{ molecule.name1 }}<!--
+                             -->{% if molecule.name2 %}, {{ molecule.name2 }}{% endif %}<!--
+                             -->{% if molecule.name3 %}, {{ molecule.name3 }}{% endif %}<!--
+                             -->{% if molecule.name4 %}, {{ molecule.name4 }}{% endif %}
+                            </strong>
+                        </h4>
                     </div>
                 </div>
+
 
             {% elif mode == 'form_to_class' %}
                 <!-- РЕЖИМ 3: ФОРМУЛА -> КЛАСС -->
