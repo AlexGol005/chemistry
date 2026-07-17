@@ -770,7 +770,14 @@ class OrganicNamesTestAnswerView(View):
                 is_correct = Chemredactor.MolToSmiles(m1) == Chemredactor.MolToSmiles(m2)
         
         elif mode == 'mol_to_name':
-            is_correct = user_ans.lower() == obj.name1.lower()
+            # === ВОТ ЭТОТ БЛОК ИСПРАВЛЕН ДЛЯ СВЕРКИ СО ВСЕМИ НАЗВАНИЯМИ ===
+            valid_names = [
+                name.strip().lower() 
+                for name in [obj.name1, obj.name2, obj.name3, obj.name4] 
+                if name
+            ]
+            is_correct = user_ans.lower() in valid_names
+            # =============================================================
             
         elif mode == 'form_to_class':
             correct_class = obj.organic_class
@@ -807,6 +814,7 @@ class OrganicNamesTestAnswerView(View):
             'total_questions': len(test_ids),
             'mode': mode
         })
+
 
 # 5. ФИНАЛ
 class OrganicNamesTestFinishedView(View):
