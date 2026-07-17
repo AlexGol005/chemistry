@@ -736,16 +736,29 @@ class OrganicNamesTestQuestionView(View):
 
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
         
+        # Список СТРОГО разрешенных кодов классов (те самые 17 штук)
+        allowed_keys = [
+            'alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 'arenes',
+            'alcohols', 'phenols', 'ethers', 'aldehydes', 'ketones', 'carboxylic_acids',
+            'esters', 'amines', 'amino_acids', 'halogen_derivatives', 'Ангидриды'
+        ]
+        
+        # Фильтруем глобальный ORGANIC_CLASSES, оставляя только разрешенные пункты
+        filtered_organic_classes = [
+            item for item in ORGANIC_CLASSES if item[0] in allowed_keys
+        ]
+        
         context = {
             'molecule': obj,
             'index': index,
             'mode': mode,
             'total_questions': len(test_ids),
-            'organic_classes': ORGANIC_CLASSES
+            'organic_classes': filtered_organic_classes  # Отдаем в шаблон урезанный список
         }
         
         template_name = f'Chem/organicnamestest_question_{mode}.html'
         return render(request, template_name, context)
+
 
 # 4. ПРОВЕРКА ОТВЕТА
 class OrganicNamesTestAnswerView(View):
