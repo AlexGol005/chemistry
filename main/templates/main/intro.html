@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химическая заставка</title>
+    <style>
+        /* Обнуление стилей и центрирование контента на весь экран */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            
+            /* Элегантный глубокий цвет Тиффани */
+            background-color: #0ABAB5; 
+            
+            /* Сложный бесшовный химический узор (молекулы, связи, решетки) */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://w3.org' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg stroke='rgba(255,255,255,0.18)' stroke-width='1.5' fill='none'%3E%3Cpath d='M80 20 L115 40 L115 80 L80 100 L45 80 L45 40 Z'/%3E%3Cpath d='M80 27 L109 44 L109 76 L80 93 L51 76 L51 44 Z' stroke-dasharray='4,4'/%3E%3Cpath d='M115 40 L145 25 M45 40 L15 25 M80 100 L80 135'/%3E%3Cpath d='M20 120 L40 110 L60 120 L80 110' stroke-width='1'/%3E%3C/g%3E%3Cg fill='rgba(255,255,255,0.35)'%3E%3Ccircle cx='80' cy='20' r='5'/%3E%3Ccircle cx='115' cy='40' r='4'/%3E%3Ccircle cx='45' cy='40' r='4'/%3E%3Ccircle cx='145' cy='25' r='6'/%3E%3Ccircle cx='15' cy='25' r='3'/%3E%3C/g%3E%3C/svg%3E");
+            
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Мягкое виньетирование для глубины фона */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0) 40%, rgba(0,0,0,0.15) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Основной контейнер для кнопок */
+        .welcome-container {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+            padding: 20px;
+            max-width: 900px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Общий стиль для больших интерактивных кнопок-ссылок */
+        .chem-link {
+            flex: 1;
+            min-height: 200px;
+            max-width: 380px;
+            padding: 30px;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-radius: 28px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            text-decoration: none; /* Убираем стандартное подчеркивание ссылки */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Левая кнопка: "Я химик" — солидная, глянцево-белая */
+        .btn-pro {
+            background: #ffffff;
+            color: #098481;
+            border: 2px solid #ffffff;
+        }
+
+        .btn-pro:hover {
+            background: #065755;
+            color: #ffffff;
+            border-color: #065755;
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Правая кнопка: "Я хочу быть химиком" — легкая, стеклянный градиент */
+        .btn-student {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-student:hover {
+            background: rgba(255, 255, 255, 0.95);
+            color: #0ABAB5;
+            border-color: #ffffff;
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 25px 50px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Эффект клика для обеих кнопок */
+        .chem-link:active {
+            transform: translateY(-2px) scale(0.99);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Адаптивность под мобильные устройства */
+        @media (max-width: 680px) {
+            .welcome-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            .chem-link {
+                width: 100%;
+                min-height: 140px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-container">
+        <!-- Кнопка "Я химик" ведет на URL страницы home -->
+        <a href="/home/" class="chem-link btn-pro">Я химик</a>
+        
+        <!-- Кнопка "Я хочу быть химиком" ведет на URL страницы chem -->
+        <a href="/chem/" class="chem-link btn-student">Я хочу быть химиком</a>
+    </div>
+
+</body>
+</html>
