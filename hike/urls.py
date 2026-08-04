@@ -2,11 +2,12 @@ from django.urls import path
 
 from . import views
 from . constants import *
-URL = 'hike_' 
 
 
 urlpatterns = [
-    path('', views.HikeAllListView.as_view(), name=URL + 'head'),
+
+    path('', views.HikeAllListView.as_view(), name='hike_head'),
+
     path('bm', views.BMAllListView.as_view(), name='bm'),
     path('it', views.ITAllListView.as_view(), name='it'),
     path('it/searchresult/', views.ITSearchResultView.as_view(), name='itsearchresult'),
