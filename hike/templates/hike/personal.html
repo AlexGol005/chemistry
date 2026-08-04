@@ -1,0 +1,28 @@
+{% extends 'main/superbasepersonal.html' %}
+{% block title %}
+{% endblock %}
+
+
+{% block content %}
+    <div style="text-align: center;">
+        <a href="{% url 'history' %}" class="btn btn-success mt-3 mr-1" style="width: 250px">История</a>
+        <a href="{% url 'hikehead' %}" class="btn btn-success mt-3 ml-1" style="width: 250px">Прогулки</a>
+        
+    </div>
+    <div style="text-align: center;">
+        <a href="{% url 'bm' %}" class="btn btn-success mt-3 mr-1" style="width: 250px">Закладки на разные темы</a>
+       <a href="{% url 'it' %}" class="btn btn-success mt-3 ml-1" style="width: 250px">Записи по айти</a>
+        
+    </div>
+    <div style="text-align: center;">
+       <a href="{% url 'kareliahistory' %}" class="btn btn-success mt-3 ml-1" style="width: 250px">История Карелии</a>
+       <a href="{% url 'example' %}" class="btn btn-success mt-3 ml-1" style="width: 250px">Пример</a>
+    </div>
+    <div style="text-align: center;">
+       <a href="{% url 'family' %}" class="btn btn-success mt-3 ml-1" style="width: 250px">История семьи</a>
+        <a href="{% url 'chemistry' %}" class="btn btn-success mt-3 ml-1" style="width: 250px">Химия</a>
+    </div>
+    <div style="text-align: center;">
+        <a href="{% url 'bdanswersall' %}" class="btn btn-success mt-3 mr-1" style="width: 250px">Билеты по базам данных</a>       
+    </div>
+{% endblock %}
