@@ -69,6 +69,17 @@ class Pictures(models.Model):
         verbose_name = 'картинки'
         verbose_name_plural = 'картинки'
 
+from django.conf import settings
+from django.db import models
+
+class UserQuestionProgress(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    question = models.ForeignKey('OrganicNames', on_delete=models.CASCADE)
+    # Сколько тестов подряд нужно пропускать этот вопрос (0 — можно задавать)
+    skip_count = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('user', 'question')
 
 
 class Videor(models.Model):
