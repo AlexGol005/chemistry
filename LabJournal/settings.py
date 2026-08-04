@@ -37,7 +37,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == "true"
 
-ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS').split(',')]
+ALLOWED_HOSTS = ['xn--h1aal8a3c.site', 'химия.site', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django_celery_beat',
@@ -125,8 +125,8 @@ DATABASES = {
         'NAME': 'jl',
         'USER': 'myappuser',
         'PASSWORD': 'U+J*0KB4TZNU',
-        'HOST': 'LabJournal-4495.postgres.pythonanywhere-services.com',
-        'PORT': 14495,
+        'HOST': '127.0.0.1',
+        'PORT': 5432,
     }
 }
 

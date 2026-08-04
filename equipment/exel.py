@@ -52,14 +52,13 @@ def get_author(Company, request):
 
 # блок 1
 # блок получения констант для блока 1 и блока 2
+import datetime
+from django.db.models import Max
+from .models import Roomschange
 
-# для фильтрации кверисетов для выгрузок ексель. Так как нужно выбирать актуальные (последниие)
-# поверки/аттестации из их таблиц и подставлять их в таблицы СИ и ИО, при этом не теряя остальные поля,
-# поэтому просто группировка не подходит
-
-get_id_room = Roomschange.objects.select_related('equipment').values('equipment'). \
-        annotate(id_actual=Max('id')).values('id_actual')
-list_ = list(get_id_room)
+# Находим актуальные ID комнат
+get_roomnumber = Roomschange.objects.values('roomnumber').annotate(id_actual=Max('id')).values('id_actual')
+list_ = list(get_roomnumber)
 setroom = []
 for n in list_:
     setroom.append(n.get('id_actual'))
