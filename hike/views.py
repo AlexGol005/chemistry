@@ -14,6 +14,21 @@ from .forms import *
 from .constants import *
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView
 
+from django import forms
+
+class SearchForm(forms.Form):
+    # Текстовое поле ввода для поиска по названию/описанию маршрута
+    q = forms.CharField(
+        required=False,  # Поле не обязательное, чтобы пустой поиск не выдавал ошибку
+        label='Поиск',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',              # Bootstrap класс для красивого текстового поля
+            'placeholder': 'Введите название...', # Подсказка внутри поля
+            'id': 'search-input'
+        })
+    )
+
+
 now = date.today()
 
 from django.views import View
