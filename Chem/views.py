@@ -529,129 +529,7 @@ def my_reactions_list(request):
 
 
 
-# # тесты на названия органики
-# # 1. ВЫБОР РЕЖИМА (Пульт управления)
-# class OrganicNamesTestHeadView(View):
-#     def get(self, request):
-#         return render(request, 'Chem/organicnames_test_head.html')
 
-# # 2. ПОДГОТОВКА (Превью и инициализация сессии)
-# class OrganicNamesTestStartView(View):
-#     def get(self, request):
-#         # Принудительно берем режим из URL
-#         mode = request.GET.get('mode', 'name_to_mol')
-#         # Сохраняем его временно, чтобы показать в шаблоне
-#         return render(request, 'Chem/organicnamestest_start.html', {'mode': mode})
-
-#     def post(self, request):
-#         # 1. Получаем режим из скрытого поля формы или из URL
-#         mode = request.POST.get('mode') or request.GET.get('mode') or 'name_to_mol'
-        
-#         # 2. ПОЛНОЕ УДАЛЕНИЕ СТАРОЙ СЕССИИ (Чистим 8/4 и прочее)
-#         request.session.flush() 
-        
-#         # 3. Начинаем выборку заново
-#         queryset = OrganicNames.objects.all()
-#         if mode == 'form_to_class':
-#             queryset = queryset.exclude(formula__isnull=True).exclude(formula__exact='')
-        
-#         ids = list(queryset.values_list('id', flat=True))
-#         random.shuffle(ids)
-        
-#         # 4. ЗАПИСЫВАЕМ ЧИСТЫЕ ДАННЫЕ
-#         request.session['organicnamestest_ids'] = ids[:10] # Строго 10 вопросов
-#         request.session['organicnamestest_score'] = 0      # Строго НОЛЬ баллов
-#         request.session['organicnamestest_mode'] = mode
-        
-#         # 5. Принудительно сохраняем
-#         request.session.modified = True
-        
-#         return redirect('organicnamestest_question', index=0)
-
-# # 3. СТРАНИЦА ВОПРОСА
-# class OrganicNamesTestQuestionView(View):
-#     def get(self, request, index):
-#         test_ids = request.session.get('organicnamestest_ids', [])
-#         mode = request.session.get('organicnamestest_mode', 'name_to_mol')
-
-#         if not test_ids or index >= len(test_ids):
-#             return redirect('organicnamestest_finished')
-
-#         obj = get_object_or_404(OrganicNames, id=test_ids[index])
-        
-#         context = {
-#             'molecule': obj,
-#             'index': index,
-#             'mode': mode,
-#             'total_questions': len(test_ids),
-#             'organic_classes': ORGANIC_CLASSES
-#         }
-        
-#         template_name = f'Chem/organicnamestest_question_{mode}.html'
-#         return render(request, template_name, context)
-
-# # 4. ПРОВЕРКА ОТВЕТА
-# class OrganicNamesTestAnswerView(View):
-#     def post(self, request, index):
-#         mode = request.session.get('organicnamestest_mode', 'name_to_mol')
-#         # Собираем ответ из разных типов полей
-#         user_ans = request.POST.get('user_answer') or request.POST.get('user_smiles') or ""
-#         user_ans = user_ans.strip()
-        
-#         test_ids = request.session.get('organicnamestest_ids', [])
-#         obj = get_object_or_404(OrganicNames, id=test_ids[index])
-        
-#         is_correct = False
-#         user_label = user_ans
-
-#         # Логика сравнения
-#         if mode == 'name_to_mol':
-#             m1 = Chemredactor.MolFromSmiles(user_ans)
-#             m2 = Chemredactor.MolFromSmiles(obj.molecule)
-#             if m1 and m2:
-#                 is_correct = Chemredactor.MolToSmiles(m1) == Chemredactor.MolToSmiles(m2)
-        
-#         elif mode == 'mol_to_name':
-#             is_correct = user_ans.lower() == obj.name1.lower()
-            
-#         elif mode == 'form_to_class':
-#             is_correct = (user_ans == obj.organic_class)
-#             # Заменяем код (alkanes) на название (Алканы) для отображения
-#             user_label = dict(ORGANIC_CLASSES).get(user_ans, "Не выбрано")
-
-#         # Начисляем баллы
-#         if is_correct:
-#             request.session['organicnamestest_score'] = request.session.get('organicnamestest_score', 0) + 1
-#             request.session.modified = True
-
-#         return render(request, 'Chem/organicnamestest_answer.html', {
-#             'molecule': obj,
-#             'is_correct': is_correct,
-#             'user_answer_label': user_label,
-#             'next_index': index + 1,
-#             'total_questions': len(test_ids),
-#             'mode': mode
-#         })
-
-# # 5. ФИНАЛ
-# class OrganicNamesTestFinishedView(View):
-#     def get(self, request):
-#         score = request.session.get('organicnamestest_score', 0)
-#         test_ids = request.session.get('organicnamestest_ids', [])
-#         total = len(test_ids)
-        
-#         if total == 0:
-#             return redirect('organicnamestest_head')
-
-#         percent = int((score / total) * 100)
-        
-#         return render(request, 'Chem/organicnamestest_finished.html', {
-#             'score': score,
-#             'total': total,
-#             'percent': percent
-#         })
-
-# # конец тесты на названия органики
 
 import random
 from django.shortcuts import render, redirect, get_object_or_404
@@ -659,17 +537,17 @@ from django.views import View
 
 # Словарь межклассовых изомеров для теста "Формула -> Класс"
 CLASS_ISOMERS = {
-    'alkenes': 'cycloalkanes',                       # Алкены и Циклоалканы
+    'alkenes': 'cycloalkanes',  # Алкены и Циклоалканы
     'cycloalkanes': 'alkenes',
-    'alkynes': 'alkadienes',                         # Алкины и Алкадиены
+    'alkynes': 'alkadienes',  # Алкины и Алкадиены
     'alkadienes': 'alkynes',
-    'alcohols': 'ethers',                            # Предельные спирты и Простые эфиры
+    'alcohols': 'ethers',  # Предельные спирты и Простые эфиры
     'ethers': 'alcohols',
-    'aldehydes': 'ketones',                          # Альдегиды и Кетоны
+    'aldehydes': 'ketones',  # Альдегиды и Кетоны
     'ketones': 'aldehydes',
-    'carboxylic_acids': 'esters',                    # Карбоновые кислоты и Сложные эфиры
-    'esters': 'carboxylic_acids',
-    'amino_acids': 'nitro_compounds',                # Аминокислоты и Нитросоединения
+    'saturated_monobasic_carboxylic_acids': 'esters',  # Предельные одноосновные карбоновые кислоты и Сложные эфиры
+    'esters': 'saturated_monobasic_carboxylic_acids',
+    'amino_acids': 'nitro_compounds',  # Аминокислоты и Нитросоединения
     'nitro_compounds': 'amino_acids',
 }
 
@@ -682,15 +560,18 @@ CLASS_GENERAL_FORMULAS = {
     'cycloalkanes': 'C<sub>n</sub>H<sub>2n</sub>',
     'arenes': 'C<sub>n</sub>H<sub>2n-6</sub>',
     'alcohols': 'C<sub>n</sub>H<sub>2n+1</sub>OH',
+    'diols': 'C<sub>n</sub>H<sub>2n</sub>(OH)<sub>2</sub>',  # Добавлено для ЕГЭ
+    'triols': 'C<sub>n</sub>H<sub>2n-1</sub>(OH)<sub>3</sub>',  # Добавлено для ЕГЭ
     'phenols': 'C<sub>n</sub>H<sub>2n-7</sub>OH',
     'ethers': 'C<sub>n</sub>H<sub>2n+2</sub>O',
     'aldehydes': 'C<sub>n</sub>H<sub>2n</sub>O',
     'ketones': 'C<sub>n</sub>H<sub>2n</sub>O',
-    'carboxylic_acids': 'C<sub>n</sub>H<sub>2n</sub>O<sub>2</sub>',
+    'saturated_monobasic_carboxylic_acids': 'C<sub>n</sub>H<sub>2n</sub>O<sub>2</sub>',  # Исправлено
     'esters': 'C<sub>n</sub>H<sub>2n</sub>O<sub>2</sub>',
     'amines': 'C<sub>n</sub>H<sub>2n+1</sub>NH<sub>2</sub>',
     'amino_acids': 'NH<sub>2</sub>-CH(R)-COOH',
     'halogen_derivatives': 'C<sub>n</sub>H<sub>2n+1</sub>X',
+    'halogen_arenes': 'C<sub>n</sub>H<sub>2n-7</sub>X',  # Добавлено для ЕГЭ
     'Ангидриды': '(RCO)<sub>2</sub>O',
 }
 
