@@ -16,24 +16,20 @@ urlpatterns = [
     path('companyupdate/', UserView.CompanyUpdateView, name='companyupdate'),
     path('companyprofile/', UserView.CompanyProfileView.as_view(), name='companyprofile'),
     path('profile/', UserView.ProfileView.as_view(), name='profile'),
+    
     path('login/', UserView.CustomLoginView.as_view(template_name='users/user.html'), name='user'),
     path('exit/', authViews.LogoutView.as_view(template_name='users/exit.html'), name='exit'),
-    path('password-reset/', 
-         PasswordResetView.as_view(template_name = "users/password_reset_form.html"),
-         name='password_reset'),
-    path('password-reset/done/',
-         PasswordResetDoneView.as_view(template_name = "users/password_reset_done.html"),
-         name='password_reset_done'),
+    
+    path('password-reset/', PasswordResetView.as_view(template_name = "users/password_reset_form.html"), name='password_reset'),
+    path('password-reset/done/', PasswordResetDoneView.as_view(template_name = "users/password_reset_done.html"), name='password_reset_done'),
     path('password-reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(template_name="users/password_reset_confirm.html"), name='password_reset_confirm'),
     path('password-reset/complete/', PasswordResetCompleteView.as_view(template_name="users/password_reset_complete.html"), name='password_reset_complete'),
-
-    path('chem/chemprofile/', UserView.ChemProfileView.as_view(), name='chemprofile'),
-
-    path('chem/chemprofilereg/', views.Chemprofilereg, name='chemprofilereg'),
-
-    path('chem/chemuserlogin/', authViews.LoginView.as_view(template_name='users/chemuser.html', next_page='chemprofile'), name='chemuser'),
-
-    path('chem/exit/', authViews.LogoutView.as_view(template_name='users/exit.html', next_page='chemuser'), name='chemexit'),
     
-        ]
+    path('chem/chemprofile/', UserView.ChemProfileView.as_view(), name='chemprofile'),
+    path('chem/chemprofilereg/', views.Chemprofilereg, name='chemprofilereg'),
+    path('chem/chemuserlogin/', authViews.LoginView.as_view(template_name='users/chemuser.html', next_page='chemprofile'), name='chemuser'),
+    path('chem/exit/', authViews.LogoutView.as_view(template_name='users/exit.html', next_page='chemuser'), name='chemexit'),
 
+    # ДОБАВЛЕННЫЙ МАРШРУТ: Личная панель Labjournal
+    path('chem/personal/', UserView.PersonalPanelView.as_view(), name='personal_page'),
+]
