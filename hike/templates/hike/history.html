@@ -1,0 +1,428 @@
+{% extends 'main/superbasepersonal.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+Ключевые исторические события по векам
+{% endblock %}
+{#конец названия страницы#}
+
+
+    
+{% block content %}
+{% autoescape off %}
+<div class="container">
+        <center>  <h3><a href="/personal/"> Ресурсы </a></h3>     </center>
+     <br>
+<div class="row">
+        <div class="col-12">
+            <center>  <h3><a href="/hike/chemistry"> Исторические события </a></h3>     </center>
+           <br>
+{#основная таблица#}
+
+
+
+
+<table class="table table-bordered flexy1">
+
+
+		
+	<thead>
+	<tr> 
+			<td>Век</td> 
+			<td class="ind3" colspan="2">Северо-Запад</td>
+			<td>Век</td> 
+			<td class="ind3" colspan="2">Россия</td>
+			<td>Век</td> 
+			<td class="ind3" colspan="2">Европа</td>
+			<td>Век</td> 
+			<td class="ind3" colspan="2">Азия</td>
+			<td>Век</td> 
+			<td class="ind3" colspan="2">США</td>
+			<td>Век</td> 
+		</tr> 
+</thead>
+
+		<tr>
+			<td></td>   
+			<td class="ind2">История</td>
+			<td class="ind2">Культура</td>
+			<td></td>
+			<td class="ind2">История</td>
+			<td class="ind2">Культура</td>
+			<td></td>
+			<td class="ind2">История</td>
+			<td class="ind2">Культура</td>
+			<td></td>
+			<td class="ind2">История</td>
+			<td class="ind2">Культура</td>
+			<td></td>
+			<td class="ind2">История</td>
+			<td class="ind2">Культура</td>
+			<td></td>
+		</tr>
+
+
+	
+		
+		<tr>
+			<td colspan="15">Раннее Средневековье (конец V — конец XI в.)</td>
+		</tr>
+	
+		<tr>
+			<td>5</td>         
+			<td class="ind1">{% for i in hn5 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn5 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>5</td>
+			<td class="ind1">{% for i in hr5 %} •  <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr5 %} •  <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>5</td>
+			<td class="ind1">{% for i in he5 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce5 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>5</td>
+			<td class="ind1">{% for i in ha5 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca5 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>5</td>
+			<td class="ind1">{% for i in hu5 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu5 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>5</td>
+		</tr>
+
+
+
+		<tr>
+			<td>6</td>         
+			<td class="ind1">{% for i in hn6 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn6 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>6</td>
+			<td class="ind1">{% for i in hr6 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr6 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>6</td>
+			<td class="ind1">{% for i in he6 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce6 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>6</td>
+			<td class="ind1">{% for i in ha6 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca6 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>6</td>
+			<td class="ind1">{% for i in hu6 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu6 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>6</td>
+		</tr>
+
+		<tr>
+			<td>7</td>         
+			<td class="ind1">{% for i in hn7 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn7 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>7</td>
+			<td class="ind1">{% for i in hr7 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr7 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>7</td>
+			<td class="ind1">{% for i in he7 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce7 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>7</td>
+			<td class="ind1">{% for i in ha7 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca7 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>7</td>
+			<td class="ind1">{% for i in hu7 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu7 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>7</td>
+		</tr>
+
+		<tr>
+			<td>8</td>         
+			<td class="ind1">{% for i in hn8 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn8 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>8</td>
+			<td class="ind1">{% for i in hr8 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr8 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>8</td>
+			<td class="ind1">{% for i in he8 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce8 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>8</td>
+			<td class="ind1">{% for i in ha8 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca8 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>8</td>
+			<td class="ind1">{% for i in hu8 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu8 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>8</td>
+		</tr>
+
+		<tr>
+			<td>9</td>         
+			<td class="ind1">{% for i in hn9 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn9 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>9</td>
+			<td class="ind1">{% for i in hr9 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr9 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>9</td>
+			<td class="ind1">{% for i in he9 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce9 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>9</td>
+			<td class="ind1">{% for i in ha9 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca9 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>9</td>
+			<td class="ind1">{% for i in hu9 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu9 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>9</td>
+		</tr>
+
+		<tr>
+			<td>10</td>         
+			<td class="ind1">{% for i in hn10 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn10 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>10</td>
+			<td class="ind1">{% for i in hr10 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr10 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>10</td>
+			<td class="ind1">{% for i in he10 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce10 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>10</td>
+			<td class="ind1">{% for i in ha10 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca10 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>10</td>
+			<td class="ind1">{% for i in hu10 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu10 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>10</td>
+		</tr>
+
+		<tr>
+			<td>11</td>         
+			<td class="ind1">{% for i in hn11 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn11 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>11</td>
+			<td class="ind1">{% for i in hr11 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr11 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>11</td>
+			<td class="ind1">{% for i in he11 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce11 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>11</td>
+			<td class="ind1">{% for i in ha11 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca11 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>11</td>
+			<td class="ind1">{% for i in hu11 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu11 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>11</td>
+		</tr>
+
+
+		<tr>
+			<td colspan="15">Зрелое (или Развитое) Средневековье (конец XI — начало XIV в.)</td>
+		</tr>
+	
+		<tr>
+			<td>12</td>         
+			<td class="ind1">{% for i in hn12 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn12 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>12</td>
+			<td class="ind1">{% for i in hr12 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr12 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>12</td>
+			<td class="ind1">{% for i in he12 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce12 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>12</td>
+			<td class="ind1">{% for i in ha12 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca12 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>12</td>
+			<td class="ind1">{% for i in hu12 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu12 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>12</td>
+		</tr>
+
+		<tr>
+			<td>13</td>         
+			<td class="ind1">{% for i in hn13 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn13 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>13</td>
+			<td class="ind1">{% for i in hr13 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr13 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>13</td>
+			<td class="ind1">{% for i in he13 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce13 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>13</td>
+			<td class="ind1">{% for i in ha13 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca13 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>13</td>
+			<td class="ind1">{% for i in hu13 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu13 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>13</td>
+		</tr>
+	
+		<tr>
+			<td colspan="15">Позднее Средневековье (XIV‒XV вв.)</td>
+		</tr>
+	
+		<tr>
+			<td>14</td>         
+			<td class="ind1">{% for i in hn14 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn14 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>14</td>
+			<td class="ind1">{% for i in hr14 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr14 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>14</td>
+			<td class="ind1">{% for i in he14 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce14 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>14</td>
+			<td class="ind1">{% for i in ha14 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca14 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>14</td>
+			<td class="ind1">{% for i in hu14 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu14 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>14</td>
+		</tr>
+
+		<tr>
+			<td>15</td>         
+			<td class="ind1">{% for i in hn15 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn15 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>15</td>
+			<td class="ind1">{% for i in hr15 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr15 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>15</td>
+			<td class="ind1">{% for i in he15 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce15 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>15</td>
+			<td class="ind1">{% for i in ha15 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca15 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>15</td>
+			<td class="ind1">{% for i in hu15 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu15 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>15</td>
+		</tr>
+	
+		<tr>
+			<td colspan="15">Новое время: начинается примерно в XV–XVII вв. и продолжается до 1914 года</td>
+		</tr>
+	
+		<tr>
+			<td>16</td>         
+			<td class="ind1">{% for i in hn16 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn16 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>16</td>
+			<td class="ind1">{% for i in hr16 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr16 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>16</td>
+			<td class="ind1">{% for i in he16 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce16 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>16</td>
+			<td class="ind1">{% for i in ha16 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca16 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>16</td>
+			<td class="ind1">{% for i in hu16 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu16 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>16</td>
+		</tr>
+
+		<tr>
+			<td>17</td>         
+			<td class="ind1">{% for i in hn17 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn17 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>17</td>
+			<td class="ind1">{% for i in hr17 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr17 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>17</td>
+			<td class="ind1">{% for i in he17 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce17 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>17</td>
+			<td class="ind1">{% for i in ha17 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca17 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>17</td>
+			<td class="ind1">{% for i in hu17 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu17 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>17</td>
+		</tr>
+
+		<tr>
+			<td>18</td>         
+			<td class="ind1">{% for i in hn18 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn18 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>18</td>
+			<td class="ind1">{% for i in hr18 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr18 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>18</td>
+			<td class="ind1">{% for i in he18 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce18 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>18</td>
+			<td class="ind1">{% for i in ha18 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca18 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>18</td>
+			<td class="ind1">{% for i in hu18 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu18 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>18</td>
+		</tr>
+
+		<tr>
+			<td>19</td>         
+			<td class="ind1">{% for i in hn19 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn19 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>19</td>
+			<td class="ind1">{% for i in hr19 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr18 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>19</td>
+			<td class="ind1">{% for i in he19 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce19 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>19</td>
+			<td class="ind1">{% for i in ha19 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca19 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>19</td>
+			<td class="ind1">{% for i in hu19 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu19 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>19</td>
+		</tr>
+
+	
+		<tr>
+			<td colspan="15">Новейшее время: начинается в 1914 году и продолжается по настоящее время</td>
+		</tr>
+
+		<tr>
+			<td>20</td>         
+			<td class="ind1">{% for i in hn20 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn20 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>20</td>
+			<td class="ind1">{% for i in hr20 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr20 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>20</td>
+			<td class="ind1">{% for i in he20 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce20 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>20</td>
+			<td class="ind1">{% for i in ha20 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca20 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>20</td>
+			<td class="ind1">{% for i in hu20 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu20 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>20</td>
+		</tr>
+
+			<tr>
+			<td>21</td>         
+			<td class="ind1">{% for i in hn21 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cn21 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>21</td>
+			<td class="ind1">{% for i in hr21 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cr21 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>21</td>
+			<td class="ind1">{% for i in he21 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ce21 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>21</td>
+			<td class="ind1">{% for i in ha21 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in ca21 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>21</td>
+			<td class="ind1">{% for i in hu21 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td class="ind1">{% for i in cu21 %} • <a href="{% url 'historystr' i.pk %}" target="blank"> {{i.year}} </a> г. {{i.text}} <br> {% endfor %}</td>
+			<td>21</td>
+		</tr>
+</table>
+
+
+
+
+</div>
+
+
+  
+</div>
+</div>
+{% endautoescape %}
+{% endblock %}
