@@ -1,59 +1,124 @@
-{% extends 'main/base.html' %}
-{% load static %}
+{% extends 'main/base.html' %} 
+{% load static %} 
 
-{% block content %}
-<div class="col-12 col-md-10 col-lg-8 mx-auto">
-    <div class="text-center mt-5">
-        <h2 class="font-weight-bold mb-3">Подготовка к тестированию</h2>
+{% block content %} 
+<div class="col-12 col-md-10 col-lg-8 mx-auto"> 
+    <div class="text-center mt-5"> 
+        <h2 class="font-weight-bold mb-3">Подготовка к тестированию</h2> 
+
+        <!-- Адаптивное описание режима --> 
+        <div class="alert alert-info py-4 shadow-sm rounded-lg border-0 mb-4"> 
+            <h3 class="mb-2 text-primary"> 
+                <strong> 
+                    {% if mode == 'name_to_mol' %} 
+                        Название → Структурная формула 
+                    {% elif mode == 'mol_to_name' %} 
+                        Структурная формула → Название 
+                    {% elif mode == 'form_to_class' %} 
+                        Молекулярная формула → Класс веществ 
+                    {% endif %} 
+                </strong> 
+            </h3> 
+            <p class="lead mb-0"> 
+                {% if mode == 'name_to_mol' %} 
+                    Вам будет дано название, ваша задача — нарисовать его структурную формулу в редакторе. 
+                {% elif mode == 'mol_to_name' %} 
+                    Вам будет представлена структурная формула, ваша задача — написать её правильное название. 
+                {% elif mode == 'form_to_class' %} 
+                    Вам будет дана молекулярная формула, ваша задача — выбрать верный класс соединения из списка. 
+                {% endif %} 
+            </p> 
+        </div> 
+
+        <div class="card bg-light border-0 p-4 mb-4 shadow-sm text-left"> 
+            <ul class="mb-0 list-unstyled"> 
+                <li class="mb-2">✅ Вопросы выбраны в случайном порядке.</li> 
+                <li class="mb-2">✅ Система автоматически проверит ваш ответ.</li> 
+                <li>✅ Результат будет доступен сразу после завершения.</li> 
+            </ul> 
+        </div> 
+
+        <!-- НАЧАЛО БЛОКА: Выбор классов соединений -->
+        <div class="card border-0 p-4 mb-5 shadow-sm text-left">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <h4 class="font-weight-bold mb-0 text-secondary" style="font-size: 1.15rem;">
+                    Выберите классы для теста:
+                </h4>
+                <button type="button" id="toggle-all-btn" class="btn btn-sm btn-outline-secondary font-weight-bold">
+                    Снять выбор со всего
+                </button>
+            </div>
+
+            <!-- Адаптивная CSS-сетка для чекбоксов на Bootstrap-переменных -->
+            <div class="classes-custom-grid p-3 bg-light rounded-lg border">
+                {% for slug, name in organic_classes %}
+                    <label class="class-checkbox-item d-flex align-items-center m-0 p-2 rounded bg-white border">
+                        <input type="checkbox" name="selected_classes" value="{{ slug }}" class="class-checkbox mr-2" checked form="test-start-form">
+                        <span style="font-size: 0.9rem; color: #495057; line-height: 1.2;">{{ name }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- КОНЕЦ БЛОКА -->
+
+        <!-- Форма отправки данных -->
+        <form method="POST" action="{% url 'organicnamestest_start' %}" id="test-start-form"> 
+            {% csrf_token %} 
+            <!-- Скрытое поле передает выбранный режим в метод POST --> 
+            <input type="hidden" name="mode" value="{{ mode }}"> 
+            
+            <button type="submit" class="btn btn-success btn-lg w-100 py-3 shadow font-weight-bold" style="max-width: 450px"> 
+                Начать тестирование <i class="fas fa-play ml-2"></i> 
+            </button> 
+        </form> 
+
+        <div class="mt-4 pb-5"> 
+            <a href="{% url 'organicnamestest_head' %}" class="btn btn-link text-secondary text-decoration-none"> 
+                <i class="fas fa-undo mr-1"></i> Назад к выбору режима 
+            </a> 
+        </div> 
+    </div> 
+</div> 
+
+<!-- Дополнительные стили для сетки классов -->
+<style>
+    .classes-custom-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 10px;
+        max-height: 320px;
+        overflow-y: auto;
+    }
+    .class-checkbox-item {
+        cursor: pointer;
+        transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    }
+    .class-checkbox-item:hover {
+        background-color: #e9ecef !important;
+        border-color: #adb5bd !important;
+    }
+</style>
+
+<!-- Скрипт мгновенного выделения / снятия выделения -->
+<script>
+    document.getElementById('toggle-all-btn').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('.class-checkbox');
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
         
-        <!-- Адаптивное описание режима -->
-        <div class="alert alert-info py-4 shadow-sm rounded-lg border-0 mb-4">
-            <h3 class="mb-2 text-primary">
-                <strong>
-                    {% if mode == 'name_to_mol' %}
-                        Название → Структурная формула
-                    {% elif mode == 'mol_to_name' %}
-                        Структурная формула → Название
-                    {% elif mode == 'form_to_class' %}
-                        Молекулярная формула → Класс веществ
-                    {% endif %}
-                </strong>
-            </h3>
-            
-            <p class="lead mb-0">
-                {% if mode == 'name_to_mol' %}
-                    Вам будет дано название, ваша задача — нарисовать его структурную формулу в редакторе.
-                {% elif mode == 'mol_to_name' %}
-                    Вам будет представлена структурная формула, ваша задача — написать её правильное название.
-                {% elif mode == 'form_to_class' %}
-                    Вам будет дана молекулярная формула, ваша задача — выбрать верный класс соединения из списка.
-                {% endif %}
-            </p>
-        </div>
-
-        <div class="card bg-light border-0 p-4 mb-5 shadow-sm text-left">
-            <ul class="mb-0 list-unstyled">
-                <li class="mb-2">✅ Вопросы выбраны в случайном порядке.</li>
-                <li class="mb-2">✅ Система автоматически проверит ваш ответ.</li>
-                <li>✅ Результат будет доступен сразу после завершения.</li>
-            </ul>
-        </div>
-
-        <form method="POST" action="{% url 'organicnamestest_start' %}">
-            {% csrf_token %}
-            <!-- Скрытое поле передает выбранный режим в метод POST -->
-            <input type="hidden" name="mode" value="{{ mode }}">
-            
-            <button type="submit" class="btn btn-success btn-lg w-100 py-3 shadow font-weight-bold" style="max-width: 450px">
-                Начать тестирование <i class="fas fa-play ml-2"></i>
-            </button>
-        </form>
-
-        <div class="mt-4 pb-5">
-            <a href="{% url 'organicnamestest_head' %}" class="btn btn-link text-secondary text-decoration-none">
-                <i class="fas fa-undo mr-1"></i> Назад к выбору режима
-            </a>
-        </div>
-    </div>
-</div>
+        checkboxes.forEach(cb => {
+            cb.checked = !anyChecked;
+        });
+        
+        this.textContent = anyChecked ? 'Выбрать все' : 'Снять выбор со всего';
+        
+        // Меняем класс кнопки для красоты (Bootstrap стили)
+        if (anyChecked) {
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('btn-secondary');
+        } else {
+            this.classList.remove('btn-secondary');
+            this.classList.add('btn-outline-secondary');
+        }
+    });
+</script>
 {% endblock %}
