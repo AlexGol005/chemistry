@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'qr_code',
     'pay',
     'Chem',
+    'hike',
     
 ]
 
