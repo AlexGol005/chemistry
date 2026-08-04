@@ -23,14 +23,6 @@ from django.views import View
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 
-class PersonalPanelView(View):
-    def get(self, request):
-        # Строгая проверка: очищаем от пробелов и переводим в нижний регистр
-        if not request.user.is_authenticated or request.user.username.strip().lower() != 'labjournal':
-            raise PermissionDenied
-            
-        # Рендерим личный раздел
-        return render(request, 'users/personal.html')
 
 
 
