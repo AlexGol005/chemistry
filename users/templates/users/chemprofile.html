@@ -7,7 +7,7 @@
     <h2>Кабинет пользователя - изучение химии</h2> 
     
     <div class="media text-muted pt-3"> 
-        <img class="bd-placeholder-img mr-2 rounded" width=30% height=30% src="{{ user.profile.img.url }}"> 
+        <img class="bd-placeholder-img mr-2 rounded" width="30%" height="30%" src="{{ user.profile.img.url }}"> 
         <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray"> 
             <strong class="d-block text-gray-dark"><b>Данные учетной записи</b></strong> 
             <br> 
@@ -19,8 +19,8 @@
     <br> 
     
     <center> 
-        <!-- НАЧАЛО БЛОКА: Кнопка отображается ТОЛЬКО для Labjournal -->
-        {% if request.user.is_authenticated and request.user.username == 'Labjournal' %}
+        <!-- НАЧАЛО БЛОКА: Кнопка отображается для любого написания (labjournal, Labjournal, LABJOURNAL) -->
+        {% if request.user.is_authenticated and request.user.username|lower == 'labjournal' %}
             <a href="{% url 'personal_page' %}" class="btn btn-warning shadow-sm font-weight-bold mr-2 ml-2 mb-3 py-2 text-dark" style="width: 80%; border: 1px solid #ffc107;">
                 <i class="fas fa-user-shield mr-2"></i> ⚙️ Панель управления Labjournal
             </a>
