@@ -1,0 +1,53 @@
+{% extends 'main/superbasepersonal.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+{{title}} 
+{% endblock %}
+{#конец названия страницы#}
+
+ 
+
+    
+{% block content %}
+{% autoescape off %}
+  <div class="row">
+    <div class="col-md-10 mt-2 ml-2">
+       
+  
+        <p>Век: {{ obj.century }}</p>
+        <p>Год начала: {{ obj.year }}</p>
+        <p>Регион: {{ obj.region }}</p>
+        <p>Тип: {{ obj.type }}</p>
+        <p>Категория: {{ obj.cat }}</p>
+        <p>Заголовок: {{ obj.title }}</p>
+        <p>Текст: {{ obj.text }}</p>
+        <p>Подробности и ссылки: {{ obj.text_long }}</p>
+
+    <div class="media text-muted flex-column align-items-center pt-3">
+      <img class="bd-placeholder-img mr-2 rounded" width=40% height=40% src="{{ obj.photo1.url }}">
+</div>
+        
+          
+<div class="media text-muted flex-column align-items-center pt-3">
+      <img class="bd-placeholder-img mr-2 rounded" width=40% height=40% src="{{ obj.photo2.url }}">
+</div>
+            <div class="media text-muted flex-column align-items-center pt-3">
+      <img class="bd-placeholder-img mr-2 rounded" width=40% height=40% src="{{ obj.photo3.url }}">
+</div>
+            <div class="media text-muted flex-column align-items-center pt-3">
+      <img class="bd-placeholder-img mr-2 rounded" width=40% height=40% src="{{ obj.photo4.url }}">
+</div>
+
+
+
+
+
+</div>
+</div>
+</div>
+{% endautoescape %}
+{% endblock %}
