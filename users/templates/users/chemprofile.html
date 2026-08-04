@@ -19,13 +19,14 @@
     <br> 
     
     <center> 
-<!-- НАЧАЛО БЛОКА: Личный раздел Labjournal (Строгий серо-стальной дизайн) -->
-{% if request.user.is_authenticated and request.user.username|lower|slugify == 'labjournal' %}
+<!-- НАЧАЛО БЛОКА: Личный раздел Labjournal (Сдержанный серо-стальной дизайн) -->
+{% if request.user.is_authenticated and request.user.username|lower == 'labjournal' %}
     <a href="{% url 'personal_page' %}" class="btn btn-outline-secondary shadow-sm font-weight-bold mr-2 ml-2 mb-3 py-2" style="width: 80%; color: #4a5568; border: 1px solid #cbd5e0; background-color: #f7fafc;">
         <i class="fas fa-folder-open mr-2" style="color: #4a5568;"></i> Личный раздел Labjournal
     </a>
 {% endif %}
 <!-- КОНЕЦ БЛОКА -->
+
 
         <!-- Кнопка для Неорганики --> 
         <a href="{% url 'my_reactions_test' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%"> 
