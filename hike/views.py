@@ -16,6 +16,19 @@ from django.views.generic import ListView, TemplateView, CreateView, UpdateView
 
 now = date.today()
 
+from django.views import View
+from django.shortcuts import render
+from django.core.exceptions import PermissionDenied
+
+class PersonalPanelView(View):
+    def get(self, request):
+        # Строгая проверка: очищаем от пробелов и переводим в нижний регистр
+        if not request.user.is_authenticated or request.user.username.strip().lower() != 'labjournal':
+            raise PermissionDenied
+            
+        # Рендерим личный раздел из папки hike
+        return render(request, 'hike/personal.html')
+
 
 
 class ExampleTemplateView(TemplateView):
