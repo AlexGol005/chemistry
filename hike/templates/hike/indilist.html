@@ -1,0 +1,61 @@
+{% extends 'main/superbasepersonal.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+{{title}} 
+{% endblock %}
+{#конец названия страницы#}
+
+
+    
+{% block content %}
+{% autoescape off %}
+  <div class="row">
+    <div class="col-md-10 mt-2 ml-2">
+       
+{#основная таблица#}
+
+
+
+ 
+ 
+            <h4>{{ obj.title }}</h4>
+            <p><b>Сезон:</b> {{ obj.season }} <b>Регион:</b> {{ obj.country }}, {{ obj.region }} <br></p>
+            <p><b>дней:</b> {{ obj.how_long }}  &nbsp&nbsp&nbsp&nbsp&nbsp <b>км: </b> {{ obj.kilometers }}<br></p>
+            <p><b>Отправление c:</b> {{ obj.start_station }} -  <b>прибытие обратно на:</b> {{ obj.home_station }}<br></p>
+            <p><b>Начало похода с:</b> {{ obj.aim_station }} -  <b>окончание похода на:</b> {{ obj.back_station }}<br></p>
+          
+               <p><b>Подробности добирания и комментарии:</b> {{ obj.travel_details }} <br>
+
+             <p><b>Группа VK:</b> 
+                {% if obj.vk %}
+                <a href="{{ obj.vk}}"  target="blank" >
+                ссылка
+                </a>
+                {% else  %}
+                отсутствует
+                {% endif %}</p>
+            <p> <b>Даты прохождения:</b> {{ obj.dates_try}}<br></b> 
+         <p><b>Нитка маршрута:</b> {{ obj.attractions }} <br>
+       <p><b>Трек план и  факт:</b></p>
+    <div class="media text-muted pt-3">
+      <img class="bd-placeholder-img mr-2 rounded" width=30% height=30% src="{{ obj.img_track_project.url }}">
+
+        
+          
+      <img class="bd-placeholder-img mr-2 rounded" width=30% height=30% src="{{ obj.img_track_fact.url }}">
+</div>
+
+{#конец основной таблицы#}
+
+
+</div>
+</div>
+</div>
+{% endautoescape %}
+{% endblock %}
+
+
