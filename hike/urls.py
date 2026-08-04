@@ -26,4 +26,6 @@ urlpatterns = [
     path('history', views.HistoryListView.as_view(), name='history'),
     # path('history/searchresult/', views.HistorySearchResultView.as_view(), name='historysearchresult'),
     path('history/<int:pk>/', views.HistoryStrView.as_view(), name='historystr'),
+    path('chem/personal/', views.PersonalPanelView.as_view(), name='personal_page'),
+
     ] 
