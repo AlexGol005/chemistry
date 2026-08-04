@@ -19,15 +19,19 @@ from django.views import View
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 
+from django.views import View
+from django.shortcuts import render
+from django.core.exceptions import PermissionDenied
+
 class PersonalPanelView(View):
     def get(self, request):
-        # Строгая проверка: если не авторизован ИЛИ логин не Labjournal — выкидываем ошибку 403
-        if not request.user.is_authenticated or request.user.username != 'Labjournal':
+        # Строгая проверка: очищаем от пробелов и переводим в нижний регистр
+        if not request.user.is_authenticated or request.user.username.strip().lower() != 'labjournal':
             raise PermissionDenied
             
-        # Если проверка прошла, рендерим страницу управления
-        # Убедитесь, что файл personal.html лежит в папке templates/users/
+        # Рендерим личный раздел
         return render(request, 'users/personal.html')
+
 
 
 # Функция отправки сообщения
