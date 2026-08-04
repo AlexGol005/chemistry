@@ -17,6 +17,7 @@ urlpatterns = [
     path('articles/', include('blog.urls')),
     path('org/', include('administrator.urls')),
     path('chem/', include('Chem.urls')),
+    path('hike/', include('hike.urls')),
 ]
 
 if settings.DEBUG:
