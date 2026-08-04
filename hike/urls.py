@@ -2,6 +2,7 @@ from django.urls import path
 
 from . import views
 from . constants import *
+URL = 'hike_' 
 
 
 urlpatterns = [
