@@ -1,0 +1,123 @@
+{% extends 'main/superbasepersonal.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{#название страницы#}
+{#стандартная#}
+{% block title %}
+{{title}} 
+{% endblock %}
+{#конец названия страницы#}
+
+
+    
+{% block content %}
+{% autoescape off %}
+
+<div class="container">
+    <center>  <h3><a href="/personal/"> Персональный раздел </a></h3>     </center>
+     <br>
+<div class="row">
+        <div class="col-7">
+<center>  <h3><a href="/hike/bm"> Тематические закладки </a></h3>     </center>
+           <br>
+{#основная таблица#}
+
+{% for obj in objects %}
+
+<table class="table table-bordered flexy">
+    <tbody>
+    <tr>
+        <td > 
+            <p><b>№</b>{{ obj.pk }}</p>
+           <p><b>Тип:&nbsp;</b>{{ obj.type }}</p>
+          <p><b>подтип:&nbsp;</b>{{ obj.undertype }}</p>
+           <p><b>Регион:&nbsp;</b>{{ obj.country }}, {{ obj.region }}</p>
+          <p><b>Текст:&nbsp;</b>{{ obj.text }}</p>
+          <p>
+
+            
+            <b>Ссылка:&nbsp;</b> 
+                {% if obj.vk %}
+                <a href="{{ obj.vk}}"  target="blank" >
+                ссылка
+                </a>
+                {% else  %}
+                отсутствует
+                {% endif %}
+            <br> </p>
+
+                    
+                <p>    {% if not obj.done  %}
+                        <form method="post" value="168" name="my_object">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button class="btn btn-outline-warning" type="submit">Ok</button>
+                        </form>
+                    {% elif obj.done %}
+                        Ok
+                    {% else %}
+                        Ok
+                    {% endif %}</p>
+              
+        </td>
+    </tr>
+    </tbody>
+</table>
+ {% endfor %}
+{#конец основной таблицы#}
+
+{#пагинация#}
+{# стандартная #}
+{% if is_paginated %}
+    {% if page_obj.has_previous %}
+       <a href="?page=1" class="btn btn-outline-primary mt-1">Начало</a>
+       <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary mt-1">Предыдущая</a>
+  {% endif %}
+    {% if page_obj.has_next %}
+       <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary mt-1">Следующая</a>
+       <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-primary mt-1">Последняя</a>
+  {% endif %}
+  {% endif %}
+{#конец пагинации#}
+</div>
+
+  <div class="col">
+
+       <center>   <h3>Фильтры</h3> </center>
+
+
+<br>
+<!-- Пример отдельной кнопки danger -->
+ <center><div class="btn-group">
+  <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    Раздел
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="{% url 'bmfilter' pk=0 %}">путешествия</a></li>
+    <li><a class="dropdown-item" href="{% url 'bmfilter' pk=1 %}">книги</a></li>
+    <li><a class="dropdown-item" href="{% url 'bmfilter' pk=2 %}">фильмы</a></li>
+    <li><a class="dropdown-item" href="{% url 'bmfilter' pk=3 %}">музеи</a></li>
+    <li><a class="dropdown-item" href="{% url 'bmfilter' pk=4 %}">учебные курсы</a></li>
+    <li><a class="dropdown-item" href="{% url 'bmfilter' pk=5 %}">рецепты</a></li>
+    <li><a class="dropdown-item" href="{% url 'bmfilter' pk=6 %}">покупки</a></li>
+    <li><a class="dropdown-item" href="{% url 'bmfilter' pk=7 %}">фотографии</a></li>
+    <li><a class="dropdown-item" href="{% url 'bmfilter' pk=8 %}">прогулка</a></li>
+    <li><a class="dropdown-item" href="{% url 'bmfilter' pk=9 %}">поездка на выходные</a></li>
+    <li><a class="dropdown-item" href="{% url 'bmfilter' pk=10 %}">аудио</a></li>
+    <li><a class="dropdown-item" href="{% url 'bmfilter' pk=11 %}">работа</a></li>
+  </ul>
+</div> </center>
+      <br>
+                      {#форма для поиска по полям #}
+{#стандартная#}
+    <form action="/hike/bm/searchresult/" method="GET">
+                    {% csrf_token %}
+                    {% crispy sform %}
+                </form>
+        </div>
+  
+</div>
+</div>
+{% endautoescape %}
+{% endblock %}
