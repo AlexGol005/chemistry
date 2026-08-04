@@ -15,6 +15,21 @@ from .models import *
 from .forms import *
 from equipment.models import *
 
+from django.views import View
+from django.shortcuts import render
+from django.core.exceptions import PermissionDenied
+
+class PersonalPanelView(View):
+    def get(self, request):
+        # Строгая проверка: если не авторизован ИЛИ логин не Labjournal — выкидываем ошибку 403
+        if not request.user.is_authenticated or request.user.username != 'Labjournal':
+            raise PermissionDenied
+            
+        # Если проверка прошла, рендерим страницу управления
+        # Убедитесь, что файл personal.html лежит в папке templates/users/
+        return render(request, 'users/personal.html')
+
+
 # Функция отправки сообщения
 def email(subject, content, user_email):
    send_mail(subject,
