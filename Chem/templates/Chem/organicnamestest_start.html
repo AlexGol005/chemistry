@@ -34,39 +34,40 @@
             <ul class="mb-0 list-unstyled"> 
                 <li class="mb-2">✅ Вопросы выбраны в случайном порядке.</li> 
                 <li class="mb-2">✅ Система автоматически проверит ваш ответ.</li> 
+                <li class="mb-2">✅ В тесте будет ровно 10 вопросов.</li>
                 <li>✅ Результат будет доступен сразу после завершения.</li> 
             </ul> 
         </div> 
 
-        <!-- НАЧАЛО БЛОКА: Выбор классов соединений -->
-        <div class="card border-0 p-4 mb-5 shadow-sm text-left">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-                <h4 class="font-weight-bold mb-0 text-secondary" style="font-size: 1.15rem;">
-                    Выберите классы для теста:
-                </h4>
-                <button type="button" id="toggle-all-btn" class="btn btn-sm btn-outline-secondary font-weight-bold">
-                    Снять выбор со всего
-                </button>
-            </div>
+        <!-- НАЧАЛО БЛОКА: Выбор групп органических классов --> 
+        <div class="card border-0 p-4 mb-5 shadow-sm text-left"> 
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3"> 
+                <h4 class="font-weight-bold mb-0 text-secondary" style="font-size: 1.15rem;"> 
+                    Выберите разделы для теста: 
+                </h4> 
+                <button type="button" id="toggle-all-btn" class="btn btn-sm btn-outline-secondary font-weight-bold"> 
+                    Снять выбор со всего 
+                </button> 
+            </div> 
 
-            <!-- Адаптивная CSS-сетка для чекбоксов на Bootstrap-переменных -->
-            <div class="classes-custom-grid p-3 bg-light rounded-lg border">
-                {% for slug, name in organic_classes %}
-                    <label class="class-checkbox-item d-flex align-items-center m-0 p-2 rounded bg-white border">
-                        <input type="checkbox" name="selected_classes" value="{{ slug }}" class="class-checkbox mr-2" checked form="test-start-form">
-                        <span style="font-size: 0.9rem; color: #495057; line-height: 1.2;">{{ name }}</span>
-                    </label>
-                {% endfor %}
-            </div>
-        </div>
-        <!-- КОНЕЦ БЛОКА -->
+            <!-- Адаптивная CSS-сетка для чекбоксов групп --> 
+            <div class="classes-custom-grid p-3 bg-light rounded-lg border"> 
+                {% for group in selectable_groups %} 
+                    <label class="class-checkbox-item d-flex align-items-center m-0 p-3 rounded bg-white border"> 
+                        <!-- Важно: передаем name="selected_groups" и значение group.name -->
+                        <input type="checkbox" name="selected_groups" value="{{ group.name }}" class="class-checkbox mr-3" {% if group.is_checked %}checked{% endif %} form="test-start-form"> 
+                        <strong style="font-size: 1rem; color: #343a40; line-height: 1.3;">{{ group.name }}</strong> 
+                    </label> 
+                {% endfor %} 
+            </div> 
+        </div> 
+        <!-- КОНЕЦ БЛОКА --> 
 
-        <!-- Форма отправки данных -->
+        <!-- Форма отправки данных --> 
         <form method="POST" action="{% url 'organicnamestest_start' %}" id="test-start-form"> 
             {% csrf_token %} 
             <!-- Скрытое поле передает выбранный режим в метод POST --> 
             <input type="hidden" name="mode" value="{{ mode }}"> 
-            
             <button type="submit" class="btn btn-success btn-lg w-100 py-3 shadow font-weight-bold" style="max-width: 450px"> 
                 Начать тестирование <i class="fas fa-play ml-2"></i> 
             </button> 
@@ -80,45 +81,49 @@
     </div> 
 </div> 
 
-<!-- Дополнительные стили для сетки классов -->
-<style>
-    .classes-custom-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 10px;
-        max-height: 320px;
-        overflow-y: auto;
-    }
-    .class-checkbox-item {
-        cursor: pointer;
-        transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
-    }
-    .class-checkbox-item:hover {
-        background-color: #e9ecef !important;
-        border-color: #adb5bd !important;
-    }
-</style>
-
-<!-- Скрипт мгновенного выделения / снятия выделения -->
-<script>
-    document.getElementById('toggle-all-btn').addEventListener('click', function() {
-        const checkboxes = document.querySelectorAll('.class-checkbox');
-        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-        
-        checkboxes.forEach(cb => {
-            cb.checked = !anyChecked;
-        });
-        
-        this.textContent = anyChecked ? 'Выбрать все' : 'Снять выбор со всего';
-        
-        // Меняем класс кнопки для красоты (Bootstrap стили)
-        if (anyChecked) {
-            this.classList.remove('btn-outline-secondary');
-            this.classList.add('btn-secondary');
-        } else {
-            this.classList.remove('btn-secondary');
-            this.classList.add('btn-outline-secondary');
+<!-- Дополнительные стили для сетки групп --> 
+<style> 
+    .classes-custom-grid { 
+        display: grid; 
+        grid-template-columns: 1fr; /* Аккуратный вертикальный список для групп */
+        gap: 12px; 
+    } 
+    @media (min-width: 768px) {
+        .classes-custom-grid {
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); /* Раскладка в две колонки на десктопах */
         }
-    });
-</script>
+    }
+    .class-checkbox-item { 
+        cursor: pointer; 
+        transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; 
+    } 
+    .class-checkbox-item input[type="checkbox"] {
+        transform: scale(1.15);
+    }
+    .class-checkbox-item:hover { 
+        background-color: #f8f9fa !important; 
+        border-color: #b8daff !important; 
+    } 
+</style> 
+
+<!-- Скрипт мгновенного выделения / снятия выделения --> 
+<script> 
+    document.getElementById('toggle-all-btn').addEventListener('click', function() { 
+        const checkboxes = document.querySelectorAll('.class-checkbox'); 
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked); 
+        checkboxes.forEach(cb => { 
+            cb.checked = !anyChecked; 
+        }); 
+        this.textContent = anyChecked ? 'Выбрать все' : 'Снять выбор со всего'; 
+
+        // Меняем класс кнопки для красоты 
+        if (anyChecked) { 
+            this.classList.remove('btn-outline-secondary'); 
+            this.classList.add('btn-secondary'); 
+        } else { 
+            this.classList.remove('btn-secondary'); 
+            this.classList.add('btn-outline-secondary'); 
+        } 
+    }); 
+</script> 
 {% endblock %}
