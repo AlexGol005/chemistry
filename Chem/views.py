@@ -94,7 +94,7 @@ ORGANIC_GROUPS = [
     },
     {
         'name': 'Прочие азотсодержащие соединения',
-        'classes': ['primary_amines', 'secondary_amines', 'tertiary_amines', 'nitro_compounds', 'Соли аминов', 'Галогениды аминов', 'Нитропроизводные фенола', 'Нитрозамины', 'Нитрилы']
+        'classes': ['Ароматические амины', 'primary_amines', 'secondary_amines', 'tertiary_amines', 'nitro_compounds', 'Соли аминов', 'Галогениды аминов', 'Нитропроизводные фенола', 'Нитрозамины', 'Нитрилы']
     },
     {
         'name': 'Углеводы',
