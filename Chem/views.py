@@ -184,7 +184,13 @@ class OrganicNamesTestStartView(View):
 
         # Если режим "Формула -> Класс", жестко фильтруем классы только разрешенными 12 школьными классами
         if mode == 'form_to_class':
-            allowed_keys = ['alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 'alcohols', 'ethers', 'aldehydes', 'ketones', 'saturated_monobasic_carboxylic_acids', 'esters', 'amino_acids']
+            allowed_keys = ['alkanes', 'alkenes', 'alkynes', 'alkadienes', 
+                            'cycloalkanes', 'alcohols', 'ethers', 'aldehydes', 
+                            'ketones', 'saturated_monobasic_carboxylic_acids',
+                            'esters', 'amino_acids',
+                            'diols', 'triols', 'phenols',
+                            'primary_amines', 'secondary_amines', 'tertiary_amines', 'Ароматические амины',
+                           ]
             selected_classes = [c for c in selected_classes if c in allowed_keys]
 
         # Загружаем карточки из Базы Данных по выбранному режиму
