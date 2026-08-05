@@ -244,21 +244,49 @@ class OrganicNamesTestQuestionView(View):
         
         if not test_ids or index >= len(test_ids):
             return redirect('organicnamestest_finished')
-
+            
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
-
+        current_class = obj.organic_class
+        
+        # Фильтруем список классов, которые будут доступны пользователю в интерфейсе
         filtered_organic_classes = [
             item for item in ORGANIC_CLASSES if item[0] in allowed_keys
         ]
         
+        # === АЛГОРИТМ УМНЫХ ВАРИАНТОВ ОТВЕТА ДЛЯ РЕЖИМА "ФОРМУЛА -> КЛАСС" ===
+        options = []
+        if mode == 'form_to_class':
+            # 1. Добавляем истинный класс
+            options.append(current_class)
+            
+            # 2. Добавляем его межклассовый изомер из созданного ранее словаря CLASS_ISOMERS
+            if 'CLASS_ISOMERS' in globals():
+                isomer_class = CLASS_ISOMERS.get(current_class)
+                if isomer_class and isomer_class in allowed_keys:
+                    options.append(isomer_class)
+            
+            # 3. Добираем случайные непересекающиеся классы, чтобы вариантов стало ровно 4
+            remaining_classes = [c for c in allowed_keys if c not in options]
+            random.shuffle(remaining_classes)
+            
+            while len(options) < 4 and remaining_classes:
+                options.append(remaining_classes.pop(0))
+                
+            # Перемешиваем варианты, чтобы правильный ответ не всегда стоял на первом месте
+            random.shuffle(options)
+            
+            # Превращаем slug вариантов в человеческие названия (кортежи) для шаблона
+            class_dict = dict(ORGANIC_CLASSES)
+            options = [(opt, class_dict.get(opt, opt)) for opt in options]
+
         context = {
             'molecule': obj,
             'index': index,
             'mode': mode,
             'total_questions': len(test_ids),
-            'organic_classes': filtered_organic_classes
+            'organic_classes': filtered_organic_classes,
+            'test_options': options  # Передаем готовые 4 варианта в HTML
         }
-        
         template_name = f'Chem/organicnamestest_question_{mode}.html'
         return render(request, template_name, context)
 
@@ -271,32 +299,41 @@ class OrganicNamesTestAnswerView(View):
         user_ans = user_ans.strip()
         
         test_ids = request.session.get('organicnamestest_ids', [])
+        if not test_ids or index >= len(test_ids):
+            return redirect('organicnamestest_head')
+            
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
-        
         is_correct = False
         user_label = user_ans
         both_answers_text = ""
         general_formula = ""
         
         if mode == 'name_to_mol':
-            m1 = Chemredactor.MolFromSmiles(user_ans)
-            m2 = Chemredactor.MolFromSmiles(obj.molecule)
+            # Проверка через SMILES (молекулярный редактор)
+            # Примечание: Убедитесь, что Chemredactor импортирован корректно в вашем проекте
+            m1 = Chemredactor.MolFromSmiles(user_ans) if 'Chemredactor' in globals() else None
+            m2 = Chemredactor.MolFromSmiles(obj.molecule) if 'Chemredactor' in globals() else None
             if m1 and m2:
                 is_correct = Chemredactor.MolToSmiles(m1) == Chemredactor.MolToSmiles(m2)
                 
         elif mode == 'mol_to_name':
+            # Сверяем текстовое имя с массивом разрешенных синонимов
             valid_names = [name.strip().lower() for name in [obj.name1, obj.name2, obj.name3, obj.name4] if name]
             is_correct = user_ans.lower() in valid_names
             
         elif mode == 'form_to_class':
             correct_class = obj.organic_class
-            isomer_class = CLASS_ISOMERS.get(correct_class)
-            
+            isomer_class = CLASS_ISOMERS.get(correct_class) if 'CLASS_ISOMERS' in globals() else None
             classes_dict = dict(ORGANIC_CLASSES)
+            
             correct_label = classes_dict.get(correct_class, "Неизвестный класс")
             isomer_label = classes_dict.get(isomer_class, "")
-            general_formula = CLASS_GENERAL_FORMULAS.get(correct_class, "")
             
+            # Подтягиваем красивую формулу из нашего словаря CLASS_GENERAL_FORMULAS
+            if 'CLASS_GENERAL_FORMULAS' in globals():
+                general_formula = CLASS_GENERAL_FORMULAS.get(correct_class, "")
+                
+            # Проверка: подошел ли правильный класс или его межклассовый изомер
             if user_ans == correct_class:
                 is_correct = True
             elif isomer_class and user_ans == isomer_class:
@@ -305,26 +342,28 @@ class OrganicNamesTestAnswerView(View):
             user_label = classes_dict.get(user_ans, "Не выбрано")
             if isomer_label:
                 both_answers_text = f"У данных классов одинаковая брутто-формула. Верны оба ответа: {correct_label} и {isomer_label}."
-                
+
         # --- ФИКСАЦИЯ ПРОГРЕССА ИНТЕРВАЛЬНОГО ПОВТОРЕНИЯ ---
         if request.user.is_authenticated:
             # Обновляем или создаем запись прогресса для этого вопроса
             progress, created = UserQuestionProgress.objects.get_or_create(
-                user=request.user, question=obj
+                user=request.user, 
+                question=obj
             )
             if is_correct:
-                progress.skip_count = 30  # Прячем вопрос на 30 следующих генераций тестов
+                progress.skip_count = 30  # Замораживаем вопрос на 30 циклов при успехе
             else:
-                progress.skip_count = 0   # Сбрасываем отдых: покажем при первой возможности
+                progress.skip_count = 0   # Показываем снова при первой возможности при ошибке
             progress.save()
-        # --------------------------------------------------
 
+        # Формируем строку красивого вывода всех правильных названий
         names_list = []
         for name in [obj.name1, obj.name2, obj.name3, obj.name4]:
             if name is not None and str(name).strip() != "":
                 names_list.append(str(name).strip())
         obj.all_names_string = ", ".join(names_list) if names_list else "Название отсутствует"
         
+        # Начисление баллов
         if is_correct:
             request.session['organicnamestest_score'] = request.session.get('organicnamestest_score', 0) + 1
             request.session.modified = True
@@ -347,6 +386,7 @@ class OrganicNamesTestFinishedView(View):
         score = request.session.get('organicnamestest_score', 0)
         test_ids = request.session.get('organicnamestest_ids', [])
         total = len(test_ids)
+        
         if total == 0:
             return redirect('organicnamestest_head')
             
