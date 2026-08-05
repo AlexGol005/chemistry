@@ -89,19 +89,40 @@ class JSMEWidget(forms.Widget):
         """
         return mark_safe(html)
 
-# 1. Форма для админки (должна быть объявлена ПЕРЕД классом OrganicNamesAdmin)
+
+# органические соединения органические вещества
+
+
+# === 1. ФОРМА ДЛЯ АДМИНКИ ===
 class OrganicNamesAdminForm(forms.ModelForm):
     class Meta:
         model = OrganicNames
         fields = '__all__'
         widgets = {
-            'molecule': JSMEWidget(), 
+            'molecule': JSMEWidget(),
             'appearance': CKEditorUploadingWidget(),
         }
 
-# 2. Фильтр для поиска записей с пустым полем organic_class
+
+# === 2. ФИЛЬТР ПО КОНКРЕТНЫМ КЛАССАМ (С КРАСИВЫМИ НАЗВАНИЯМИ) ===
+class OrganicClassChoicesFilter(admin.SimpleListFilter):
+    title = 'Класс органики'  # Заголовок блока в правой панели
+    parameter_name = 'class_slug'
+
+    def lookups(self, request, model_admin):
+        # Используем ваш глобальный список ORGANIC_CLASSES (кортежи вида: ('slug', 'Название'))
+        # Если в базе есть записи, фильтр покажет их понятные русские имена
+        return ORGANIC_CLASSES
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(organic_class=self.value())
+        return queryset
+
+
+# === 3. ФИЛЬТР ДЛЯ ПОИСКА ЗАПИСЕЙ С ПУСТЫМ ПОЛЕМ ORGANIC_CLASS ===
 class OrganicClassEmptyFilter(admin.SimpleListFilter):
-    title = 'Наличие класса (organic_class)' # Заголовок в правой панели
+    title = 'Наличие класса (organic_class)'  # Заголовок в правой панели
     parameter_name = 'empty_class'
 
     def lookups(self, request, model_admin):
@@ -119,17 +140,16 @@ class OrganicClassEmptyFilter(admin.SimpleListFilter):
             return queryset.exclude(organic_class__isnull=True).exclude(organic_class='')
         return queryset
 
-# 3. Основной класс админки
+
+# === 4. ОСНОВНОЙ КЛАСС АДМИНКИ ===
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
     search_fields = ['name1', 'name2', 'name3']
-    
-    # Добавил organic_class в список, чтобы вы видели результат фильтрации
     list_display = ('pk', 'name1', 'molecule_short', 'organic_class')
     
-    # Подключаем созданный фильтр
-    list_filter = (OrganicClassEmptyFilter,)
+    # ИСПРАВЛЕНИЕ: Подключаем оба фильтра в боковую панель админки
+    list_filter = (OrganicClassChoicesFilter, OrganicClassEmptyFilter)
 
     def save_model(self, request, obj, form, change):
         # Сначала вызываем стандартное сохранение
@@ -140,8 +160,8 @@ class OrganicNamesAdmin(admin.ModelAdmin):
             msg = f"Редактирована запись № {obj.pk}"
         else:
             msg = f"Создана запись № {obj.pk}"
-        
         messages.success(request, msg)
+
         
 # знх классы для отображения в админке
 
