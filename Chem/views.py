@@ -125,7 +125,9 @@ class OrganicNamesTestStartView(View):
         # ЗАПОМИНАНИЕ ВЫБОРА: Достаем ранее выбранные ГРУППЫ из сессии
         previously_selected_groups = request.session.get('last_selected_groups', [])
         
-        # Ограничения для специального режима "Формула -> Класс"
+        # ФЛАГ ОТОБРАЖЕНИЯ: Если это режим "Формула -> Класс", то выбор разделов НЕ НУЖЕН
+        show_groups = mode != 'form_to_class'
+
         if mode == 'form_to_class':
             allowed_keys = [
                 'alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes',
@@ -137,24 +139,25 @@ class OrganicNamesTestStartView(View):
 
         selectable_groups = []
         
-        # Фильтруем группы: показываем только те, в которых есть доступные для режима классы
-        for group in ORGANIC_GROUPS:
-            # Проверяем, есть ли в группе подходящие классы для текущего режима
-            has_valid_classes = False
-            for c_slug in group['classes']:
-                if allowed_keys is None or c_slug in allowed_keys:
-                    has_valid_classes = True
-                    break
-            
-            if has_valid_classes:
-                selectable_groups.append({
-                    'name': group['name'],
-                    'is_checked': group['name'] in previously_selected_groups  # Проверяем, была ли выбрана группа
-                })
+        # Собираем список групп только если флаг show_groups равен True
+        if show_groups:
+            for group in ORGANIC_GROUPS:
+                has_valid_classes = False
+                for c_slug in group['classes']:
+                    if allowed_keys is None or c_slug in allowed_keys:
+                        has_valid_classes = True
+                        break
+                
+                if has_valid_classes:
+                    selectable_groups.append({
+                        'name': group['name'],
+                        'is_checked': group['name'] in previously_selected_groups
+                    })
 
         context = {
             'mode': mode,
-            'selectable_groups': selectable_groups  # Отдаем только плоский список ГРУПП
+            'selectable_groups': selectable_groups,
+            'show_groups': show_groups  # Отдаем флаг в HTML-шаблон
         }
         return render(request, 'Chem/organicnamestest_start.html', context)
 
@@ -164,8 +167,9 @@ class OrganicNamesTestStartView(View):
         # Получаем список названий ВЫБРАННЫХ ГРУПП из формы
         selected_group_names = request.POST.getlist('selected_groups')
         
-        # ЗАПОМИНАЕМ ВЫБОР ГРУПП в сессии
-        request.session['last_selected_groups'] = selected_group_names
+        # ЗАПОМИНАЕМ ВЫБОР ГРУПП в сессии (только для режимов, где они есть)
+        if mode != 'form_to_class':
+            request.session['last_selected_groups'] = selected_group_names
         
         # Очищаем данные старого теста
         for key in ['organicnamestest_ids', 'organicnamestest_score', 'organicnamestest_mode', 'organicnamestest_allowed_keys']:
@@ -174,11 +178,11 @@ class OrganicNamesTestStartView(View):
         # Раскрываем выбранные ГРУППЫ в плоский список входящих в них КЛАССОВ (slug)
         selected_classes = []
         for group in ORGANIC_GROUPS:
-            # Если пользователь выбрал эту группу ИЛИ вообще ничего не выбрал (тогда берем все группы)
-            if group['name'] in selected_group_names or not selected_group_names:
+            # Если это режим формул, или группа выбрана, или вообще ничего не выбрано (тогда берем всё)
+            if mode == 'form_to_class' or group['name'] in selected_group_names or not selected_group_names:
                 selected_classes.extend(group['classes'])
 
-        # Если режим "Формула -> Класс", жестко ограничиваем классы только разрешенными
+        # Если режим "Формула -> Класс", жестко фильтруем классы только разрешенными 12 школьными классами
         if mode == 'form_to_class':
             allowed_keys = ['alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 'alcohols', 'ethers', 'aldehydes', 'ketones', 'saturated_monobasic_carboxylic_acids', 'esters', 'amino_acids']
             selected_classes = [c for c in selected_classes if c in allowed_keys]
@@ -194,6 +198,7 @@ class OrganicNamesTestStartView(View):
 
         # --- СИСТЕМА ИНТЕРВАЛЬНОГО ПОВТОРЕНИЯ ---
         if request.user.is_authenticated:
+            from django.db.models import F
             UserQuestionProgress.objects.filter(user=request.user, skip_count__gt=0).update(
                 skip_count=F('skip_count') - 1
             )
@@ -233,6 +238,7 @@ class OrganicNamesTestStartView(View):
         request.session.modified = True
         
         return redirect('organicnamestest_question', index=0)
+
 
 
 
