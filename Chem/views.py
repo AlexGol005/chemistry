@@ -17,23 +17,35 @@ from django.http import Http404
 
 from .models import OrganicNames, UserQuestionProgress  # Подключаем модель прогресса
 
-# Словарь межклассовых изомеров для теста "Формула -> Класс"
+
+
+# ==============================================================================
+# 2. СЛОВАРЬ МЕЖКЛАССОВЫХ ИЗОМЕРОВ (Для создания "умных" вариантов ответов)
+# ==============================================================================
 CLASS_ISOMERS = {
-    'alkenes': 'cycloalkanes',  # Алкены и Циклоалканы
+    'alkenes': 'cycloalkanes',
     'cycloalkanes': 'alkenes',
-    'alkynes': 'alkadienes',  # Алкины и Алкадиены
+    'alkynes': 'alkadienes',
     'alkadienes': 'alkynes',
-    'alcohols': 'ethers',  # Предельные спирты и Простые эфиры
+    'alcohols': 'ethers',
     'ethers': 'alcohols',
-    'aldehydes': 'ketones',  # Альдегиды и Кетоны
+    'aldehydes': 'ketones',
     'ketones': 'aldehydes',
-    'saturated_monobasic_carboxylic_acids': 'esters',  # Предельные одноосновные карбоновые кислоты и Сложные эфиры
+    'saturated_monobasic_carboxylic_acids': 'esters',
     'esters': 'saturated_monobasic_carboxylic_acids',
-    'amino_acids': 'nitro_compounds',  # Аминокислоты и Нитросоединения
+    'amino_acids': 'nitro_compounds',
     'nitro_compounds': 'amino_acids',
+    # Добавлено для школьной химии / ЕГЭ:
+    'primary_amines': 'secondary_amines',
+    'secondary_amines': 'primary_amines',
+    'tertiary_amines': 'primary_amines',
+    'Нитрилы': 'Циангидрины',
+    'Циангидрины': 'Нитрилы',
 }
 
-# Словарь общих формул с HTML-тегами нижних индексов
+# ==============================================================================
+# 3. СЛОВАРЬ ОБЩИХ ФОРМУЛ (С тегами нижних индексов для вывода в HTML)
+# ==============================================================================
 CLASS_GENERAL_FORMULAS = {
     'alkanes': 'C<sub>n</sub>H<sub>2n+2</sub>',
     'alkenes': 'C<sub>n</sub>H<sub>2n</sub>',
@@ -42,18 +54,22 @@ CLASS_GENERAL_FORMULAS = {
     'cycloalkanes': 'C<sub>n</sub>H<sub>2n</sub>',
     'arenes': 'C<sub>n</sub>H<sub>2n-6</sub>',
     'alcohols': 'C<sub>n</sub>H<sub>2n+1</sub>OH',
-    'diols': 'C<sub>n</sub>H<sub>2n</sub>(OH)<sub>2</sub>',  # Добавлено для ЕГЭ
-    'triols': 'C<sub>n</sub>H<sub>2n-1</sub>(OH)<sub>3</sub>',  # Добавлено для ЕГЭ
+    'diols': 'C<sub>n</sub>H<sub>2n</sub>(OH)<sub>2</sub>',
+    'triols': 'C<sub>n</sub>H<sub>2n-1</sub>(OH)<sub>3</sub>',
+    'polyols': 'C<sub>n</sub>H<sub>2n+2</sub>O<sub>x</sub>',  # Добавлено
     'phenols': 'C<sub>n</sub>H<sub>2n-7</sub>OH',
     'ethers': 'C<sub>n</sub>H<sub>2n+2</sub>O',
     'aldehydes': 'C<sub>n</sub>H<sub>2n</sub>O',
     'ketones': 'C<sub>n</sub>H<sub>2n</sub>O',
-    'saturated_monobasic_carboxylic_acids': 'C<sub>n</sub>H<sub>2n</sub>O<sub>2</sub>',  # Исправлено
+    'saturated_monobasic_carboxylic_acids': 'C<sub>n</sub>H<sub>2n</sub>O<sub>2</sub>',
     'esters': 'C<sub>n</sub>H<sub>2n</sub>O<sub>2</sub>',
-    'amines': 'C<sub>n</sub>H<sub>2n+1</sub>NH<sub>2</sub>',
+    'primary_amines': 'C<sub>n</sub>H<sub>2n+3</sub>N',    # Переименован ключ
+    'secondary_amines': 'C<sub>n</sub>H<sub>2n+3</sub>N',  # Добавлено
+    'tertiary_amines': 'C<sub>n</sub>H<sub>2n+3</sub>N',   # Добавлено
     'amino_acids': 'NH<sub>2</sub>-CH(R)-COOH',
     'halogen_derivatives': 'C<sub>n</sub>H<sub>2n+1</sub>X',
-    'halogen_arenes': 'C<sub>n</sub>H<sub>2n-7</sub>X',  # Добавлено для ЕГЭ
+    'halogen_arenes': 'C<sub>n</sub>H<sub>2n-7</sub>X',
+    'Нитрилы': 'C<sub>n</sub>H<sub>2n-1</sub>N',           # Добавлено
     'Ангидриды': '(RCO)<sub>2</sub>O',
 }
 
