@@ -74,6 +74,40 @@ CLASS_GENERAL_FORMULAS = {
 }
 
 
+ORGANIC_GROUPS = [
+    {
+        'name': 'Углеводороды и их галогенопроизводные',
+        'classes': ['alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 'arenes', 'Ацетилениды', 'halogen_derivatives', 'halogen_arenes', 'other_halogen_derivatives']
+    },
+    {
+        'name': 'Предельные одноосновные кислородсодержащие соединения',
+        'classes': ['alcohols', 'ethers', 'aldehydes', 'ketones', 'saturated_monobasic_carboxylic_acids', 'esters']
+    },
+    {
+        'name': 'Карбоновые кислоты и их производные',
+        'classes': ['saturated_monobasic_carboxylic_acids', 'other_carboxylic_acids', 'carboxylic_acids_salts', 'Ангидриды', 'Хлорангидриды', 'Соли сульфокислоты']
+    },
+    {
+        'name': 'Аминокислоты и белки',
+        'classes': ['amino_acids', 'polyfunctional_amino_acids', 'дипептиды', 'proteins']
+    },
+    {
+        'name': 'Прочие азотсодержащие соединения',
+        'classes': ['primary_amines', 'secondary_amines', 'tertiary_amines', 'nitro_compounds', 'Соли аминов', 'Галогениды аминов', 'Нитропроизводные фенола', 'Нитрозамины', 'Нитрилы']
+    },
+    {
+        'name': 'Углеводы',
+        'classes': ['carbohydrates']
+    },
+    {
+        'name': 'Полимеры',
+        'classes': ['Полимеры']
+    },
+    {
+        'name': 'Остальные органические классы',
+        'classes': ['diols', 'triols', 'polyols', 'polyfunctional_alcohols', 'phenols', 'ketals_and_hemiketals', 'fats', 'nucleic_acids', 'thiols', 'heterocycles', 'organometallic_compounds', 'Бифункциональное соединение', 'Циангидрины', 'Алкоголяты металлов']
+    }
+]
 
 
 
@@ -83,41 +117,72 @@ class OrganicNamesTestHeadView(View):
         return render(request, 'Chem/organicnames_test_head.html')
 
 
-# === 2. ПОДГОТОВКА (Настройка параметров и выбор классов) ===
 class OrganicNamesTestStartView(View):
     def get(self, request):
         mode = request.GET.get('mode', 'name_to_mol')
+        
+        # ЗАПОМИНАНИЕ ВЫБОРА: Достаем ранее выбранные ГРУППЫ из сессии
+        previously_selected_groups = request.session.get('last_selected_groups', [])
+        
+        # Ограничения для специального режима "Формула -> Класс"
         if mode == 'form_to_class':
             allowed_keys = [
                 'alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes',
                 'alcohols', 'ethers', 'aldehydes', 'ketones', 
                 'saturated_monobasic_carboxylic_acids', 'esters', 'amino_acids'
             ]
-            selectable_classes = [item for item in ORGANIC_CLASSES if item[0] in allowed_keys]
         else:
-            selectable_classes = ORGANIC_CLASSES
+            allowed_keys = None
+
+        selectable_groups = []
+        
+        # Фильтруем группы: показываем только те, в которых есть доступные для режима классы
+        for group in ORGANIC_GROUPS:
+            # Проверяем, есть ли в группе подходящие классы для текущего режима
+            has_valid_classes = False
+            for c_slug in group['classes']:
+                if allowed_keys is None or c_slug in allowed_keys:
+                    has_valid_classes = True
+                    break
             
+            if has_valid_classes:
+                selectable_groups.append({
+                    'name': group['name'],
+                    'is_checked': group['name'] in previously_selected_groups  # Проверяем, была ли выбрана группа
+                })
+
         context = {
             'mode': mode,
-            'organic_classes': selectable_classes
+            'selectable_groups': selectable_groups  # Отдаем только плоский список ГРУПП
         }
         return render(request, 'Chem/organicnamestest_start.html', context)
 
     def post(self, request):
         mode = request.POST.get('mode') or request.GET.get('mode') or 'name_to_mol'
-        selected_classes = request.POST.getlist('selected_classes')
         
-        # Безопасно удаляем только данные старого теста, не трогая авторизацию
+        # Получаем список названий ВЫБРАННЫХ ГРУПП из формы
+        selected_group_names = request.POST.getlist('selected_groups')
+        
+        # ЗАПОМИНАЕМ ВЫБОР ГРУПП в сессии
+        request.session['last_selected_groups'] = selected_group_names
+        
+        # Очищаем данные старого теста
         for key in ['organicnamestest_ids', 'organicnamestest_score', 'organicnamestest_mode', 'organicnamestest_allowed_keys']:
             request.session.pop(key, None)
-            
-        if not selected_classes:
-            if mode == 'form_to_class':
-                selected_classes = ['alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 'alcohols', 'ethers', 'aldehydes', 'ketones', 'saturated_monobasic_carboxylic_acids', 'esters', 'amino_acids']
-            else:
-                selected_classes = ['alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 'arenes', 'alcohols', 'diols', 'triols', 'phenols', 'ethers', 'aldehydes', 'ketones', 'saturated_monobasic_carboxylic_acids', 'other_carboxylic_acids', 'esters', 'amines', 'amino_acids', 'halogen_derivatives', 'halogen_arenes', 'Ангидриды']
 
-        # Первичная фильтрация карточек по режиму
+        # Раскрываем выбранные ГРУППЫ в плоский список входящих в них КЛАССОВ (slug)
+        selected_classes = []
+        for group in ORGANIC_GROUPS:
+            # Если пользователь выбрал эту группу ИЛИ вообще ничего не выбрал (тогда берем все группы)
+            if group['name'] in selected_group_names or not selected_group_names:
+                selected_classes.extend(group['classes'])
+
+        # Если режим "Формула -> Класс", жестко ограничиваем классы только разрешенными
+        if mode == 'form_to_class':
+            allowed_keys = ['alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 'alcohols', 'ethers', 'aldehydes', 'ketones', 'saturated_monobasic_carboxylic_acids', 'esters', 'amino_acids']
+            selected_classes = [c for c in selected_classes if c in allowed_keys]
+
+        # Загружаем карточки из Базы Данных по выбранному режиму
         queryset = OrganicNames.objects.all()
         if mode == 'name_to_mol':
             queryset = queryset.filter(test_name_to_structure=True)
@@ -128,31 +193,20 @@ class OrganicNamesTestStartView(View):
 
         # --- СИСТЕМА ИНТЕРВАЛЬНОГО ПОВТОРЕНИЯ ---
         if request.user.is_authenticated:
-            # 1. Уменьшаем счетчик skip_count на 1 для ВСЕХ старых вопросов этого пользователя
-            from django.db.models import F  # Гарантируем импорт класса F
             UserQuestionProgress.objects.filter(user=request.user, skip_count__gt=0).update(
                 skip_count=F('skip_count') - 1
             )
-            
-            # 2. Находим вопросы, которые сейчас "отдыхают" (skip_count > 0)
-            skipped_ids = UserQuestionProgress.objects.filter(
-                user=request.user,
-                skip_count__gt=0
-            ).values_list('question_id', flat=True)
-            
-            # 3. Исключаем их из выборки для текущего теста
+            skipped_ids = UserQuestionProgress.objects.filter(user=request.user, skip_count__gt=0).values_list('question_id', flat=True)
             queryset_filtered = queryset.exclude(id__in=skipped_ids)
             
-            # Если из-за фильтрации осталось слишком мало вопросов, откатываемся к полной базе
-            if queryset_filtered.count() >= max(10, len(selected_classes)):
+            if queryset_filtered.count() >= 10:
                 queryset = queryset_filtered
 
-        # === АЛГОРИТМ ДИНАМИЧЕСКОЙ ДЛИНЫ И РАЗНООБРАЗИЯ ===
-        import random  # Гарантируем импорт встроенного модуля random
+        # === АЛГОРИТМ ФИКСИРОВАННОЙ ДЛИНЫ ТЕСТА (СТРОГО 10 ВОПРОСОВ) ===
         final_ids = []
-        target_questions_count = max(10, len(selected_classes))
-        class_pools = {}
+        target_questions_count = 10
         
+        class_pools = {}
         for c_slug in selected_classes:
             class_ids = list(queryset.filter(organic_class=c_slug).values_list('id', flat=True))
             if class_ids:
