@@ -174,4 +174,47 @@
     {% endfor %} 
 </div> 
 {% endautoescape %} 
+
+<script>
+  // Этот скрипт принудительно уберет фиксированную ширину с картинок в таблицах,
+  // которую CKEditor записывает прямо в HTML код (width="800")
+  document.addEventListener("DOMContentLoaded", function() {
+    var images = document.querySelectorAll('table img');
+    images.forEach(function(img) {
+      img.removeAttribute('width');
+      img.removeAttribute('height');
+    });
+  });
+</script>
+
+<style>
+  /* Принудительно сжимаем ВСЕ таблицы на этой странице до ширины экрана */
+  table, .flexy1, .flexy {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+  }
+
+  /* Заставляем абсолютно ВСЕ картинки внутри любых таблиц сжиматься */
+  table img, 
+  td img, 
+  figure, 
+  figure.image, 
+  .image,
+  .ind1 img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    margin: 0 auto !important;
+  }
+
+  /* Разрешаем тексту в таблицах переноситься, чтобы он не распирал ячейки */
+  td, th, p, span {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+  }
+</style>
+
 {% endblock %}
