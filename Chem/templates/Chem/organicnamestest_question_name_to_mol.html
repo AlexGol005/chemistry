@@ -23,7 +23,7 @@
 <script type="text/javascript">
     var testJsmeApplet;
     function startJSME() {
-        // Оставляем стандартные опции, как у вас было
+        // Стандартные стабильные опции
         testJsmeApplet = new JSApplet.JSME("jsme_canvas_test", "100%", "350px", {
             "options": "oldLook,paste,autocenter"
         });
@@ -32,21 +32,37 @@
             document.getElementById("user_smiles").value = event.src.smiles();
         });
 
-        // ПЕРЕХВАТ НАЖАТИЯ НА КНОПКУ "Х" ДЛЯ МОБИЛЬНЫХ СМАРТФОНОВ
-        testJsmeApplet.setCallBack("BeforeAction", function(event) {
-            // Проверяем, что пользователь нажал именно на кнопку выбора атома "X"
-            if (event.action === "Atom" && event.argument === "X") {
-                // Вызываем системное мобильное окно ввода вместо стандартного поля JSME
-                var userAtom = prompt("Введите обозначение атома (например: Cl, Br, Si):", "");
+        // ВКЛЮЧАЕМ НАБЛЮДАТЕЛЬ ЗА НАЖАТИЕМ НА КНОПКУ "X"
+        setTimeout(enableMobileXButton, 2000); // Ждем 2 секунды, пока нарисуется панель
+    }
+
+    function enableMobileXButton() {
+        // Ищем на странице картинку или элемент кнопки "X" внутри редактора JSME
+        // В JSME кнопки обычно рендерятся как теги img или div с соответствующим текстом/атрибутами
+        var jsmeContainer = document.getElementById("jsme_canvas_test");
+        if (!jsmeContainer) return;
+
+        // Находим все элементы и вешаем обработчик на тот, который отвечает за кнопку X
+        jsmeContainer.addEventListener('click', function(e) {
+            var target = e.target;
+            
+            // Проверяем, кликнул ли пользователь на кнопку "X" на панели (в JSME у нее специфичный вид)
+            // Самый надежный способ для мобильных: если это элемент панели с текстом "X" или картинка
+            if (target.tagName === 'IMG' && target.src.includes('atom_X') || target.innerText === 'X') {
+                
+                // Вызываем системный prompt браузера
+                var userAtom = prompt("Введите обозначение атома для кнопки X (например: Cl, Br, Si):", "");
                 if (userAtom) {
-                    // Принудительно передаем введенный текст в кисть редактора
+                    // Передаем введенный символ в кисть редактора через легальный API
                     testJsmeApplet.setAction("Atom", userAtom.trim());
                 }
-                // Отменяем стандартное поведение JSME, которое ломает клавиатуру на мобилках
-                event.preventDefault(); 
+                
+                e.stopPropagation();
+                e.preventDefault();
             }
-        });
+        }, true); // Используем capture mode, чтобы перехватить клик до того, как JSME его заблокирует
     }
+
     window.jsmeOnLoad = startJSME;
     setTimeout(function() { if (typeof JSApplet !== 'undefined' && !testJsmeApplet) startJSME(); }, 1500);
 </script>
