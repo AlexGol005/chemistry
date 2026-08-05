@@ -1,5 +1,5 @@
 {% load static %}
-<div class="jsme-admin-wrapper" style="margin-bottom: 20px; border: 1px solid #eee; padding: 10px; background: #fcfcfc;">
+<div class="jsme-admin-wrapper" style="margin-bottom: 20px; border: 1px solid #eee; padding: 10px; background: #fcfcfc; position: relative;">
     
     <!-- Текстовое поле SMILES (для ручного ввода) -->
     <div style="margin-bottom: 10px;">
@@ -7,6 +7,11 @@
         <input type="text" name="{{ name }}" id="{{ id }}" value="{{ value }}" 
                style="width: 100%; max-width: 500px; font-family: monospace; padding: 8px; border: 1px solid #ccc; display: block; margin-top: 5px;">
     </div>
+
+    <!-- ТЕХНИЧЕСКИЙ СКРЫТЫЙ ИНПУТ ДЛЯ АКТИВАЦИИ МОБИЛЬНОЙ КЛАВИАТУРЫ ДЛЯ КНОПКИ X -->
+    <input type="text" id="jsme_keyboard_trigger_{{ id }}" 
+           style="position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; top: 50px; left: 10px;" 
+           maxlength="2" autocomplete="off" autocapitalize="none">
 
     <!-- Редактор JSME -->
     <div id="jsme_container_{{ id }}" 
@@ -19,9 +24,8 @@
     </div>
 </div>
 
-<!-- Подключение JSME (путь как у вас в админке) -->
+<!-- Подключение JSME -->
 <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
-
 
 <script type="text/javascript">
     var jsmeApplet_{{ id }};
@@ -30,25 +34,21 @@
         var field = document.getElementById("{{ id }}");
         var containerId = "jsme_container_{{ id }}";
         
-        // Инициализация через JSApplet (как у вас заработало)
         jsmeApplet_{{ id }} = new JSApplet.JSME(containerId, "500px", "350px", {
             "options": "oldLook,paste,autocenter"
         });
 
-        // 1. Загрузка из поля в редактор при открытии
         if (field.value) {
             setTimeout(function() {
                 jsmeApplet_{{ id }}.readGenericMolecularInput(field.value);
             }, 500);
         }
 
-        // 2. Синхронизация: РИСУНОК -> ПОЛЕ (при каждом клике/изменении)
         jsmeApplet_{{ id }}.setCallBack("AfterStructureModified", function(event) {
             var smiles = event.src.smiles();
             field.value = smiles;
         });
 
-        // 3. Синхронизация: ПОЛЕ -> РИСУНОК (при ручном вводе/вставке)
         field.addEventListener('input', function() {
             var val = this.value.trim();
             if (val) {
@@ -57,12 +57,44 @@
                 jsmeApplet_{{ id }}.clear();
             }
         });
+
+        // ЗАПУСК ИСПРАВЛЕНИЯ КНОПКИ X ДЛЯ СМАРТФОНОВ
+        setTimeout(initMobileXFix_{{ id }}, 1000);
     }
 
-    // Глобальный колбэк загрузки JSME
+    function initMobileXFix_{{ id }}() {
+        var container = document.getElementById("jsme_container_{{ id }}");
+        var hiddenInput = document.getElementById("jsme_keyboard_trigger_{{ id }}");
+        if (!container || !hiddenInput) return;
+
+        // Перехватываем нажатие пальцем в области редактора
+        container.addEventListener('click', function(e) {
+            var target = e.target;
+            
+            // Проверяем, нажал ли пользователь на мобильном на элемент кнопки X (текст или картинка)
+            if (target.innerText === 'X' || (target.tagName === 'IMG' && target.src && target.src.includes('atom_X'))) {
+                
+                // Программный фокус по настоящему пользовательскому клику — мобильный браузер ОБЯЗАН ОТКРЫТЬ КЛАВИАТУРУ
+                hiddenInput.focus();
+                hiddenInput.value = ""; 
+            }
+        }, true);
+
+        // Слушаем, что пользователь набрал на выехавшей мобильной клавиатуре
+        hiddenInput.addEventListener('input', function() {
+            var val = hiddenInput.value.trim();
+            if (val.length > 0) {
+                // Передаем введенный символ (например: Cl, Br, N) напрямую в кисть JSME
+                jsmeApplet_{{ id }}.setAction("Atom", val);
+                
+                // Убираем фокус, чтобы клавиатура красиво спряталась сама
+                hiddenInput.blur();
+            }
+        });
+    }
+
     window.jsmeOnLoad = startJSME_{{ id }};
 
-    // Страховка, если jsmeOnLoad уже проскочил
     setTimeout(function() {
         if (typeof JSApplet !== 'undefined' && !jsmeApplet_{{ id }}) {
             startJSME_{{ id }}();
