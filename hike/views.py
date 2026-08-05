@@ -104,7 +104,7 @@ class BMSearchResultView(TemplateView):
 
         context['form'] = UdateForm()
         context['sform'] = SearchForm() 
-        if self.request.GET['searchword']:
+        if searchword:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
             objects = Bookmarks.objects.\
@@ -149,7 +149,7 @@ class KareliahistorySearchResultView(TemplateView):
         searchword = self.request.GET.get('searchword', '')
 
         context['form'] = SearchForm()
-        if self.request.GET['searchword']:
+        if searchword:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
             objects = Kareliahistory.objects.\
@@ -195,7 +195,7 @@ class SearchResultView(TemplateView):
         context = super(SearchResultView, self).get_context_data(**kwargs)
         searchword = self.request.GET.get('searchword', '')
 
-        if self.request.GET['searchword']:
+        if searchword:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
             objects = Hike.objects.\
@@ -225,7 +225,7 @@ class ITSearchResultView(TemplateView):
         context = super(ITSearchResultView, self).get_context_data(**kwargs)
         searchword = self.request.GET.get('searchword', '')
 
-        if self.request.GET['searchword']:
+        if searchword:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
             objects = Itbookmarks.objects.\
@@ -313,7 +313,7 @@ class FamilySearchResultView(TemplateView):
         context = super(FamilySearchResultView, self).get_context_data(**kwargs)
         searchword = self.request.GET.get('searchword', '')
 
-        if self.request.GET['searchword']:
+        if searchword:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
             objects = Family.objects.\
@@ -344,7 +344,7 @@ class ChemistrySearchResultView(TemplateView):
         context = super(ChemistrySearchResultView, self).get_context_data(**kwargs)
         searchword = self.request.GET.get('searchword', '')
 
-        if self.request.GET['searchword']:
+        if searchword:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
             objects = Chemistry.objects.\
