@@ -29,7 +29,7 @@ ORGANIC_CLASSES = [
     ('ethers', 'Простые эфиры'),
     ('ketals_and_hemiketals', 'Кетали и полукетали'),
     ('aldehydes', 'Альдегиды'),
-    ('polyfunctional_aldehydes', 'Полифункциональные альдегиды'),
+    ('polyfunctional_aldehydes', 'Полифункциональные альдегиды и кетоны'),
     ('ketones', 'Кетоны'),
     ('saturated_monobasic_carboxylic_acids', 'Предельные одноосновные карбоновые кислоты'),
     ('other_carboxylic_acids', 'Другие карбоновые кислоты (непредельные, ароматические, многоосновные)'),
