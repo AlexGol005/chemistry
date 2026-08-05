@@ -82,7 +82,7 @@ ORGANIC_GROUPS = [
     },
     {
         'name': 'Предельные одноосновные кислородсодержащие соединения',
-        'classes': ['alcohols', 'ethers', 'aldehydes', 'ketones', 'saturated_monobasic_carboxylic_acids', 'esters']
+        'classes': ['alcohols', 'ethers', 'aldehydes', 'ketones', 'saturated_monobasic_carboxylic_acids', 'esters', 'phenols', 'Галогенпроизводные фенолов']
     },
     {
         'name': 'Карбоновые кислоты и их производные',
@@ -106,7 +106,7 @@ ORGANIC_GROUPS = [
     },
     {
         'name': 'Остальные органические классы',
-        'classes': ['Ацетали', 'Амиды', 'Феноляты', 'diols', 'triols', 'polyols', 'polyfunctional_alcohols', 'phenols', 'ketals_and_hemiketals', 'fats', 'nucleic_acids', 'thiols', 'heterocycles', 'organometallic_compounds', 'Бифункциональное соединение', 'Циангидрины', 'Алкоголяты металлов']
+        'classes': ['Ацетали', 'Амиды', 'Феноляты', 'diols', 'triols', 'polyols', 'polyfunctional_alcohols',  'ketals_and_hemiketals', 'fats', 'nucleic_acids', 'thiols', 'heterocycles', 'organometallic_compounds', 'Бифункциональное соединение', 'Циангидрины', 'Алкоголяты металлов']
     }
 ]
 
