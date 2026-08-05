@@ -73,14 +73,14 @@ class OrganicNamesTestStartView(View):
         mode = request.GET.get('mode', 'name_to_mol')
         if mode == 'form_to_class':
             allowed_keys = [
-                'alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 
+                'alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes',
                 'alcohols', 'ethers', 'aldehydes', 'ketones', 
                 'saturated_monobasic_carboxylic_acids', 'esters', 'amino_acids'
             ]
             selectable_classes = [item for item in ORGANIC_CLASSES if item[0] in allowed_keys]
         else:
             selectable_classes = ORGANIC_CLASSES
-
+            
         context = {
             'mode': mode,
             'organic_classes': selectable_classes
@@ -92,10 +92,9 @@ class OrganicNamesTestStartView(View):
         selected_classes = request.POST.getlist('selected_classes')
         
         # Безопасно удаляем только данные старого теста, не трогая авторизацию
-for key in ['organicnamestest_ids', 'organicnamestest_score', 'organicnamestest_mode', 'organicnamestest_allowed_keys']:
-    request.session.pop(key, None)
-
-
+        for key in ['organicnamestest_ids', 'organicnamestest_score', 'organicnamestest_mode', 'organicnamestest_allowed_keys']:
+            request.session.pop(key, None)
+            
         if not selected_classes:
             if mode == 'form_to_class':
                 selected_classes = ['alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 'alcohols', 'ethers', 'aldehydes', 'ketones', 'saturated_monobasic_carboxylic_acids', 'esters', 'amino_acids']
@@ -114,13 +113,15 @@ for key in ['organicnamestest_ids', 'organicnamestest_score', 'organicnamestest_
         # --- СИСТЕМА ИНТЕРВАЛЬНОГО ПОВТОРЕНИЯ ---
         if request.user.is_authenticated:
             # 1. Уменьшаем счетчик skip_count на 1 для ВСЕХ старых вопросов этого пользователя
+            from django.db.models import F  # Гарантируем импорт класса F
             UserQuestionProgress.objects.filter(user=request.user, skip_count__gt=0).update(
-                skip_count=models.F('skip_count') - 1
+                skip_count=F('skip_count') - 1
             )
             
             # 2. Находим вопросы, которые сейчас "отдыхают" (skip_count > 0)
             skipped_ids = UserQuestionProgress.objects.filter(
-                user=request.user, skip_count__gt=0
+                user=request.user,
+                skip_count__gt=0
             ).values_list('question_id', flat=True)
             
             # 3. Исключаем их из выборки для текущего теста
@@ -129,19 +130,19 @@ for key in ['organicnamestest_ids', 'organicnamestest_score', 'organicnamestest_
             # Если из-за фильтрации осталось слишком мало вопросов, откатываемся к полной базе
             if queryset_filtered.count() >= max(10, len(selected_classes)):
                 queryset = queryset_filtered
-        # ----------------------------------------
 
         # === АЛГОРИТМ ДИНАМИЧЕСКОЙ ДЛИНЫ И РАЗНООБРАЗИЯ ===
+        import random  # Гарантируем импорт встроенного модуля random
         final_ids = []
         target_questions_count = max(10, len(selected_classes))
-        
         class_pools = {}
+        
         for c_slug in selected_classes:
             class_ids = list(queryset.filter(organic_class=c_slug).values_list('id', flat=True))
             if class_ids:
                 random.shuffle(class_ids)
                 class_pools[c_slug] = class_ids
-
+                
         if class_pools:
             active_slugs = list(class_pools.keys())
             while len(final_ids) < target_questions_count and active_slugs:
@@ -153,14 +154,15 @@ for key in ['organicnamestest_ids', 'organicnamestest_score', 'organicnamestest_
                             break
                     else:
                         active_slugs.remove(c_slug)
-
+                        
         request.session['organicnamestest_ids'] = final_ids
         request.session['organicnamestest_score'] = 0
         request.session['organicnamestest_mode'] = mode
-        request.session['organicnamestest_allowed_keys'] = selected_classes 
+        request.session['organicnamestest_allowed_keys'] = selected_classes
         request.session.modified = True
         
         return redirect('organicnamestest_question', index=0)
+
 
 
 # === 3. СТРАНИЦА ВОПРОСА ===
