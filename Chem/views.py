@@ -379,7 +379,7 @@ class OrganicNamesTestFinishedView(View):
         # === СТАЛО: Сохраняем режим и передаем его в контекст ===
         current_mode = request.session.get('organicnamestest_mode', 'name_to_mol')
 
-        return render(request, 'Chem/organicnames_finished.html', {
+        return render(request, 'Chem/organicnamestest_finished.html', {
             'score': score,
             'total': total,
             'percent': percent,
