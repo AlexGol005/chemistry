@@ -6,7 +6,7 @@ from . constants import *
 
 urlpatterns = [
 
-    path('', views.HikeAllListView.as_view(), name='hike_head'),
+    path('', views.HikeAllListView.as_view(), name='hikehead'),
 
     path('bm', views.BMAllListView.as_view(), name='bm'),
     path('it', views.ITAllListView.as_view(), name='it'),
