@@ -376,17 +376,16 @@ class OrganicNamesTestFinishedView(View):
 
         percent = int((score / total) * 100)
         
-        # Полностью очищаем переменные сессии завершенного теста
-        for key in ['organicnamestest_ids', 'organicnamestest_score', 'organicnamestest_mode', 'organicnamestest_allowed_keys']:
-            request.session.pop(key, None)
-        request.session.modified = True
+        # === СТАЛО: Сохраняем режим и передаем его в контекст ===
+        current_mode = request.session.get('organicnamestest_mode', 'name_to_mol')
 
-        return render(request, 'Chem/organicnamestest_finished.html', {
+        return render(request, 'Chem/organicnames_finished.html', {
             'score': score,
             'total': total,
             'percent': percent,
-            'mode': current_mode  # Передаем режим в контекст финала
+            'mode': current_mode  # <-- ДОБАВИТЬ ЭТУ СТРОКУ
         })
+
 
 
 
