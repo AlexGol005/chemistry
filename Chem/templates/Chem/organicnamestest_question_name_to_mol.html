@@ -23,7 +23,11 @@
 <script type="text/javascript">
     var testJsmeApplet;
     function startJSME() {
-        testJsmeApplet = new JSApplet.JSME("jsme_canvas_test", "100%", "350px", {"options": "oldLook,paste,autocenter"});
+        // Заменили старую строку на Вариант А (добавлена опция atomcustombutton)
+        testJsmeApplet = new JSApplet.JSME("jsme_canvas_test", "100%", "350px", {
+            "options": "oldLook,paste,autocenter,atomcustombutton"
+        });
+        
         testJsmeApplet.setCallBack("AfterStructureModified", function(event) {
             document.getElementById("user_smiles").value = event.src.smiles();
         });
@@ -31,4 +35,5 @@
     window.jsmeOnLoad = startJSME;
     setTimeout(function() { if (typeof JSApplet !== 'undefined' && !testJsmeApplet) startJSME(); }, 1500);
 </script>
+
 {% endblock %}
