@@ -20,24 +20,37 @@
 </div>
 
 <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
-<!-- Добавили ?v=3 для мгновенного сброса кэша на всех смартфонах -->
-<script type="text/javascript" src="/static/jsme/jsme.nocache.js?v=3"></script>
-
 <script type="text/javascript">
     var testJsmeApplet;
     function startJSME() {
-        // Заменили опции: добавили 'number' (выводит панель ввода) и 'keepexceivedkeyboardfocus'
+        // Оставляем стандартные опции, как у вас было
         testJsmeApplet = new JSApplet.JSME("jsme_canvas_test", "100%", "350px", {
-            "options": "oldLook,paste,autocenter,number,keepexceivedkeyboardfocus"
+            "options": "oldLook,paste,autocenter"
         });
         
         testJsmeApplet.setCallBack("AfterStructureModified", function(event) {
             document.getElementById("user_smiles").value = event.src.smiles();
         });
+
+        // ПЕРЕХВАТ НАЖАТИЯ НА КНОПКУ "Х" ДЛЯ МОБИЛЬНЫХ СМАРТФОНОВ
+        testJsmeApplet.setCallBack("BeforeAction", function(event) {
+            // Проверяем, что пользователь нажал именно на кнопку выбора атома "X"
+            if (event.action === "Atom" && event.argument === "X") {
+                // Вызываем системное мобильное окно ввода вместо стандартного поля JSME
+                var userAtom = prompt("Введите обозначение атома (например: Cl, Br, Si):", "");
+                if (userAtom) {
+                    // Принудительно передаем введенный текст в кисть редактора
+                    testJsmeApplet.setAction("Atom", userAtom.trim());
+                }
+                // Отменяем стандартное поведение JSME, которое ломает клавиатуру на мобилках
+                event.preventDefault(); 
+            }
+        });
     }
     window.jsmeOnLoad = startJSME;
     setTimeout(function() { if (typeof JSApplet !== 'undefined' && !testJsmeApplet) startJSME(); }, 1500);
 </script>
+
 
 
 {% endblock %}
