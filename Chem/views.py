@@ -106,7 +106,7 @@ ORGANIC_GROUPS = [
     },
     {
         'name': 'Остальные органические классы',
-        'classes': ['diols', 'triols', 'polyols', 'polyfunctional_alcohols', 'phenols', 'ketals_and_hemiketals', 'fats', 'nucleic_acids', 'thiols', 'heterocycles', 'organometallic_compounds', 'Бифункциональное соединение', 'Циангидрины', 'Алкоголяты металлов']
+        'classes': ['Феноляты', 'diols', 'triols', 'polyols', 'polyfunctional_alcohols', 'phenols', 'ketals_and_hemiketals', 'fats', 'nucleic_acids', 'thiols', 'heterocycles', 'organometallic_compounds', 'Бифункциональное соединение', 'Циангидрины', 'Алкоголяты металлов']
     }
 ]
 
