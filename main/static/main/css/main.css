@@ -1,58 +1,46 @@
 /* ========================================================================== 
-   1. ГЛОБАЛЬНЫЕ СТИЛИ И СЕТКА (ПРИЖАТИЕ ФУТЕРА И ЦЕНТРИРОВАНИЕ) 
+   1. ГЛОБАЛЬНЫЕ СТИЛИ И СЕТКА (ПРИЖАТИЕ ФУТЕРА И АДАПТИВНОСТЬ) 
    ========================================================================== */ 
 
-/* Настройки для прижатия футера: растягиваем базовые теги на всю высоту экрана */ 
 html, body { 
     height: 100%; 
     margin: 0; 
     padding: 0; 
 } 
 
-/* Мета-настройка для корректного расчета ширины элементов */ 
 *, *::before, *::after { 
     box-sizing: border-box; 
 } 
 
-/* Базовые настройки для всего тела страницы. Выстраиваем элементы строго вертикально */ 
 .main-page-body { 
     background-color: rgba(123, 245, 244, 0.47); 
-    white-space: normal !important; /* Разрешаем перенос контента, чтобы ничего не наезжало */ 
+    white-space: normal !important; 
     width: 100%; 
-    overflow-x: hidden; /* Защита от появления горизонтальной полосы прокрутки сайта */ 
+    overflow-x: hidden; 
     display: flex; 
     flex-direction: column; 
-    min-height: 100vh; /* Занимает не меньше 100% высоты экрана */ 
+    min-height: 100vh; 
 } 
 
-/* Обертка контента забирает все свободное место по вертикали и центрируется */ 
 .inner-page-body { 
     background-color: rgba(245, 244, 225, 0.47); 
-    padding: 20px 15px; 
-    flex: 1 0 auto; /* Растягивается автоматически по вертикали */ 
-    margin-bottom: 40px; /* Свободный зазор между основным содержимым страницы и футером */ 
-    width: 100%; 
-    max-width: 1200px; /* Ограничиваем контентную зону, чтобы текст не размазывался по монитору */ 
-    margin-left: auto !important; /* Равномерный автоматический отступ слева */ 
-    margin-right: auto !important; /* Равномерный автоматический отступ справа */ 
+    padding: 15px; 
+    flex: 1 0 auto; 
 } 
 
-/* Настройки вашего футера */ 
 footer, .bg-body-tertiary { 
-    flex-shrink: 0; /* Запрещает футеру сжиматься или искажаться */ 
-    width: 100%; 
-    margin-top: auto; /* Дополнительная страховка прижатия к низу страницы */ 
+    flex-shrink: 0 !important; 
+    width: 100% !important; 
+    margin-top: auto !important; 
+    padding-top: 40px !important; 
 } 
 
-/* ИСПРАВЛЕНО: Убрано свойство max-width: fit-content, которое мешало сайту растягиваться по ширине */ 
+/* ИСПРАВЛЕНО: Растягиваем контентную сетку на всю ширину на ПК */ 
 .table-list { 
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-left: auto !important; 
-    margin-right: auto !important; 
+    width: 100% !important; 
+    max-width: 100% !important; 
 } 
 
-/* Скрытие элементов при печати документа */ 
 @media print { 
     .noprint { 
         display: none !important; 
@@ -63,15 +51,14 @@ footer, .bg-body-tertiary {
    2. ШАПКА САЙТА (NAVBAR) 
    ========================================================================== */ 
 
-/* Адаптивная шапка: строго по ширине экрана, элементы аккуратно переносятся */ 
 .navbar1 { 
     background: rgba(22, 240, 240, 0.47) !important; 
     border-bottom: 3px solid silver; 
     border-color: #f5f5f6 !important; 
     width: 100%; 
-    flex-shrink: 0; /* Запрещает шапке сжиматься */ 
+    flex-shrink: 0; 
     display: flex; 
-    flex-wrap: wrap; /* Разрешает перенос ссылок меню на мобильных экранах вниз */ 
+    flex-wrap: wrap; 
     align-items: center; 
     justify-content: space-between; 
     padding: 10px 20px; 
@@ -81,76 +68,54 @@ footer, .bg-body-tertiary {
    3. БОКОВАЯ ПАНЕЛЬ (ASIDE) 
    ========================================================================== */ 
 
-/* ИСПРАВЛЕНО: Полностью удалено position: absolute, ломавшее мобильную адаптивность. 
-   Положением блоков теперь безопасно управляет сетка Bootstrap 5 */ 
-aside, 
-main aside, 
-.col-12.col-lg-3 aside { 
+/* ИСПРАВЛЕНО: Убрано абсолютное позиционирование. Положением управляет Bootstrap */ 
+aside { 
     position: relative !important; 
+    width: 100% !important; 
     top: auto !important; 
     right: auto !important; 
-    left: auto !important;
-    width: 100% !important; 
-    margin-top: 0; 
 } 
 
-/* На мобильных экранах добавляем аккуратный отступ сверху, когда сайдбар падает под контент */ 
 @media screen and (max-width: 991px) { 
     aside { 
-        margin-top: 30px !important; 
+        margin-top: 20px; 
     } 
 } 
 
 /* ========================================================================== 
-   4. ТАБЛИЦЫ И ЯЧЕЙКИ (ЦЕНТРИРОВАНИЕ ТАБЛИЦ) 
+   4. ТАБЛИЦЫ И ЯЧЕЙКИ 
    ========================================================================== */ 
 
-/* Базовые ячейки со стандартным переносом строк, без дефисов */ 
 .table-bordered td, .table-bordered th { 
     border-color: #4d74bd !important; 
     background-color: rgb(245, 245, 246) !important; 
     text-align: center !important; 
-    white-space: normal !important; /* Разрешаем перенос длинных слов */ 
-    overflow-wrap: anywhere; /* Безопасный перенос длинного контента без поломки сетки */ 
-    hyphens: none !important; /* ЗАПРЕЩАЕМ автоматический знак переноса (-) */ 
+    white-space: normal !important; 
+    overflow-wrap: anywhere; 
+    hyphens: none !important; 
     padding: 8px !important; 
 } 
 
-/* Адаптивные таблицы во всю ширину центрированного контейнера */ 
 .flexy, .flexy1 { 
     border-color: #4d74bd !important; 
     background-color: rgb(245, 245, 246) !important; 
     text-align: center !important; 
     width: 100% !important; 
     max-width: 100%; 
-    table-layout: auto !important; /* Авто-подстройка колонок под размер контента */ 
+    table-layout: auto !important; 
     white-space: normal !important; 
-    margin-left: auto !important; /* Центрируем саму таблицу, если она меньше 100% */ 
-    margin-right: auto !important; 
 } 
 
-/* Минимальные ширины колонок */ 
 .td600 { min-width: 250px !important; } 
 .td200 { min-width: 60px !important; } 
 .td800 { min-width: 330px !important; } 
 
-/* Сжатие колонок под маленькие экраны смартфонов */ 
 @media screen and (max-width: 768px) { 
     .td600, .td800 { 
-        min-width: 120px !important; /* Уменьшаем лимиты, чтобы таблицы помещались на экране */ 
-    } 
-    
-    /* ИСПРАВЛЕНО: Добавлена автоматическая прокрутка для больших таблиц на смартфонах, 
-       чтобы они не распирали горизонтально экран мобильного устройства */ 
-    table, .table { 
-        display: block; 
-        width: 100% !important; 
-        overflow-x: auto !important; 
-        -webkit-overflow-scrolling: touch; 
+        min-width: 120px !important; 
     } 
 } 
 
-/* Стилизация строк и ячеек по результатам */ 
 td.red { background-color: rgb(252, 236, 236) !important; } 
 td.orange { background-color: rgb(248, 237, 230) !important; } 
 td.green { background-color: rgb(221, 246, 221) !important; } 
@@ -159,8 +124,6 @@ td.green { background-color: rgb(221, 246, 221) !important; }
 .Goodresult { color: #047c0a; font-weight: bold; } 
 .Middleresult { color: orange; font-weight: bold; } 
 
-/* ИСПРАВЛЕНО: Исправлен синтаксис селекторов (было nor.td -> стало .nor td). 
-   Ширина компактных таблиц .nor расширена до 100% во избежание багов искусственного сжатия */ 
 .nor, .nor td, .nor th { 
     border: 1px solid black; 
     height: 22px; 
@@ -181,7 +144,7 @@ th.ind, td.ind {
     max-width: 100px !important; 
     word-wrap: break-word; 
     white-space: normal !important; 
-    hyphens: none !important; /* Запрет знака переноса */ 
+    hyphens: none !important; 
 } 
 
 .no-gutters { 
@@ -205,9 +168,7 @@ th.ind, td.ind {
     border: 1px solid silver; 
     margin-top: 20px; 
     width: 100%; 
-    max-width: 600px; /* Ограничиваем форму для удобного чтения */ 
-    margin-left: auto !important; /* Центрируем форму на странице */ 
-    margin-right: auto !important; /* Центрируем форму на странице */ 
+    max-width: 600px; 
 } 
 
 .form-register .helptext { 
@@ -221,7 +182,7 @@ th.ind, td.ind {
 
 .form-register.auth input { 
     display: block; 
-    width: 100%; /* Растягиваем поля ввода на 100% внутреннего пространства */ 
+    width: 100%; 
     margin-top: 5px; 
     border: 1px solid silver; 
     border-radius: 5px; 
@@ -230,30 +191,19 @@ th.ind, td.ind {
 
 /* ========================================================================== 
    6. ФИКСЫ ДЛЯ МОЛЕКУЛЯРНОГО РЕДАКТОРА JSME 
-   ========================================================================== */ 
+   ========================================================================= */ 
 
-/* Защита внутренней разметки редактора от воздействия глобальных стилей сайта */ 
 [id^="jsme_container_"], [id^="jsme_container_"] * { 
-    white-space: normal !important; /* Разрешает элементам управления JSME вставать на свои места */ 
-    box-sizing: content-box !important; /* Защищает координатную сетку рисования */ 
+    white-space: normal !important; 
+    box-sizing: content-box !important; 
 } 
 
 [id^="jsme_container_"] { 
-    background-color: #ffffff !important; /* Гарантирует белый холст */ 
-    text-align: left !important; /* Фиксирует точное позиционирование мыши при рисовании */ 
-    max-width: 100% !important; /* Позволяет редактору адаптивно сжиматься на смартфонах */ 
+    background-color: #ffffff !important; 
+    text-align: left !important; 
+    max-width: 100%; 
 } 
 
-/* ИСПРАВЛЕНО: Добавлена специальная адаптивная обертка на случай, если JSME-холст 
-   в пикселях физически шире экрана мобильного телефона */ 
-.jsme-responsive-wrapper { 
-    width: 100%; 
-    overflow-x: auto !important; 
-    -webkit-overflow-scrolling: touch; 
-    margin-bottom: 15px; 
-} 
-
-/* Автоматическое скрытие редактора при выводе страницы на печать */ 
 @media print { 
     [id^="jsme_container_"], .jsme-admin-wrapper { 
         display: none !important; 
