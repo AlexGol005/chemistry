@@ -20,12 +20,15 @@
 </div>
 
 <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script>
+<!-- Добавили ?v=3 для мгновенного сброса кэша на всех смартфонах -->
+<script type="text/javascript" src="/static/jsme/jsme.nocache.js?v=3"></script>
+
 <script type="text/javascript">
     var testJsmeApplet;
     function startJSME() {
-        // Заменили старую строку на Вариант А (добавлена опция atomcustombutton)
+        // Заменили опции: добавили 'number' (выводит панель ввода) и 'keepexceivedkeyboardfocus'
         testJsmeApplet = new JSApplet.JSME("jsme_canvas_test", "100%", "350px", {
-            "options": "oldLook,paste,autocenter,atomcustombutton"
+            "options": "oldLook,paste,autocenter,number,keepexceivedkeyboardfocus"
         });
         
         testJsmeApplet.setCallBack("AfterStructureModified", function(event) {
@@ -35,5 +38,6 @@
     window.jsmeOnLoad = startJSME;
     setTimeout(function() { if (typeof JSApplet !== 'undefined' && !testJsmeApplet) startJSME(); }, 1500);
 </script>
+
 
 {% endblock %}
