@@ -99,7 +99,9 @@ class BMSearchResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(BMSearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET['searchword']
+        searchword = self.request.GET.get('searchword', '')
+
+
         context['form'] = UdateForm()
         context['sform'] = SearchForm() 
         if self.request.GET['searchword']:
@@ -144,7 +146,8 @@ class KareliahistorySearchResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(KareliahistorySearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET['searchword']
+        searchword = self.request.GET.get('searchword', '')
+
         context['form'] = SearchForm()
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
@@ -190,7 +193,8 @@ class SearchResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(SearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET['searchword']
+        searchword = self.request.GET.get('searchword', '')
+
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
@@ -219,7 +223,8 @@ class ITSearchResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ITSearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET['searchword']
+        searchword = self.request.GET.get('searchword', '')
+
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
@@ -306,7 +311,8 @@ class FamilySearchResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(FamilySearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET['searchword']
+        searchword = self.request.GET.get('searchword', '')
+
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
@@ -336,7 +342,8 @@ class ChemistrySearchResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ChemistrySearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET['searchword']
+        searchword = self.request.GET.get('searchword', '')
+
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
