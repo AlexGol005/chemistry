@@ -226,3 +226,31 @@ th.ind, td.ind {
         display: none !important; 
     } 
 }
+
+/* ========================================================================== 
+   7. ТОЧЕЧНЫЙ ФИКС ДЛЯ СТРАНИЦЫ С КАРТИНКАМИ (CHEM/PICTURES) 
+   ========================================================================== */ 
+
+/* Находим контейнер страницы мемов и принудительно раскрываем его на 100% */
+.main-page-body[class*="chem"] .col-6,
+.main-page-body[class*="chem"] .col-md-6,
+main .container .row > div[class*="col-"] {
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+}
+
+/* Заставляем все картинки-мемы растягиваться на всю ширину родительского блока */
+.main-page-body img,
+main img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+/* Если картинки обернуты в теги ссылок, раскрываем ссылки тоже */
+main p center a,
+main center a {
+    display: block !important;
+    width: 100% !important;
+}
+
