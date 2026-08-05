@@ -254,3 +254,42 @@ main center a {
     width: 100% !important;
 }
 
+sudo bash -c 'cat << EOF >> /var/www/labjournaleq/LabBookeq/static/main/css/main.css
+
+/* ========================================================================== 
+   8. АДАПТИВНОСТЬ ТАБЛИЦ И БОКОВОЙ ПАНЕЛИ НА СМАРТФОНАХ
+   ========================================================================== */ 
+@media (max-width: 768px) {
+    /* Перестраиваем сетку: контент и боковой блок встают друг под друга */
+    .row {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    /* Центральный контент раскрывается на 100% ширины */
+    .col-8, main .col-8, div[class*="col-8"] {
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        width: 100% !important;
+    }
+    
+    /* Боковой блок (aside) сдвигается вниз страницы на всю ширину */
+    .col-4, aside, div[class*="col-4"] {
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        margin-top: 30px !important;
+        border-top: 1px solid #dee2e6;
+        padding-top: 20px;
+    }
+
+    /* Защищаем таблицы от вылезания: добавляем им внутреннюю прокрутку */
+    table, .table {
+        display: block !important;
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+}
+EOF'
