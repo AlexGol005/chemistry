@@ -367,8 +367,12 @@ class OrganicNamesTestFinishedView(View):
         test_ids = request.session.get('organicnamestest_ids', [])
         total = len(test_ids)
 
+        # Вытаскиваем режим перед возможной очисткой
+        current_mode = request.session.get('organicnamestest_mode', 'name_to_mol')
+
         if total == 0:
-            return redirect('organicnamestest_start')
+            # ИСПРАВЛЕНИЕ: Перенаправляем на страницу настройки конкретного режима
+            return redirect(f"/chem/organicnamestest/start/?mode={current_mode}")
 
         percent = int((score / total) * 100)
         
@@ -380,9 +384,9 @@ class OrganicNamesTestFinishedView(View):
         return render(request, 'Chem/organicnamestest_finished.html', {
             'score': score,
             'total': total,
-            'percent': percent
+            'percent': percent,
+            'mode': current_mode  # Передаем режим в контекст финала
         })
-
 
 
 
