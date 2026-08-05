@@ -39,6 +39,7 @@ ORGANIC_CLASSES = [
     ('primary_amines', 'Первичные амины'),  # Переименовано из 'amines'
     ('secondary_amines', 'Вторичные амины'),
     ('tertiary_amines', 'Третичные амины'),
+        ('Ароматические амины', 'Ароматические амины'),
     ('nitro_compounds', 'Нитросоединения'),
     ('amino_acids', 'Аминокислоты'),
     ('polyfunctional_amino_acids', 'Полифункциональные аминокислоты'),
