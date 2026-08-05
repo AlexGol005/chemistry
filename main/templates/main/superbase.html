@@ -38,7 +38,7 @@
     (function (d, w, id) {
         if (d.getElementById(id)) return;
         var ts = d.createElement("script"); ts.type = "text/javascript"; ts.async = true; ts.id = id; ts.src = "https://mail.ru";
-        var f = function () {var s = d.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ts, s);};
+        var f = function () {var s = d.getElementsByTagName("script"); s.parentNode.insertBefore(ts, s);};
         if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); }
     })(document, window, "tmr-code");
     </script>
@@ -50,7 +50,7 @@
     (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
     m[i].l=1*new Date();
     for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    k=e.createElement(t),a=e.getElementsByTagName(t),k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
     (window, document, "script", "https://yandex.ru", "ym");
     ym(101384023, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
     </script>
@@ -161,7 +161,7 @@
         <div class="container-fluid table-list px-4"> 
             <div class="row">
                 
-                <!-- Левая/Главная колонка: на мобильных 100% ширины, на больших экранах занимает 9 из 12 колонок -->
+                <!-- Левая/Главная колонка: на мобильных 100% ширины, на ПК занимает 9 из 12 колонок -->
                 <div class="col-12 col-lg-9 mb-4">
                     {% block content %}
                     {% endblock %}
@@ -170,7 +170,7 @@
                     {% endblock %}
                 </div>
 
-                <!-- Правая колонка (Сайдбар): на мобильных падает вниз, на больших экранах занимает 3 из 12 колонок -->
+                <!-- Правая校лонka (Сайдбар): на мобильных падает вниз, на ПК занимает 3 из 12 колонок -->
                 <div class="col-12 col-lg-3 mb-4">
                     {% block aside %}
                     {% endblock %}
@@ -189,3 +189,4 @@
                 $('#add-form').click(function() {
                     var index = $('#id_inline_test_models-TOTAL_FORMS').val()
                     var newTable = $('#id_inline_test_models-__prefix__-DELETE').parents('table').clone()
+                    newTable.find(':input').each(function() {
