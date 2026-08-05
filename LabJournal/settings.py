@@ -37,7 +37,19 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == "true"
 
-ALLOWED_HOSTS = ['xn--h1aal8a3c.site', 'химия.site', 'localhost', '127.0.0.1']
+
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '217.149.22.220',
+    'химия.site',
+    'www.химия.site',
+    'xn--b1agh7b2a.site',
+    'www.xn--b1agh7b2a.site',
+    'xn--h1aal8a3c.site',       # Добавили новый вариант
+    'www.xn--h1aal8a3c.site',   # Добавили новый вариант с www
+]
+
 
 INSTALLED_APPS = [
     'django_celery_beat',
@@ -109,15 +121,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'LabJournal.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 
 DATABASES = {
