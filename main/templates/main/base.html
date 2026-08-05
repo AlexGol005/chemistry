@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block aside %}
-<div class="w-100">
-    <center><h6 class="mt-4">Today</h6></center>
+<div class="col-4">
+    <center><h6 class="mt-4">Сегодня</h6></center>
     <center><div id="current_date_time_block"></div></center>
     <h4>
         <center>
@@ -29,20 +29,22 @@
         </center>
     </h4>
 
-    <center><h6 class="mt-2">Announcements</h6></center>
+    <center><h6 class="mt-2">Объявления</h6></center>
     <p><center>{{last_ad.text}}</center></p>
 
-    <center><h6 class="mt-2">Quotes</h6></center>
+    <center><h6 class="mt-2">Цитаты</h6></center>
     <p><center>{{last_ad.text}}</center></p>
-    <p><center>Work conscientiously, so you can look people in the eye without shame. (Russian folk proverb)</center></p>
-    <p><center>«The harder you work, the luckier you get». Thomas Jefferson</center></p>
+    <p><center>Работаешь добросовестно, так и в глаза людям глядеть не совестно. (русская народная поговорка)</center></p>
+    <p><center>«Чем усерднее вы работаете, тем более удачливым вы становитесь». Томас Джефферсон</center></p>
 
     <center><img width="90%" src="{% static 'main/img/5.jpg' %}" class="img_thumbnail"></center>
 
-    <center><h4 class="mt-2">News</h4></center>
+    <center><h4 class="mt-2">Новости</h4></center>
     <p><center>{{last_news.text}}</center></p>
 </div>
 {% endblock %}
 
-{% block content %}
-{% endblock %}
+<div class="col-8">
+    {% block content %}
+    {% endblock %}
+</div>
