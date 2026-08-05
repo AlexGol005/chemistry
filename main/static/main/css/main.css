@@ -35,7 +35,7 @@ footer, .bg-body-tertiary {
     padding-top: 40px !important; 
 } 
 
-/* ИСПРАВЛЕНО: Растягиваем контентную сетку на всю ширину на ПК */ 
+/* ИСПРАВЛЕНО: Разрешаем главному контенту растягиваться по ширине на ПК */ 
 .table-list { 
     width: 100% !important; 
     max-width: 100% !important; 
@@ -68,18 +68,35 @@ footer, .bg-body-tertiary {
    3. БОКОВАЯ ПАНЕЛЬ (ASIDE) 
    ========================================================================== */ 
 
-/* ИСПРАВЛЕНО: Убрано абсолютное позиционирование. Положением управляет Bootstrap */ 
-aside { 
-    position: relative !important; 
-    width: 100% !important; 
-    top: auto !important; 
-    right: auto !important; 
+/* Сайдбар фиксируется абсолютом только на больших экранах компьютеров */ 
+@media screen and (min-width: 1300px) { 
+    aside { 
+        position: absolute !important; 
+        right: calc((100% - 1200px) / 2) !important; 
+        top: 80px !important; 
+        width: 240px !important; 
+        z-index: 10; 
+    } 
+    .inner-page-body { 
+        padding-right: 260px !important; 
+    } 
 } 
 
-@media screen and (max-width: 991px) { 
+/* ИСПРАВЛЕНО: На смартфонах и планшетах (до 1300px) абсолютное позиционирование отменяется, 
+   а сетка col-4 / col-8 расширяется до 100%, гарантируя, что блоки встанут строго друг под друга */ 
+@media screen and (max-width: 1299px) { 
     aside { 
-        margin-top: 20px; 
+        position: relative !important; 
+        width: 100% !important; 
+        margin-top: 20px !important; 
+        right: auto !important; 
+        left: auto !important; 
+        display: block !important;
     } 
+    .col-4, .col-8 {
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
 } 
 
 /* ========================================================================== 
@@ -124,7 +141,7 @@ td.green { background-color: rgb(221, 246, 221) !important; }
 .Goodresult { color: #047c0a; font-weight: bold; } 
 .Middleresult { color: orange; font-weight: bold; } 
 
-.nor, .nor td, .nor th { 
+.nor, nor.td, nor.th { 
     border: 1px solid black; 
     height: 22px; 
     padding: 0 !important; 
@@ -137,7 +154,7 @@ td.green { background-color: rgb(221, 246, 221) !important; }
 .nor { 
     border-collapse: collapse; 
     background-color: rgb(245, 245, 246); 
-    width: 100% !important; 
+    width: 15px; 
 } 
 
 th.ind, td.ind { 
