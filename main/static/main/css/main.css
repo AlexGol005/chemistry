@@ -318,3 +318,43 @@ sudo bash -c 'cat << EOF >> /var/www/labjournaleq/LabBookeq/static/main/css/main
 }
 EOF'
 
+
+sudo bash -c 'cat << EOF >> /var/www/labjournaleq/LabBookeq/static/main/css/main.css
+
+/* ========================================================================== 
+   12. ЖЕСТКИЙ СБРОС ЛЮБЫХ ФИКСИРОВАННЫХ РАЗМЕРОВ НА СМАРТФОНАХ
+   ========================================================================== */ 
+@media (max-width: 768px) {
+    /* Принудительно заставляем ВСЕ элементы контента сжиматься под ширину экрана телефона */
+    .col-12, .col-8, .col-4, main, article, section, div, p, span, table, tr, td, th, figure {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        float: none !important;
+    }
+    
+    /* Сбрасываем жесткую высоту и ширину, прописанную редактором в атрибутах */
+    [width], [height], [style*="width"], [style*="height"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Если картинка вставлена как обычный тег */
+    img {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Если редактор вставил картинку как фон ячейки таблицы */
+    [style*="background-image"] {
+        background-size: contain !important; /* Картинка масштабируется внутри блока */
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        height: 250px !important; /* Задаем безопасную высоту для фоновой картинки на мобильных */
+    }
+}
+EOF'
+
