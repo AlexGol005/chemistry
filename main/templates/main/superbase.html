@@ -248,52 +248,65 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
   });
 </script>
 
-<style>
-  /* 1. Запрещаем обрезать контент в таблицах и ячейках */
-  .table-responsive, 
-  .table-responsive *,
-  td, 
-  tr,
-  table {
-    overflow: visible !important;
-    max-height: none !important;
-  }
+<!-- Умная адаптивность картинок CKEditor без растягивания на ПК -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var images = document.querySelectorAll('table img');
+    images.forEach(function(img) {
+      // Полностью очищаем инлайновые стили ширины/высоты, которые ломают верстку
+      img.removeAttribute('width');
+      img.removeAttribute('height');
+      img.style.width = '';
+      img.style.height = '';
+    });
+  });
+</script>
 
-  /* 2. Заставляем ВСЕ таблицы на сайте подчиняться ширине экрана */
-  table, .flexy1, .flexy {
+<style>
+  /* 1. Запрещаем таблицам вылезать за экран, но разрешаем им растягиваться вниз */
+  table, .table, .flexy1, .flexy {
     width: 100% !important;
     max-width: 100% !important;
-    table-layout: fixed !important;
+    table-layout: auto !important; /* Меняем на auto, чтобы ячейки подстраивались под контент */
+    height: auto !important;
   }
 
-  /* 3. Пропорциональное сжатие для картинок внутри таблиц */
+  /* 2. Снимаем любые ограничения на высоту ячеек, чтобы картинку не резало */
+  .table-responsive, td, tr, tbody {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+
+  /* 3. Умное сжатие картинок: на ПК они нормальные, на мобильном — сжимаются */
   table img, 
   td img, 
   figure img,
   .ind1 img {
-    width: 100% !important;        
-    max-width: 100% !important;    
-    height: auto !important;       /* Картинка сжимается пропорционально и не режется */
     display: block !important;
-    margin: 0 auto !important;     
-    object-fit: contain !important; 
+    max-width: 100% !important;    /* Картинка никогда не станет шире экрана или ячейки */
+    width: auto !important;         /* На ПК картинка сохранит свой РЕАЛЬНЫЙ размер и не растянется */
+    height: auto !important;        /* Высота подстроится пропорционально, без обрезки */
+    max-height: none !important;    /* Убираем ограничения высоты */
+    margin: 10px auto !important;   /* Центрируем и делаем небольшие отступы */
   }
 
-  /* 4. Сброс фиксированной ширины для оберток редактора */
+  /* 4. Сбрасываем жесткую ширину контейнеров CKEditor */
   figure, figure.image, .image, td div, td p {
-    width: 100% !important;
+    width: auto !important;         /* Не растягиваем на весь экран на ПК */
     max-width: 100% !important;
-    height: auto !important;       
+    height: auto !important;
     box-sizing: border-box !important;
   }
 
-  /* 5. Безопасный перенос текста и формул в ячейках */
+  /* 5. Перенос текста, чтобы длинные формулы не распирали ячейки вбок */
   td, th, p, span {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     white-space: normal !important;
   }
 </style>
+
 
 
 </body> <!-- ТЕГ BODY ТЕПЕРЬ В САМОМ КОНЦЕ -->
