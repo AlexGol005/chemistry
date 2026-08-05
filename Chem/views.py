@@ -112,12 +112,13 @@ ORGANIC_GROUPS = [
 
 
 
-# === 1. ВЫБОР РЕЖИМА (Пульт управления) ===
+# === 1. ГЛАВНАЯ СТРАНИЦА ТЕСТОВ ===
 class OrganicNamesTestHeadView(View):
     def get(self, request):
         return render(request, 'Chem/organicnames_test_head.html')
 
 
+# === 2. НАСТРОЙКА И СТАРТ ТЕСТА ===
 class OrganicNamesTestStartView(View):
     def get(self, request):
         mode = request.GET.get('mode', 'name_to_mol')
@@ -127,10 +128,10 @@ class OrganicNamesTestStartView(View):
         
         # ФЛАГ ОТОБРАЖЕНИЯ: Если это режим "Формула -> Класс", то выбор разделов НЕ НУЖЕН
         show_groups = mode != 'form_to_class'
-
+        
         if mode == 'form_to_class':
             allowed_keys = [
-                'alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes',
+                'alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 
                 'alcohols', 'ethers', 'aldehydes', 'ketones', 
                 'saturated_monobasic_carboxylic_acids', 'esters', 'amino_acids'
             ]
@@ -139,7 +140,6 @@ class OrganicNamesTestStartView(View):
 
         selectable_groups = []
         
-        # Собираем список групп только если флаг show_groups равен True
         if show_groups:
             for group in ORGANIC_GROUPS:
                 has_valid_classes = False
@@ -147,7 +147,6 @@ class OrganicNamesTestStartView(View):
                     if allowed_keys is None or c_slug in allowed_keys:
                         has_valid_classes = True
                         break
-                
                 if has_valid_classes:
                     selectable_groups.append({
                         'name': group['name'],
@@ -157,43 +156,35 @@ class OrganicNamesTestStartView(View):
         context = {
             'mode': mode,
             'selectable_groups': selectable_groups,
-            'show_groups': show_groups  # Отдаем флаг в HTML-шаблон
+            'show_groups': show_groups
         }
         return render(request, 'Chem/organicnamestest_start.html', context)
 
     def post(self, request):
         mode = request.POST.get('mode') or request.GET.get('mode') or 'name_to_mol'
-        
-        # Получаем список названий ВЫБРАННЫХ ГРУПП из формы
         selected_group_names = request.POST.getlist('selected_groups')
-        
-        # ЗАПОМИНАЕМ ВЫБОР ГРУПП в сессии (только для режимов, где они есть)
+
         if mode != 'form_to_class':
             request.session['last_selected_groups'] = selected_group_names
-        
+
         # Очищаем данные старого теста
         for key in ['organicnamestest_ids', 'organicnamestest_score', 'organicnamestest_mode', 'organicnamestest_allowed_keys']:
             request.session.pop(key, None)
 
-        # Раскрываем выбранные ГРУППЫ в плоский список входящих в них КЛАССОВ (slug)
         selected_classes = []
         for group in ORGANIC_GROUPS:
-            # Если это режим формул, или группа выбрана, или вообще ничего не выбрано (тогда берем всё)
             if mode == 'form_to_class' or group['name'] in selected_group_names or not selected_group_names:
                 selected_classes.extend(group['classes'])
 
-        # Если режим "Формула -> Класс", жестко фильтруем классы только разрешенными 12 школьными классами
         if mode == 'form_to_class':
-            allowed_keys = ['alkanes', 'alkenes', 'alkynes', 'alkadienes', 
-                            'cycloalkanes', 'alcohols', 'ethers', 'aldehydes', 
-                            'ketones', 'saturated_monobasic_carboxylic_acids',
-                            'esters', 'amino_acids',
-                            'diols', 'triols', 'phenols',
-                            'primary_amines', 'secondary_amines', 'tertiary_amines', 'Ароматические амины',
-                           ]
+            allowed_keys = [
+                'alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 'alcohols', 'ethers', 
+                'aldehydes', 'ketones', 'saturated_monobasic_carboxylic_acids', 'esters', 'amino_acids', 
+                'diols', 'triols', 'phenols', 'primary_amines', 'secondary_amines', 'tertiary_amines', 
+                'Ароматические амины',
+            ]
             selected_classes = [c for c in selected_classes if c in allowed_keys]
 
-        # Загружаем карточки из Базы Данных по выбранному режиму
         queryset = OrganicNames.objects.all()
         if mode == 'name_to_mol':
             queryset = queryset.filter(test_name_to_structure=True)
@@ -204,68 +195,69 @@ class OrganicNamesTestStartView(View):
 
         # --- СИСТЕМА ИНТЕРВАЛЬНОГО ПОВТОРЕНИЯ ---
         if request.user.is_authenticated:
-            from django.db.models import F
             UserQuestionProgress.objects.filter(user=request.user, skip_count__gt=0).update(
                 skip_count=F('skip_count') - 1
             )
             skipped_ids = UserQuestionProgress.objects.filter(user=request.user, skip_count__gt=0).values_list('question_id', flat=True)
             queryset_filtered = queryset.exclude(id__in=skipped_ids)
-            
             if queryset_filtered.count() >= 10:
                 queryset = queryset_filtered
 
-        # === АЛГОРИТМ ФИКСИРОВАННОЙ ДЛИНЫ ТЕСТА (СТРОГО 10 ВОПРОСОВ) ===
-        final_ids = []
-        target_questions_count = 10
+        # Оптимизация БД: Загружаем данные одним быстрым запросом
+        raw_questions = queryset.filter(organic_class__in=selected_classes).values('id', 'organic_class')
         
         class_pools = {}
-        for c_slug in selected_classes:
-            class_ids = list(queryset.filter(organic_class=c_slug).values_list('id', flat=True))
-            if class_ids:
-                random.shuffle(class_ids)
-                class_pools[c_slug] = class_ids
-                
-        if class_pools:
-            active_slugs = list(class_pools.keys())
-            while len(final_ids) < target_questions_count and active_slugs:
-                for c_slug in list(active_slugs):
-                    if class_pools[c_slug]:
-                        q_id = class_pools[c_slug].pop(0)
-                        final_ids.append(q_id)
-                        if len(final_ids) == target_questions_count:
-                            break
-                    else:
-                        active_slugs.remove(c_slug)
-                        
+        for q in raw_questions:
+            class_pools.setdefault(q['organic_class'], []).append(q['id'])
+            
+        for c_slug in class_pools:
+            random.shuffle(class_pools[c_slug])
+
+        # === АЛГОРИТМ ФИКСИРОВАННОЙ ДЛИНЫ ТЕСТА С ПЕРЕМЕШИВАНИЕМ КЛАССОВ ===
+        final_ids = []
+        target_questions_count = 10
+        active_slugs = list(class_pools.keys())
+
+        # ИСПРАВЛЕНИЕ: Полностью перемешиваем классы перед распределением
+        random.shuffle(active_slugs)
+
+        while len(final_ids) < target_questions_count and active_slugs:
+            for c_slug in list(active_slugs):
+                if class_pools[c_slug]:
+                    q_id = class_pools[c_slug].pop(0)
+                    final_ids.append(q_id)
+                    if len(final_ids) == target_questions_count:
+                        break
+                else:
+                    active_slugs.remove(c_slug)
+                    
+        # ИСПРАВЛЕНИЕ: Дополнительно перемешиваем финальный пул вопросов, чтобы они шли вразнобой
+        random.shuffle(final_ids)
+
         request.session['organicnamestest_ids'] = final_ids
         request.session['organicnamestest_score'] = 0
         request.session['organicnamestest_mode'] = mode
         request.session['organicnamestest_allowed_keys'] = selected_classes
         request.session.modified = True
-        
         return redirect('organicnamestest_question', index=0)
-
-
-
-
 # === 3. СТРАНИЦА ВОПРОСА ===
 class OrganicNamesTestQuestionView(View):
     def get(self, request, index):
         test_ids = request.session.get('organicnamestest_ids', [])
         mode = request.session.get('organicnamestest_mode', 'name_to_mol')
         allowed_keys = request.session.get('organicnamestest_allowed_keys', [])
-        
+
         if not test_ids or index >= len(test_ids):
             return redirect('organicnamestest_finished')
-            
+
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
         current_class = obj.organic_class
         
         # Фильтруем список классов, которые будут доступны пользователю в интерфейсе
         filtered_organic_classes = [
-            item for item in ORGANIC_CLASSES if item[0] in allowed_keys
+            item for item in ORGANIC_CLASSES if item in allowed_keys
         ]
-        
+
         # === АЛГОРИТМ УМНЫХ ВАРИАНТОВ ОТВЕТА ДЛЯ РЕЖИМА "ФОРМУЛА -> КЛАСС" ===
         options = []
         if mode == 'form_to_class':
@@ -277,17 +269,16 @@ class OrganicNamesTestQuestionView(View):
                 isomer_class = CLASS_ISOMERS.get(current_class)
                 if isomer_class and isomer_class in allowed_keys:
                     options.append(isomer_class)
-            
+
             # 3. Добираем случайные непересекающиеся классы, чтобы вариантов стало ровно 4
             remaining_classes = [c for c in allowed_keys if c not in options]
             random.shuffle(remaining_classes)
-            
             while len(options) < 4 and remaining_classes:
                 options.append(remaining_classes.pop(0))
-                
+
             # Перемешиваем варианты, чтобы правильный ответ не всегда стоял на первом месте
             random.shuffle(options)
-            
+
             # Превращаем slug вариантов в человеческие названия (кортежи) для шаблона
             class_dict = dict(ORGANIC_CLASSES)
             options = [(opt, class_dict.get(opt, opt)) for opt in options]
@@ -302,8 +293,6 @@ class OrganicNamesTestQuestionView(View):
         }
         template_name = f'Chem/organicnamestest_question_{mode}.html'
         return render(request, template_name, context)
-
-
 # === 4. ПРОВЕРКА ОТВЕТА ===
 class OrganicNamesTestAnswerView(View):
     def post(self, request, index):
@@ -314,16 +303,15 @@ class OrganicNamesTestAnswerView(View):
         test_ids = request.session.get('organicnamestest_ids', [])
         if not test_ids or index >= len(test_ids):
             return redirect('organicnamestest_head')
-            
+
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
         is_correct = False
         user_label = user_ans
         both_answers_text = ""
         general_formula = ""
-        
+
         if mode == 'name_to_mol':
-            # Проверка через SMILES (молекулярный редактор)
-            # Примечание: Убедитесь, что Chemredactor импортирован корректно в вашем проекте
+            # Безопасная проверка SMILES структур
             m1 = Chemredactor.MolFromSmiles(user_ans) if 'Chemredactor' in globals() else None
             m2 = Chemredactor.MolFromSmiles(obj.molecule) if 'Chemredactor' in globals() else None
             if m1 and m2:
@@ -341,27 +329,25 @@ class OrganicNamesTestAnswerView(View):
             
             correct_label = classes_dict.get(correct_class, "Неизвестный класс")
             isomer_label = classes_dict.get(isomer_class, "")
-            
+
             # Подтягиваем красивую формулу из нашего словаря CLASS_GENERAL_FORMULAS
             if 'CLASS_GENERAL_FORMULAS' in globals():
                 general_formula = CLASS_GENERAL_FORMULAS.get(correct_class, "")
-                
+
             # Проверка: подошел ли правильный класс или его межклассовый изомер
             if user_ans == correct_class:
                 is_correct = True
             elif isomer_class and user_ans == isomer_class:
                 is_correct = True
-                
+
             user_label = classes_dict.get(user_ans, "Не выбрано")
             if isomer_label:
                 both_answers_text = f"У данных классов одинаковая брутто-формула. Верны оба ответа: {correct_label} и {isomer_label}."
 
         # --- ФИКСАЦИЯ ПРОГРЕССА ИНТЕРВАЛЬНОГО ПОВТОРЕНИЯ ---
         if request.user.is_authenticated:
-            # Обновляем или создаем запись прогресса для этого вопроса
             progress, created = UserQuestionProgress.objects.get_or_create(
-                user=request.user, 
-                question=obj
+                user=request.user, question=obj
             )
             if is_correct:
                 progress.skip_count = 30  # Замораживаем вопрос на 30 циклов при успехе
@@ -375,12 +361,12 @@ class OrganicNamesTestAnswerView(View):
             if name is not None and str(name).strip() != "":
                 names_list.append(str(name).strip())
         obj.all_names_string = ", ".join(names_list) if names_list else "Название отсутствует"
-        
+
         # Начисление баллов
         if is_correct:
             request.session['organicnamestest_score'] = request.session.get('organicnamestest_score', 0) + 1
             request.session.modified = True
-            
+
         return render(request, 'Chem/organicnamestest_answer.html', {
             'molecule': obj,
             'is_correct': is_correct,
@@ -399,20 +385,23 @@ class OrganicNamesTestFinishedView(View):
         score = request.session.get('organicnamestest_score', 0)
         test_ids = request.session.get('organicnamestest_ids', [])
         total = len(test_ids)
-        
+
+        # ИСПРАВЛЕНИЕ: Теперь перенаправляет строго на страницу выбора режима при сбое данных
         if total == 0:
-            return redirect('organicnamestest_head')
-            
+            return redirect('organicnamestest_start')
+
         percent = int((score / total) * 100)
+        
+        # ИСПРАВЛЕНИЕ: Полностью очищаем переменные сессии завершенного теста
+        for key in ['organicnamestest_ids', 'organicnamestest_score', 'organicnamestest_mode', 'organicnamestest_allowed_keys']:
+            request.session.pop(key, None)
+        request.session.modified = True
+
         return render(request, 'Chem/organicnamestest_finished.html', {
             'score': score,
             'total': total,
             'percent': percent
         })
-
-
-
-
 
 
 
