@@ -2,7 +2,6 @@
 {% load static %} 
 
 {% block content %} 
-<!-- Добавляем стили для адаптивного масштабирования жесткого контейнера JSME -->
 <style>
     .jsme-responsive-container {
         max-width: 500px;
@@ -47,23 +46,8 @@
     </form> 
 </div> 
 
-<!-- Подключаем JSME -->
 <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script> 
 <script type="text/javascript"> 
-    // ХАК-ИСПРАВЛЕНИЕ: Блокируем вызов запрещенного 'unload', из-за которого ломается кнопка X
-    (function() {
-        var originalAddEventListener = window.addEventListener;
-        window.addEventListener = function(type, listener, options) {
-            // Если JSME пытается повесить обработчик на 'unload', мягко игнорируем это,
-            // чтобы браузер не выбрасывал ошибку Permissions policy violation
-            if (type === 'unload') {
-                console.log("JSME попытался вызвать запрещенный 'unload'. Запрос безопасно отклонен.");
-                return; 
-            }
-            return originalAddEventListener.apply(this, arguments);
-        };
-    })();
-
     var testJsmeApplet; 
     
     function startJSME() { 
