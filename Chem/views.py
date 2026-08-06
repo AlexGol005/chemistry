@@ -233,15 +233,16 @@ class OrganicNamesTestStartView(View):
         request.session.modified = True
         return redirect('organicnamestest_question', index=0)
 # === 3. СТРАНИЦА ВОПРОСА ===
+# === 3. СТРАНИЦА ВОПРОСА ===
 class OrganicNamesTestQuestionView(View):
     def get(self, request, index):
         test_ids = request.session.get('organicnamestest_ids', [])
         mode = request.session.get('organicnamestest_mode', 'name_to_mol')
         allowed_keys = request.session.get('organicnamestest_allowed_keys', [])
-
+        
         if not test_ids or index >= len(test_ids):
             return redirect('organicnamestest_finished')
-
+            
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
         current_class = obj.organic_class
         
@@ -249,7 +250,7 @@ class OrganicNamesTestQuestionView(View):
         filtered_organic_classes = [
             item for item in ORGANIC_CLASSES if item[0] in allowed_keys
         ]
-
+        
         # === АЛГОРИТМ УМНЫХ ВАРИАНТОВ ОТВЕТА ДЛЯ РЕЖИМА "ФОРМУЛА -> КЛАСС" ===
         options = []
         if mode == 'form_to_class':
@@ -261,30 +262,40 @@ class OrganicNamesTestQuestionView(View):
                 isomer_class = CLASS_ISOMERS.get(current_class)
                 if isomer_class and isomer_class in allowed_keys:
                     options.append(isomer_class)
-
+                    
             # 3. Добираем случайные непересекающиеся классы, чтобы вариантов стало ровно 4
             remaining_classes = [c for c in allowed_keys if c not in options]
             random.shuffle(remaining_classes)
             while len(options) < 4 and remaining_classes:
                 options.append(remaining_classes.pop(0))
-
+                
             # Перемешиваем варианты, чтобы правильный ответ не всегда стоял на первом месте
             random.shuffle(options)
-
-            # Превращаем slug вариантов в человеческие названия (кортежи) для шаблона
-            class_dict = dict(ORGANIC_CLASSES)
-            options = [(opt, class_dict.get(opt, opt)) for opt in options]
-
+            
+        # Превращаем slug вариантов в человеческие названия (кортежи) для шаблона
+        class_dict = dict(ORGANIC_CLASSES)
+        options = [(opt, class_dict.get(opt, opt)) for opt in options]
+        
         context = {
             'molecule': obj,
             'index': index,
             'mode': mode,
             'total_questions': len(test_ids),
-            'organic_classes': filtered_organic_classes, # Выпадающий список снова заполнен!
-            'test_options': options  # Передаем готовые 4 варианта в HTML
+            'organic_classes': filtered_organic_classes, 
+            'test_options': options 
         }
+        
         template_name = f'Chem/organicnamestest_question_{mode}.html'
-        return render(request, template_name, context)
+        
+        # Сначала сохраняем сгенерированный HTML в переменную response
+        response = render(request, template_name, context)
+        
+        # ИСПРАВЛЕНИЕ: Принудительно разрешаем браузеру выполнять старый метод 'unload' для кнопки X на этой странице.
+        # Это отключает ошибку "Permissions policy violation: unload is not allowed" и открывает prompt()
+        response['Permissions-Policy'] = 'unload=(self)'
+        
+        return response
+
 # === 4. ПРОВЕРКА ОТВЕТА ===
 class OrganicNamesTestAnswerView(View):
     def post(self, request, index):
