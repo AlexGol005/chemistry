@@ -6,8 +6,10 @@
     <h3 class="h4 mt-4">Вопрос №{{ index|add:1 }}</h3> 
     <h4 class="h5 mb-4">Нарисуйте формулу для: <br><strong>«{{ molecule.name1 }}»</strong></h4> 
     
-    <!-- Добавлено свойство pointer-events: auto, чтобы клики по апплету обрабатывались корректно -->
-    <div class="jsme-wrapper shadow-sm mx-auto mb-4" style="max-width: 500px; pointer-events: auto;"> 
+    <!-- ИСПРАВЛЕНИЕ: Добавлен tabindex="-1" и изоляция фокуса, чтобы Bootstrap не блокировал prompt() кнопки X -->
+    <div class="jsme-wrapper shadow-sm mx-auto mb-4" 
+         tabindex="-1" 
+         style="max-width: 500px; position: relative; z-index: 10; outline: none;"> 
         <div id="jsme_canvas_test" style="width: 100% !important; height: 350px !important; border: 1px solid #ccc; background: white !important;"> 
         </div> 
     </div> 
@@ -22,10 +24,10 @@
 <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script> 
 <script type="text/javascript"> 
     var testJsmeApplet; 
+    
     function startJSME() { 
-        // В опции принудительно добавлено свойство 'xbutton', чтобы активировать всплывающее окно prompt()
         testJsmeApplet = new JSApplet.JSME("jsme_canvas_test", "100%", "350px", {
-            "options": "oldLook,paste,autocenter,xbutton"
+            "options": "oldLook,paste,autocenter"
         }); 
         
         testJsmeApplet.setCallBack("AfterStructureModified", function(event) { 
