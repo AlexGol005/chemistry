@@ -69,7 +69,7 @@
     function startJSME() { 
         // Жесткие размеры 500х350, как в рабочей админке, чтобы внутренняя координатная сетка кнопки Х не ломалась
         testJsmeApplet = new JSApplet.JSME("jsme_canvas_test", "500px", "350px", {
-            "options": "oldLook,paste,autocenter"
+            "options": "oldLook,paste,autocenter,xbutton"
         }); 
         
         testJsmeApplet.setCallBack("AfterStructureModified", function(event) { 
