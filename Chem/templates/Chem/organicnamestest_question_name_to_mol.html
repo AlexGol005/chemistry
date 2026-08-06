@@ -2,15 +2,41 @@
 {% load static %} 
 
 {% block content %} 
+<!-- Добавляем стили для адаптивного масштабирования жесткого контейнера JSME -->
+<style>
+    .jsme-responsive-container {
+        max-width: 500px;
+        height: 350px;
+        margin: 0 auto;
+        overflow: visible;
+        position: relative;
+    }
+    @media (max-width: 540px) {
+        #jsme_canvas_test {
+            transform: scale(0.85);
+            transform-origin: top center;
+        }
+        .jsme-responsive-container {
+            height: 300px;
+        }
+    }
+    @media (max-width: 420px) {
+        #jsme_canvas_test {
+            transform: scale(0.7);
+            transform-origin: top center;
+        }
+        .jsme-responsive-container {
+            height: 250px;
+        }
+    }
+</style>
+
 <div class="col-12 col-md-10 col-lg-8 mx-auto text-center"> 
     <h3 class="h4 mt-4">Вопрос №{{ index|add:1 }}</h3> 
     <h4 class="h5 mb-4">Нарисуйте формулу для: <br><strong>«{{ molecule.name1 }}»</strong></h4> 
     
-    <!-- ИСПРАВЛЕНИЕ: Добавлен tabindex="-1" и изоляция фокуса, чтобы Bootstrap не блокировал prompt() кнопки X -->
-    <div class="jsme-wrapper shadow-sm mx-auto mb-4" 
-         tabindex="-1" 
-         style="max-width: 500px; position: relative; z-index: 10; outline: none;"> 
-        <div id="jsme_canvas_test" style="width: 100% !important; height: 350px !important; border: 1px solid #ccc; background: white !important;"> 
+    <div class="jsme-responsive-container shadow-sm mb-4"> 
+        <div id="jsme_canvas_test" style="width: 500px; height: 350px; border: 1px solid #ccc; background: white !important;"> 
         </div> 
     </div> 
     
@@ -21,12 +47,27 @@
     </form> 
 </div> 
 
+<!-- Подключаем JSME -->
 <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script> 
 <script type="text/javascript"> 
+    // ХАК-ИСПРАВЛЕНИЕ: Блокируем вызов запрещенного 'unload', из-за которого ломается кнопка X
+    (function() {
+        var originalAddEventListener = window.addEventListener;
+        window.addEventListener = function(type, listener, options) {
+            // Если JSME пытается повесить обработчик на 'unload', мягко игнорируем это,
+            // чтобы браузер не выбрасывал ошибку Permissions policy violation
+            if (type === 'unload') {
+                console.log("JSME попытался вызвать запрещенный 'unload'. Запрос безопасно отклонен.");
+                return; 
+            }
+            return originalAddEventListener.apply(this, arguments);
+        };
+    })();
+
     var testJsmeApplet; 
     
     function startJSME() { 
-        testJsmeApplet = new JSApplet.JSME("jsme_canvas_test", "100%", "350px", {
+        testJsmeApplet = new JSApplet.JSME("jsme_canvas_test", "500px", "350px", {
             "options": "oldLook,paste,autocenter"
         }); 
         
