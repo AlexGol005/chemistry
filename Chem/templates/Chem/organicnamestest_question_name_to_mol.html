@@ -2,6 +2,7 @@
 {% load static %} 
 
 {% block content %} 
+<!-- Блок стилей, чтобы редактор сохранял правильные пиксельные размеры и не ломал верстку на мобильных -->
 <style>
     .jsme-responsive-container {
         max-width: 500px;
@@ -34,6 +35,7 @@
     <h3 class="h4 mt-4">Вопрос №{{ index|add:1 }}</h3> 
     <h4 class="h5 mb-4">Нарисуйте формулу для: <br><strong>«{{ molecule.name1 }}»</strong></h4> 
     
+    <!-- Контейнер для химического редактора -->
     <div class="jsme-responsive-container shadow-sm mb-4"> 
         <div id="jsme_canvas_test" style="width: 500px; height: 350px; border: 1px solid #ccc; background: white !important;"> 
         </div> 
@@ -49,8 +51,23 @@
 <script type="text/javascript" src="/static/jsme/jsme.nocache.js"></script> 
 <script type="text/javascript"> 
     var testJsmeApplet; 
+
+    // ЗАЩИТА ФОКУСА: Не даем конфликтующим Bootstrap 4 и Bootstrap 5 из base.html 
+    // перехватывать фокус у нативного окна prompt() при клике на кнопку Х
+    (function() {
+        var originalFocus = HTMLElement.prototype.focus;
+        HTMLElement.prototype.focus = function(options) {
+            if (document.activeElement && document.activeElement.id === 'jsme_canvas_test') {
+                if (this.classList && (this.classList.contains('modal') || this.tagName === 'BODY')) {
+                    return; 
+                }
+            }
+            return originalFocus.apply(this, arguments);
+        };
+    })();
     
     function startJSME() { 
+        // Жесткие размеры 500х350, как в рабочей админке, чтобы внутренняя координатная сетка кнопки Х не ломалась
         testJsmeApplet = new JSApplet.JSME("jsme_canvas_test", "500px", "350px", {
             "options": "oldLook,paste,autocenter"
         }); 
