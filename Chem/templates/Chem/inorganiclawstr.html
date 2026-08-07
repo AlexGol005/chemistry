@@ -1,256 +1,82 @@
 {% extends 'main/superbase.html' %}
-
-{# название страницы #}
 {% block title %} {{ obj.title }} {% endblock %}
-
 {% block metaname %}<meta name="description" content="{{ obj.metatitle }}">{% endblock %}
 {% block keywords %}<meta name="keywords" content="{{ obj.keywords }}">{% endblock %}
 {% block description %}<meta name="description" content="{{ obj.description }}">{% endblock %}
 
-{# Блок Условности в aside #}
 {% block aside %}
     <div class="col-12 col-md-4 order-2 order-md-2 mt-4">
         <center><h4>Условности</h4></center><br>
-        Э = любой химический элемент <br>
-        Met = любой металл <br>
-        Amet = любой неметалл <br>
-        Amf = любой амфотерный элемент <br>
-        Cat = любой катион <br>
-        A = любой кислотный остаток <br>
-        Щ = любой щелочной металл I группы <br>
-        Hal2 = галоген (Cl, Br, I) <br>
-        Oxi = окислитель <br>
-        Red-Oxi = восстановленный окислитель <br>
-        Red = восстановитель <br>
-        Oxi-Red = окисленный восстановитель <br>
-        <br><br>
-        <center>
-            <a href="{% url 'tables' %}" class="btn btn-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> Таблицы </a>
-        </center>
+        Э = любой химический элемент | Met = любой металл | Amet = любой неметалл <br>
+        Amf = любой амфотерный элемент | Cat = любой катион | A = любой кислотный остаток <br>
+        Щ = любой щелочной металл I группы | Hal2 = галоген (Cl, Br, I) <br>
+        Oxi = окислитель | Red-Oxi = восстановленный окислитель <br>
+        Red = восстановитель | Oxi-Red = окисленный восстановитель <br><br>
+        <center><a href="{% url 'tables' %}" class="btn btn-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> Таблицы </a></center>
     </div>
 {% endblock %}
 
-{# Основной контент закона #}
 {% block content %}
 {% autoescape off %}
 <div class="col-12 col-md-8 order-1 order-md-1">
-    <center>
-        <h3><a href="/chem/inorganiclaw"> Законы неорганической химии </a></h3>
-    </center>
+    <center><h3><a href="/chem/inorganiclaw"> Законы неорганической химии </a></h3></center>
+    <center><h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2></center>
 
-    <center>
-        <h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2>
-    </center>
+    <div class="table-responsive"><table class="table table-bordered flexy1"><tbody><tr><td class="ind1">{{ obj.text }}</td></tr></tbody></table></div>
+    <div class="table-responsive"><table class="table table-bordered flexy"><tbody><tr><td><h4>Общая формула закона</h4><br>{{ obj.formula }}</td></tr></tbody></table></div>
 
-    <div class="table-responsive">
-        <table class="table table-bordered flexy1">
-            <tbody>
-                <tr>
-                    <td class="ind1">
-                        {{ obj.text }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    {% if obj.img1 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; height:auto;" src="{{ obj.img1.url }}"><br></div></center>{% endif %}
+    {% if obj.img2 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; height:auto;" src="{{ obj.img2.url }}"><br></div></center>{% endif %}
 
-    <div class="table-responsive">
-        <table class="table table-bordered flexy">
-            <tbody>
-                <tr>
-                    <td>
-                        <h4>Общая формула закона</h4>
-                        <br>
-                        {{ obj.formula }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <div class="table-responsive"><table class="table table-bordered flexy1"><tbody><tr><td><h4>Примеры</h4><br>{{ obj.examples }}</td></tr></tbody></table></div>
+    {% if obj.exceptions %}<div class="table-responsive"><table class="table table-bordered flexy1"><tbody><tr><td class="ind1"><h4>Исключения</h4><br>{{ obj.exceptions }}</td></tr></tbody></table></div>{% endif %}
+    {% if obj.trening %}<div class="table-responsive"><table class="table table-bordered flexy1"><tbody><tr><td><h4>Ссылки</h4><br><a href="{{ obj.trening }}" target="blank"> ссылка </a></td></tr></tbody></table></div>{% endif %}
 
-    <center>
-        <div class="media text-muted flex-column align-items-center pt-3">
-            {% if obj.img1 %}
-                <img class="bd-placeholder-img mr-2 rounded img-fluid" style="max-width:100%; height:auto;" src="{{ obj.img1.url }}">
-            {% endif %}
-            <br>
-        </div>
-    </center>
-    <br>
+    {% if obj.presentation and obj.file_extension == '.pdf' %}<div style="margin-top: 20px;"><embed src="{{ obj.presentation.url }}#toolbar=0&navpanes=0" type="application/pdf" width="100%" height="600px" /></div>{% endif %}
 
-    <center>
-        <div class="media text-muted flex-column align-items-center pt-3">
-            {% if obj.img2 %}
-                <img class="bd-placeholder-img mr-2 rounded img-fluid" style="max-width:100%; height:auto;" src="{{ obj.img2.url }}">
-            {% endif %}
-            <br>
-        </div>
-    </center>
-    <br>
-
-    <div class="table-responsive">
-        <table class="table table-bordered flexy1">
-            <tbody>
-                <tr>
-                    <td>
-                        <h4>Примеры</h4>
-                        <br>
-                        {{ obj.examples }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    {% if obj.exceptions %}
-        <div class="table-responsive">
-            <table class="table table-bordered flexy1">
-                <tbody>
-                    <tr>
-                        <td class="ind1">
-                            <h4>Исключения</h4>
-                            <br>
-                            {{ obj.exceptions }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    {% endif %}
-
-    {% if obj.trening %}
-        <div class="table-responsive">
-            <table class="table table-bordered flexy1">
-                <tbody>
-                    <tr>
-                        <td>
-                            <h4>Ссылки</h4>
-                            <br>
-                            <a href="{{ obj.trening }}" target="blank"> ссылка </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    {% endif %}
-
-    {# ВСТРОЕННЫЙ PDF ПЛЕЕР #}
-    {% if obj.presentation and obj.file_extension == '.pdf' %}
-        <div style="margin-top: 20px;">
-            <embed src="{{ obj.presentation.url }}#toolbar=0&navpanes=0" type="application/pdf" width="100%" height="600px" />
-        </div>
-    {% endif %}
-
-    {# ВИДЕОРОЛИКИ #}
     {% if obj.video or obj.extra_videos.all %}
-        <br><br>
-        <center>
-            {% if obj.video %}
-                <a href="{{ obj.video }}" class="btn btn-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer">
-                    Посмотрите интересное и наглядное видео с химическими экспериментами!
-                </a>
-            {% endif %}
-
-            {% for vid in obj.extra_videos.all %}
-                <a href="{{ vid.video_url }}" class="btn btn-outline-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer">
-                    Видео {{ forloop.counter }}
-                </a>
-            {% endfor %}
+        <br><br><center>
+            {% if obj.video %}<a href="{{ obj.video }}" class="btn btn-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer">Посмотрите интересное видео!</a>{% endif %}
+            {% for vid in obj.extra_videos.all %}<a href="{{ vid.video_url }}" class="btn btn-outline-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer">Видео {{ forloop.counter }}</a>{% endfor %}
         </center>
     {% endif %}
 
-    {# ПРЕЗЕНТАЦИИ В ОТДЕЛЬНОМ ОКНЕ #}
     {% if obj.presentation or obj.extra_presentations.all %}
-        <center>
-            <div style="margin-top: 20px;">
-                {% if obj.presentation %}
-                    <a href="{{ obj.presentation.url }}" target="_blank" class="btn btn-primary m-1">
-                        👁 Посмотреть презентацию в новом окне
-                    </a>
-                {% endif %}
-
-                {% for pres in obj.extra_presentations.all %}
-                    <a href="{{ pres.file.url }}" target="_blank" class="btn btn-outline-primary m-1">
-                        👁 {% if pres.title %}{{ pres.title }}{% else %}Дополнительная презентация {{ forloop.counter }}{% endif %}
-                    </a>
-                {% endfor %}
-            </div>
-        </center>
+        <center><div style="margin-top: 20px;">
+            {% if obj.presentation %}<a href="{{ obj.presentation.url }}" target="_blank" class="btn btn-primary m-1">👁 Презентация в новом окне</a>{% endif %}
+            {% for pres in obj.extra_presentations.all %}<a href="{{ pres.file.url }}" target="_blank" class="btn btn-outline-primary m-1">👁 {% if pres.title %}{{ pres.title }}{% else %}Доп. презентация {{ forloop.counter }}{% endif %}</a>{% endfor %}
+        </div></center>
     {% endif %}
 
-    <br><br>
-    <center>
-        <a href="{% url 'inorganiclawtest' obj.pk %}" class="btn btn-primary mt-2 mr-2 ml-2"> Перейти к тренировке </a>
-    </center>
-    <br><br>
+    <br><br><center><a href="{% url 'inorganiclawtest' obj.pk %}" class="btn btn-primary mt-2 mr-2 ml-2"> Перейти к тренировке </a></center><br><br>
 
-    <center>
-        <div class="media text-muted flex-column align-items-center pt-3">
-            {% if obj.img3 %}
-                <img class="bd-placeholder-img mr-2 rounded img-fluid" style="max-width:100%; height:auto;" src="{{ obj.img3.url }}">
-            {% endif %}
+    {% if obj.img3 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; height:auto;" src="{{ obj.img3.url }}"></div></center><br>{% endif %}
+    {% if obj.img4 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; height:auto;" src="{{ obj.img4.url }}"></div></center><br>{% endif %}
+    {% if obj.img5 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; height:auto;" src="{{ obj.img5.url }}"></div></center><br>{% endif %}
+    {% if obj.img6 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; height:auto;" src="{{ obj.img6.url }}"></div></center><br>{% endif %}
+
+    {% if obj.extra_images.all %}
+        <br><center><button class="btn btn-outline-primary btn-lg mt-3 mb-3" type="button" data-toggle="collapse" data-target="#collapseInorganicGallery" aria-expanded="false" aria-controls="collapseInorganicGallery">🖼 Показать слайды презентации ({{ obj.extra_images.count }} шт.)</button></center>
+        <div class="collapse" id="collapseInorganicGallery">
+            {% for item in obj.extra_images.all %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; height:auto;" src="{{ item.image.url }}" loading="lazy" decoding="async"></div></center><br>{% endfor %}
+            <center><button class="btn btn-outline-secondary mt-2 mb-4" type="button" data-toggle="collapse" data-target="#collapseInorganicGallery" aria-expanded="false" aria-controls="collapseInorganicGallery">🔼 Свернуть слайды</button></center>
+        </div><br>
+    {% endif %}
+
+    {% if qw %}
+        <br><br><center><button class="btn btn-primary btn-lg mt-2 mb-3" type="button" data-toggle="collapse" data-target="#collapseInorganicReactions" aria-expanded="false" aria-controls="collapseInorganicReactions">🧪 Показать примеры реакций <br><small style="font-size: 11pt; color: #fff; opacity: 0.8;">(реакции приведены без коэффициентов)</small></button></center>
+        <div class="collapse" id="collapseInorganicReactions">
+            {% for j in qw %}
+                <br><p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin-left: auto; margin-right: auto; word-wrap: break-word; overflow-wrap: break-word;">
+                    <a href="{% url 'inorganiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
+                        {% if j.reagent1 %} {{ j.reagent1 }} {% endif %}{% if j.reagent2 %} + {{ j.reagent2 }} {% endif %}{% if j.reagent3 %} + {{ j.reagent3 }} {% endif %} = 
+                        {% if j.product1 %} {{ j.product1 }} {% endif %}{% if j.product2 %} + {{ j.product2 }} {% endif %}{% if j.product3 %} + {{ j.product3 }} {% endif %}{% if j.product4 %} +{{ j.product4 }} {% endif %}
+                    </a>
+                </p>
+            {% endfor %}
+            <center><button class="btn btn-outline-secondary mt-3 mb-4" type="button" data-toggle="collapse" data-target="#collapseInorganicReactions" aria-expanded="false" aria-controls="collapseInorganicReactions">🔼 Свернуть примеры реакций</button></center>
         </div>
-    </center>
-    <br>
-
-    <center>
-        <div class="media text-muted flex-column align-items-center pt-3">
-            {% if obj.img4 %}
-                <img class="bd-placeholder-img mr-2 rounded img-fluid" style="max-width:100%; height:auto;" src="{{ obj.img4.url }}">
-            {% endif %}
-        </div>
-    </center>
-    <br>
-
-    <center>
-        <div class="media text-muted flex-column align-items-center pt-3">
-            {% if obj.img5 %}
-                <img class="bd-placeholder-img mr-2 rounded img-fluid" style="max-width:100%; height:auto;" src="{{ obj.img5.url }}">
-            {% endif %}
-        </div>
-    </center>
-    <br>
-
-    <center>
-        <div class="media text-muted flex-column align-items-center pt-3">
-            {% if obj.img6 %}
-                <img class="bd-placeholder-img mr-2 rounded img-fluid" style="max-width:100%; height:auto;" src="{{ obj.img6.url }}">
-            {% endif %}
-        </div>
-    </center>
-    <br>
-
-    {# ИЛЛЮСТРАЦИИ С УКАЗАНИЕМ УРОВНЯ ОГЭ / ЕГЭ #}
-    {% for item in obj.extra_images.all %}
-        <center>
-            <div class="media text-muted flex-column align-items-center pt-3">
-                <span class="badge badge-info mb-2" style="font-size: 14pt; padding: 8px 16px;">
-                    Уровень: {{ item.get_level_display }}
-                </span>
-                <img class="bd-placeholder-img mr-2 rounded img-fluid" style="max-width:100%; height:auto;" src="{{ item.image.url }}">
-            </div>
-        </center>
-        <br>
-    {% endfor %}
-
-    <br><br>
-    <h4>Еще примеры (реакции приведены без коэффициентов)</h4>
-
-    {% for j in qw %}
-        <br>
-        <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto; word-wrap: break-word; overflow-wrap: break-word;">
-            <a href="{% url 'inorganiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
-                {% if j.reagent1 %} {{ j.reagent1 }} {% endif %}
-                {% if j.reagent2 %} + {{ j.reagent2 }} {% endif %}
-                {% if j.reagent3 %} + {{ j.reagent3 }} {% endif %}
-                =
-                {% if j.product1 %} {{ j.product1 }} {% endif %}
-                {% if j.product2 %} + {{ j.product2 }} {% endif %}
-                {% if j.product3 %} + {{ j.product3 }} {% endif %}
-                {% if j.product4 %} +{{ j.product4 }} {% endif %}
-            </a>
-        </p>
-    {% endfor %}
+    {% endif %}
 </div>
 {% endautoescape %}
 {% endblock %}
