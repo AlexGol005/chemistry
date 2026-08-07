@@ -1,7 +1,12 @@
 from django import forms
 from django.contrib import admin
 from django.contrib import messages
-from .models import *
+from .models import (
+    Atomlaw, AtomlawImage, AtomlawVideo, AtomlawPresentation,
+    Inorganiclaw, InorganiclawImage, InorganiclawVideo, InorganiclawPresentation,
+    Organiclaw, OrganiclawImage, OrganiclawVideo, OrganiclawPresentation
+)
+
 
 from import_export.admin import ImportExportActionModelAdmin
 from import_export import resources
