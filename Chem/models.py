@@ -129,6 +129,10 @@ class Organiclaw(models.Model):
         verbose_name_plural = 'Законы органической химии'
 
 
+# =====================================================================
+# НОВЫЕ СВЯЗАННЫЕ СТРУКТУРЫ ДЛЯ БЕСКОНЕЧНОГО ДОБАВЛЕНИЯ КОНТЕНТА
+# =====================================================================
+
 # Варианты выбора уровня сложности
 LEVEL_CHOICES = [
     ('oge', 'ОГЭ'),
@@ -139,36 +143,97 @@ LEVEL_CHOICES = [
 class AtomlawImage(models.Model):
     atomlaw = models.ForeignKey(Atomlaw, on_delete=models.CASCADE, related_name='extra_images')
     image = models.ImageField('Дополнительная иллюстрация', upload_to='user_images')
-    # По умолчанию для общей химии ставим ОГЭ
     level = models.CharField('Уровень', max_length=10, choices=LEVEL_CHOICES, default='oge')
 
     class Meta:
         verbose_name = 'Дополнительная иллюстрация (Общая)'
         verbose_name_plural = 'Дополнительные иллюстрации (Общая)'
 
+class AtomlawVideo(models.Model):
+    atomlaw = models.ForeignKey(Atomlaw, on_delete=models.CASCADE, related_name='extra_videos')
+    video_url = models.CharField('Ссылка на видео', max_length=10000)
+
+    class Meta:
+        verbose_name = 'Дополнительное видео (Общая)'
+        verbose_name_plural = 'Дополнительные видео (Общая)'
+
+class AtomlawPresentation(models.Model):
+    atomlaw = models.ForeignKey(Atomlaw, on_delete=models.CASCADE, related_name='extra_presentations')
+    file = models.FileField('Файл презентации', upload_to='presentations/')
+    title = models.CharField('Название презентации', max_length=255, blank=True, null=True)
+
+    @property
+    def file_extension(self):
+        return os.path.splitext(self.file.name).lower() if self.file else ''
+
+    class Meta:
+        verbose_name = 'Дополнительная презентация (Общая)'
+        verbose_name_plural = 'Дополнительные презентации (Общая)'
+
 
 # --- СВЯЗАННЫЕ МОДЕЛИ ДЛЯ НЕОРГАНИЧЕСКОЙ ХИМИИ (Inorganiclaw) ---
 class InorganiclawImage(models.Model):
     law = models.ForeignKey(Inorganiclaw, on_delete=models.CASCADE, related_name='extra_images')
-    image = models.ImageField('Дополнительная иллюстрация', upload_to='user_images')
-    # По умолчанию для неорганики ставим ОГЭ
+    image = models.ImageField('Дополнительная  иллюстрация', upload_to='user_images')
     level = models.CharField('Уровень', max_length=10, choices=LEVEL_CHOICES, default='oge')
 
     class Meta:
         verbose_name = 'Доп. иллюстрация (Неорганика)'
         verbose_name_plural = 'Доп. иллюстрации (Неорганика)'
 
+class InorganiclawVideo(models.Model):
+    law = models.ForeignKey(Inorganiclaw, on_delete=models.CASCADE, related_name='extra_videos')
+    video_url = models.CharField('Ссылка на видео', max_length=10000)
+
+    class Meta:
+        verbose_name = 'Доп. видео (Неорганика)'
+        verbose_name_plural = 'Доп. видео (Неорганика)'
+
+class InorganiclawPresentation(models.Model):
+    law = models.ForeignKey(Inorganiclaw, on_delete=models.CASCADE, related_name='extra_presentations')
+    file = models.FileField('Файл презентации', upload_to='presentations/')
+    title = models.CharField('Название презентации', max_length=255, blank=True, null=True)
+
+    @property
+    def file_extension(self):
+        return os.path.splitext(self.file.name).lower() if self.file else ''
+
+    class Meta:
+        verbose_name = 'Доп. презентация (Неорганика)'
+        verbose_name_plural = 'Доп. презентации (Неорганика)'
+
 
 # --- СВЯЗАННЫЕ МОДЕЛИ ДЛЯ ОРГАНИЧЕСКОЙ ХИМИИ (Organiclaw) ---
 class OrganiclawImage(models.Model):
     law = models.ForeignKey(Organiclaw, on_delete=models.CASCADE, related_name='extra_images')
     image = models.ImageField('Дополнительная иллюстрация', upload_to='user_images')
-    # По умолчанию для всей органики оставляем ЕГЭ
     level = models.CharField('Уровень', max_length=10, choices=LEVEL_CHOICES, default='ege')
 
     class Meta:
         verbose_name = 'Доп. иллюстрация (Органика)'
         verbose_name_plural = 'Доп. иллюстрации (Органика)'
+
+class OrganiclawVideo(models.Model):
+    law = models.ForeignKey(Organiclaw, on_delete=models.CASCADE, related_name='extra_videos')
+    video_url = models.CharField('Ссылка на видео', max_length=10000)
+
+    class Meta:
+        verbose_name = 'Доп. видео (Органика)'
+        verbose_name_plural = 'Доп. видео (Органика)'
+
+class OrganiclawPresentation(models.Model):
+    law = models.ForeignKey(Organiclaw, on_delete=models.CASCADE, related_name='extra_presentations')
+    file = models.FileField('Файл презентации', upload_to='presentations/')
+    title = models.CharField('Название презентации', max_length=255, blank=True, null=True)
+
+    @property
+    def file_extension(self):
+        return os.path.splitext(self.file.name).lower() if self.file else ''
+
+    class Meta:
+        verbose_name = 'Доп. презентация (Органика)'
+        verbose_name_plural = 'Доп. презентации (Органика)'
+
 
 
 
