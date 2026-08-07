@@ -4,23 +4,31 @@
 {% block keywords %}<meta name="keywords" content="{{ obj.keywords }}">{% endblock %}
 {% block description %}<meta name="description" content="{{ obj.description }}">{% endblock %}
 
-{% block aside %}
-    <div class="col-12 col-md-4 order-2 order-md-2 mt-4">
-        <center><h4>Условности</h4></center><br>
-        Э = любой химический элемент | Met = любой металл | Amet = любой неметалл <br>
-        Amf = любой амфотерный элемент | Cat = любой катион | A = любой кислотный остаток <br>
-        Щ = любой щелочной металл I группы | Hal2 = галоген (Cl, Br, I) <br>
-        Oxi = окислитель | Red-Oxi = восстановленный окислитель <br>
-        Red = восстановитель | Oxi-Red = окисленный восстановитель <br><br>
-        <center><a href="{% url 'tables' %}" class="btn btn-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> Таблицы </a></center>
-    </div>
-{% endblock %}
+{# Боковой блок полностью удален #}
+{% block aside %}{% endblock %}
 
 {% block content %}
 {% autoescape off %}
-<div class="col-12 col-md-8 order-1 order-md-1">
+<div class="col-12"> {# Контент теперь занимает максимальные 12 колонок вместо 8 #}
     <center><h3><a href="/chem/inorganiclaw"> Законы неорганической химии </a></h3></center>
     <center><h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2></center>
+
+    {# УСЛОВНОСТИ: Перенесены наверх и спрятаны под удобную кнопку, чтобы не занимать место #}
+    <center>
+        <button class="btn btn-sm btn-outline-secondary mt-2 mb-3" type="button" data-toggle="collapse" data-target="#collapseUslovnosti" aria-expanded="false" aria-controls="collapseUslovnosti">
+            📋 Показать / скрыть условности (Э, Met, Amet...)
+        </button>
+    </center>
+    <div class="collapse" id="collapseUslovnosti">
+        <div class="card card-body text-center bg-light mb-3" style="font-size: 12pt; line-height: 1.8;">
+            Э = любой химический элемент | Met = любой металл | Amet = любой неметалл <br>
+            Amf = любой амфотерный элемент | Cat = любой катион | A = любой кислотный остаток <br>
+            Щ = любой щелочной металл I группы | Hal2 = галоген (Cl, Br, I) <br>
+            Oxi = окислитель | Red-Oxi = восстановленный окислитель <br>
+            Red = восстановитель | Oxi-Red = окисленный восстановитель <br>
+            <a href="{% url 'tables' %}" class="btn btn-sm btn-primary mt-2 mx-auto d-block" style="max-width: 150px;" target="_blank" rel="noopener noreferrer"> Таблицы </a>
+        </div>
+    </div>
 
     <div class="table-responsive"><table class="table table-bordered flexy1"><tbody><tr><td class="ind1">{{ obj.text }}</td></tr></tbody></table></div>
     <div class="table-responsive"><table class="table table-bordered flexy"><tbody><tr><td><h4>Общая формула закона</h4><br>{{ obj.formula }}</td></tr></tbody></table></div>
