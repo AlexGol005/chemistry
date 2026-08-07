@@ -12,16 +12,38 @@
     <center><h3><a href="/chem/inorganiclaw"> Законы неорганической химии </a></h3></center>
     <center><h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2></center>
 
-    {# КРУПНАЯ И ВКУСНАЯ КНОПКА ТРЕНИРОВКИ ПРЯМО ПОД ЗАГОЛОВКОМ #}
+    {# ЭФФЕКТЫ ДЛЯ ЖИВОЙ КНОПКИ #}
+    <style>
+        .alive-btn {
+            background: linear-gradient(45deg, #11998e, #38ef7d); 
+            border: none; 
+            border-radius: 50px; 
+            font-size: 16pt; 
+            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4); 
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            display: inline-block;
+        }
+        /* Анимация при наведении мышки */
+        .alive-btn:hover {
+            transform: translateY(-4px); /* Кнопка плавно приподнимается */
+            box-shadow: 0 8px 25px rgba(56, 239, 125, 0.6); /* Тень становится ярче и больше */
+            filter: brightness(1.05); /* Кнопка становится капельку светлее */
+            text-decoration: none; /* Убираем стандартное подчеркивание ссылки */
+        }
+        /* Эффект при самом клике (нажатии) */
+        .alive-btn:active {
+            transform: translateY(-1px); /* Кнопка слегка опускается обратно */
+            box-shadow: 0 3px 10px rgba(56, 239, 125, 0.4);
+        }
+    </style>
+
+    {# ЖИВАЯ КНОПКА ТРЕНИРОВКИ ПРЯМО ПОД ЗАГОЛОВКОМ #}
     <center>
         <a href="{% url 'inorganiclawtest' obj.pk %}" 
-           class="btn btn-lg mt-3 mb-4 px-5 text-white font-weight-bold" 
-           style="background: linear-gradient(45deg, #11998e, #38ef7d); 
-                  border: none; 
-                  border-radius: 50px; 
-                  font-size: 16pt; 
-                  box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4); 
-                  transition: all 0.3s ease;">
+           target="_blank" 
+           rel="noopener noreferrer"
+           class="btn btn-lg mt-3 mb-4 px-5 text-white font-weight-bold alive-btn">
             Перейти к тренировке ➔
         </a>
     </center>
