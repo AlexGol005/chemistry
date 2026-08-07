@@ -940,11 +940,11 @@ class LinkView(ListView):
 #конец  справочные страницы:таблицы, ссылки, заглавная страница
 
 
-#законы химии общие, органика, ика: главная, поиск, персональная и еще тест по общей химии, и списка веществ орг,неорг с поиском
+#законы химии общие, органика, неорганика: главная, поиск, персональная и еще тест по общей химии, и списка веществ орг,неорг с поиском
 
 
 class InorganiclawView(ListView):
-    """ Выводит список всех всех законов ической химии """
+    """ Выводит список всех всех законов неорганической химии """
     model = Inorganiclaw
     template_name = 'Chem/inorganiclaw.html'
     context_object_name = 'objects'
@@ -958,25 +958,27 @@ class InorganiclawView(ListView):
 
 
 class InorganiclawStrView(TemplateView):
-    """ выводит отдельный закон ической химии """
+    """ выводит отдельный закон неорганической химии """
     model = Inorganiclaw
     template_name = 'Chem/inorganiclawstr.html'
 
-
-    def get_object(self, queryset=None):
-        return Inorganiclaw.objects.get(pk=self.kwargs.get("pk"))
-
     def get_context_data(self, **kwargs):
         context = super(InorganiclawStrView, self).get_context_data(**kwargs)
-        obj = Inorganiclaw.objects.get(pk=self.kwargs.get("pk"))
+        
+        # Используем get_object_or_404, чтобы вместо ошибки сервера отдавать красивую страницу 404
+        # Также добавляем select_related/prefetch_related для реакций и связанных материалов, если нужно
+        obj = get_object_or_404(Inorganiclaw, pk=self.kwargs.get("pk"))
+        
+        # Получаем реакции, связанные с этим законом
         qw = InorganicReaction.objects.filter(number=obj)
+        
         context['obj'] = obj
         context['qw'] = qw
         return context
 
 
 class ChemSearchResultView(TemplateView):
-    """ Представление, которое выводит результаты поиска по законам химии """
+    """ Представление, которое выводит результаты поиска по законам неорганической химии """
 
     template_name = 'Chem/inorganiclaw.html'
 
@@ -1034,14 +1036,13 @@ class AtomlawStrView(TemplateView):
     model = Atomlaw
     template_name = 'Chem/atomlawstr.html'
 
-
-    def get_object(self, queryset=None):
-        return Atomlaw.objects.get(pk=self.kwargs.get("pk"))
-
     def get_context_data(self, **kwargs):
         context = super(AtomlawStrView, self).get_context_data(**kwargs)
+        
+        # Загружаем объект закона общей химии
         obj = Atomlaw.objects.get(pk=self.kwargs.get("pk"))
         qw = AtomTest.objects.filter(number=obj)
+        
         context['obj'] = obj
         context['qw'] = qw
         return context
@@ -1101,18 +1102,7 @@ class AtomTestAnswerView(TemplateView):
 
 
 
-# class CompaundView(ListView):
-#     """ Выводит список неорганические вещества всех всех веществ """
-#     model = NamesCompaunds
-#     template_name = 'Chem/compaunds.html'
-#     context_object_name = 'objects'
-#     ordering = ['pk']
-#     paginate_by = 6
 
-#     def get_context_data(self, **kwargs):
-#         context = super(CompaundView, self).get_context_data(**kwargs)
-#         context['form'] = SearchForm()
-#         return context
 
 class CompaundView(ListView):
     """ Выводит список неорганических веществ без инструкции """
@@ -1268,17 +1258,17 @@ class OrganiclawStrView(TemplateView):
     model = Organiclaw
     template_name = 'Chem/organiclawstr.html'
 
-
-    def get_object(self, queryset=None):
-        return Organiclaw.objects.get(pk=self.kwargs.get("pk"))
-
     def get_context_data(self, **kwargs):
         context = super(OrganiclawStrView, self).get_context_data(**kwargs)
+        
+        # Загружаем объект закона органической химии
         obj = Organiclaw.objects.get(pk=self.kwargs.get("pk"))
         qw = OrganicReaction.objects.filter(number=obj)
+        
         context['obj'] = obj
         context['qw'] = qw
         return context
+
 
 
 class OrganicChemSearchResultView(TemplateView):
