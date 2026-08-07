@@ -77,14 +77,14 @@
         </table>
     {% endif %}
 
-    {# ВСТРОЕННЫЙ PDF ПЛЕЕР (Основная презентация) #}
+    {# ВСТРОЕННЫЙ PDF ПЛЕЕР #}
     {% if obj.presentation and obj.file_extension == '.pdf' %}
         <div style="margin-top: 20px;">
             <embed src="{{ obj.presentation.url }}#toolbar=0&navpanes=0" type="application/pdf" width="100%" height="600px" />
         </div>
     {% endif %}
 
-    {# ВИДЕОРОЛИКИ (Основной + Бесконечные новые) #}
+    {# ВИДЕОРОЛИКИ #}
     {% if obj.video or obj.extra_videos.all %}
         <br>
         <br>
@@ -95,7 +95,6 @@
                 </a>
             {% endif %}
 
-            {# Список бесконечных новых видео кнопок #}
             {% for vid in obj.extra_videos.all %}
                 <a href="{{ vid.video_url }}" class="btn btn-outline-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer">
                     Видео {{ forloop.counter }}
@@ -104,7 +103,7 @@
         </center>
     {% endif %}
 
-    {# ССЫЛКИ НА ПРЕЗЕНТАЦИИ (Основная + Бесконечные новые) #}
+    {# ССЫЛКИ НА ПРЕЗЕНТАЦИИ #}
     {% if obj.presentation or obj.extra_presentations.all %}
         <center>
             <div style="margin-top: 20px;">
@@ -114,7 +113,6 @@
                     </a>
                 {% endif %}
 
-                {# Список бесконечных новых презентаций #}
                 {% for pres in obj.extra_presentations.all %}
                     <a href="{{ pres.file.url }}" target="_blank" class="btn btn-outline-primary m-1">
                         👁 {% if pres.title %}{{ pres.title }}{% else %}Дополнительная презентация {{ forloop.counter }}{% endif %}
@@ -168,11 +166,14 @@
     </center>
     <br>
 
-    {# ИЛЛЮСТРАЦИИ (Вывод бесконечных дополнительных картинок органики) #}
+    {# ИЛЛЮСТРАЦИИ С УКАЗАНИЕМ УРОВНЯ ОГЭ / ЕГЭ #}
     {% for item in obj.extra_images.all %}
         <center>
             <div class="media text-muted flex-column align-items-center pt-3">
-                <img class="bd-placeholder-img mr-2 rounded" width="70%" height="70%" src="{{ item.image.url }}">
+                <span class="badge badge-info mb-2" style="font-size: 14pt; padding: 8px 16px;">
+                    Уровень: {{ item.get_level_display }}
+                </span>
+                <img class="bd-placeholder-img mr-2 rounded img-fluid" style="max-width:100%; height:auto;" src="{{ item.image.url }}">
             </div>
         </center>
         <br>
@@ -180,7 +181,7 @@
 
     <br>
     <br>
-    <h4>Примеры (реакции приведены без коэффициентов)</h4> {# ИСПРАВЛЕНО: было </h3> #}
+    <h4>Примеры (реакции приведены без коэффициентов)</h4>
 
     {% for j in qw %}
         <br>
