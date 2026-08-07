@@ -163,43 +163,58 @@ class OrganicNamesAdmin(admin.ModelAdmin):
         messages.success(request, msg)
 
         
-# знх классы для отображения в админке
+# === СТРУКТУРЫ ДЛЯ БЕСКОНЕЧНОГО ДОБАВЛЕНИЯ КОНТЕНТА К ЗАКОНАМ НЕОРГАНИЧЕСКОЙ ХИМИИ ===
 
-# класс для загрузки/выгрузки знх
+class InorganiclawImageInline(admin.TabularInline):
+    model = InorganiclawImage
+    extra = 1
+
+class InorganiclawVideoInline(admin.TabularInline):
+    model = InorganiclawVideo
+    extra = 1
+
+class InorganiclawPresentationInline(admin.TabularInline):
+    model = InorganiclawPresentation
+    extra = 1
+
+
+# === ОБНОВЛЕННЫЕ ИСХОДНЫЕ КЛАССЫ ЗАКОНОВ НЕОРГАНИЧЕСКОЙ ХИМИИ ===
+
+# Класс для загрузки/выгрузки знх
 class InorganiclawResource(resources.ModelResource):
     class Meta:
         model = Inorganiclaw
-        
 
-
-# класс добавления стилей к окну знх
+# Класс добавления стилей к окну знх
 class InorganiclawAdminForm(forms.ModelForm):
     title = forms.CharField(label="Заголовок", widget=CKEditorUploadingWidget())
     text = forms.CharField(label="Описание закона", widget=CKEditorUploadingWidget())
     formula = forms.CharField(label="Общая формула закона", widget=CKEditorUploadingWidget())
     examples = forms.CharField(label="Примеры", widget=CKEditorUploadingWidget())
     exceptions = forms.CharField(label="Исключения", widget=CKEditorUploadingWidget(), required=False)
-
-
+    
     class Meta:
         model = Inorganiclaw
         fields = '__all__'
-        
-# класс подробностей знх   
+
+# Класс подробностей знх
 class InorganiclawAdmin(ImportExportActionModelAdmin):
     resource_class = InorganiclawResource
-    list_display = ('number', 'title' , 'display_count', 'pk')
+    list_display = ('number', 'title', 'display_count', 'pk')
     ordering = ('number',)
     search_fields = ['number', 'title', 'text', 'keywords']
     form = InorganiclawAdminForm
     save_as = True
+    
+    # Подключаем бесконечные блоки для неорганической химии в самый низ страницы
+    inlines = [InorganiclawImageInline, InorganiclawVideoInline, InorganiclawPresentationInline]
 
     def display_count(self, obj):
         return obj.inorganicreaction_set.count()
-    
-    display_count.short_description = "реакций"
         
-# фиксация формы в админке знх
+    display_count.short_description = "реакций"
+
+# Фиксация формы в админке знх
 admin.site.register(Inorganiclaw, InorganiclawAdmin)
 
 
@@ -317,35 +332,52 @@ class NamesCompaundsAdmin(ImportExportActionModelAdmin):
 admin.site.register(NamesCompaunds, NamesCompaundsAdmin)
 
 
-# законы строения атомов классы для отображения в админке
+# === СТРУКТУРЫ ДЛЯ БЕСКОНЕЧНОГО ДОБАВЛЕНИЯ КОНТЕНТА К ЗАКОНАМ ОБЩЕЙ ХИМИИ ===
 
-# класс для загрузки/выгрузки законы строения атомов
+class AtomlawImageInline(admin.TabularInline):
+    model = AtomlawImage
+    extra = 1
+
+class AtomlawVideoInline(admin.TabularInline):
+    model = AtomlawVideo
+    extra = 1
+
+class AtomlawPresentationInline(admin.TabularInline):
+    model = AtomlawPresentation
+    extra = 1
+
+
+# === ОБНОВЛЕННЫЕ ИСХОДНЫЕ КЛАССЫ ЗАКОНОВ ОБЩЕЙ ХИМИИ ===
+
+# класс для загрузки/выгрузки законы общей химии
 class AtomlawResource(resources.ModelResource):
     class Meta:
         model = Atomlaw
         skip_unchanged = True
-        report_skipped = True 
+        report_skipped = True
 
-
-# класс добавления стилей к окну законы строения атомов
+# класс добавления стилей к окну законы общей химии
 class AtomlawAdminForm(forms.ModelForm):
     text = forms.CharField(label="Описание закона", widget=CKEditorUploadingWidget())
-
+    
     class Meta:
         model = Atomlaw
         fields = '__all__'
-        
-# класс подробностей законы строения атомов   
+
+# класс подробностей законы общей химии
 class AtomlawAdmin(ImportExportActionModelAdmin):
     resource_class = AtomlawResource
     form = AtomlawAdminForm
-    search_fields = ['pk', 'title', 'text'] 
+    search_fields = ['pk', 'title', 'text']
     save_as = True
     list_display = ('pk', 'title')
     
-        
-# фиксация формы в админке законы строения атомов
+    # Подключаем бесконечные блоки для общей химии в самый низ страницы
+    inlines = [AtomlawImageInline, AtomlawVideoInline, AtomlawPresentationInline]
+
+# фиксация формы в админке законы общей химии
 admin.site.register(Atomlaw, AtomlawAdmin)
+
 
 # тесты атомов классы для отображения в админке
 
@@ -387,53 +419,44 @@ admin.site.register(Link)
 
 
 
-from django.contrib import admin
-from django import forms
-from .models import OrganicNames
-from .widgets import JSMEWidget
-
-# # 1. Создаем форму, которая подменит стандартное поле на редактор JSME
-# class OrganicNamesAdminForm(forms.ModelForm):
-#     class Meta:
-#         model = OrganicNames
-#         fields = '__all__'
-#         widgets = {
-#             # Указываем, что для поля 'molecule' используем наш JSMEWidget
-#             'molecule': JSMEWidget(), 
-#         }
-
-# # 2. Регистрируем модель в админке с использованием этой формы
-# @admin.register(OrganicNames)
-# class OrganicNamesAdmin(admin.ModelAdmin):
-#     form = OrganicNamesAdminForm
-#     # Отображаем имя и SMILES-строку в списке всех записей
-#     list_display = ('name1', 'molecule')
 
 
 
 
-# базовая органика
-# зох классы для отображения в админке
 
-# класс для загрузки/выгрузки зох
+# === СТРУКТУРЫ ДЛЯ БЕСКОНЕЧНОГО ДОБАВЛЕНИЯ КОНТЕНТА К ЗАКОНАМ ОРГАНИЧЕСКОЙ ХИМИИ ===
+
+class OrganiclawImageInline(admin.TabularInline):
+    model = OrganiclawImage
+    extra = 1
+
+class OrganiclawVideoInline(admin.TabularInline):
+    model = OrganiclawVideo
+    extra = 1
+
+class OrganiclawPresentationInline(admin.TabularInline):
+    model = OrganiclawPresentation
+    extra = 1
+
+
+# === ОБНОВЛЕННЫЕ ИСХОДНЫЕ КЛАССЫ ЗАКОНОВ ОРГАНИЧЕСКОЙ ХИМИИ ===
+
+# класс для загрузки/выгрузки законы органической химии
 class OrganiclawResource(resources.ModelResource):
     class Meta:
         model = Organiclaw
-        
 
-
-# класс добавления стилей к окну # класс для загрузки/выгрузки зох
+# класс добавления стилей к окну законы органической химии
 class OrganiclawAdminForm(forms.ModelForm):
     title = forms.CharField(label="Заголовок", widget=CKEditorUploadingWidget())
     text = forms.CharField(label="Описание закона", widget=CKEditorUploadingWidget())
     exceptions = forms.CharField(label="Исключения", widget=CKEditorUploadingWidget(), required=False)
-
-
+    
     class Meta:
         model = Organiclaw
         fields = '__all__'
-        
-# класс подробностей # класс для загрузки/выгрузки зох   
+
+# класс подробностей законы органической химии
 class OrganiclawAdmin(ImportExportActionModelAdmin):
     resource_class = OrganiclawResource
     list_display = ('number', 'title' , 'display_count', 'pk')
@@ -441,14 +464,18 @@ class OrganiclawAdmin(ImportExportActionModelAdmin):
     search_fields = ['number', 'title', 'text', 'keywords']
     form = OrganiclawAdminForm
     save_as = True
+    
+    # Подключаем бесконечные блоки для органической химии в самый низ страницы
+    inlines = [OrganiclawImageInline, OrganiclawVideoInline, OrganiclawPresentationInline]
 
     def display_count(self, obj):
         return obj.organicreaction_set.count()
-    
-    display_count.short_description = "реакций"
         
-# фиксация формы в админке # класс для загрузки/выгрузки зох
+    display_count.short_description = "реакций"
+
+# фиксация формы в админке законы органической химии
 admin.site.register(Organiclaw, OrganiclawAdmin)
+
 
 
 
