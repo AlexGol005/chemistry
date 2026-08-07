@@ -1,197 +1,230 @@
 {% extends 'main/superbase.html' %}
 
+{# название страницы #}
+{# стандартная #}
+{% block title %} {{ obj.title }} {% endblock %}
+{# конец названия страницы #}
 
-{#название страницы#}
-{#стандартная#}
-{% block title %}
-{{obj.title}} 
-{% endblock %}
-{#конец названия страницы#}
-
-
-    {% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
-    {% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
-    {% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
-
+{% block metaname %}<meta name="description" content="{{ obj.metatitle }}" >{% endblock %}
+{% block keywords %}<meta name="keywords" content="{{ obj.keywords }}">{% endblock %}
+{% block description %}<meta name="description" content="{{ obj.description }}">{% endblock %}
 
 {% block content %}
 {% autoescape off %}
-
 <div class="col-8">
-         
-   <center>  <h3><a href="/chem/atomlaws"> Законы общей химии </a></h3>     </center>
-{#основная таблица#}
-
-
-
- 
- 
-            <center><h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2></center>
-        
-            <table class="table table-bordered flexy1">
-            <tbody>
-            <tr>
-            <td class="ind1">
-                {{ obj.text }}
-            </td>
-            </tr>
-            </tbody>
-            </table>
-    <br>
-{% if obj.presentation %}
-<center>    <div style="margin-top: 20px;">
-        <a href="{{ obj.presentation.url }}" target="_blank" class="btn btn-primary">
-            👁 Посмотреть презентацию в новом окне
-        </a>
-    </div>
+    <center>
+        <h3><a href="/chem/atomlaws"> Законы общей химии </a></h3>
     </center>
-{% endif %}
 
-     {% if obj.formula %}
-            <table class="table table-bordered flexy">
-            <tbody>
-            <tr>
-            <td>
-                <h4>Общая формула закона</h4>
-                <br>
-                {{ obj.formula }}
-            </td>
-            </tr>
-            </tbody>
-                </table>
-    {% endif %}    
+    {# основная таблица #}
+    <center>
+        <h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2>
+    </center>
 
-    
-   <center>  <div class="media text-muted flex-column align-items-center pt-3">
-       {% if obj.img1 %} <img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img1.url }}">{% endif %}         <br>
-</div></center> 
-        <br>
-                    <center>    <div class="media text-muted flex-column align-items-center pt-3">
-       {% if obj.img2 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img2.url }}">{% endif %}
-        <br>
-                </div></center> 
+    <table class="table table-bordered flexy1">
+        <tbody>
+            <tr>
+                <td class="ind1">
+                    {{ obj.text }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
 
-     <br>
-    {% if obj.examples %}
-            <table class="table table-bordered flexy1">
-            <tbody>
-            <tr>
-            <td>
-                <h4>Примеры</h4>
-                <br>
-                {{ obj.examples }}
-            </td>
-            </tr>
-            </tbody> 
-                </table>
-{% endif %}
-    
-     {% if obj.exceptions %}
-                
-            <table class="table table-bordered flexy1">
-            <tbody>
-            <tr>
-            <td class="ind1">
-                <h4>Исключения</h4>
-                <br>
-                {{ obj.exceptions }}
-            </td>
-            </tr>
-            </tbody>
-                </table>
-           {% endif %}
-
-      
-                {% if obj.trening %}
-            <table class="table table-bordered flexy1">
-            <tbody>
-            <tr>
-            <td>
-                <h4>Ссылки</h4>
-                <br>
-                                <a href="{{ obj.trening}}"  target="blank" >
-                ссылка
-                </a>
-            </td>
-            </tr>
-            </tbody>
-                </table>
+    {# ПРЕЗЕНТАЦИИ (Основная + Бесконечные новые) #}
+    {% if obj.presentation or obj.extra_presentations.all %}
+        <center>
+            <div style="margin-top: 20px;">
+                {% if obj.presentation %}
+                    <a href="{{ obj.presentation.url }}" target="_blank" class="btn btn-primary m-1">
+                        👁 Посмотреть презентацию в новом окне
+                    </a>
                 {% endif %}
 
+                {# Цикл по дополнительным бесконечным презентациям #}
+                {% for pres in obj.extra_presentations.all %}
+                    <a href="{{ pres.file.url }}" target="_blank" class="btn btn-outline-primary m-1">
+                        👁 {% if pres.title %}{{ pres.title }}{% else %}Дополнительная презентация {{ forloop.counter }}{% endif %}
+                    </a>
+                {% endfor %}
+            </div>
+        </center>
+    {% endif %}
 
- {% if obj.video %}
-  <br>  <br>
-       <center>   <a href="{{ obj.video }}"  class="btn btn-primary  mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> 
-       Посмотрите интересное и наглядное видео с химическими экспериментами!
-   </a></center> 
-   {% endif %} 
+    {% if obj.formula %}
+        <table class="table table-bordered flexy">
+            <tbody>
+                <tr>
+                    <td>
+                        <h4>Общая формула закона</h4>
+                        <br>
+                        {{ obj.formula }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
 
-    
-  
-       <center>   <a href="{% url 'atomlawtest' obj.pk %}"  class="btn btn-primary  mt-2 mr-2 ml-2"> 
-       Перейти к тренировке
-   </a></center> 
+    <center>
+        <div class="media text-muted flex-column align-items-center pt-3">
+            {% if obj.img1 %}
+                <img class="bd-placeholder-img mr-2 rounded" width="70%" height="70%" src="{{ obj.img1.url }}">
+            {% endif %}
+            <br>
+        </div>
+    </center>
+    <br>
 
-    
-  <br>  <br>
+    <center>
+        <div class="media text-muted flex-column align-items-center pt-3">
+            {% if obj.img2 %}
+                <img class="bd-placeholder-img mr-2 rounded" width="70%" height="70%" src="{{ obj.img2.url }}">
+            {% endif %}
+            <br>
+        </div>
+    </center>
+    <br>
 
+    {% if obj.examples %}
+        <table class="table table-bordered flexy1">
+            <tbody>
+                <tr>
+                    <td>
+                        <h4>Примеры</h4>
+                        <br>
+                        {{ obj.examples }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
 
-               <center>  <div class="media text-muted flex-column align-items-center pt-3">
-       {% if obj.img3 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img3.url }}">{% endif %}
+    {% if obj.exceptions %}
+        <table class="table table-bordered flexy1">
+            <tbody>
+                <tr>
+                    <td class="ind1">
+                        <h4>Исключения</h4>
+                        <br>
+                        {{ obj.exceptions }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
 
-</div></center> 
-    <br>  
+    {% if obj.trening %}
+        <table class="table table-bordered flexy1">
+            <tbody>
+                <tr>
+                    <td>
+                        <h4>Ссылки</h4>
+                        <br>
+                        <a href="{{ obj.trening }}" target="blank"> ссылка </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
 
+    {# ВИДЕОРОЛИКИ (Основной + Бесконечные новые) #}
+    {% if obj.video or obj.extra_videos.all %}
+        <br>
+        <br>
+        <center>
+            {% if obj.video %}
+                <a href="{{ obj.video }}" class="btn btn-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer">
+                    Посмотрите интересное и наглядное видео с химическими экспериментами!
+                </a>
+            {% endif %}
 
-               <center>  <div class="media text-muted flex-column align-items-center pt-3">
-       {% if obj.img4 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img4.url }}">{% endif %}
+            {# Цикл по дополнительным бесконечным ссылкам на видео #}
+            {% for vid in obj.extra_videos.all %}
+                <a href="{{ vid.video_url }}" class="btn btn-outline-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer">
+                    Видео {{ forloop.counter }}
+                </a>
+            {% endfor %}
+        </center>
+    {% endif %}
 
-</div></center> 
-    <br> 
-               <center>  <div class="media text-muted flex-column align-items-center pt-3">
-       {% if obj.img5 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img5.url }}">{% endif %}
+    <center>
+        <a href="{% url 'atomlawtest' obj.pk %}" class="btn btn-primary mt-2 mr-2 ml-2"> Перейти к тренировке </a>
+    </center>
+    <br>
+    <br>
 
-</div></center> 
-    <br> 
-                   <center>  <div class="media text-muted flex-column align-items-center pt-3">
-       {% if obj.img6 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img6.url }}">{% endif %}
+    <center>
+        <div class="media text-muted flex-column align-items-center pt-3">
+            {% if obj.img3 %}
+                <img class="bd-placeholder-img mr-2 rounded" width="70%" height="70%" src="{{ obj.img3.url }}">
+            {% endif %}
+        </div>
+    </center>
+    <br>
 
-</div></center> 
-    <br> 
-    
-<center> <h4>Подробности</h3></center>
-{% for j in qw %}
- <br>  <br>
-   
-<center>
-             <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
-<a href="{% url 'atomlawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
-           {% if j.text %}       
-       {{j.text}} 
-         {% endif %}
+    <center>
+        <div class="media text-muted flex-column align-items-center pt-3">
+            {% if obj.img4 %}
+                <img class="bd-placeholder-img mr-2 rounded" width="70%" height="70%" src="{{ obj.img4.url }}">
+            {% endif %}
+        </div>
+    </center>
+    <br>
 
+    <center>
+        <div class="media text-muted flex-column align-items-center pt-3">
+            {% if obj.img5 %}
+                <img class="bd-placeholder-img mr-2 rounded" width="70%" height="70%" src="{{ obj.img5.url }}">
+            {% endif %}
+        </div>
+    </center>
+    <br>
 
-</a>
-                 </center>
-</p>
+    <center>
+        <div class="media text-muted flex-column align-items-center pt-3">
+            {% if obj.img6 %}
+                <img class="bd-placeholder-img mr-2 rounded" width="70%" height="70%" src="{{ obj.img6.url }}">
+            {% endif %}
+        </div>
+    </center>
+    <br>
 
+    {# ИЛЛЮСТРАЦИИ (Вывод бесконечных дополнительных картинок) #}
+    {% for item in obj.extra_images.all %}
+        <center>
+            <div class="media text-muted flex-column align-items-center pt-3">
+                <img class="bd-placeholder-img mr-2 rounded" width="70%" height="70%" src="{{ item.image.url }}">
+            </div>
+        </center>
+        <br>
+    {% endfor %}
 
-  
- {% endfor %}
+    <center>
+        <h4>Подробности</h4>
+    </center>
 
-
- </div>
+    {% for j in qw %}
+        <br>
+        <br>
+        <center>
+            <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
+                <a href="{% url 'atomlawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
+                    {% if j.text %}
+                        {{ j.text }}
+                    {% endif %}
+                </a>
+            </p>
+        </center>
+    {% endfor %}
+</div>
 
 <div class="col-4">
-
-
-  <br>  <br>
-       <center>   <a href="{% url 'tables' %}"  class="btn btn-primary  mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> 
-       Таблицы
-   </a></center> 
-
-
-
-    </div>
+    <br>
+    <br>
+    <center>
+        <a href="{% url 'tables' %}" class="btn btn-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer"> Таблицы </a>
+    </center>
+</div>
 {% endautoescape %}
 {% endblock %}
