@@ -6,7 +6,7 @@ from .models import (
     Inorganiclaw, InorganiclawImage, InorganiclawVideo, InorganiclawPresentation,
     Organiclaw, OrganiclawImage, OrganiclawVideo, OrganiclawPresentation
 )
-
+from .models import *
 
 from import_export.admin import ImportExportActionModelAdmin
 from import_export import resources
