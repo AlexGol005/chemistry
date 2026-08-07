@@ -10,6 +10,226 @@ LEVEL = [
         ('ЕГЭ', 'ЕГЭ'),
     ]
 
+class Atomlaw(models.Model):
+    """ Законы общей химии """
+    date = models.DateField('Дата', auto_now_add=True)
+    metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
+    description = models.TextField('Метаописание страницы', blank=True, null=True)    
+    keywords = models.TextField('Ключевые слова', blank=True, null=True)
+    
+    number = models.IntegerField('Номер закона', blank=True, null=True)
+    title = models.TextField('Заголовок', blank=True, null=True)
+    text = models.TextField('Описание закона', blank=True, null=True)
+    formula = models.TextField('Общая формула закона', blank=True, null=True)
+    examples = models.TextField('Примеры', blank=True, null=True)
+    exceptions = models.TextField('Описание исключений', blank=True, null=True)
+    trening = models.TextField('Тренировка', blank=True, null=True)
+    img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
+                                        
+    img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
+                                      
+    img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
+                                        
+    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
+                                      
+    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
+    presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
+    video = models.CharField('Видео', max_length=10000, blank=True, null=True)
+
+    @property
+    def file_extension(self):
+        return os.path.splitext(self.presentation.name)[1].lower()
+
+    def __str__(self):
+        if self.title:
+            return f'{self.pk} - {self.title}'
+        return f'{self.pk}'
+
+    class Meta:
+        verbose_name = 'Закон общей химии'
+        verbose_name_plural = 'Законы общей химии'
+
+
+
+class Inorganiclaw(models.Model):
+    """ Законы неорганической химии """
+    date = models.DateField('Дата', auto_now_add=True)
+    metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
+    description = models.TextField('Метаописание страницы', blank=True, null=True)    
+    keywords = models.TextField('Ключевые слова', blank=True, null=True)
+    
+    number = models.IntegerField('Номер закона', blank=True, null=True)
+    title = models.TextField('Заголовок', blank=True, null=True)
+    text = models.TextField('Описание закона', blank=True, null=True)
+    formula = models.TextField('Общая формула закона', blank=True, null=True)
+    examples = models.TextField('Примеры', blank=True, null=True)
+    exceptions = models.TextField('Описание исключений', blank=True, null=True)
+    trening = models.TextField('Тренировка', blank=True, null=True)
+    img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
+                                        
+    img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
+                                      
+    img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
+                                        
+    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
+                                      
+    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
+    video = models.CharField('Видео', max_length=10000, blank=True, null=True)
+    presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
+                                        
+
+
+    def __str__(self):
+        count = self.inorganicreaction_set.count()
+        return f'{self.title} - {count} реакций'
+
+
+    class Meta:
+        verbose_name = 'Закон неорганической химии'
+        verbose_name_plural = 'Законы неорганической химии'
+
+
+
+
+class Organiclaw(models.Model):
+    """ Законы органической химии """
+    date = models.DateField('Дата', auto_now_add=True)
+    metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
+    description = models.TextField('Метаописание страницы', blank=True, null=True)    
+    keywords = models.TextField('Ключевые слова', blank=True, null=True)
+    
+    number = models.IntegerField('Номер закона', blank=True, null=True)
+    title = models.TextField('Заголовок', blank=True, null=True)
+    text = models.TextField('Описание закона', blank=True, null=True)
+    trening = models.TextField('Ссылки', blank=True, null=True)
+    img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
+                                        
+    img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
+                                      
+    img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
+                                        
+    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
+                                      
+    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
+    video = models.CharField('Видео', max_length=10000, blank=True, null=True)
+    presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
+                                        
+
+
+    def __str__(self):
+        count = self.organicreaction_set.count()
+        return f'{self.title} - {count} реакций'
+
+
+    class Meta:
+        verbose_name = 'Закон органической химии'
+        verbose_name_plural = 'Законы органической химии'
+
+
+#добавление видео, картинок, презентаций во все эти модели (законы орг неорг и общ)
+# --- СВЯЗАННЫЕ МОДЕЛИ ДЛЯ ОБЩЕЙ ХИМИИ (Atomlaw) ---
+class AtomlawImage(models.Model):
+    atomlaw = models.ForeignKey(Atomlaw, on_delete=models.CASCADE, related_name='extra_images')
+    image = models.ImageField('Дополнительная иллюстрация', upload_to='user_images')
+
+    class Meta:
+        verbose_name = 'Дополнительная  иллюстрация (Общая)'
+        verbose_name_plural = 'Дополнительные иллюстрации (Общая)'
+
+class AtomlawVideo(models.Model):
+    atomlaw = models.ForeignKey(Atomlaw, on_delete=models.CASCADE, related_name='extra_videos')
+    video_url = models.CharField('Ссылка на видео', max_length=10000)
+
+    class Meta:
+        verbose_name = 'Дополнительное видео (Общая)'
+        verbose_name_plural = 'Дополнительные видео (Общая)'
+
+class AtomlawPresentation(models.Model):
+    atomlaw = models.ForeignKey(Atomlaw, on_delete=models.CASCADE, related_name='extra_presentations')
+    file = models.FileField('Файл презентации', upload_to='presentations/')
+    title = models.CharField('Название презентации', max_length=255, blank=True, null=True)
+
+    @property
+    def file_extension(self):
+        return os.path.splitext(self.file.name)[1].lower() if self.file else ''
+
+    class Meta:
+        verbose_name = 'Дополнительная презентация (Общая)'
+        verbose_name_plural = 'Дополнительные презентации (Общая)'
+
+
+# --- СВЯЗАННЫЕ МОДЕЛИ ДЛЯ НЕОРГАНИЧЕСКОЙ ХИМИИ (Inorganiclaw) ---
+class InorganiclawImage(models.Model):
+    law = models.ForeignKey(Inorganiclaw, on_delete=models.CASCADE, related_name='extra_images')
+    image = models.ImageField('Дополнительная иллюстрация', upload_to='user_images')
+
+    class Meta:
+        verbose_name = 'Доп. иллюстрация (Неорганика)'
+        verbose_name_plural = 'Доп. иллюстрации (Неорганика)'
+
+class InorganiclawVideo(models.Model):
+    law = models.ForeignKey(Inorganiclaw, on_delete=models.CASCADE, related_name='extra_videos')
+    video_url = models.CharField('Ссылка на видео', max_length=10000)
+
+    class Meta:
+        verbose_name = 'Доп. видео (Неорганика)'
+        verbose_name_plural = 'Доп. видео (Неорганика)'
+
+class InorganiclawPresentation(models.Model):
+    law = models.ForeignKey(Inorganiclaw, on_delete=models.CASCADE, related_name='extra_presentations')
+    file = models.FileField('Файл презентации', upload_to='presentations/')
+    title = models.CharField('Название презентации', max_length=255, blank=True, null=True)
+
+    @property
+    def file_extension(self):
+        return os.path.splitext(self.file.name)[1].lower() if self.file else ''
+
+    class Meta:
+        verbose_name = 'Доп. презентация (Неорганика)'
+        verbose_name_plural = 'Доп. презентации (Неорганика)'
+
+
+# --- СВЯЗАННЫЕ МОДЕЛИ ДЛЯ ОРГАНИЧЕСКОЙ ХИМИИ (Organiclaw) ---
+class OrganiclawImage(models.Model):
+    law = models.ForeignKey(Organiclaw, on_delete=models.CASCADE, related_name='extra_images')
+    image = models.ImageField('Дополнительная иллюстрация', upload_to='user_images')
+
+    class Meta:
+        verbose_name = 'Доп. иллюстрация (Органика)'
+        verbose_name_plural = 'Доп. иллюстрации (Органика)'
+
+class OrganiclawVideo(models.Model):
+    law = models.ForeignKey(Organiclaw, on_delete=models.CASCADE, related_name='extra_videos')
+    video_url = models.CharField('Ссылка на видео', max_length=10000)
+
+    class Meta:
+        verbose_name = 'Доп. видео (Органика)'
+        verbose_name_plural = 'Доп. видео (Органика)'
+
+class OrganiclawPresentation(models.Model):
+    law = models.ForeignKey(Organiclaw, on_delete=models.CASCADE, related_name='extra_presentations')
+    file = models.FileField('Файл презентации', upload_to='presentations/')
+    title = models.CharField('Название презентации', max_length=255, blank=True, null=True)
+
+    @property
+    def file_extension(self):
+        return os.path.splitext(self.file.name)[1].lower() if self.file else ''
+
+    class Meta:
+        verbose_name = 'Доп. презентация (Органика)'
+        verbose_name_plural = 'Доп. презентации (Органика)'
+
+
+
+
+
+
+
+
+
 # ==============================================================================
 # 1. СПИСОК ВСЕХ ОРГАНИЧЕСКИХ КЛАССОВ (С учетом новых разделений и дополнений)
 # ==============================================================================
@@ -187,40 +407,7 @@ class OrganicNames(models.Model): # Используем стандартный 
         verbose_name_plural = "Органические соединения"
 
 
-class Organiclaw(models.Model):
-    """ Законы органической химии """
-    date = models.DateField('Дата', auto_now_add=True)
-    metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
-    description = models.TextField('Метаописание страницы', blank=True, null=True)    
-    keywords = models.TextField('Ключевые слова', blank=True, null=True)
-    
-    number = models.IntegerField('Номер закона', blank=True, null=True)
-    title = models.TextField('Заголовок', blank=True, null=True)
-    text = models.TextField('Описание закона', blank=True, null=True)
-    trening = models.TextField('Ссылки', blank=True, null=True)
-    img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
-                                        
-    img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
-                                      
-    img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
-    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
-                                        
-    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
-                                      
-    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
-    video = models.CharField('Видео', max_length=10000, blank=True, null=True)
-    presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
-                                        
 
-
-    def __str__(self):
-        count = self.organicreaction_set.count()
-        return f'{self.title} - {count} реакций'
-
-
-    class Meta:
-        verbose_name = 'Закон органической химии'
-        verbose_name_plural = 'Законы органической химии'
 
 
 class OrganicReaction(models.Model):
@@ -287,43 +474,7 @@ class OrganicReaction(models.Model):
 
 
 
-class Inorganiclaw(models.Model):
-    """ Законы неорганической химии """
-    date = models.DateField('Дата', auto_now_add=True)
-    metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
-    description = models.TextField('Метаописание страницы', blank=True, null=True)    
-    keywords = models.TextField('Ключевые слова', blank=True, null=True)
-    
-    number = models.IntegerField('Номер закона', blank=True, null=True)
-    title = models.TextField('Заголовок', blank=True, null=True)
-    text = models.TextField('Описание закона', blank=True, null=True)
-    formula = models.TextField('Общая формула закона', blank=True, null=True)
-    examples = models.TextField('Примеры', blank=True, null=True)
-    exceptions = models.TextField('Описание исключений', blank=True, null=True)
-    trening = models.TextField('Тренировка', blank=True, null=True)
-    img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
-                                        
-    img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
-                                      
-    img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
-    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
-                                        
-    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
-                                      
-    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
-    video = models.CharField('Видео', max_length=10000, blank=True, null=True)
-    presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
-                                        
 
-
-    def __str__(self):
-        count = self.inorganicreaction_set.count()
-        return f'{self.title} - {count} реакций'
-
-
-    class Meta:
-        verbose_name = 'Закон неорганической химии'
-        verbose_name_plural = 'Законы неорганической химии'
 
 
 class InorganicReaction(models.Model):
@@ -423,45 +574,7 @@ class NamesCompaunds(models.Model):
         super().clean()
 
 
-class Atomlaw(models.Model):
-    """ Законы общей химии """
-    date = models.DateField('Дата', auto_now_add=True)
-    metatitle = models.CharField('Метазаголовок страницы', max_length=10000, blank=True, null=True)
-    description = models.TextField('Метаописание страницы', blank=True, null=True)    
-    keywords = models.TextField('Ключевые слова', blank=True, null=True)
-    
-    number = models.IntegerField('Номер закона', blank=True, null=True)
-    title = models.TextField('Заголовок', blank=True, null=True)
-    text = models.TextField('Описание закона', blank=True, null=True)
-    formula = models.TextField('Общая формула закона', blank=True, null=True)
-    examples = models.TextField('Примеры', blank=True, null=True)
-    exceptions = models.TextField('Описание исключений', blank=True, null=True)
-    trening = models.TextField('Тренировка', blank=True, null=True)
-    img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
-                                        
-    img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
-                                      
-    img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
-    img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
-                                        
-    img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
-                                      
-    img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
-    presentation = models.FileField(upload_to='presentations/', verbose_name="Файл презентации", blank=True, null=True)
-    video = models.CharField('Видео', max_length=10000, blank=True, null=True)
 
-    @property
-    def file_extension(self):
-        return os.path.splitext(self.presentation.name)[1].lower()
-
-    def __str__(self):
-        if self.title:
-            return f'{self.pk} - {self.title}'
-        return f'{self.pk}'
-
-    class Meta:
-        verbose_name = 'Закон общей химии'
-        verbose_name_plural = 'Законы общей химии'
 
 
 class AtomTest(models.Model):
