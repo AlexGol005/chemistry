@@ -12,6 +12,7 @@
     <center><h3><a href="/chem/inorganiclaw"> Законы неорганической химии </a></h3></center>
     <center><h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2></center>
 
+    {# УСЛОВНОСТИ: Перенесены наверх под компактную кнопку #}
     <center>
         <button class="btn btn-sm btn-outline-secondary mt-2 mb-3" type="button" data-toggle="collapse" data-target="#collapseUslovnosti" aria-expanded="false" aria-controls="collapseUslovnosti">
             📋 Показать / скрыть условности (Э, Met, Amet...)
@@ -29,9 +30,16 @@
     </div>
 
     <div class="table-responsive"><table class="table table-bordered flexy1"><tbody><tr><td class="ind1">{{ obj.text }}</td></tr></tbody></table></div>
+    
+    {# КНОПКА ТРЕНИРОВКИ: Теперь находится вверху в самом логичном месте #}
+    <br>
+    <center>
+        <a href="{% url 'inorganiclawtest' obj.pk %}" class="btn btn-success btn-lg mt-2 mb-3 px-5"> 📝 Перейти к тренировке </a>
+    </center>
+
     <div class="table-responsive"><table class="table table-bordered flexy"><tbody><tr><td><h4>Общая формула закона</h4><br>{{ obj.formula }}</td></tr></tbody></table></div>
 
-    {# Старые картинки с ограничением по высоте #}
+    {# Старые картинки: теперь идеально влезают по высоте экрана #}
     {% if obj.img1 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img1.url }}"><br></div></center>{% endif %}
     {% if obj.img2 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img2.url }}"><br></div></center>{% endif %}
 
@@ -39,8 +47,10 @@
     {% if obj.exceptions %}<div class="table-responsive"><table class="table table-bordered flexy1"><tbody><tr><td class="ind1"><h4>Исключения</h4><br>{{ obj.exceptions }}</td></tr></tbody></table></div>{% endif %}
     {% if obj.trening %}<div class="table-responsive"><table class="table table-bordered flexy1"><tbody><tr><td><h4>Ссылки</h4><br><a href="{{ obj.trening }}" target="blank"> ссылка </a></td></tr></tbody></table></div>{% endif %}
 
+    {# ВСТРОЕННЫЙ PDF ПЛЕЕР #}
     {% if obj.presentation and obj.file_extension == '.pdf' %}<div style="margin-top: 20px;"><embed src="{{ obj.presentation.url }}#toolbar=0&navpanes=0" type="application/pdf" width="100%" height="600px" /></div>{% endif %}
 
+    {# ВИДЕОРОЛИКИ #}
     {% if obj.video or obj.extra_videos.all %}
         <br><br><center>
             {% if obj.video %}<a href="{{ obj.video }}" class="btn btn-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer">Посмотрите интересное видео!</a>{% endif %}
@@ -48,22 +58,21 @@
         </center>
     {% endif %}
 
-    {% if obj.presentation or obj.extra_presentations.all %}
+    {# ПРЕЗЕНТАЦИИ (Остались только дополнительные бесконечные) #}
+    {% if obj.extra_presentations.all %}
         <center><div style="margin-top: 20px;">
-            {% if obj.presentation %}<a href="{{ obj.presentation.url }}" target="_blank" class="btn btn-primary m-1">👁 Презентация в новом окне</a>{% endif %}
             {% for pres in obj.extra_presentations.all %}<a href="{{ pres.file.url }}" target="_blank" class="btn btn-outline-primary m-1">👁 {% if pres.title %}{{ pres.title }}{% else %}Доп. презентация {{ forloop.counter }}{% endif %}</a>{% endfor %}
         </div></center>
     {% endif %}
 
-    <br><br><center><a href="{% url 'inorganiclawtest' obj.pk %}" class="btn btn-primary mt-2 mr-2 ml-2"> Перейти к тренировке </a></center><br><br>
-
-    {# Оставшиеся старые картинки с ограничением по высоте #}
+    <br><br>
+    {# Оставшиеся старые картинки с контролем высоты #}
     {% if obj.img3 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img3.url }}"></div></center><br>{% endif %}
     {% if obj.img4 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img4.url }}"></div></center><br>{% endif %}
     {% if obj.img5 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img5.url }}"></div></center><br>{% endif %}
     {% if obj.img6 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img6.url }}"></div></center><br>{% endif %}
 
-    {# Новые бесконечные картинки с ограничением по высоте #}
+    {# СВЕРНУТЫЙ БЛОК ГАЛЕРЕИ С КНОПКОЙ #}
     {% if obj.extra_images.all %}
         <br><center><button class="btn btn-outline-primary btn-lg mt-3 mb-3" type="button" data-toggle="collapse" data-target="#collapseInorganicGallery" aria-expanded="false" aria-controls="collapseInorganicGallery">🖼 Показать слайды презентации ({{ obj.extra_images.count }} шт.)</button></center>
         <div class="collapse" id="collapseInorganicGallery">
@@ -72,6 +81,7 @@
         </div><br>
     {% endif %}
 
+    {# СВЕРНУТЫЙ БЛОК РЕАКЦИЙ С КНОПКОЙ #}
     {% if qw %}
         <br><br><center><button class="btn btn-primary btn-lg mt-2 mb-3" type="button" data-toggle="collapse" data-target="#collapseInorganicReactions" aria-expanded="false" aria-controls="collapseInorganicReactions">🧪 Показать примеры реакций <br><small style="font-size: 11pt; color: #fff; opacity: 0.8;">(реакции приведены без коэффициентов)</small></button></center>
         <div class="collapse" id="collapseInorganicReactions">
