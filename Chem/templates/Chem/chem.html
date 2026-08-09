@@ -2,7 +2,7 @@
 {% load static %}
 
 {# SEO-ОПТИМИЗАЦИЯ ДЛЯ ПОИСКОВИКОВ (ОГЭ И ЕГЭ ПО ХИМИИ) #}
-{% block title %}Подготовка к ЕГЭ и ОГЭ по химии: теоретический справочник, законы и таблицы{% endblock %}
+{% block title %}Учебный сайт для подготовки к ОГЭ и ЕГЭ по химии: справочник, законы и таблицы{% endblock %}
 
 {% block metaname %}
 <meta name="description" content="Бесплатный интерактивный справочник для подготовки к ЕГЭ и ОГЭ по химии. Все законы общей, органической и неорганической химии, формулы соединений и таблицы Менделеева.">
@@ -17,10 +17,16 @@
 {% block content %}
 <div class="col-12 px-md-5">
     
-    {# СТРОГИЙ ПРИВЕТСТВЕННЫЙ БЛОК ДЛЯ SEO-ИНДЕКСАЦИИ #}
+    {# СТРОГИЙ ПРИВЕТСТВЕННЫЙ БЛОК С ПРОБИРКОЙ #}
     <div class="text-center mt-4 mb-5 p-4 rounded" style="background-color: #f8f9fa; border: 1px solid #e9ecef;">
-        <h1 class="font-weight-bold" style="color: #343a40; font-family: Georgia, serif; font-size: 28pt;">
-            Справочник для подготовки к ЕГЭ и ОГЭ по химии
+        <h1 class="font-weight-bold d-flex align-items-center justify-content-center flex-wrap" style="color: #343a40; font-family: Georgia, serif; font-size: 26pt;">
+            <!-- Любимая пробирка из прошлых версий справочника -->
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 15px;">
+                <path d="M10 2h4M12 2v15M16 17a4 4 0 0 1-8 0V2h8v15z" />
+                <path d="M9 13h6" stroke-width="1.5" />
+                <path d="M8.5 16h7" stroke-width="1.5" />
+            </svg>
+            Учебный сайт для подготовки к ОГЭ и ЕГЭ по химии
         </h1>
     </div>
 
@@ -29,7 +35,7 @@
         .main-collapse-btn {
             width: 100%;
             text-align: left !important;
-            padding: 15px 25px;
+            padding: 16px 25px;
             font-size: 16pt;
             font-weight: 600;
             color: #495057 !important;
@@ -61,33 +67,23 @@
             transform: rotate(180deg);
         }
 
-        /* Особый благородный стиль для верхнего блока таблиц */
-        .btn-tables-top {
-            background-color: #ffffff;
-            border: 2px solid #b2c2d4;
-            color: #2b4c7e !important;
-        }
-        .btn-tables-top:hover {
-            background-color: #f4f7fa;
-        }
-
-        /* Нежные пастельные фоны для остальных кнопок (без фиолетового) */
+        /* Мягкие, благородные стили для кнопок-аккордеонов */
+        .btn-tables-top { background-color: #ffffff; border: 2px solid #b2c2d4; color: #2b4c7e !important; }
+        .btn-tables-top:hover { background-color: #f4f7fa; }
         .btn-general-pastel { background-color: #e3faf2; border-color: #c3fae8; }
         .btn-organic-pastel { background-color: #e8f5e9; border-color: #c8e6c9; }
         .btn-inorganic-pastel { background-color: #ffeae8; border-color: #ffcdd2; }
         .btn-memes-pastel { background-color: #fff9db; border-color: #fff3bf; }
 
-        /* Вспомогательный класс для центрирования SVG картинок в кнопке */
         .btn-title-wrapper {
             display: flex;
             align-items: center;
         }
         .btn-title-wrapper svg {
-            margin-right: 12px;
+            margin-right: 15px;
             flex-shrink: 0;
         }
 
-        /* Контентные карточки */
         .collapse-card-body {
             background: #ffffff;
             border: 1px solid #dee2e6;
@@ -99,7 +95,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
 
-        /* Интерактивные ссылки справочника */
         .chem-link-item {
             font-size: 13pt;
             padding: 10px 15px;
@@ -120,17 +115,17 @@
     </style>
 
     <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ТАБЛИЦЫ (НА САМОМ ВЕРХУ, КАРТИНКА - ЯЧЕЙКА ТАБЛИЦЫ МЕНДЕЛЕЕВА) -->
+    <!-- РАЗДЕЛ: ТАБЛИЦЫ (РОВНАЯ, АККУРАТНАЯ СЕТКА СИСТЕМЫ) -->
     <!-- ================================================================= -->
     <button class="main-collapse-btn btn-tables-top" type="button" data-toggle="collapse" data-target="#collapseTables" aria-expanded="false" aria-controls="collapseTables">
         <div class="btn-title-wrapper">
-            <!-- SVG: Ячейка таблицы Менделеева (Атомный номер 1, Водород H) -->
+            <!-- SVG: Красивая, идеально ровная геометрическая таблица Менделеева -->
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2b4c7e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="18" height="18" rx="2" />
-                <path d="M7 7h1" />
-                <path d="M7 11h4" />
-                <path d="M7 15h2" />
-                <text x="14" y="15" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#2b4c7e" stroke-width="0">H</text>
+                <line x1="9" y1="3" x2="9" y2="21" />
+                <line x1="15" y1="3" x2="15" y2="21" />
+                <line x1="3" y1="9" x2="21" y2="9" />
+                <line x1="3" y1="15" x2="21" y2="15" />
             </svg>
             <span>Справочные таблицы</span>
         </div>
@@ -146,12 +141,12 @@
     </div>
 
     <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ОБЩАЯ ХИМИЯ (КАРТИНКА - ПОКРАСИВЕЕ СХЕМАТИЧНЫЙ АТОМ) -->
+    <!-- РАЗДЕЛ: ОБЩАЯ ХИМИЯ (СХЕМАТИЧНЫЙ РОВНЫЙ АТОМ БЕЗ ФИОЛЕТОВОГО) -->
     <!-- ================================================================= -->
     <button class="main-collapse-btn btn-general-pastel" type="button" data-toggle="collapse" data-target="#collapseGeneral" aria-expanded="false" aria-controls="collapseGeneral">
         <div class="btn-title-wrapper">
-            <!-- SVG: Схематичный красивый атом без фиолетового (мягкий сине-зеленый оттенок) -->
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#11998e" stroke-width="1.5">
+            <!-- SVG: Симметричный чистый атом в мягком изумрудно-мятном тоне -->
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#11998e" stroke-width="1.8">
                 <ellipse cx="12" cy="12" rx="3" ry="9" transform="rotate(30 12 12)" />
                 <ellipse cx="12" cy="12" rx="3" ry="9" transform="rotate(90 12 12)" />
                 <ellipse cx="12" cy="12" rx="3" ry="9" transform="rotate(150 12 12)" />
@@ -171,20 +166,17 @@
     </div>
 
     <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ОРГАНИЧЕСКАЯ ХИМИЯ (КАРТИНКА - СТРУКТУРНАЯ ФОРМУЛА НАФТАЛИНА) -->
+    <!-- РАЗДЕЛ: ОРГАНИЧЕСКАЯ ХИМИЯ (БЕНЗОЛ С КРУГОМ + РЕТОРТА) -->
     <!-- ================================================================= -->
     <button class="main-collapse-btn btn-organic-pastel" type="button" data-toggle="collapse" data-target="#collapseOrganic" aria-expanded="false" aria-controls="collapseOrganic">
         <div class="btn-title-wrapper">
-            <!-- SVG: Химическая структурная формула нафталина (два сопряженных шестиугольника) -->
-            <svg width="34" height="28" viewBox="0 0 34 24" fill="none" stroke="#2e7d32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <!-- Левое бензольное кольцо -->
-                <polygon points="6,12 11,4 20,4 25,12 20,20 11,20" />
-                <line x1="12" y1="6" x2="19" y2="6" />
-                <line x1="8" y1="12" x2="11" y2="18" />
-                <!-- Правое сопряженное кольцо -->
-                <polygon points="20,4 29,4 34,12 29,20 20,20" />
-                <line x1="21" y1="18" x2="28" y2="18" />
-                <line x1="28" y1="6" x2="32" y2="12" />
+            <!-- SVG: Геометрически правильное кольцо бензола с кругом внутри и реторта -->
+            <svg width="32" height="28" viewBox="0 0 28 24" fill="none" stroke="#2e7d32" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Идеальное кольцо бензола -->
+                <polygon points="6,12 10,5 18,5 22,12 18,19 10,19" />
+                <circle cx="14" cy="12" r="4" />
+                <!-- Реторта / колба рядышком -->
+                <path d="M23 7h3M24.5 7v4M21 17l2.5-6h2l2.5 6A2 2 0 0 1 26 20h-3a2 2 0 0 1-2-2z" stroke-width="1.3" />
             </svg>
             <span>Органическая химия</span>
         </div>
@@ -203,14 +195,31 @@
         </div>
     </div>
     <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: НЕОРГАНИЧЕСКАЯ ХИМИЯ -->
+    <!-- РАЗДЕЛ: НЕОРГАНИЧЕСКАЯ ХИМИЯ (КРИСТАЛЛИЧЕСКАЯ РЕШЕТКА + ПРОБИРКА) -->
     <!-- ================================================================= -->
     <button class="main-collapse-btn btn-inorganic-pastel" type="button" data-toggle="collapse" data-target="#collapseInorganic" aria-expanded="false" aria-controls="collapseInorganic">
         <div class="btn-title-wrapper">
-            <!-- SVG: Колба Эрленмеера и реторта (Неорганическая химия) -->
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c62828" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 2h4M12 2v7M5 22h14M5 22l4-13h6l4 13" />
-                <path d="M7.5 14h9" stroke-dasharray="2 2" />
+            <!-- SVG: Ровная кубическая кристаллическая решетка и пробирка на переднем плане -->
+            <svg width="32" height="28" viewBox="0 0 28 24" fill="none" stroke="#c62828" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Пробирка слева -->
+                <path d="M4 4h4M6 4v11M9 15a3 3 0 0 1-6 0V4h6v11z" />
+                <path d="M3.5 12h5" stroke-width="1.2" stroke-dasharray="1 1" />
+                
+                <!-- Кристаллическая решетка (объемный куб) справа -->
+                <!-- Дальняя грань куба -->
+                <rect x="14" y="5" width="8" height="8" stroke-width="1" stroke-dasharray="2 2" />
+                <!-- Ближняя грань куба -->
+                <rect x="18" y="9" width="8" height="8" />
+                <!-- Соединительные ребра решетки -->
+                <line x1="14" y1="5" x2="18" y2="9" />
+                <line x1="22" y1="5" x2="26" y2="9" />
+                <line x1="14" y1="13" x2="18" y2="17" />
+                <line x1="22" y1="13" x2="26" y2="17" />
+                <!-- Узлы решетки (атомы) -->
+                <circle cx="18" cy="9" r="1.5" fill="#c62828" />
+                <circle cx="26" cy="9" r="1.5" fill="#c62828" />
+                <circle cx="18" cy="17" r="1.5" fill="#c62828" />
+                <circle cx="26" cy="17" r="1.5" fill="#c62828" />
             </svg>
             <span>Неорганическая химия</span>
         </div>
@@ -231,12 +240,14 @@
     <!-- ================================================================= -->
     <button class="main-collapse-btn btn-memes-pastel" type="button" data-toggle="collapse" data-target="#collapseMemes" aria-expanded="false" aria-controls="collapseMemes">
         <div class="btn-title-wrapper">
-            <!-- SVG: Стильная улыбающаяся иконка (Мемы и юмор) -->
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f57f17" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- SVG: Стильная улыбающаяся иконка в очках -->
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f57f17" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-                <line x1="9" y1="9" x2="9.01" y2="9" stroke-width="2" />
-                <line x1="15" y1="9" x2="15.01" y2="9" stroke-width="2" />
+                <!-- Крутые очки -->
+                <path d="M6 9h12" />
+                <path d="M6 9a2.5 2.5 0 0 1 5 0v1a2.5 2.5 0 0 1-5 0V9z" fill="#f57f17" fill-opacity="0.1" />
+                <path d="M13 9a2.5 2.5 0 0 1 5 0v1a2.5 2.5 0 0 1-5 0V9z" fill="#f57f17" fill-opacity="0.1" />
             </svg>
             <span>Мемы и картинки</span>
         </div>
@@ -252,12 +263,12 @@
     </div>
 
     <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ПОЛЕЗНЫЕ РЕСУРСЫ И ВИДЕО (НЕЖНЫЙ СИНЕ-СЕРЫЙ ЦВЕТ) -->
+    <!-- РАЗДЕЛ: ПОЛЕЗНЫЕ РЕСУРСЫ И ВИДЕО (МЯГКИЙ СИНЕ-СЕРЫЙ ЦВЕТ) -->
     <!-- ================================================================= -->
     <button class="main-collapse-btn" style="background-color: #f1f5f9; border-color: #cbd5e1;" type="button" data-toggle="collapse" data-target="#collapseResources" aria-expanded="false" aria-controls="collapseResources">
         <div class="btn-title-wrapper">
-            <!-- SVG: Раскрытая книга и видеопленка (Ресурсы и видео) -->
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- SVG: Раскрытая книга справочника и значок видеовоспроизведения -->
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15z" />
                 <polygon points="10,9 15,12 10,15" fill="#475569" />
             </svg>
@@ -279,10 +290,10 @@
 
     {# НЕНАВЯЗЧИВЫЙ БЛОК ОБРАТНОЙ СВЯЗИ В САМОМ НИЗУ #}
     <div class="text-center mt-5 pt-4 pb-2 border-top" style="font-size: 11pt; color: #6c757d;">
-        <p class="mb-1">Нашли ошибку или хотите предложить улучшение справочника?</p>
+        <p class="mb-1">Хотите предложить улучшение справочника или ищете репетитора по химии?</p>
         <p>
             Связаться с автором: 
-            <a href="https://vk.ru" target="_blank" rel="noopener noreferrer" class="mx-2 text-decoration-none" style="color: #4c75a3;">
+            <a href="https://vk.ru/alexgolovkina" target="_blank" rel="noopener noreferrer" class="mx-2 text-decoration-none" style="color: #4c75a3;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: text-top; margin-right: 2px;"><path d="M22.12 11.23c-.15-.36-.53-.5-.53-.5h-2.73s-.2 0-.35.1c-.13.08-.22.24-.22.24s-.43 1.15-1 1.9c-1.2 1.57-1.7 1.65-1.9 1.53-.46-.3-.35-1.18-.35-1.8 0-1.96.3-2.78-.58-3-1-.24-1.72-.25-2.56-.25-1.07 0-1.98.02-2.5.27-.34.17-.6.55-.44.57.2.03.65.13.9.46.3.4.3 1.34.3 1.34s.03.82-.13 1.14c-.1.2-.5.5-.96.07C7.54 12.3 6.9 11 6.9 11s-.1-.2-.22-.26C6.54 10.66 6.33 10.6 6.33 10.6H3.5s-.28 0-.4.12c-.1.1-.02.34-.02.34s2.55 6 5.43 9c2.64 2.76 5.65 2.58 5.65 2.58h1.08s.33 0 .5-.17c.15-.17.15-.5.15-.5s-.02-1.46.66-1.67c.67-.2 1.53 1.4 2.45 2.03.7.48 1.23.38 1.23.38h2.44s.74 0 .87-.36c.13-.36-.1-.1-.1-1.07 0-1-.44-2.22-1.46-3.4-.82-1-2-2.1-2.4-2.65-.54-.7-.4-.82 0-1.48.02-.03 1-1.43 2.1-3z"/></svg>ВКонтакте
             </a> 
             | 
