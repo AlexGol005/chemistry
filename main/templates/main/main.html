@@ -6,42 +6,28 @@
 {% endblock %}
 
 {% block content %}
-<!-- Строгие и живые стили для кнопок с градиентом -->
+<!-- Живые стили на основе вашего оригинального синего цвета -->
 <style>
-    .btn-gradient-primary {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    .btn-custom-blue {
+        /* Градиент на основе оригинального синего Bootstrap */
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
         color: #ffffff !important;
         border: none;
         font-weight: 500;
-        letter-spacing: 0.5px;
-        box-shadow: 0 4px 6px rgba(30, 60, 114, 0.15);
-        transition: all 0.25s ease-in-out;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+        transition: all 0.2s ease-in-out;
     }
-    .btn-gradient-primary:hover {
-        background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+    /* Анимация при наведении: кнопка "оживает" и приподнимается */
+    .btn-custom-blue:hover {
+        background: linear-gradient(135deg, #1573f8 0%, #0b5ed7 100%);
         transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(30, 60, 114, 0.25);
+        box-shadow: 0 6px 15px rgba(13, 110, 253, 0.35);
     }
-    .btn-gradient-primary:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 4px rgba(30, 60, 114, 0.15);
-    }
-    
-    .btn-gradient-secondary {
-        background: linear-gradient(135deg, #606c88 0%, #3f4c6b 100%);
-        color: #ffffff !important;
-        border: none;
-        font-weight: 500;
-        box-shadow: 0 4px 6px rgba(63, 76, 107, 0.15);
-        transition: all 0.25s ease-in-out;
-    }
-    .btn-gradient-secondary:hover {
-        background: linear-gradient(135deg, #3f4c6b 0%, #606c88 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(63, 76, 107, 0.25);
-    }
-    .btn-gradient-secondary:active {
-        transform: translateY(0);
+    /* Эффект нажатия */
+    .btn-custom-blue:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 5px rgba(13, 110, 253, 0.2);
     }
 </style>
 
@@ -55,21 +41,21 @@
                     Автоматизация учета лабораторного оборудования и микроклимата для вашей лаборатории
                 </h1>
 
-                <!-- Блок авторизации (кнопки теперь разделены и не слипаются) -->
+                <!-- Блок авторизации (кнопки с гарантированным отступом g-3) -->
                 <div class="row g-3 justify-content-center mb-4">
                     {% if not user.is_authenticated %}
                         <div class="col-12 col-sm-5 col-md-4">
-                            <a href="{% url 'heademployeereg' %}" class="btn btn-gradient-primary py-2.5 w-100">Регистрация</a>
+                            <a href="{% url 'heademployeereg' %}" class="btn btn-custom-blue py-2.5 w-100">Регистрация</a>
                         </div>
                         <div class="col-12 col-sm-5 col-md-4">
-                            <a href="{% url 'user' %}" class="btn btn-gradient-primary py-2.5 w-100">Войти</a>
+                            <a href="{% url 'user' %}" class="btn btn-custom-blue py-2.5 w-100">Войти</a>
                         </div>
                     {% else %}
                         <div class="col-12 col-sm-5 col-md-4">
-                            <a href="{% url 'profile' %}" class="btn btn-gradient-primary py-2.5 w-100">ID {{ request.user.username }}</a>
+                            <a href="{% url 'profile' %}" class="btn btn-custom-blue py-2.5 w-100">ID {{ request.user.username }}</a>
                         </div>
                         <div class="col-12 col-sm-5 col-md-4">
-                            <a href="{% url 'exit' %}" class="btn btn-gradient-secondary py-2.5 w-100">Выйти</a>
+                            <a href="{% url 'exit' %}" class="btn btn-custom-blue py-2.5 w-100" style="opacity: 0.9;">Выйти</a>
                         </div>
                     {% endif %}
                 </div>
@@ -77,8 +63,8 @@
                 <!-- Главная навигация -->
                 <div class="row g-3 justify-content-center mb-5">
                     <div class="col-12 col-sm-10 col-md-8">
-                        <a href="{% url 'contact_page' %}" class="btn btn-gradient-primary py-3 w-100 mb-3">Задать вопрос администрации сайта</a>
-                        <a href="{% url 'about' %}" class="btn btn-gradient-secondary py-3 w-100">Что это за сайт?</a>
+                        <a href="{% url 'contact_page' %}" class="btn btn-custom-blue py-3 w-100 mb-3">Задать вопрос администрации сайта</a>
+                        <a href="{% url 'about' %}" class="btn btn-custom-blue py-3 w-100">Что это за сайт?</a>
                     </div>
                 </div>
 
@@ -98,7 +84,7 @@
                 
                 <div class="row g-3 justify-content-center">
                     <div class="col-12 col-sm-10 col-md-8">
-                        <a href="{% url 'chem' %}" class="btn btn-gradient-primary py-3 w-100 fs-5">Перейти к изучению химии</a>
+                        <a href="{% url 'chem' %}" class="btn btn-custom-blue py-3 w-100 fs-5">Перейти к изучению химии</a>
                     </div>
                 </div>
 
