@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 {% load static %}
 {% load qr_code %}
 <html lang="ru">
@@ -16,17 +17,17 @@
     <meta http-equiv="Content-Language" content="ru" />
     
     <!-- КОРРЕКТНЫЙ СТИЛЬ BOOTSTRAP 4 -->
-    <link rel="stylesheet" href="https://bootstrapcdn.com">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     
-    <!-- ВАШ КАСТОМНЫЙ CSS -->
+    <!-- ВАШ КАСТОМНЫЙ CSS (Идёт строго после Bootstrap, чтобы перебивать его) -->
     <link rel="stylesheet" type="text/css" href="{% static 'main/css/main.css' %}">
     <link rel="icon" href="{% static 'main/img/3.png' %}" type="image/x-icon">
     
-    <!-- СКРИПТЫ (jQuery -> Popper -> Bootstrap 4) -->
+    <!-- СКРИПТЫ (Сначала библиотеки, потом JS Bootstrap 4, Пятую версию удалили) -->
     <script type="text/javascript" src="https://unpkg.com"></script>
-    <script src="https://jsdelivr.net"></script>
-    <script src="https://jsdelivr.net"></script>
-    <script src="https://jsdelivr.net"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- CKEDITOR -->
     <script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script> 
@@ -39,17 +40,25 @@
     (function (d, w, id) {
       if (d.getElementById(id)) return;
       var ts = d.createElement("script"); ts.type = "text/javascript"; ts.async = true; ts.id = id;
-      ts.src = "https://mail.ru";
+      ts.src = "https://top-fwz1.mail.ru/js/code.js";
       var f = function () {var s = d.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ts, s);};
       if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); }
     })(document, window, "tmr-code");
     </script>
-    <noscript><div><img src="https://mail.ru" style="position:absolute;left:-9999px;" alt="Top.Mail.Ru" /></div></noscript>
+    <noscript><div><img src="https://top-fwz1.mail.ru/counter?id=3475315;js=na" style="position:absolute;left:-9999px;" alt="Top.Mail.Ru" /></div></noscript>
+    <!-- /Top.Mail.Ru counter -->
+
+    <!-- Yandex.Metrika counter -->
+    {#конец кода счётчика#}
 </head>
 
+
+    
 <body class="main-page-body h-100">
     
+{# здесь рисуем шапку сайта #}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <!-- Логотип зафиксирован по высоте, чтобы не распирать шапку -->
     <a href="/" class="navbar-brand d-flex align-items-center py-0 m-0">
         <img src="{% static 'main/img/3.png' %}" alt="Лого" style="height: 38px; width: auto;">
     </a>
@@ -58,12 +67,14 @@
     </button>
     
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <!-- Стили гарантируют, что ВСЕ элементы меню будут строго одной высоты и не будут прыгать -->
         <style>
             #navbarNavDropdown .nav-item {
                 display: flex;
                 align-items: center;
                 justify-content: center;
             }
+            /* Унифицируем высоту и вертикальные отступы для всех кликабельных элементов */
             #navbarNavDropdown .nav-link, 
             #navbarNavDropdown .btn {
                 height: 40px; 
@@ -73,9 +84,10 @@
                 box-sizing: border-box;
                 padding-top: 0 !important;
                 padding-bottom: 0 !important;
-                margin: 4px !important;
+                margin: 4px !important; /* Одинаковый зазор между всеми кнопками */
                 white-space: nowrap;
             }
+            /* Текстовые ссылки превращаем в аккуратные прозрачные кнопки, чтобы они не выбивались */
             #navbarNavDropdown .nav-link {
                 color: #495057 !important;
                 border: 1px solid transparent;
@@ -90,6 +102,7 @@
                 font-weight: bold;
                 background-color: rgba(0,0,0,0.08);
             }
+            /* Задаем фиксированную ширину для кнопок действий, чтобы они не скакали из-за длины текста */
             .btn-fixed-lg { width: 190px; }
             .btn-fixed-sm { width: 90px; }
         </style>
@@ -98,39 +111,241 @@
             <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="/">JournalLab</a>
             </li>
+
+            {# Блок для НЕ химических страниц #}
+            {% if 'chem' not in request.path and request.user.profile.userid != "chem" %}                         
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about' %}">О&nbsp;сайте</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'eq' %}">Ресурсы</a>
+                </li>
+                {% if user.is_authenticated and USER_HAVE_RIGHTS %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'managerequipment' %}">Управление ресурсами</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'blog' %}">Блог о ЛО</a>
+                </li>
+            {% endif %}                  
+            
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'chem' %}">Химия</a>
+            </li>
+        
+            <li class="nav-item">               
+                <a href="{% url 'contact_page' %}" class="btn btn-warning btn-fixed-lg">Обратная связь</a>
+            </li>
+
+            {# Авторизация для НЕ химических страниц #}
+            {% if 'chem' not in request.path %}   
+                {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="{% url 'heademployeereg' %}" class="btn btn-outline-success btn-fixed-lg">Попробовать бесплатно</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'user' %}" class="btn btn-outline-info btn-fixed-sm">Войти</a>
+                    </li>
+                {% else %}
+                    {% if request.user.profile.userid != "chem" %}
+                        <li class="nav-item">
+                            <!-- Кнопка очищена от вывода short_name -->
+                            <a href="{% url 'profile' %}" class="btn btn-outline-warning btn-fixed-lg">ЛК Лаборатории</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'exit' %}" class="btn btn-outline-warning btn-fixed-sm">Выйти</a>
+                        </li>
+                    {% endif %} 
+                {% endif %} 
+            {% endif %} 
+
+            {# Авторизация для химических страниц #}
+            {% if 'chem' in request.path %}   
+                {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="{% url 'chemuser' %}" class="btn btn-outline-info btn-fixed-sm">Войти</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a href="{% url 'chemprofile' %}" class="btn btn-outline-warning btn-fixed-lg">ЛК Химии</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'chemexit' %}" class="btn btn-outline-warning btn-fixed-sm">Выйти</a>
+                    </li>
+                {% endif %} 
+            {% endif %} 
         </ul>
     </div>
 </nav>
+{# конец шапки #}
 
+
+
+
+
+
+       
+
+    {# здесь рисуем всплывающие при разных действиях сообщения  #}       
+    <div class="container mt-5 table-list no-gutters">
+        <div class="row no-gutters">
+            <div class="col-md-12 no-gutters">
+            {% if messages %}
+                {% for mess in messages %}
+                <div class="TransactionAmount Badresult">
+                    <div class="alert alert=success"><b><font color="red"  size="5">* {{ mess }}</font></b></div>
+                </div>
+                {% endfor %}
+            {% endif %}
+            </div>
+         </div>
+    </div>
+    {# конец сообщений #}           
+
+
+
+ {# тело #}           
 <main class="flex-grow-1">    
-    <!-- container-fluid раскрывает контент на 100% ширины экрана -->
+    <!-- Заменили container на container-fluid для растяжения на 100% ширины -->
     <div class="container-fluid table-list">
+        <!-- Перенесли no-gutters сюда, где ему и место по правилам Bootstrap -->
         <div class="row no-gutters"> 
 
-            <!-- Главная колонка контента (получила класс main-content-col) -->
-            <div class="col-12 col-xl-8 inner-page-body main-content-col">
-                {% block content %}
-                {% endblock %}
-                
-                {% block uniccontent %}
-                {% endblock %}
-            </div>
+            {% block content %}
+            {% endblock %}
             
-            <!-- Боковая панель -->
-            <div class="col-12 col-xl-4">
-                {% block aside %}
-                {% endblock %}
-            </div>
+            {% block uniccontent %}
+            {% endblock %}
+            
+            {% block aside %}
+            {% endblock %}
 
-        </div> 
-    </div> 
+        </div> <!-- Закрываем row -->
+    </div> <!-- Закрываем container-fluid -->
 </main>
 
-<footer class="bg-body-tertiary text-center text-lg-start">
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-        © {% now "Y" %} JournalLab. Все права защищены.
-    </div>
-</footer>
+ {# конец тело #}  
 
-</body>
-</html>
+
+
+
+
+    
+{% block footer %}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+
+{{ form.media }}
+
+<script>
+(function($) {
+    $('#add-form').click(function() {
+        var index = $('#id_inline_test_models-TOTAL_FORMS').val()
+        var newTable = $('#id_inline_test_models-__prefix__-DELETE').parents('table').clone()
+        newTable.find(':input').each(function() {
+            for (attr of ['name', 'id'])
+                $(this).attr(
+                    attr,
+                    $(this).attr(attr).replace('__prefix__', index)
+                )
+        })
+        newTable.insertBefore($(this))
+        $('#id_inline_test_models-TOTAL_FORMS').val(
+            parseInt($('#id_inline_test_models-TOTAL_FORMS').val()) + 1
+        )
+        newTable.slideDown()
+    })
+})($)
+</script>
+{% endblock %}
+
+    </div> <!-- Закрывает .inner-page-body -->
+    
+    <!-- Переносим футер СЮДА, внутрь body -->
+    <footer class="bg-body-tertiary text-center text-lg-start">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2023-2026 СЗ Головкина Александра Борисовна
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            Все права защищены.
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="text-body" href="{% url 'politycaconfident' %}">Политика конфиденциальности</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="text-body" href="{% url 'oferta' %}">Условия предоставления услуг</a>
+        </div>
+    </footer>
+
+
+        <!-- Фикс адаптивности таблиц и картинок CKEditor для всего сайта -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Находим абсолютно все картинки внутри таблиц на сайте
+    var images = document.querySelectorAll('table img');
+    images.forEach(function(img) {
+      img.removeAttribute('width');
+      img.removeAttribute('height');
+    });
+  });
+</script>
+
+<!-- Умная адаптивность картинок CKEditor без растягивания на ПК -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var images = document.querySelectorAll('table img');
+    images.forEach(function(img) {
+      // Полностью очищаем инлайновые стили ширины/высоты, которые ломают верстку
+      img.removeAttribute('width');
+      img.removeAttribute('height');
+      img.style.width = '';
+      img.style.height = '';
+    });
+  });
+</script>
+
+<style>
+  /* 1. Запрещаем таблицам вылезать за экран, но разрешаем им растягиваться вниз */
+  table, .table, .flexy1, .flexy {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: auto !important; /* Меняем на auto, чтобы ячейки подстраивались под контент */
+    height: auto !important;
+  }
+
+  /* 2. Снимаем любые ограничения на высоту ячеек, чтобы картинку не резало */
+  .table-responsive, td, tr, tbody {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+
+  /* 3. Умное сжатие картинок: на ПК они нормальные, на мобильном — сжимаются */
+  table img, 
+  td img, 
+  figure img,
+  .ind1 img {
+    display: block !important;
+    max-width: 100% !important;    /* Картинка никогда не станет шире экрана или ячейки */
+    width: auto !important;         /* На ПК картинка сохранит свой РЕАЛЬНЫЙ размер и не растянется */
+    height: auto !important;        /* Высота подстроится пропорционально, без обрезки */
+    max-height: none !important;    /* Убираем ограничения высоты */
+    margin: 10px auto !important;   /* Центрируем и делаем небольшие отступы */
+  }
+
+  /* 4. Сбрасываем жесткую ширину контейнеров CKEditor */
+  figure, figure.image, .image, td div, td p {
+    width: auto !important;         /* Не растягиваем на весь экран на ПК */
+    max-width: 100% !important;
+    height: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 5. Перенос текста, чтобы длинные формулы не распирали ячейки вбок */
+  td, th, p, span {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+  }
+</style>
+
+
+
+</body> <!-- ТЕГ BODY ТЕПЕРЬ В САМОМ КОНЦЕ -->
