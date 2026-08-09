@@ -193,21 +193,36 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
          </div>
     </div>
     {# конец сообщений #}           
- <main>    
-    <div class="container table-list no-gutters">
-      <div class="row"> 
 
-                {% block content %}
-                {% endblock %}
 
+
+ {# тело #}           
+<main class="flex-grow-1">    
+    <!-- Заменили container на container-fluid для растяжения на 100% ширины -->
+    <div class="container-fluid table-list">
+        <!-- Перенесли no-gutters сюда, где ему и место по правилам Bootstrap -->
+        <div class="row no-gutters"> 
+
+            {% block content %}
+            {% endblock %}
             
             {% block uniccontent %}
             {% endblock %}
-                  
             
             {% block aside %}
             {% endblock %}
- </main>          
+
+        </div> <!-- Закрываем row -->
+    </div> <!-- Закрываем container-fluid -->
+</main>
+
+ {# конец тело #}  
+
+
+
+
+
+    
 {% block footer %}
 <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
 
