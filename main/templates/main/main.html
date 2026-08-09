@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<!-- Изолированные жесткие стили для Superbase (защищены от конфликтов с base.html) -->
+<!-- Изолированные жесткие стили для Superbase -->
 <style>
     /* Контейнер центрального блока */
     .superbase-container {
@@ -18,12 +18,12 @@
         box-sizing: border-box;
     }
 
-    /* Уникальный класс для кнопок, чтобы base.html их не ломал */
+    /* Уникальный класс для кнопок и ссылок-кнопок */
     .superbase-btn {
         display: block !important;
         width: 100% !important;
         max-width: 400px !important;
-        margin: 14px auto !important; /* Жесткий отступ со всех сторон — кнопки никогда не слипнутся */
+        margin: 14px auto !important; /* Кнопки никогда не слипнутся */
         padding: 14px 20px !important;
         
         /* Гарантированный ярко-синий градиент */
@@ -39,6 +39,7 @@
         transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
         cursor: pointer !important;
         box-sizing: border-box;
+        text-align: center;
     }
 
     /* Эффект оживания при наведении (для ПК) */
@@ -51,7 +52,7 @@
         }
     }
 
-    /* Эффект живого нажатия (идеально для мобильных тапов) */
+    /* Эффект живого нажатия (для мобильных тапов и кликов) */
     .superbase-btn:active {
         transform: translateY(2px) !important;
         box-shadow: 0 2px 6px rgba(13, 110, 253, 0.2) !important;
@@ -87,16 +88,23 @@
             Автоматизация учета лабораторного оборудования и микроклимата для вашей лаборатории
         </h1>
 
-        <!-- Блок авторизации -->
+        <!-- Блок авторизации и профиля -->
         {% if not user.is_authenticated %}
+            <!-- Ссылки для гостей (обычные GET-запросы — проверено, работают корректно) -->
             <a href="{% url 'heademployeereg' %}" class="superbase-btn">Регистрация</a>
             <a href="{% url 'user' %}" class="superbase-btn">Войти</a>
         {% else %}
+            <!-- Ссылка на профиль (GET-запрос) -->
             <a href="{% url 'profile' %}" class="superbase-btn">ID {{ request.user.username }}</a>
-            <a href="{% url 'exit' %}" class="superbase-btn">Выйти</a>
+            
+            <!-- Безопасный выход через POST-форму для Django -->
+            <form action="{% url 'exit' %}" method="post" style="display: block; margin: 0; padding: 0;">
+                {% csrf_token %}
+                <button type="submit" class="superbase-btn" style="opacity: 0.9;">Выйти</button>
+            </form>
         {% endif %}
 
-        <!-- Главная навигация -->
+        <!-- Главная навигация (GET-запросы) -->
         <a href="{% url 'contact_page' %}" class="superbase-btn">Задать вопрос администрации сайта</a>
         <a href="{% url 'about' %}" class="superbase-btn">Что это за сайт?</a>
 
