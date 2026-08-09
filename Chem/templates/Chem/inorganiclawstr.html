@@ -8,103 +8,92 @@
 
 {% block content %}
 <div class="col-12">
-    <center><h3><a href="/chem/inorganiclaw"> Законы неорганической химии </a></h3></center>
-    <center><h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2></center>
+    <div class="text-center">
+        <h3><a href="/chem/inorganiclaw"> Законы неорганической химии </a></h3>
+        <h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2>
+    </div>
 
-    {# ЭФФЕКТЫ ДЛЯ ЖИВЫХ КНОПОК #}
+    {# ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ ЖИВЫХ КНОПОК #}
     <style>
-        /* 1. Главная кнопка тренировки */
-        .alive-btn {
-            background: linear-gradient(45deg, #11998e, #38ef7d); 
+        .alive-btn-base {
             border: none; 
             border-radius: 50px; 
             font-size: 16pt; 
-            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4); 
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             cursor: pointer;
             display: inline-block;
         }
-        .alive-btn:hover {
+        .alive-btn-base:hover {
             transform: translateY(-4px); 
-            box-shadow: 0 8px 25px rgba(56, 239, 125, 0.6); 
             filter: brightness(1.05); 
             text-decoration: none; 
         }
-        .alive-btn:active {
+        .alive-btn-base:active {
             transform: translateY(-1px); 
-            box-shadow: 0 3px 10px rgba(56, 239, 125, 0.4);
         }
 
-        /* 2. Обновленная крупная кнопка иллюстраций */
-        .alive-btn-alt {
+        /* Цвета кнопок */
+        .btn-train {
+            background: linear-gradient(45deg, #11998e, #38ef7d); 
+            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4); 
+        }
+        .btn-train:hover { box-shadow: 0 8px 25px rgba(56, 239, 125, 0.6); }
+        .btn-train:active { box-shadow: 0 3px 10px rgba(56, 239, 125, 0.4); }
+
+        .btn-illustrations {
             background: linear-gradient(45deg, #007bff, #00c6ff); 
-            border: none; 
-            border-radius: 50px; 
-            font-size: 14pt; 
-            padding: 12px 35px;
-            color: white !important;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); 
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: pointer;
-            display: inline-block;
-            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4); 
         }
-        .alive-btn-alt:hover {
-            transform: translateY(-3px); 
-            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.5); 
-            filter: brightness(1.08); 
-            text-decoration: none; 
-        }
-        .alive-btn-alt:active {
-            transform: translateY(-1px); 
-            box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
-        }
+        .btn-illustrations:hover { box-shadow: 0 8px 25px rgba(0, 123, 255, 0.6); }
+        .btn-illustrations:active { box-shadow: 0 3px 10px rgba(0, 123, 255, 0.4); }
 
-        /* 3. Кнопка раскрытия полезных ссылок */
-        .alive-btn-links {
+        .btn-links {
             background: linear-gradient(45deg, #6f42c1, #a951ed); 
-            border: none; 
-            border-radius: 50px; 
-            font-size: 13pt; 
-            padding: 10px 30px;
-            color: white !important;
-            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3); 
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: pointer;
-            display: inline-block;
-            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4); 
         }
-        .alive-btn-links:hover {
-            transform: translateY(-3px); 
-            box-shadow: 0 8px 20px rgba(111, 66, 193, 0.5); 
-            filter: brightness(1.08); 
-            text-decoration: none; 
-        }
+        .btn-links:hover { box-shadow: 0 8px 25px rgba(111, 66, 193, 0.6); }
+        .btn-links:active { box-shadow: 0 3px 10px rgba(111, 66, 193, 0.4); }
 
-        /* Восстановление отображения абзацев из CKEditor внутри таблиц Bootstrap */
-        .flexy td p, .flexy1 td p, .ind1 p {
+        .btn-reactions {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b); 
+            box-shadow: 0 4px 15px rgba(255, 75, 43, 0.4); 
+        }
+        .btn-reactions:hover { box-shadow: 0 8px 25px rgba(255, 75, 43, 0.6); }
+        .btn-reactions:active { box-shadow: 0 3px 10px rgba(255, 75, 43, 0.4); }
+
+        /* Чистые контентные блоки без ломающих Bootstrap-таблиц */
+        .content-block {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        /* Сохраняем и защищаем стили абзацев из CKEditor */
+        .content-block p {
             margin-top: 0 !important;
-            margin-bottom: 1rem !important;
+            margin-bottom: 1.2rem !important;
             display: block !important;
+            line-height: 1.6;
         }
     </style>
 
-    {# ЖИВАЯ КНОПКА ТРЕНИРОВКИ ПРЯМО ПОД ЗАГОЛОВКОМ #}
-    <center>
+    {# ЖИВАЯ КНОПКА ТРЕНИРОВКИ #}
+    <div class="text-center">
         <a href="{% url 'inorganiclawtest' obj.pk %}" 
            target="_blank" 
            rel="noopener noreferrer"
-           class="btn btn-lg mt-3 mb-4 px-5 text-white font-weight-bold alive-btn">
+           class="btn btn-lg mt-3 mb-4 px-5 text-white font-weight-bold alive-btn-base btn-train">
             Перейти к тренировке ➔
         </a>
-    </center>
+    </div>
 
     {# УСЛОВНОСТИ #}
-    <center>
+    <div class="text-center">
         <button class="btn btn-sm btn-outline-secondary mb-3" type="button" data-toggle="collapse" data-target="#collapseUslovnosti" aria-expanded="false" aria-controls="collapseUslovnosti">
             📋 Показать / скрыть условности (Э, Met, Amet...)
         </button>
-    </center>
+    </div>
     <div class="collapse" id="collapseUslovnosti">
         <div class="card card-body text-center bg-light mb-3" style="font-size: 12pt; line-height: 1.8;">
             Э = любой химический элемент | Met = любой металл | Amet = любой неметалл <br>
@@ -116,108 +105,146 @@
         </div>
     </div>
 
-    {# ОСНОВНОЙ ТЕКСТ ЗАКОНА #}
-    {% if obj.text and obj.text != "-" and obj.text != " " and obj.text != "" %}
-        <div class="table-responsive"><table class="table table-bordered flexy1"><tbody><tr><td class="ind1">{{ obj.text|safe }}</td></tr></tbody></table></div>
+    {# БЛОК: ОСНОВНОЙ ТЕКСТ #}
+    {% if obj.text and obj.text|striptags|trim != "-" and obj.text|striptags|trim != "—" and obj.text|striptags|trim != "" %}
+        <div class="content-block">{{ obj.text|safe }}</div>
     {% endif %}
 
-    {# ОБЩАЯ ФОРМУЛА ЗАКОНА #}
-    {% if obj.formula and obj.formula != "-" and obj.formula != " " and obj.formula != "" %}
-        <div class="table-responsive"><table class="table table-bordered flexy"><tbody><tr><td><h4>Общая формула закона</h4><br>{{ obj.formula|safe }}</td></tr></tbody></table></div>
+    {# БЛОК: ОБЩАЯ ФОРМУЛА ЗАКОНА (С исправленной фильтрацией прочерков) #}
+    {% if obj.formula and obj.formula|striptags|trim != "-" and obj.formula|striptags|trim != "—" and obj.formula|striptags|trim != "" %}
+        <div class="content-block">
+            <h4 class="text-center font-weight-bold">Общая формула закона</h4><br>
+            {{ obj.formula|safe }}
+        </div>
     {% endif %}
 
     {# Старые картинки 1 и 2 #}
-    {% if obj.img1 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img1.url }}"><br></div></center>{% endif %}
-    {% if obj.img2 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img2.url }}"><br></div></center>{% endif %}
+    {% if obj.img1 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img1.url }}"><br></div>{% endif %}
+    {% if obj.img2 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img2.url }}"><br></div>{% endif %}
 
-    {# ПРИМЕРЫ #}
-    {% if obj.examples and obj.examples != "-" and obj.examples != " " and obj.examples != "" %}
-        <div class="table-responsive"><table class="table table-bordered flexy1"><tbody><tr><td><h4>Примеры</h4><br>{{ obj.examples|safe }}</td></tr></tbody></table></div>
+    {# БЛОК: ПРИМЕРЫ #}
+    {% if obj.examples and obj.examples|striptags|trim != "-" and obj.examples|striptags|trim != "—" and obj.examples|striptags|trim != "" %}
+        <div class="content-block">
+            <h4 class="text-center font-weight-bold">Примеры</h4><br>
+            {{ obj.examples|safe }}
+        </div>
     {% endif %}
     
-    {# ИСКЛЮЧЕНИЯ #}
-    {% if obj.exceptions and obj.exceptions != "-" and obj.exceptions != " " and obj.exceptions != "" %}
-        <div class="table-responsive"><table class="table table-bordered flexy1"><tbody><tr><td class="ind1"><h4>Исключения</h4><br>{{ obj.exceptions|safe }}</td></tr></tbody></table></div>
+    {# БЛОК: ИСКЛЮЧЕНИЯ #}
+    {% if obj.exceptions and obj.exceptions|striptags|trim != "-" and obj.exceptions|striptags|trim != "—" and obj.exceptions|striptags|trim != "" %}
+        <div class="content-block">
+            <h4 class="text-center font-weight-bold">Исключения</h4><br>
+            {{ obj.exceptions|safe }}
+        </div>
     {% endif %}
     
-    {# ССЫЛКИ / ТРЕНИНГ #}
-    {% if obj.trening and obj.trening != "-" and obj.trening != " " and obj.trening != "" %}
-        <div class="table-responsive"><table class="table table-bordered flexy1"><tbody><tr><td><h4>Ссылки</h4><br><a href="{{ obj.trening }}" target="blank"> ссылка </a></td></tr></tbody></table></div>
+    {# БЛОК: ССЫЛКИ #}
+    {% if obj.trening and obj.trening|striptags|trim != "-" and obj.trening|striptags|trim != "—" and obj.trening|striptags|trim != "" %}
+        <div class="content-block">
+            <h4 class="text-center font-weight-bold">Ссылки</h4><br>
+            <div class="text-center"><a href="{{ obj.trening }}" target="_blank" class="btn btn-link"> ссылка </a></div>
+        </div>
     {% endif %}
 
     {# ВСТРОЕННЫЙ PDF ПЛЕЕР #}
     {% if obj.presentation and obj.file_extension == '.pdf' %}<div style="margin-top: 20px;"><embed src="{{ obj.presentation.url }}#toolbar=0&navpanes=0" type="application/pdf" width="100%" height="600px" /></div>{% endif %}
-        {# ВИДЕОРОЛИКИ (ОСНОВНОЙ) #}
-    {% if obj.video %}
-        <br><br><center>
-            <a href="{{ obj.video }}" class="btn btn-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer">Посмотрите интересное видео!</a>
-        </center>
-    {% endif %}
 
-    {# КРАСИВЫЙ СВЕРНУТЫЙ БЛОК ПОЛЕЗНЫХ ССЫЛОК #}
-    {% if obj.extra_videos.all %}
-        <br><center>
-            <button class="alive-btn-links mt-2 mb-3" type="button" data-toggle="collapse" data-target="#collapseExtraVideos" aria-expanded="false" aria-controls="collapseExtraVideos">
-                🔗 Полезные ссылки ({{ obj.extra_videos.count }} шт.)
-            </button>
-        </center>
-        <div class="collapse" id="collapseExtraVideos">
-            <div class="card card-body text-center bg-light mb-3 mx-auto" style="max-width: 600px;">
-                <h4 class="mb-3">Полезные ссылки</h4>
-                <div class="d-flex flex-column align-items-center">
-                    {% for vid in obj.extra_videos.all %}
-                        <a href="{{ vid.video_url }}" class="btn btn-link text-decoration-none my-1" target="_blank" rel="noopener noreferrer" style="font-size: 13pt; font-weight: 500;">
-                            🚀 {% if vid.title %}{{ vid.title }}{% else %}Ссылка{% endif %}
-                        </a>
-                    {% endfor %}
-                </div>
-                <center><button class="btn btn-sm btn-outline-secondary mt-3" type="button" data-toggle="collapse" data-target="#collapseExtraVideos" aria-expanded="false" aria-controls="collapseExtraVideos">🔼 Свернуть ссылки</button></center>
-            </div>
+    {# ВИДЕОРОЛИК (ОСНОВНОЙ) #}
+    {% if obj.video %}
+        <div class="text-center mt-4 mb-4">
+            <a href="{{ obj.video }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Посмотрите интересное видео!</a>
         </div>
     {% endif %}
 
     {# ПРЕЗЕНТАЦИИ #}
     {% if obj.extra_presentations.all %}
-        <center><div style="margin-top: 20px;">
+        <div class="text-center" style="margin-top: 20px;">
             {% for pres in obj.extra_presentations.all %}<a href="{{ pres.file.url }}" target="_blank" class="btn btn-outline-primary m-1">👁 {% if pres.title %}{{ pres.title }}{% else %}Доп. презентация {{ forloop.counter }}{% endif %}</a>{% endfor %}
-        </div></center>
+        </div>
     {% endif %}
 
     <br><br>
     {# Оставшиеся старые картинки 3-6 #}
-    {% if obj.img3 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img3.url }}"></div></center><br>{% endif %}
-    {% if obj.img4 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img4.url }}"></div></center><br>{% endif %}
-    {% if obj.img5 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img5.url }}"></div></center><br>{% endif %}
-    {% if obj.img6 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img6.url }}"></div></center><br>{% endif %}
+    {% if obj.img3 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img3.url }}"></div><br>{% endif %}
+    {% if obj.img4 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img4.url }}"></div><br>{% endif %}
+    {% if obj.img5 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img5.url }}"></div><br>{% endif %}
+    {% if obj.img6 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img6.url }}"></div><br>{% endif %}
+        <!-- ================================================================= -->
+    <!-- НИЖНИЙ БЛОК ИЗ ТРЕХ КНОПОК ОДИНАКОВОГО СТИЛЯ И РАЗМЕРА -->
+    <!-- ================================================================= -->
+    <div class="d-flex flex-column align-items-center mt-5 mb-5">
 
-    {# ОБНОВЛЕННЫЙ СВЕРНУТЫЙ БЛОК ГАЛЕРЕИ С НОВОЙ КНОПКОЙ #}
-    {% if obj.extra_images.all %}
-        <br><center>
-            <button class="alive-btn-alt mt-3 mb-3" type="button" data-toggle="collapse" data-target="#collapseInorganicGallery" aria-expanded="false" aria-controls="collapseInorganicGallery">
+        {# 1. КНОПКА: ПОКАЗАТЬ ЕЩЕ ИЛЛЮСТРАЦИИ #}
+        {% if obj.extra_images.all %}
+            <button class="btn btn-lg mt-3 mb-3 px-5 text-white font-weight-bold alive-btn-base btn-illustrations" 
+                    type="button" data-toggle="collapse" data-target="#collapseInorganicGallery" 
+                    aria-expanded="false" aria-controls="collapseInorganicGallery">
                 🖼 Показать еще иллюстрации ({{ obj.extra_images.count }} шт.)
             </button>
-        </center>
-        <div class="collapse" id="collapseInorganicGallery">
-            {% for item in obj.extra_images.all %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ item.image.url }}" loading="lazy" decoding="async"></div></center><br>{% endfor %}
-            <center><button class="btn btn-outline-secondary mt-2 mb-4" type="button" data-toggle="collapse" data-target="#collapseInorganicGallery" aria-expanded="false" aria-controls="collapseInorganicGallery">🔼 Свернуть иллюстрации</button></center>
-        </div><br>
-    {% endif %}
+            <div class="collapse w-100" id="collapseInorganicGallery">
+                <div class="pt-3">
+                    {% for item in obj.extra_images.all %}
+                        <img class="bd-placeholder-img rounded img-fluid mx-auto d-block mb-4" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ item.image.url }}" loading="lazy" decoding="async">
+                    {% endfor %}
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-sm btn-outline-secondary mb-4" type="button" data-toggle="collapse" data-target="#collapseInorganicGallery" aria-expanded="false" aria-controls="collapseInorganicGallery">🔼 Свернуть иллюстрации</button>
+                </div>
+            </div>
+        {% endif %}
 
-    {# СВЕРНУТЫЙ БЛОК РЕАКЦИЙ С КНОПКОЙ #}
-    {% if qw %}
-        <br><br><center><button class="btn btn-primary btn-lg mt-2 mb-3" type="button" data-toggle="collapse" data-target="#collapseInorganicReactions" aria-expanded="false" aria-controls="collapseInorganicReactions">🧪 Показать примеры реакций <br><small style="font-size: 11pt; color: #fff; opacity: 0.8;">(реакции приведены без коэффициентов)</small></button></center>
-        <div class="collapse" id="collapseInorganicReactions">
-            {% for j in qw %}
-                <br><p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin-left: auto; margin-right: auto; word-wrap: break-word; overflow-wrap: break-word;">
-                    <a href="{% url 'inorganiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
-                        {% if j.reagent1 %} {{ j.reagent1 }} {% endif %}{% if j.reagent2 %} + {{ j.reagent2 }} {% endif %}{% if j.reagent3 %} + {{ j.reagent3 }} {% endif %} = 
-                        {% if j.product1 %} {{ j.product1 }} {% endif %}{% if j.product2 %} + {{ j.product2 }} {% endif %}{% if j.product3 %} + {{ j.product3 }} {% endif %}{% if j.product4 %} +{{ j.product4 }} {% endif %}
-                    </a>
-                </p>
-            {% endfor %}
-            <center><button class="btn btn-outline-secondary mt-3 mb-4" type="button" data-toggle="collapse" data-target="#collapseInorganicReactions" aria-expanded="false" aria-controls="collapseInorganicReactions">🔼 Свернуть примеры реакций</button></center>
-        </div>
-    {% endif %}
+        {# 2. КНОПКА: ПОЛЕЗНЫЕ ССЫЛКИ #}
+        {% if obj.extra_videos.all %}
+            <button class="btn btn-lg mt-3 mb-3 px-5 text-white font-weight-bold alive-btn-base btn-links" 
+                    type="button" data-toggle="collapse" data-target="#collapseExtraVideos" 
+                    aria-expanded="false" aria-controls="collapseExtraVideos">
+                🔗 Полезные ссылки ({{ obj.extra_videos.count }} шт.)
+            </button>
+            <div class="collapse w-100" id="collapseExtraVideos">
+                <div class="card card-body text-center bg-light mb-4 mx-auto" style="max-width: 600px; border-radius: 15px;">
+                    <h4 class="mb-3 font-weight-bold text-dark">Полезные ссылки</h4>
+                    <div class="d-flex flex-column align-items-center">
+                        {% for vid in obj.extra_videos.all %}
+                            <a href="{{ vid.video_url }}" class="btn btn-link text-decoration-none my-1" target="_blank" rel="noopener noreferrer" style="font-size: 13pt; font-weight: 500;">
+                                🚀 {% if vid.title %}{{ vid.title }}{% else %}Ссылка{% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-sm btn-outline-secondary mt-3" type="button" data-toggle="collapse" data-target="#collapseExtraVideos" aria-expanded="false" aria-controls="collapseExtraVideos">🔼 Свернуть ссылки</button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {# 3. КНОПКА: ПОКАЗАТЬ ПРИМЕРЫ РЕАКЦИЙ #}
+        {% if qw %}
+            <button class="btn btn-lg mt-3 mb-3 px-5 text-white font-weight-bold alive-btn-base btn-reactions" 
+                    type="button" data-toggle="collapse" data-target="#collapseInorganicReactions" 
+                    aria-expanded="false" aria-controls="collapseInorganicReactions">
+                🧪 Показать примеры реакций
+            </button>
+            <div class="collapse w-100" id="collapseInorganicReactions">
+                <div class="card card-body bg-light mb-4 p-4" style="border-radius: 15px;">
+                    <div class="text-center mb-4">
+                        <small style="font-size: 12pt; color: #6c757d; font-weight: 500;">(реакции приведены без коэффициентов)</small>
+                    </div>
+                    {% for j in qw %}
+                        <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin-left: auto; margin-right: auto; word-wrap: break-word; overflow-wrap: break-word;">
+                            <a href="{% url 'inorganiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-none">
+                                {% if j.reagent1 %} {{ j.reagent1 }} {% endif %}{% if j.reagent2 %} + {{ j.reagent2 }} {% endif %}{% if j.reagent3 %} + {{ j.reagent3 }} {% endif %} = 
+                                {% if j.product1 %} {{ j.product1 }} {% endif %}{% if j.product2 %} + {{ j.product2 }} {% endif %}{% if j.product3 %} + {{ j.product3 }} {% endif %}{% if j.product4 %} +{{ j.product4 }} {% endif %}
+                            </a>
+                        </p>
+                    {% endfor %}
+                    <div class="text-center">
+                        <button class="btn btn-sm btn-outline-secondary mt-3" type="button" data-toggle="collapse" data-target="#collapseInorganicReactions" aria-expanded="false" aria-controls="collapseInorganicReactions">🔼 Свернуть примеры реакций</button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
 </div>
 {% endblock %}
 
