@@ -1,9 +1,18 @@
 {% extends 'main/superbase.html' %}
 {% load static %}
 
+{# ИСПРАВЛЕНО: Теперь колонка col-8 находится ВНУТРИ своего блока и будет работать! #}
+{% block content %}
+<div class="col-8">
+    {# Сюда будет приходить контент из страниц, которые наследуются от этого подшаблона #}
+    {% block inner_content %}
+    {% endblock %}
+</div>
+{% endblock %}
+
 {% block aside %}
-            <!-- Изменили col-4 на col-3 и добавили смещение offset-1 (зазор в 1 колонку слева) -->
-            <div class="col-3 offset-1">
+            <!-- Вернули стандартную col-4, но добавили pr-xl-4 для идеального зазора слева -->
+            <div class="col-4 pl-xl-5">
                 <center><h6 class="mt-4">Сегодня</h6></center>                        
                 <center><div id="current_date_time_block"></div></center>
                 <h4>
@@ -52,9 +61,3 @@
                 <p><center>{{last_news.text}}</center></p>
             </div>
 {% endblock %}
-
-<!-- Изменили col-8 на col-7, чтобы освободить место для зазора -->
-<div class="col-7">
-     {% block content %}
-     {% endblock %}
-</div>
