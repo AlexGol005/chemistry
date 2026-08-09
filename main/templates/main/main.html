@@ -1,40 +1,59 @@
-{% extends 'main/base.html' %}
+{% extends 'main/superbase.html' %}
 {% load static %}
-{% block title %}
-    Лабораторные журналы
-{% endblock %}
 
+{% block title %}
+    Лабораторные журналы — Автоматизация учета оборудования и микроклимата
+{% endblock %}
 
 {% block content %}
-{% if content_type == "nonchem" %}
-<div class="col-8">
-                <center><h3>Автоматизация учета лабораторного оборудования и микроклимата для Вашей лаборатории</h3></center>
+<div class="container my-4 my-md-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8 text-center">
+
+            {% if content_type == "nonchem" %}
+                <!-- SEO Заголовок H1 (должен быть один на странице) -->
+                <h1 class="h3 mb-4 fw-bold text-dark">
+                    Автоматизация учета лабораторного оборудования и микроклимата для вашей лаборатории
+                </h1>
+
+                <!-- Блок авторизации / профиля -->
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-2 mb-4">
                     {% if not user.is_authenticated %}
-                    <center><a href="{% url 'heademployeereg' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width:20%">регистрация</a>
-                    <a href="{% url 'user' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width:20%">войти</a> </center>
+                        <a href="{% url 'heademployeereg' %}" class="btn btn-primary px-4 py-2 w-100 w-sm-auto">Регистрация</a>
+                        <a href="{% url 'user' %}" class="btn btn-primary px-4 py-2 w-100 w-sm-auto">Войти</a>
                     {% else %}
-                    <center><a href="{% url 'profile' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width:20%"> ID {{ request.user.username }}</a>
-                    <a href="{% url 'exit' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width:20%"> выйти</a> </center>
+                        <a href="{% url 'profile' %}" class="btn btn-primary px-4 py-2 w-100 w-sm-auto">ID {{ request.user.username }}</a>
+                        <a href="{% url 'exit' %}" class="btn btn-outline-danger px-4 py-2 w-100 w-sm-auto">Выйти</a>
                     {% endif %}
-                <center> <a href="{% url 'contact_page' %}" class="btn btn-primary  mr-2 ml-2 mt-3" style="width:60%">Задать вопрос администрации сайта</a></center>
-                <center><a href="{% url 'about' %}" class="btn btn-primary  mr-2 ml-2 mt-3" style="width:60%">Что это за сайт?</a> </center>
-                <br>
-                <center><img width= 50%   src="{% static 'main/img/2.jpg' %}" alt="Изображение на главной странице" class="mr-2 ml-2 mt-2"> </center>
+                </div>
+
+                <!-- Блок навигации -->
+                <div class="d-grid gap-3 col-12 col-sm-8 mx-auto mb-4">
+                    <a href="{% url 'contact_page' %}" class="btn btn-primary py-2">Задать вопрос администрации сайта</a>
+                    <a href="{% url 'about' %}" class="btn btn-outline-secondary py-2">Что это за сайт?</a>
+                </div>
+
+                <!-- Оптимизированное изображение -->
+                <div class="mt-4">
+                    <img src="{% static 'main/img/2.jpg' %}" 
+                         alt="Интерфейс системы автоматизации учета лабораторного оборудования" 
+                         class="img-fluid rounded shadow-sm d-block mx-auto" 
+                         style="max-width: 500px; height: auto;"
+                         loading="lazy">
+                </div>
+
+            {% elif content_type == "chem" %}
+
+                <!-- Раздел Химии -->
+                <h1 class="h3 mb-4 fw-bold text-dark">Изучение химии в лаборатории</h1>
+                
+                <div class="d-grid gap-3 col-12 col-sm-8 mx-auto">
+                    <a href="{% url 'chem' %}" class="btn btn-primary py-3 fs-5">Перейти к изучению химии</a>
+                </div>
+
+            {% endif %}
+
+        </div>
+    </div>
 </div>
-
-
-{% elif content_type == "chem" %}
-
-
-<div class="col-8">
-                <center><h3>Изучение химии</h3></center>
-                  
-                    <center><a href="{% url 'chem' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width:60%">Изучение химии</a>
-                    </center>
-
-</div>
- {% endif %}
 {% endblock %}
-
-
-                          
