@@ -40,6 +40,9 @@ CLASS_ISOMERS = {
     'primary_amines': 'secondary_amines',
     'secondary_amines': 'primary_amines',
     'tertiary_amines': 'primary_amines',
+    'primary_amines': 'tertiary_amines',
+    'tertiary_amines': 'secondary_amines',
+    'secondary_amines': 'tertiary_amines',
     'Нитрилы': 'Циангидрины',
     'Циангидрины': 'Нитрилы',
 }
@@ -106,7 +109,8 @@ ORGANIC_GROUPS = [
     },
     {
         'name': 'Остальные органические классы',
-        'classes': ['Циклические простые эфиры', 'Ацетали', 'Карбамиды', 'Амиды', 'Феноляты', 'diols', 'triols', 'polyols', 'polyfunctional_alcohols',  'ketals_and_hemiketals', 'fats', 'nucleic_acids', 'thiols', 'heterocycles', 'organometallic_compounds', 'Бифункциональное соединение', 'Циангидрины', 'Алкоголяты металлов']
+        'classes': ['Циклические простые эфиры', 'Ацетали', 'Карбамиды', 'Амиды', 'Феноляты', 'diols', 'triols', 'polyols', 'polyfunctional_alcohols',  'ketals_and_hemiketals', 
+                    'fats', 'nucleic_acids', 'thiols', 'heterocycles', 'organometallic_compounds', 'Бифункциональное соединение', 'Циангидрины', 'Алкоголяты металлов']
     }
 ]
 
@@ -172,7 +176,7 @@ class OrganicNamesTestStartView(View):
                 'alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 'alcohols', 'ethers', 
                 'aldehydes', 'ketones', 'saturated_monobasic_carboxylic_acids', 'esters', 'amino_acids', 
                 'diols', 'triols', 'phenols', 'primary_amines', 'secondary_amines', 'tertiary_amines', 
-                'Ароматические амины',
+                'Ароматические амины', 'halogen_derivatives'
             ]
             selected_classes = [c for c in selected_classes if c in allowed_keys]
 
