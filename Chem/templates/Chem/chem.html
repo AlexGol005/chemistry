@@ -1,147 +1,226 @@
 {% extends 'main/superbase.html' %}
 {% load static %}
 
-{% block title %}
-   Школьная химия ЕГЭ и ОГЭ
+{# SEO-ОПТИМИЗАЦИЯ ДЛЯ ПОИСКОВИКОВ (ОГЭ И ЕГЭ ПО ХИМИИ) #}
+{% block title %}Подготовка к ЕГЭ и ОГЭ по химии: теоретический справочник, законы и таблицы{% endblock %}
+
+{% block metaname %}
+<meta name="description" content="Бесплатный интерактивный справочник для подготовки к ЕГЭ и ОГЭ по химии. Все законы общей, органической и неорганической химии, формулы соединений и таблицы Менделеева.">
+{% endblock %}
+{% block keywords %}
+<meta name="keywords" content="химия егэ, химия огэ, подготовка к егэ по химии, подготовка к огэ по химии, законы химии, таблицы по химии, органические соединения, неорганическая химия">
 {% endblock %}
 
-{# ПОЛНОСТЬЮ УБИРАЕМ БОКОВОЙ БЛОК ДЛЯ МАКСИМАЛЬНОЙ ШИРИНЫ НА СТРАНИЦЕ #}
+{# ПОЛНОСТЬЮ ПРЯЧЕМ БОКОВОЙ БЛОК ДЛЯ СТРАНИЦЫ ВО ВСЮ ШИРИНУ #}
 {% block aside %}{% endblock %}
 
 {% block content %}
 <div class="col-12 px-md-5">
     
-    {# ЯРКИЙ И ПРИВЕТЛИВЫЙ ЗАГЛАВНЫЙ БЛОК #}
-    <div class="text-center mt-4 mb-5 p-4 rounded" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-        <h1 class="font-weight-bold" style="color: #2c3e50; font-family: Georgia, serif; font-size: 30pt;">🧪 Школьная химия ЕГЭ и ОГЭ</h1>
-        <p class="text-muted mt-2" style="font-size: 13pt;">Выберите интересующий раздел справочника для быстрого доступа к материалам</p>
+    {# СТРОГИЙ ПРИВЕТСТВЕННЫЙ БЛОК ДЛЯ SEO-ИНДЕКСАЦИИ #}
+    <div class="text-center mt-4 mb-5 p-4 rounded" style="background-color: #f8f9fa; border: 1px solid #e9ecef;">
+        <h1 class="font-weight-bold" style="color: #343a40; font-family: Georgia, serif; font-size: 28pt;">
+            Справочник для подготовки к ЕГЭ и ОГЭ по химии
+        </h1>
     </div>
 
-    {# ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ ЖИВЫХ КНОПОК И СВОРАЧИВАЕМЫХ МЕНЮ #}
+    {# НЕЖНЫЕ ПАСТЕЛЬНЫЕ СТИЛИ БЕЗ ЛИШНЕЙ РАДУГИ #}
     <style>
         .main-collapse-btn {
             width: 100%;
             text-align: left !important;
-            padding: 20px 30px;
-            font-size: 18pt;
-            font-weight: bold;
-            color: white !important;
-            border: none;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            padding: 15px 25px;
+            font-size: 16pt;
+            font-weight: 600;
+            color: #495057 !important;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 0.25s ease;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
         .main-collapse-btn:hover {
-            transform: translateY(-4px);
-            filter: brightness(1.08);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
             text-decoration: none;
+            color: #212529 !important;
         }
         .main-collapse-btn:active {
-            transform: translateY(-1px);
+            transform: translateY(0);
         }
         .main-collapse-btn::after {
             content: '▼';
-            font-size: 14pt;
-            transition: transform 0.3s ease;
+            font-size: 11pt;
+            color: #6c757d;
+            transition: transform 0.2s ease;
         }
         .main-collapse-btn[aria-expanded="true"]::after {
             transform: rotate(180deg);
         }
 
-        /* Индивидуальные градиенты для разделов */
-        .btn-general { background: linear-gradient(45deg, #2193b0, #6dd5ed); box-shadow: 0 4px 15px rgba(33, 147, 176, 0.3); }
-        .btn-organic { background: linear-gradient(45deg, #11998e, #38ef7d); box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3); }
-        .btn-inorganic { background: linear-gradient(45deg, #ff416c, #ff4b2b); box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3); }
-        .btn-memes { background: linear-gradient(45deg, #f7971e, #ffd200); box-shadow: 0 4px 15px rgba(247, 151, 30, 0.3); }
-        .btn-tables { background: linear-gradient(45deg, #00c6ff, #0072ff); box-shadow: 0 4px 15px rgba(0, 114, 255, 0.3); }
-        .btn-resources { background: linear-gradient(45deg, #6f42c1, #a951ed); box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3); }
-
-        /* Внутренние контейнеры под раскрытыми кнопками */
-        .collapse-card-body {
-            background: #ffffff;
-            border: 2px solid #f1f3f5;
-            border-top: none;
-            border-radius: 0 0 15px 15px;
-            padding: 25px;
-            margin-top: -17px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+        /* Особый благородный стиль для верхнего блока таблиц */
+        .btn-tables-top {
+            background-color: #ffffff;
+            border: 2px solid #b2c2d4;
+            color: #2b4c7e !important;
+        }
+        .btn-tables-top:hover {
+            background-color: #f4f7fa;
         }
 
-        /* Адаптивные интерактивные ссылки плиточного меню */
+        /* Нежные пастельные фоны для остальных кнопок (без фиолетового) */
+        .btn-general-pastel { background-color: #e3faf2; border-color: #c3fae8; }
+        .btn-organic-pastel { background-color: #e8f5e9; border-color: #c8e6c9; }
+        .btn-inorganic-pastel { background-color: #ffeae8; border-color: #ffcdd2; }
+        .btn-memes-pastel { background-color: #fff9db; border-color: #fff3bf; }
+
+        /* Вспомогательный класс для центрирования SVG картинок в кнопке */
+        .btn-title-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .btn-title-wrapper svg {
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Контентные карточки */
+        .collapse-card-body {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            padding: 20px;
+            margin-top: -14px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        /* Интерактивные ссылки справочника */
         .chem-link-item {
-            font-size: 14pt;
-            padding: 12px 18px;
-            border-radius: 8px;
+            font-size: 13pt;
+            padding: 10px 15px;
+            border-radius: 6px;
             color: #495057;
             transition: all 0.2s ease;
             display: block;
-            margin-bottom: 8px;
-            background-color: #fafbfc;
-            border: 1px solid #f1f3f5;
+            margin-bottom: 6px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
         }
         .chem-link-item:hover {
-            background-color: #f1f3f5;
-            color: #007bff;
-            padding-left: 26px;
+            background-color: #e9ecef;
+            color: #0056b3;
+            padding-left: 20px;
             text-decoration: none;
-            border-color: #dee2e6;
         }
     </style>
 
     <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ОБЩАЯ ХИМИЯ -->
+    <!-- РАЗДЕЛ: ТАБЛИЦЫ (НА САМОМ ВЕРХУ, КАРТИНКА - ЯЧЕЙКА ТАБЛИЦЫ МЕНДЕЛЕЕВА) -->
     <!-- ================================================================= -->
-    <button class="main-collapse-btn btn-general" type="button" data-toggle="collapse" data-target="#collapseGeneral" aria-expanded="false" aria-controls="collapseGeneral">
-        <span>🍏 Общая химия</span>
+    <button class="main-collapse-btn btn-tables-top" type="button" data-toggle="collapse" data-target="#collapseTables" aria-expanded="false" aria-controls="collapseTables">
+        <div class="btn-title-wrapper">
+            <!-- SVG: Ячейка таблицы Менделеева (Атомный номер 1, Водород H) -->
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2b4c7e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M7 7h1" />
+                <path d="M7 11h4" />
+                <path d="M7 15h2" />
+                <text x="14" y="15" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#2b4c7e" stroke-width="0">H</text>
+            </svg>
+            <span>Справочные таблицы</span>
+        </div>
+    </button>
+    <div class="collapse" id="collapseTables">
+        <div class="collapse-card-body">
+            <div class="row">
+                <div class="col-12">
+                    <a href="{% url 'tables' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Таблица Менделеева, таблицы растворимости и справочные материалы</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- РАЗДЕЛ: ОБЩАЯ ХИМИЯ (КАРТИНКА - ПОКРАСИВЕЕ СХЕМАТИЧНЫЙ АТОМ) -->
+    <!-- ================================================================= -->
+    <button class="main-collapse-btn btn-general-pastel" type="button" data-toggle="collapse" data-target="#collapseGeneral" aria-expanded="false" aria-controls="collapseGeneral">
+        <div class="btn-title-wrapper">
+            <!-- SVG: Схематичный красивый атом без фиолетового (мягкий сине-зеленый оттенок) -->
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#11998e" stroke-width="1.5">
+                <ellipse cx="12" cy="12" rx="3" ry="9" transform="rotate(30 12 12)" />
+                <ellipse cx="12" cy="12" rx="3" ry="9" transform="rotate(90 12 12)" />
+                <ellipse cx="12" cy="12" rx="3" ry="9" transform="rotate(150 12 12)" />
+                <circle cx="12" cy="12" r="2" fill="#11998e" />
+            </svg>
+            <span>Общая химия</span>
+        </div>
     </button>
     <div class="collapse" id="collapseGeneral">
         <div class="collapse-card-body">
             <div class="row">
                 <div class="col-12">
-                    <a href="{% url 'atomlaws' %}" class="chem-link-item">➔ Законы общей химии</a>
+                    <a href="{% url 'atomlaws' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Законы общей химии для подготовки к экзаменам</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ОРГАНИЧЕСКАЯ ХИМИЯ -->
+    <!-- РАЗДЕЛ: ОРГАНИЧЕСКАЯ ХИМИЯ (КАРТИНКА - СТРУКТУРНАЯ ФОРМУЛА НАФТАЛИНА) -->
     <!-- ================================================================= -->
-    <button class="main-collapse-btn btn-organic" type="button" data-toggle="collapse" data-target="#collapseOrganic" aria-expanded="false" aria-controls="collapseOrganic">
-        <span>🌿 Органическая химия</span>
+    <button class="main-collapse-btn btn-organic-pastel" type="button" data-toggle="collapse" data-target="#collapseOrganic" aria-expanded="false" aria-controls="collapseOrganic">
+        <div class="btn-title-wrapper">
+            <!-- SVG: Химическая структурная формула нафталина (два сопряженных шестиугольника) -->
+            <svg width="34" height="28" viewBox="0 0 34 24" fill="none" stroke="#2e7d32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Левое бензольное кольцо -->
+                <polygon points="6,12 11,4 20,4 25,12 20,20 11,20" />
+                <line x1="12" y1="6" x2="19" y2="6" />
+                <line x1="8" y1="12" x2="11" y2="18" />
+                <!-- Правое сопряженное кольцо -->
+                <polygon points="20,4 29,4 34,12 29,20 20,20" />
+                <line x1="21" y1="18" x2="28" y2="18" />
+                <line x1="28" y1="6" x2="32" y2="12" />
+            </svg>
+            <span>Органическая химия</span>
+        </div>
     </button>
     <div class="collapse" id="collapseOrganic">
         <div class="collapse-card-body">
             <div class="row">
                 <div class="col-md-6">
-                    <a href="{% url 'organiclaw' %}" class="chem-link-item">➔ Законы органической химии</a>
-                    <a href="{% url 'organiccompaunds' %}" class="chem-link-item">➔ Органические соединения</a>
+                    <a href="{% url 'organiclaw' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Законы органической химии для ЕГЭ и ОГЭ</a>
+                    <a href="{% url 'organiccompaunds' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Органические соединения</a>
                 </div>
                 <div class="col-md-6">
-                    <a href="{% url 'organicnamestest_head' %}" class="chem-link-item">➔ Тест: названия органических соединений</a>
+                    <a href="{% url 'organicnamestest_head' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Тест: номенклатура и названия органических соединений</a>
                 </div>
             </div>
         </div>
     </div>
-
-       <!-- ================================================================= -->
+    <!-- ================================================================= -->
     <!-- РАЗДЕЛ: НЕОРГАНИЧЕСКАЯ ХИМИЯ -->
     <!-- ================================================================= -->
-    <button class="main-collapse-btn btn-inorganic" type="button" data-toggle="collapse" data-target="#collapseInorganic" aria-expanded="false" aria-controls="collapseInorganic">
-        <span>🧪 Неорганическая химия</span>
+    <button class="main-collapse-btn btn-inorganic-pastel" type="button" data-toggle="collapse" data-target="#collapseInorganic" aria-expanded="false" aria-controls="collapseInorganic">
+        <div class="btn-title-wrapper">
+            <!-- SVG: Колба Эрленмеера и реторта (Неорганическая химия) -->
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c62828" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 2h4M12 2v7M5 22h14M5 22l4-13h6l4 13" />
+                <path d="M7.5 14h9" stroke-dasharray="2 2" />
+            </svg>
+            <span>Неорганическая химия</span>
+        </div>
     </button>
     <div class="collapse" id="collapseInorganic">
         <div class="collapse-card-body">
             <div class="row">
                 <div class="col-12">
-                    <a href="{% url 'inorganiclaw' %}" class="chem-link-item">➔ Законы неорганической химии</a>
-                    <a href="{% url 'compaunds' %}" class="chem-link-item">➔ Неорганические соединения</a>
+                    <a href="{% url 'inorganiclaw' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Законы неорганической химии</a>
+                    <a href="{% url 'compaunds' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Неорганические соединения</a>
                 </div>
             </div>
         </div>
@@ -150,54 +229,68 @@
     <!-- ================================================================= -->
     <!-- РАЗДЕЛ: МЕМЫ И КАРТИНКИ -->
     <!-- ================================================================= -->
-    <button class="main-collapse-btn btn-memes" type="button" data-toggle="collapse" data-target="#collapseMemes" aria-expanded="false" aria-controls="collapseMemes">
-        <span>🤡 Мемы и картинки отдельно</span>
+    <button class="main-collapse-btn btn-memes-pastel" type="button" data-toggle="collapse" data-target="#collapseMemes" aria-expanded="false" aria-controls="collapseMemes">
+        <div class="btn-title-wrapper">
+            <!-- SVG: Стильная улыбающаяся иконка (Мемы и юмор) -->
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f57f17" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                <line x1="9" y1="9" x2="9.01" y2="9" stroke-width="2" />
+                <line x1="15" y1="9" x2="15.01" y2="9" stroke-width="2" />
+            </svg>
+            <span>Мемы и картинки</span>
+        </div>
     </button>
     <div class="collapse" id="collapseMemes">
         <div class="collapse-card-body">
             <div class="row">
                 <div class="col-12">
-                    <a href="{% url 'pictures' %}" class="chem-link-item">➔ Открыть галерею химических мемов и картинок</a>
+                    <a href="{% url 'pictures' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Юмор, запоминалки и химические иллюстрации в картинках</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ТАБЛИЦЫ -->
+    <!-- РАЗДЕЛ: ПОЛЕЗНЫЕ РЕСУРСЫ И ВИДЕО (НЕЖНЫЙ СИНЕ-СЕРЫЙ ЦВЕТ) -->
     <!-- ================================================================= -->
-    <button class="main-collapse-btn btn-tables" type="button" data-toggle="collapse" data-target="#collapseTables" aria-expanded="false" aria-controls="collapseTables">
-        <span>📊 Таблицы отдельно</span>
-    </button>
-    <div class="collapse" id="collapseTables">
-        <div class="collapse-card-body">
-            <div class="row">
-                <div class="col-12">
-                    <a href="{% url 'tables' %}" class="chem-link-item">➔ Справочные и интерактивные таблицы</a>
-                </div>
-            </div>
+    <button class="main-collapse-btn" style="background-color: #f1f5f9; border-color: #cbd5e1;" type="button" data-toggle="collapse" data-target="#collapseResources" aria-expanded="false" aria-controls="collapseResources">
+        <div class="btn-title-wrapper">
+            <!-- SVG: Раскрытая книга и видеопленка (Ресурсы и видео) -->
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15z" />
+                <polygon points="10,9 15,12 10,15" fill="#475569" />
+            </svg>
+            <span>Полезные ссылки и видеоматериалы</span>
         </div>
-    </div>
-
-    <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ПОЛЕЗНЫЕ РЕСУРСЫ И ВИДЕО (ОБЪЕДИНЕННЫЙ) -->
-    <!-- ================================================================= -->
-    <button class="main-collapse-btn btn-resources" type="button" data-toggle="collapse" data-target="#collapseResources" aria-expanded="false" aria-controls="collapseResources">
-        <span>🎥 Полезные ресурсы и видео</span>
     </button>
     <div class="collapse" id="collapseResources">
         <div class="collapse-card-body">
             <div class="row">
                 <div class="col-md-6">
-                    <a href="{% url 'links' %}" class="chem-link-item">➔ Дополнительные полезные ресурсы</a>
+                    <a href="{% url 'links' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Дополнительные полезные сайты и литература</a>
                 </div>
                 <div class="col-md-6">
-                    <a href="{% url 'videor' %}" class="chem-link-item">➔ Химические реакции в видеоматериалах</a>
+                    <a href="{% url 'videor' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Видеоопыты и химические реакции наглядно</a>
                 </div>
             </div>
         </div>
     </div>
 
+    {# НЕНАВЯЗЧИВЫЙ БЛОК ОБРАТНОЙ СВЯЗИ В САМОМ НИЗУ #}
+    <div class="text-center mt-5 pt-4 pb-2 border-top" style="font-size: 11pt; color: #6c757d;">
+        <p class="mb-1">Нашли ошибку или хотите предложить улучшение справочника?</p>
+        <p>
+            Связаться с автором: 
+            <a href="https://vk.ru" target="_blank" rel="noopener noreferrer" class="mx-2 text-decoration-none" style="color: #4c75a3;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: text-top; margin-right: 2px;"><path d="M22.12 11.23c-.15-.36-.53-.5-.53-.5h-2.73s-.2 0-.35.1c-.13.08-.22.24-.22.24s-.43 1.15-1 1.9c-1.2 1.57-1.7 1.65-1.9 1.53-.46-.3-.35-1.18-.35-1.8 0-1.96.3-2.78-.58-3-1-.24-1.72-.25-2.56-.25-1.07 0-1.98.02-2.5.27-.34.17-.6.55-.44.57.2.03.65.13.9.46.3.4.3 1.34.3 1.34s.03.82-.13 1.14c-.1.2-.5.5-.96.07C7.54 12.3 6.9 11 6.9 11s-.1-.2-.22-.26C6.54 10.66 6.33 10.6 6.33 10.6H3.5s-.28 0-.4.12c-.1.1-.02.34-.02.34s2.55 6 5.43 9c2.64 2.76 5.65 2.58 5.65 2.58h1.08s.33 0 .5-.17c.15-.17.15-.5.15-.5s-.02-1.46.66-1.67c.67-.2 1.53 1.4 2.45 2.03.7.48 1.23.38 1.23.38h2.44s.74 0 .87-.36c.13-.36-.1-.1-.1-1.07 0-1-.44-2.22-1.46-3.4-.82-1-2-2.1-2.4-2.65-.54-.7-.4-.82 0-1.48.02-.03 1-1.43 2.1-3z"/></svg>ВКонтакте
+            </a> 
+            | 
+            <a href="https://t.me" target="_blank" rel="noopener noreferrer" class="mx-2 text-decoration-none" style="color: #24A1DE;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: text-top; margin-right: 2px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.37.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>Telegram (@alexgolovkina)
+            </a>
+        </p>
+    </div>
+
 </div>
 {% endblock %}
-
