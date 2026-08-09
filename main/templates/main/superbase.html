@@ -48,68 +48,108 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
 <body class="main-page-body h-100">
     
 {# здесь рисуем шапку сайта #}
-<nav class="navbar navbar-expand-lg navbar-light bg-light align-items-center">
-    <a href="/" class="navbar-brand d-flex align-items-center py-0">
-        <img src="{% static 'main/img/3.png' %}" alt="Лого" style="max-height: 35px;">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <!-- Логотип зафиксирован по высоте, чтобы не распирать шапку -->
+    <a href="/" class="navbar-brand d-flex align-items-center py-0 m-0">
+        <img src="{% static 'main/img/3.png' %}" alt="Лого" style="height: 38px; width: auto;">
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav justify-content-center align-items-lg-center w-100 text-center">
-            <li class="nav-item active my-1">
+        <!-- Стили в теге <style> гарантируют, что ВСЕ элементы меню будут строго одной высоты и не будут прыгать -->
+        <style>
+            #navbarNavDropdown .nav-item {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            /* Унифицируем высоту и вертикальные отступы для всех кликабельных элементов */
+            #navbarNavDropdown .nav-link, 
+            #navbarNavDropdown .btn {
+                height: 40px; 
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                box-sizing: border-box;
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+                margin: 4px !important; /* Одинаковый зазор между всеми кнопками */
+                white-space: nowrap;
+            }
+            /* Текстовые ссылки превращаем в аккуратные прозрачные кнопки, чтобы они не выбивались */
+            #navbarNavDropdown .nav-link {
+                color: #495057 !important;
+                border: 1px solid transparent;
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+                border-radius: 0.25rem;
+            }
+            #navbarNavDropdown .nav-link:hover {
+                background-color: rgba(0,0,0,0.05);
+            }
+            #navbarNavDropdown .nav-link.active {
+                font-weight: bold;
+                background-color: rgba(0,0,0,0.08);
+            }
+            /* Задаем фиксированную ширину для кнопок действий, чтобы они не скакали из-за длины текста */
+            .btn-fixed-lg { width: 190px; }
+            .btn-fixed-sm { width: 90px; }
+        </style>
+
+        <ul class="navbar-nav justify-content-center align-items-center w-100 text-center flex-wrap">
+            <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="/">JournalLab</a>
             </li>
 
             {# Блок для НЕ химических страниц #}
             {% if 'chem' not in request.path and request.user.profile.userid != "chem" %}                         
-                <li class="nav-item my-1">
+                <li class="nav-item">
                     <a class="nav-link" href="{% url 'about' %}">О&nbsp;сайте</a>
                 </li>
-                <li class="nav-item my-1">
+                <li class="nav-item">
                     <a class="nav-link" href="{% url 'eq' %}">Ресурсы</a>
                 </li>
                 {% if user.is_authenticated and USER_HAVE_RIGHTS %}
-                    <li class="nav-item my-1">
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'managerequipment' %}">Управление ресурсами</a>
                     </li>
                 {% endif %}
-                <li class="nav-item my-1">
+                <li class="nav-item">
                     <a class="nav-link" href="{% url 'contacts' %}">Контакты</a>
                 </li>
-                <!-- Заменено: Про оборудование -> Блог о ЛО -->
-                <li class="nav-item my-1">
+                <li class="nav-item">
                     <a class="nav-link" href="{% url 'blog' %}">Блог о ЛО</a>
                 </li>
             {% endif %}                  
             
-            <li class="nav-item my-1">
+            <li class="nav-item">
                 <a class="nav-link" href="{% url 'chem' %}">Химия</a>
             </li>
         
-            <li class="nav-item m-1">               
-                <a href="{% url 'contact_page' %}" class="btn btn-warning d-inline-block" style="min-width: 200px;">Обратная связь</a>
+            <li class="nav-item">               
+                <a href="{% url 'contact_page' %}" class="btn btn-warning btn-fixed-lg">Обратная связь</a>
             </li>
 
             {# Авторизация для НЕ химических страниц #}
             {% if 'chem' not in request.path %}   
                 {% if not user.is_authenticated %}
-                    <li class="nav-item m-1">
-                        <a href="{% url 'heademployeereg' %}" class="btn btn-outline-success">Попробовать бесплатно</a>
+                    <li class="nav-item">
+                        <a href="{% url 'heademployeereg' %}" class="btn btn-outline-success btn-fixed-lg">Попробовать бесплатно</a>
                     </li>
-                    <li class="nav-item m-1">
-                        <a href="{% url 'user' %}" class="btn btn-outline-info px-3">Войти</a>
+                    <li class="nav-item">
+                        <a href="{% url 'user' %}" class="btn btn-outline-info btn-fixed-sm">Войти</a>
                     </li>
                 {% else %}
                     {% if request.user.profile.userid != "chem" %}
-                        <li class="nav-item m-1">
-                            <a href="{% url 'profile' %}" class="btn btn-outline-warning"> 
+                        <li class="nav-item">
+                            <a href="{% url 'profile' %}" class="btn btn-outline-warning btn-fixed-lg"> 
                                 ЛК Лаборатории {% if request.user.profile.short_name %}({{ request.user.profile.short_name }}){% endif %}
                             </a>
                         </li>
-                        <li class="nav-item m-1">
-                            <a href="{% url 'exit' %}" class="btn btn-outline-warning px-3">Выйти</a>
+                        <li class="nav-item">
+                            <a href="{% url 'exit' %}" class="btn btn-outline-warning btn-fixed-sm">Выйти</a>
                         </li>
                     {% endif %} 
                 {% endif %} 
@@ -118,15 +158,15 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
             {# Авторизация для химических страниц #}
             {% if 'chem' in request.path %}   
                 {% if not user.is_authenticated %}
-                    <li class="nav-item m-1">
-                        <a href="{% url 'chemuser' %}" class="btn btn-outline-info px-3">Войти</a>
+                    <li class="nav-item">
+                        <a href="{% url 'chemuser' %}" class="btn btn-outline-info btn-fixed-sm">Войти</a>
                     </li>
                 {% else %}
-                    <li class="nav-item m-1">
-                        <a href="{% url 'chemprofile' %}" class="btn btn-outline-warning">ЛК Химии</a>
+                    <li class="nav-item">
+                        <a href="{% url 'chemprofile' %}" class="btn btn-outline-warning btn-fixed-lg">ЛК Химии</a>
                     </li>
-                    <li class="nav-item m-1">
-                        <a href="{% url 'chemexit' %}" class="btn btn-outline-warning px-3">Выйти</a>
+                    <li class="nav-item">
+                        <a href="{% url 'chemexit' %}" class="btn btn-outline-warning btn-fixed-sm">Выйти</a>
                     </li>
                 {% endif %} 
             {% endif %} 
@@ -134,6 +174,7 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
     </div>
 </nav>
 {# конец шапки #}
+
 
 
 
