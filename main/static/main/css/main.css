@@ -338,19 +338,29 @@ sudo bash -c 'cat << EOF >> /var/www/labjournaleq/LabBookeq/static/main/css/main
     overflow-wrap: break-word !important;
     white-space: normal !important;
 
-   /* ========================================================================== 
-   ОГРАНИЧЕНИЕ ШИРИНЫ ТОЛЬКО ДЛЯ СТАТЕЙ
+/* ========================================================================== 
+   ОГРАНИЧЕНИЕ ШИРИНЫ ТЕКСТА ИЗ РЕДАКТОРА НА ПК
    ========================================================================== */ 
 @media screen and (min-width: 1200px) {
-    /* Нацеливаемся на абзацы и заголовки, которые лежат внутри основного контейнера */
-    .table-list p, 
-    .table-list h1, 
-    .table-list h2, 
-    .table-list h3 {
+    /* Ограничиваем только текстовые элементы внутри блока с контентом */
+    .ck-editor-content p, 
+    .ck-editor-content span,
+    .ck-editor-content li,
+    .ck-editor-content h1, 
+    .ck-editor-content h2, 
+    .ck-editor-content h3 {
         max-width: 800px !important;
+        width: 100% !important;
         margin-left: 0 !important;
         margin-right: auto !important;
+        display: block !important; /* Чтобы ограничение ширины работало на span */
     }
-}
 
+    /* ИСКЛЮЧЕНИЕ: внутри таблиц текст должен растягиваться по ширине ячеек */
+    .ck-editor-content table p, 
+    .ck-editor-content table span, 
+    .ck-editor-content table li {
+        max-width: 100% !important;
+        display: inline !important; /* Возвращаем стандартный вид для ячеек */
+    }
 }
