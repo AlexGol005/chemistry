@@ -367,23 +367,24 @@
     }
   }
 
-  /* 8. УДАЛЕНИЕ ДУБЛИКАТА ПОИСКА И РАЗДЕЛЕНИЕ КОЛОНОК НА МОБИЛЬНЫХ */
+  /* 8. ИСПРАВЛЕНИЕ ДЛЯ МОБИЛЬНЫХ: ОСТАВЛЯЕМ В ОДИН РЯД И ДЕЛАЕМ БОКОВОЙ ЗАЗОР */
   @media screen and (max-width: 1199px) {
     /* Точечно скрываем мелкую внутреннюю метку формы Crispy, убирая дублирование слова Поиск */
     main .row.no-gutters > .col-4 form div.form-group label {
       display: none !important;
     }
 
-    /* Принудительно разворачиваем колонки на полную ширину на мобильных */
-    main .row.no-gutters > .col-8,
-    main .row.no-gutters > .col-4 {
-      max-width: 100% !important;
-      flex: 0 0 100% !important;
+    /* Уменьшаем ширину главной колонки, чтобы осталось место для зазора */
+    main .row.no-gutters > .col-8 {
+      max-width: 63% !important;
+      flex: 0 0 63% !important;
     }
 
-    /* Зазор между верхней (главной) и нижней (боковой) колонками */
-    main .row.no-gutters > .col-8 {
-      margin-bottom: 40px !important;
+    /* Уменьшаем ширину боковой колонки и отодвигаем её вправо */
+    main .row.no-gutters > .col-4 {
+      max-width: 32% !important;
+      flex: 0 0 32% !important;
+      margin-left: auto !important; /* Создает воздушный коридор между колонками */
     }
   }
 </style>
