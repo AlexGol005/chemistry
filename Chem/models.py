@@ -677,6 +677,18 @@ class OrganicUserReaction(models.Model):
 
 
 
+class CompoundExtraVideo(models.Model):
+    """Дополнительные видео для неорганического вещества"""
+    compound = models.ForeignKey(NamesCompaunds, on_delete=models.CASCADE, related_name='extra_videos', verbose_name="Вещество")
+    video_url = models.CharField('Ссылка на видео', max_length=10000)
+    title = models.CharField('Название видео/ссылки (необязательно)', max_length=500, blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Дополнительное видео к веществу'
+        verbose_name_plural = 'Дополнительные видео к веществам'
+
+    def __str__(self):
+        return self.title if self.title else f"Видео для {self.compound.formula}"
 
 
 
