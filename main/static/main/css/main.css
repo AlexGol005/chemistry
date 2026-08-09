@@ -337,4 +337,20 @@ sudo bash -c 'cat << EOF >> /var/www/labjournaleq/LabBookeq/static/main/css/main
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     white-space: normal !important;
+
+   /* ========================================================================== 
+   ОГРАНИЧЕНИЕ ШИРИНЫ ТОЛЬКО ДЛЯ СТАТЕЙ
+   ========================================================================== */ 
+@media screen and (min-width: 1200px) {
+    /* Нацеливаемся на абзацы и заголовки, которые лежат внутри основного контейнера */
+    .table-list p, 
+    .table-list h1, 
+    .table-list h2, 
+    .table-list h3 {
+        max-width: 800px !important;
+        margin-left: 0 !important;
+        margin-right: auto !important;
+    }
+}
+
 }
