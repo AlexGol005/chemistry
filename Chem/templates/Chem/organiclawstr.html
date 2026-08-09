@@ -7,51 +7,92 @@
 {% block aside %}{% endblock %}
 
 {% block content %}
-{% autoescape off %}
 <div class="col-12">
-    <center><h3><a href="/chem/organiclaw"> Законы органической химии </a></h3></center>
-    <center><h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2></center>
+    <div class="text-center">
+        <h3><a href="/chem/organiclaw"> Законы органической химии </a></h3>
+        <h2>Закон № {{ obj.number }} <br>{% autoescape off %}{{ obj.title }}{% endautoescape %}</h2>
+    </div>
 
-    {# ЭФФЕКТЫ ДЛЯ ЖИВОЙ КНОПКИ #}
+    {# ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ ЖИВЫХ КНОПОК #}
     <style>
-        .alive-btn {
-            background: linear-gradient(45deg, #11998e, #38ef7d); 
+        .alive-btn-base {
             border: none; 
             border-radius: 50px; 
             font-size: 16pt; 
-            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4); 
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             cursor: pointer;
             display: inline-block;
         }
-        .alive-btn:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(56, 239, 125, 0.6);
-            filter: brightness(1.05);
-            text-decoration: none;
+        .alive-btn-base:hover {
+            transform: translateY(-4px); 
+            filter: brightness(1.05); 
+            text-decoration: none; 
         }
-        .alive-btn:active {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 10px rgba(56, 239, 125, 0.4);
+        .alive-btn-base:active {
+            transform: translateY(-1px); 
+        }
+
+        /* Цвета кнопок */
+        .btn-train {
+            background: linear-gradient(45deg, #11998e, #38ef7d); 
+            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4); 
+        }
+        .btn-train:hover { box-shadow: 0 8px 25px rgba(56, 239, 125, 0.6); }
+        .btn-train:active { box-shadow: 0 3px 10px rgba(56, 239, 125, 0.4); }
+
+        .btn-illustrations {
+            background: linear-gradient(45deg, #007bff, #00c6ff); 
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4); 
+        }
+        .btn-illustrations:hover { box-shadow: 0 8px 25px rgba(0, 123, 255, 0.6); }
+        .btn-illustrations:active { box-shadow: 0 3px 10px rgba(0, 123, 255, 0.4); }
+
+        .btn-links {
+            background: linear-gradient(45deg, #6f42c1, #a951ed); 
+            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4); 
+        }
+        .btn-links:hover { box-shadow: 0 8px 25px rgba(111, 66, 193, 0.6); }
+        .btn-links:active { box-shadow: 0 3px 10px rgba(111, 66, 193, 0.4); }
+
+        .btn-reactions {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b); 
+            box-shadow: 0 4px 15px rgba(255, 75, 43, 0.4); 
+        }
+        .btn-reactions:hover { box-shadow: 0 8px 25px rgba(255, 75, 43, 0.6); }
+        .btn-reactions:active { box-shadow: 0 3px 10px rgba(255, 75, 43, 0.4); }
+
+        /* Чистые контентные блоки без ломающих Bootstrap-таблиц */
+        .content-block {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .content-block p {
+            margin-top: 0 !important;
+            margin-bottom: 1.2rem !important;
+            display: block !important;
+            line-height: 1.6;
         }
     </style>
 
-    {# ЖИВАЯ КНОПКА ТРЕНИРОВКИ ПРЯМО ПОД ЗАГОЛОВКОМ (ОТКРЫВАЕТСЯ В НОВОМ ОКНЕ) #}
-    <center>
+    {# ЖИВАЯ КНОПКА ТРЕНИРОВКИ #}
+    <div class="text-center">
         <a href="{% url 'organiclawtest' obj.pk %}" 
            target="_blank" 
            rel="noopener noreferrer"
-           class="btn btn-lg mt-3 mb-4 px-5 text-white font-weight-bold alive-btn">
+           class="btn btn-lg mt-3 mb-4 px-5 text-white font-weight-bold alive-btn-base btn-train">
             Перейти к тренировке ➔
         </a>
-    </center>
+    </div>
 
-    {# НАПОМИНАНИЕ (ШПАРГАЛКА): Перенесено наверх под компактную кнопку #}
-    <center>
+    {# НАПОМИНАНИЕ (ШПАРГАЛКА) #}
+    <div class="text-center">
         <button class="btn btn-sm btn-outline-secondary mb-3" type="button" data-toggle="collapse" data-target="#collapseNapominanie" aria-expanded="false" aria-controls="collapseNapominanie">
             📋 Показать / скрыть шпаргалку (Мет, Эт, Проп...)
         </button>
-    </center>
+    </div>
     <div class="collapse" id="collapseNapominanie">
         <div class="card card-body text-center bg-light mb-3" style="font-size: 12pt; line-height: 1.8;">
             <strong>Корни:</strong> Мет-1 | Эт-2 | Проп-3 | Бут-4 | Пент-5 | Гекс-6 | Гепт-7 | Окт-8 | Нон-9 | Дек-10 <br>
@@ -62,106 +103,28 @@
         </div>
     </div>
 
-    <table class="table table-bordered flexy1">
-        <tbody>
-            <tr>
-                <td class="ind1">
-                    {{ obj.text }}
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    {# Картинки идеально влезают по высоте экрана #}
-    {% if obj.img1 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img1.url }}"><br></div></center>{% endif %}
-    {% if obj.img2 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img2.url }}"><br></div></center>{% endif %}
-
-    <table class="table table-bordered flexy1">
-        <tbody>
-            <tr>
-                <td>
-                    <h4>Примеры</h4>
-                    <br>
-                    {{ obj.examples }}
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    {% if obj.trening %}
-        <table class="table table-bordered flexy1">
-            <tbody>
-                <tr>
-                    <td>
-                        <h4>Ссылки</h4>
-                        <br>
-                        <a href="{{ obj.trening }}" target="blank"> ссылка </a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    {# БЛОК: ОСНОВНОЙ ТЕКСТ #}
+    {% if obj.text %}
+        <div class="content-block ck-editor-content">{% autoescape off %}{{ obj.text }}{% endautoescape %}</div>
     {% endif %}
 
-    {# ВСТРОЕННЫЙ PDF ПЛЕЕР #}
-    {% if obj.presentation and obj.file_extension == '.pdf' %}
-        <div style="margin-top: 20px;">
-            <embed src="{{ obj.presentation.url }}#toolbar=0&navpanes=0" type="application/pdf" width="100%" height="600px" />
-        </div>
-    {% endif %}
-
-    {# ВИДЕОРОЛИКИ #}
-    {% if obj.video or obj.extra_videos.all %}
-        <br>
-        <br>
-        <center>
-            {% if obj.video %}<a href="{{ obj.video }}" class="btn btn-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer">Посмотрите интересное и наглядное видео!</a>{% endif %}
-            {% for vid in obj.extra_videos.all %}<a href="{{ vid.video_url }}" class="btn btn-outline-primary mt-2 mr-2 ml-2" target="_blank" rel="noopener noreferrer">Видео {{ forloop.counter }}</a>{% endfor %}
-        </center>
-    {% endif %}
-
-    {# ПРЕЗЕНТАЦИИ (Остались только дополнительные бесконечные) #}
+    {# ДОПОЛНИТЕЛЬНЫЕ ПРЕЗЕНТАЦИИ #}
     {% if obj.extra_presentations.all %}
-        <center>
-            <div style="margin-top: 20px;">
-                {% for pres in obj.extra_presentations.all %}
-                    <a href="{{ pres.file.url }}" target="_blank" class="btn btn-outline-primary m-1">👁 {% if pres.title %}{{ pres.title }}{% else %}Дополнительная презентация {{ forloop.counter }}{% endif %}</a>
-                {% endfor %}
-            </div>
-        </center>
-    {% endif %}
-
-    <br>
-    <br>
-    {% if obj.img3 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img3.url }}"></div></center><br>{% endif %}
-    {% if obj.img4 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img4.url }}"></div></center><br>{% endif %}
-    {% if obj.img5 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img5.url }}"></div></center><br>{% endif %}
-    {% if obj.img6 %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img6.url }}"></div></center><br>{% endif %}
-
-    {# СВЕРНУТЫЙ БЛОК ГАЛЕРЕИ С КНОПКОЙ #}
-    {% if obj.extra_images.all %}
-        <br><center><button class="btn btn-outline-primary btn-lg mt-3 mb-3" type="button" data-toggle="collapse" data-target="#collapseOrganicGallery" aria-expanded="false" aria-controls="collapseOrganicGallery">🖼 Показать слайды презентации ({{ obj.extra_images.count }} шт.)</button></center>
-        <div class="collapse" id="collapseOrganicGallery">
-            {% for item in obj.extra_images.all %}<center><div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ item.image.url }}" loading="lazy" decoding="async"></div></center><br>{% endfor %}
-            <center><button class="btn btn-outline-secondary mt-2 mb-4" type="button" data-toggle="collapse" data-target="#collapseOrganicGallery" aria-expanded="false" aria-controls="collapseOrganicGallery">🔼 Свернуть слайды</button></center>
-        </div><br>
-    {% endif %}
-
-    {# СВЕРНУТЫЙ БЛОК РЕАКЦИЙ С КНОПКОЙ #}
-    {% if qw %}
-        <br><br><center><button class="btn btn-primary btn-lg mt-2 mb-3" type="button" data-toggle="collapse" data-target="#collapseOrganicReactions" aria-expanded="false" aria-controls="collapseOrganicReactions">🧪 Показать примеры реакций <br><small style="font-size: 11pt; color: #fff; opacity: 0.8;">(реакции приведены без коэффициентов)</small></button></center>
-        <div class="collapse" id="collapseOrganicReactions">
-            {% for j in qw %}
-                <br><br>
-                <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
-                    <a href="{% url 'organiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
-                        {% if j.reagent1 %} {{ j.reagent1 }} {% endif %}{% if j.reagent2 %} + {{ j.reagent2 }} {% endif %}{% if j.reagent3 %} + {{ j.reagent3 }} {% endif %} = 
-                        {% if j.product1 %} {{ j.product1 }} {% endif %}{% if j.product2 %} + {{ j.product2 }} {% endif %}{% if j.product3 %} + {{ j.product3 }} {% endif %}{% if j.product4 %} +{{ j.product4 }} {% endif %}
-                    </a>
-                </p>
+        <div class="text-center mb-4">
+            {% for pres in obj.extra_presentations.all %}
+                <a href="{{ pres.file.url }}" target="_blank" class="btn btn-outline-primary m-1">👁 {% if pres.title %}{{ pres.title }}{% else %}Дополнительная презентация {{ forloop.counter }}{% endif %}</a>
             {% endfor %}
-            <center><button class="btn btn-outline-secondary mt-3 mb-4" type="button" data-toggle="collapse" data-target="#collapseOrganicReactions" aria-expanded="false" aria-controls="collapseOrganicReactions">🔼 Свернуть примеры реакций</button></center>
         </div>
     {% endif %}
-</div>
-{% endautoescape %}
-{% endblock %}
+
+    {# Основные картинки 1 и 2 с ленивой загрузкой #}
+    {% if obj.img1 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img1.url }}" loading="lazy" decoding="async"><br></div>{% endif %}
+    {% if obj.img2 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img2.url }}" loading="lazy" decoding="async"><br></div>{% endif %}
+
+    {# БЛОК: ПРИМЕРЫ #}
+    {% if obj.examples %}
+        <div class="content-block ck-editor-content" data-block-type="examples">
+            <h4 class="text-center font-weight-bold">Примеры</h4><br>
+            <div class="ck-inner-text">{% autoescape off %}{{ obj.examples }}{% endautoescape %}</div>
+        </div>
+    {% endif %}
