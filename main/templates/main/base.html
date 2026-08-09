@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block aside %}
-            <!-- Добавили стиль padding-left, чтобы принудительно создать зазор на больших экранах -->
-            <div class="col-4" style="padding-left: 40px !important;">
+            <!-- Изменили col-4 на col-3 и добавили смещение offset-1 (зазор в 1 колонку слева) -->
+            <div class="col-3 offset-1">
                 <center><h6 class="mt-4">Сегодня</h6></center>                        
                 <center><div id="current_date_time_block"></div></center>
                 <h4>
@@ -42,12 +42,10 @@
                 <center><h6 class="mt-2">Объявления</h6></center>
                 <p><center>{{last_ad.text}}</center></p>
                 
-                <!-- ИСПРАВЛЕНО: Убран дубликат переменной объявлений из блока цитат -->
                 <center><h6 class="mt-2">Цитаты</h6></center>
                 <p><center>Работаешь добросовестно, так и в глаза людям глядеть не совестно. (русская народная поговорка)</center></p>
                 <p><center>«Чем усерднее вы работаете, тем более удачливым вы становитесь». Томас Джефферсон</center></p>
                 
-                <!-- ИСПРАВЛЕНО: Заменен класс img_thumbnail на корректный img-thumbnail -->
                 <center><img width="90%" src="{% static 'main/img/5.jpg' %}" class="img-thumbnail"></center>
                 
                 <center><h4 class="mt-2">Новости</h4></center>
@@ -55,7 +53,8 @@
             </div>
 {% endblock %}
 
-<div class="col-8">
+<!-- Изменили col-8 на col-7, чтобы освободить место для зазора -->
+<div class="col-7">
      {% block content %}
      {% endblock %}
 </div>
