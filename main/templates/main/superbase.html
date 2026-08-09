@@ -48,133 +48,146 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
 <body class="main-page-body h-100">
     
 {# здесь рисуем шапку сайта #}
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm py-3" style="width: 100%; overflow: hidden;">
-    <div class="container">
-        <!-- Левая часть: Логотип (без внешних марджинов) -->
-        <a class="navbar-brand d-flex align-items-center p-0 m-0" href="/">
-            <img src="{% static 'main/img/3.png' %}" alt="Логотип JournalLab" height="40" class="d-inline-block">
-        </a>
-        
-        <!-- Кнопка мобильного меню (без контуров) -->
-        <button class="navbar-toggler border-0 p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Переключить навигацию" style="box-shadow: none;">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <!-- Контент меню -->
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            
-            <!-- Центральная часть: Ссылки меню (строго по центру без переносов) -->
-            <ul class="navbar-nav mx-auto text-center my-3 my-lg-0 align-items-center justify-content-center flex-nowrap-lg" style="gap: 4px;">
-                <li class="nav-item">
-                    <a class="nav-link fw-bold style-nav-link {% if request.path == '/' %}text-primary{% else %}text-dark{% endif %}" href="/" style="white-space: nowrap;">JournalLab</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <!-- Логотип без внешних рамок и лишних отступов -->
+    <a href="/"><img src="{% static 'main/img/3.png' %}" alt="Лого" style="max-height: 40px; display: block;"></a>
+    
+    <!-- Кнопка мобильного меню (исправлена под современный Bootstrap 5) -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav justify-content-center align-items-center w-100">
+                <li class="nav-item active">
+                    <a class="nav-link active text-dark fw-bold" aria-current="page" href="/">JournalLab</a>
                 </li>
 
                 {% if 'chem' not in request.path and request.user.profile.userid != "chem" %}                         
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium style-nav-link {% if request.path == '/about/' %}text-primary fw-bold{% else %}text-dark{% endif %}" href="{% url 'about' %}" style="white-space: nowrap;">О&nbsp;сайте</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium style-nav-link {% if request.path == '/eq/' %}text-primary fw-bold{% else %}text-dark{% endif %}" href="{% url 'eq' %}" style="white-space: nowrap;">Инфраструктура</a>
-                    </li>
-                    {% if user.is_authenticated and USER_HAVE_RIGHTS %}
-                        <li class="nav-item">
-                            <a class="nav-link fw-medium style-nav-link text-dark" href="{% url 'managerequipment' %}" style="white-space: nowrap;">Управление инфраструктурой</a>
-                        </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium style-nav-link text-dark" href="{% url 'contacts' %}" style="white-space: nowrap;">Контакты</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium style-nav-link text-dark" href="{% url 'blog' %}" style="white-space: nowrap;">Про оборудование</a>
-                    </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark fw-medium" href="{% url 'about' %}">О&nbsp;сайте</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark fw-medium" href="{% url 'eq' %}">Инфраструктура</a>
+                </li>
+                {% if user.is_authenticated %}
+                {% if USER_HAVE_RIGHTS %}
+                <li class="nav-item">
+                    <a class="nav-link text-dark fw-medium" href="{% url 'managerequipment' %}">Управление инфраструктурой</a>
+                </li>
+                {% endif %}
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link text-dark fw-medium" href="{% url 'contacts' %}">Контакты</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark fw-medium" href="{% url 'blog' %}">Про оборудование</a>
+                </li>
                 {% endif %}                  
                 
                 <li class="nav-item">
-                    <a class="nav-link fw-medium style-nav-link {% if 'chem' in request.path %}text-primary fw-bold{% else %}text-dark{% endif %}" href="{% url 'chem' %}px" style="white-space: nowrap;">Химия</a>
+                    <a class="nav-link text-dark fw-medium" href="{% url 'chem' %}">Химия</a>
                 </li>
-            </ul>
 
-            <!-- Дополнительные стили для фиксации размеров кнопок и ссылок -->
-            <style>
-                .style-nav-link {
-                    font-size: 15px !important;
-                    padding-left: 10px !important;
-                    padding-right: 10px !important;
-                }
-                .btn-header-fix {
-                    white-space: nowrap !important;
-                    height: 40px !important;
-                    border-radius: 6px !important;
-                    font-weight: 500 !important;
-                    font-size: 14px !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    width: 100% !important; /* На мобильных на всю ширину */
-                    margin-bottom: 10px; /* Отступ между кнопками на мобильных */
-                }
+                <!-- КНОПКИ: Стилизованы точечно, чтобы не ломать высоту и не слипаться -->
+                <li class="nav-item header-item-spacing">               
+                    <a href="{% url 'contact_page' %}" class="btn btn-warning header-btn-layout">Форма обратной связи</a>
+                </li>
                 
-                /* Защита разметки для экранов компьютеров и ноутбуков */
-                @media (min-width: 992px) {
-                    .flex-nowrap-lg {
-                        flex-wrap: nowrap !important; /* Меню гарантированно НЕ переносится */
-                    }
-                    .btn-header-fix {
-                        width: auto !important; /* На ПК ширина по контенту */
-                        margin-bottom: 0 !important;
-                        margin-left: 10px !important; /* Равномерный отступ между кнопками */
-                    }
-                    /* Умное адаптивное ограничение для длинной кнопки Личного кабинета */
-                    .lk-btn-responsive {
-                        max-width: 140px !important; 
-                        transition: max-width 0.2s ease;
-                    }
-                    @media (min-width: 1200px) {
-                        .lk-btn-responsive { max-width: 220px !important; }
-                    }
-                }
-            </style>
-
-            <!-- Правая часть: Блок функциональных кнопок (выровнен по правому краю, без вылетов) -->
-            <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center justify-content-end mt-2 mt-lg-0 p-0 m-0" style="flex-shrink: 0;">
-                
-                <a href="{% url 'contact_page' %}" class="btn btn-warning btn-header-fix px-3">Обратная связь</a>
+                {# Этот элемент li с hr убран на ПК, так как он ломал вертикальное выравнивание, но оставлен для мобильных #}
+                <li class="d-lg-none w-100"><hr class="dropdown-divider m-2"></li>
 
                 {% if 'chem' not in request.path %}   
                     {% if not user.is_authenticated %}
-                        <a href="{% url 'heademployeereg' %}" class="btn btn-success btn-header-fix px-3">Попробовать бесплатно</a>
-                        <a href="{% url 'user' %}" class="btn btn-outline-primary btn-header-fix px-3">Войти</a>
+                        <li class="nav-item header-item-spacing">
+                            <a href="{% url 'heademployeereg' %}" class="btn btn-outline-success header-btn-layout">попробовать бесплатно</a>
+                        </li>
+                        <li class="nav-item header-item-spacing">
+                            <a href="{% url 'user' %}" class="btn btn-outline-info header-btn-layout">войти</a>
+                        </li>
                     {% else %}
-                        {% if request.user.profile.userid != "chem" %}
-                            <a href="{% url 'profile' %}" class="btn btn-primary btn-header-fix lk-btn-responsive text-truncate px-3" title="ЛК {% if request.user.profile.short_name %}{{ request.user.profile.short_name }}{% else %}Управление Лабораторией{% endif %}">
-                                ЛК {% if request.user.profile.short_name %}{{ request.user.profile.short_name }}{% else %}Управление Лабораторией{% endif %}
-                            </a>
-                        {% endif %} 
-                        <!-- Форма выхода с нулевыми внешними отступами -->
-                        <form action="{% url 'exit' %}" method="post" class="m-0 p-0 d-block" style="margin-bottom: 10px;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-secondary btn-header-fix px-3 m-0">Выйти</button>
-                        </form>
-                    {% endif %} 
-                {% endif %} 
+                        <li class="nav-item header-item-spacing">
+                            {% if request.user.profile.userid != "chem" %}
+                                {% if request.user.profile.short_name %}
+                                     <a href="{% url 'profile' %}" class="btn btn-outline-warning header-btn-layout text-truncate" style="max-width: 240px;"> ЛК Управление Лабораторией {{ request.user.profile.short_name }}</a>
+                                {% else %}
+                                     <a href="{% url 'profile' %}" class="btn btn-outline-warning header-btn-layout text-truncate" style="max-width: 240px;"> ЛК Управление Лабораторией</a>
+                                {% endif %}
+                            {% endif %}
+                        </li>
+                        <li class="nav-item header-item-spacing">
+                             <!-- Исправлена ошибка безопасности выхода (POST запрос) -->
+                             <form action="{% url 'exit' %}" method="post" style="display: inline-block; margin: 0; padding: 0;">
+                                 {% csrf_token %}
+                                 <button type="submit" class="btn btn-outline-warning header-btn-layout">выйти</button>
+                             </form>
+                        </li>
+                     {% endif %} 
+                 {% endif %} 
 
                 {% if 'chem' in request.path %}   
                     {% if not user.is_authenticated %}
-                        <a href="{% url 'chemuser' %}" class="btn btn-outline-primary btn-header-fix px-3">Войти</a>
+                        <li class="nav-item header-item-spacing">
+                            <a href="{% url 'chemuser' %}" class="btn btn-outline-info header-btn-layout">войти</a>
+                        </li>
                     {% else %}
-                        <a href="{% url 'chemprofile' %}" class="btn btn-primary btn-header-fix px-3">ЛК Изучение Химии</a>
-                        <!-- Форма выхода ХИМИЯ -->
-                        <form action="{% url 'chemexit' %}" method="post" class="m-0 p-0 d-block" style="margin-bottom: 10px;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-secondary btn-header-fix px-3 m-0">Выйти</button>
-                        </form>
+                        <li class="nav-item header-item-spacing">
+                             <a href="{% url 'chemprofile' %}" class="btn btn-outline-warning header-btn-layout text-truncate" style="max-width: 240px;"> ЛК Изучение Химии</a>
+                        </li>
+                        <li class="nav-item header-item-spacing">
+                             <!-- Исправлена ошибка безопасности выхода для Химии (POST запрос) -->
+                             <form action="{% url 'chemexit' %}" method="post" style="display: inline-block; margin: 0; padding: 0;">
+                                 {% csrf_token %}
+                                 <button type="submit" class="btn btn-outline-warning header-btn-layout">выйти</button>
+                             </form>
+                        </li>
                     {% endif %} 
-                {% endif %} 
-            </div>
-            
-        </div>
+                 {% endif %} 
+        </ul>
     </div>
 </nav>
+
+<!-- Минимальные и жесткие стили для исправления отступов и вылетов (встроены локально) -->
+<style>
+    /* Базовый сброс высоты и выравнивания кнопок в одну линию на ПК */
+    .header-btn-layout {
+        height: 38px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+        font-weight: 500 !important;
+        margin: 0 !important; /* Убираем ваши mr-2 ml-2 mt-2, так как они ломали сетку */
+    }
+
+    /* Равномерные зазоры на мобильных и ПК без съезжания краев */
+    .header-item-spacing {
+        padding: 4px !important; /* Отступ на мобильных */
+    }
+
+    @media (min-width: 992px) {
+        /* На компьютерах делаем ровный боковой зазор между кнопками */
+        .header-item-spacing {
+            padding: 0 0 0 10px !important; 
+        }
+        /* Самый первый элемент после меню не должен иметь левого отступа */
+        .navbar-nav > .header-item-spacing:first-of-type {
+            padding-left: 15px !important; 
+        }
+    }
+
+    /* На телефонах растягиваем кнопки ровно по ширине, чтобы ничего не резалось */
+    @media (max-width: 991px) {
+        .header-btn-layout {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        .header-item-spacing {
+            width: 100% !important;
+            text-align: center;
+        }
+    }
+</style>
 {# конец шапки #}
 
 
