@@ -356,45 +356,41 @@
 
   /* 7. ГОРИЗОНТАЛЬНЫЙ ЗАЗОР МЕЖДУ КОНТЕНТОМ И САЙДБАРOМ НА ПК */
   @media screen and (min-width: 1200px) {
-    main .row.no-gutters > .col-8 {
-      max-width: 64% !important;
-      flex: 0 0 64% !important;
-    }
-    main .row.no-gutters > .col-4 {
+    main .row.no-gutters > .col-4,
+    .table-list .row > .col-4 {
       max-width: 32% !important;
       flex: 0 0 32% !important;
       margin-left: auto !important; /* Отталкивает сайдбар вправо, создавая коридор */
     }
-    /* На компьютере наш невидимый мобильный разделитель полностью скрывается */
-    .mobile-spacer {
-      display: none !important;
+    main .row.no-gutters > .col-8,
+    .table-list .row > .col-8 {
+      max-width: 64% !important;
+      flex: 0 0 64% !important;
     }
   }
 
-  /* 8. ИСПРАВЛЕНО: НАСТРОЙКА ЭЛЕМЕНТОВ НА МОБИЛЬНЫХ ТЕЛЕФОНАХ */
+  /* 8. ИСПРАВЛЕНО: ЖЕСТКИЙ ВНУТРЕННИЙ ЗАЗОР И ФИКС ДУБЛИРОВАНИЯ НА МОБИЛЬНЫХ */
   @media screen and (max-width: 1199px) {
-    /* Сбрасываем лишние внешние шаги */
-    main .row.no-gutters > .col-4 {
+    /* Создаем виртуальный пустой блок на мобильном прямо ПЕРЕД содержимым сайдбара */
+    main .row.no-gutters > .col-4::before,
+    .table-list .row > .col-4::before {
+      content: "" !important;
+      display: block !important;
+      height: 50px !important;       /* Физическая высота зазора на телефоне */
+      width: 100% !important;
+    }
+
+    /* Сбрасываем внешние шаги, чтобы розовая полоса гарантированно не появлялась */
+    main .row.no-gutters > .col-4,
+    .table-list .row > .col-4 {
       margin-top: 0 !important;      
     }
+
     /* Точечно скрываем мелкую внутреннюю метку формы Crispy, убирая дублирование слова Поиск */
     main .row.no-gutters > .col-4 form div.form-group label {
       display: none !important;
     }
-    /* На мобильном телефоне разделитель становится видимым и создаёт зазор */
-    .mobile-spacer {
-      display: block !important;
-      height: 50px !important;       /* Физическая высота пустого пространства */
-      width: 100% !important;
-      clear: both !important;        /* Запрещает элементам обтекать этот блок */
-    }
   }
 </style>
 
-<!-- НЕВИДИМЫЙ МОБИЛЬНЫЙ РАЗДЕЛИТЕЛЬ: встанет строго между закрывшейся левой колонкой контента и сайдбаром -->
-<div class="mobile-spacer"></div>
-
-</body> <!-- ТЕГ BODY ТЕПЕРЬ В САМОМ КОНЦЕ -->
-
-
-
+</body> <!-- ТЕГ BODY ТЕПЕРЬ В САМОМ КОНЦЕ И БЕЗ ЛИШНИХ ТЕГОВ DIV -->
