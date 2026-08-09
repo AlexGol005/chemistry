@@ -207,9 +207,9 @@
             <div class="collapse w-100" id="collapseAtomExamples">
                 <div class="card card-body bg-light mb-4 p-4" style="border-radius: 15px;">
                     {% for j in qw %}
-                        <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin-left: auto; margin-right: auto; word-wrap: break-word; overflow-wrap: break-word;">
-                            <a href="{% url 'atomlawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-none">
-                                {% if j.text %} {{ j.text }} {% endif %}
+                        <p style="display: block; width: 100%; text-align: center !important; font-size: 14pt; margin-left: auto; margin-right: auto; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.5;">
+                            <a href="{% url 'atomlawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-none font-weight-500">
+                                {% if j.text %}{% autoescape off %}{{ j.text }}{% endautoescape %}{% endif %}
                             </a>
                         </p>
                     {% endfor %}
@@ -219,6 +219,7 @@
                 </div>
             </div>
         {% endif %}
+
 
         {# ТАБЛИЦЫ #}
         <div class="text-center mt-4">
