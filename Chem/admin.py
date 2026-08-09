@@ -180,7 +180,7 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
     autocomplete_fields = ['number']
     
 
-    list_filter = ("number",)
+    list_filter = ("number__number",)
     list_display = ('pk', 'metatitle', 'level') 
     search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
     save_as = True
@@ -385,7 +385,7 @@ admin.site.register(Organiclaw, OrganiclawAdmin)
 
 
 
-# реакции ох классы для отображения в админке
+# реакции органической химии классы для отображения в админке
 
 # класс для загрузки/выгрузки реакции ох
 class OrganicReactionResource(resources.ModelResource):
@@ -411,7 +411,7 @@ class OrganicReactionAdmin(ImportExportActionModelAdmin):
     autocomplete_fields = ['number']
     list_display = ('pk', 'metatitle')
     search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
-    list_filter = ("number",)
+    list_filter = ("number__number",)
     save_as = True
 
     def save_model(self, request, obj, form, change):
