@@ -1,7 +1,6 @@
 /* ========================================================================== 
    1. ГЛОБАЛЬНЫЕ СТИЛИ И СЕТКА (ПРИЖАТИЕ ФУТЕРА И АДАПТИВНОСТЬ) 
    ========================================================================== */ 
-
 html, body { 
     height: 100%; 
     margin: 0; 
@@ -35,7 +34,6 @@ footer, .bg-body-tertiary {
     padding-top: 40px !important; 
 } 
 
-/* ИСПРАВЛЕНО: Разрешаем главному контенту растягиваться по ширине на ПК */ 
 .table-list { 
     width: 100% !important; 
     max-width: 100% !important; 
@@ -50,7 +48,6 @@ footer, .bg-body-tertiary {
 /* ========================================================================== 
    2. ШАПКА САЙТА (NAVBAR) 
    ========================================================================== */ 
-
 .navbar1 { 
     background: rgba(22, 240, 240, 0.47) !important; 
     border-bottom: 3px solid silver; 
@@ -67,8 +64,6 @@ footer, .bg-body-tertiary {
 /* ========================================================================== 
    3. БОКОВАЯ ПАНЕЛЬ (ASIDE) 
    ========================================================================== */ 
-
-/* Сайдбар фиксируется абсолютом только на больших экранах компьютеров */ 
 @media screen and (min-width: 1300px) { 
     aside { 
         position: absolute !important; 
@@ -82,8 +77,6 @@ footer, .bg-body-tertiary {
     } 
 } 
 
-/* ИСПРАВЛЕНО: На смартфонах и планшетах (до 1300px) абсолютное позиционирование отменяется, 
-   а сетка col-4 / col-8 расширяется до 100%, гарантируя, что блоки встанут строго друг под друга */ 
 @media screen and (max-width: 1299px) { 
     aside { 
         position: relative !important; 
@@ -91,18 +84,17 @@ footer, .bg-body-tertiary {
         margin-top: 20px !important; 
         right: auto !important; 
         left: auto !important; 
-        display: block !important;
+        display: block !important; 
     } 
-    .col-4, .col-8 {
-        max-width: 100% !important;
-        flex: 0 0 100% !important;
-    }
-} 
+    .col-4, .col-8 { 
+        max-width: 100% !important; 
+        flex: 0 0 100% !important; 
+    } 
+}
 
 /* ========================================================================== 
    4. ТАБЛИЦЫ И ЯЧЕЙКИ 
    ========================================================================== */ 
-
 .table-bordered td, .table-bordered th { 
     border-color: #4d74bd !important; 
     background-color: rgb(245, 245, 246) !important; 
@@ -172,7 +164,6 @@ th.ind, td.ind {
 /* ========================================================================== 
    5. ФОРМЫ, СИСТЕМНЫЕ УВЕДОМЛЕНИЯ И АВТОРИЗАЦИЯ 
    ========================================================================== */ 
-
 .alert-light { 
     border-color: #bfbfbf; 
     color: #04147c; 
@@ -209,7 +200,6 @@ th.ind, td.ind {
 /* ========================================================================== 
    6. ФИКСЫ ДЛЯ МОЛЕКУЛЯРНОГО РЕДАКТОРА JSME 
    ========================================================================= */ 
-
 [id^="jsme_container_"], [id^="jsme_container_"] * { 
     white-space: normal !important; 
     box-sizing: content-box !important; 
@@ -230,8 +220,6 @@ th.ind, td.ind {
 /* ========================================================================== 
    7. ТОЧЕЧНЫЙ ФИКС ДЛЯ СТРАНИЦЫ С КАРТИНКАМИ (CHEM/PICTURES) 
    ========================================================================== */ 
-
-/* Находим контейнер страницы мемов и принудительно раскрываем его на 100% */
 .main-page-body[class*="chem"] .col-6,
 .main-page-body[class*="chem"] .col-md-6,
 main .container .row > div[class*="col-"] {
@@ -239,7 +227,6 @@ main .container .row > div[class*="col-"] {
     flex: 0 0 100% !important;
 }
 
-/* Заставляем все картинки-мемы растягиваться на всю ширину родительского блока */
 .main-page-body img,
 main img {
     width: 100% !important;
@@ -247,33 +234,27 @@ main img {
     height: auto !important;
 }
 
-/* Если картинки обернуты в теги ссылок, раскрываем ссылки тоже */
 main p center a,
 main center a {
     display: block !important;
     width: 100% !important;
 }
 
-
-
 /* ========================================================================== 
    8. АДАПТИВНОСТЬ ТАБЛИЦ И БОКОВОЙ ПАНЕЛИ НА СМАРТФОНАХ
    ========================================================================== */ 
 @media (max-width: 768px) {
-    /* Перестраиваем сетку: контент и боковой блок встают друг под друга */
     .row {
         display: flex !important;
         flex-direction: column !important;
     }
     
-    /* Центральный контент раскрывается на 100% ширины */
     .col-8, main .col-8, div[class*="col-8"] {
         max-width: 100% !important;
         flex: 0 0 100% !important;
         width: 100% !important;
     }
     
-    /* Боковой блок (aside) сдвигается вниз страницы на всю ширину */
     .col-4, aside, div[class*="col-4"] {
         max-width: 100% !important;
         flex: 0 0 100% !important;
@@ -283,7 +264,6 @@ main center a {
         padding-top: 20px;
     }
 
-    /* Защищаем таблицы от вылезания: добавляем им внутреннюю прокрутку */
     table, .table {
         display: block !important;
         width: 100% !important;
@@ -293,24 +273,17 @@ main center a {
     }
 }
 
-
-/* ==========================================================================
-   ГЛОБАЛЬНАЯ АДАПТИВНОСТЬ ДЛЯ ТАБЛИЦ И КАРТИНОК ИЗ CKEDITOR
-   ========================================================================== */
-
-/* 1. Запрещаем любым элементам внутри адаптивных таблиц вылезать за ширину экрана */
+/* ГЛОБАЛЬНАЯ АДАПТИВНОСТЬ ДЛЯ ТАБЛИЦ И КАРТИНОК ИЗ CKEDITOR */
 .table-responsive * {
     max-width: 100% !important;
 }
 
-/* 2. Принудительно сжимаем сами таблицы и фиксируем их разметку */
 .table-responsive table {
     width: 100% !important;
     max-width: 100% !important;
     table-layout: fixed !important;
 }
 
-/* 3. Сбрасываем жесткую ширину контейнеров и фигур, в которые CKEditor оборачивает фото */
 .table-responsive figure,
 .table-responsive figure.image,
 .table-responsive .image,
@@ -321,17 +294,15 @@ main center a {
     box-sizing: border-box !important;
 }
 
-/* 4. Жестко адаптируем сами изображения внутри ячеек */
 .table-responsive td img,
 .table-responsive table img {
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
     display: block !important;
-    margin: 0 auto !important; /* Центрирует картинку в ячейке */
+    margin: 0 auto !important;
 }
 
-/* 5. Разрешаем перенос любого текста и формул в ячейках */
 .table-responsive td,
 .table-responsive th {
     word-wrap: break-word !important;
@@ -340,21 +311,29 @@ main center a {
 }
 
 /* ========================================================================== 
-   9. ОГРАНИЧЕНИЕ ШИРИНЫ ТЕКСТА НА БОЛЬШИХ ЭКРАНАХ
+   9. ОГРАНИЧЕНИЕ ШИРИНЫ ТЕКСТА ВНУТРИ СЕТКИ НА БОЛЬШИХ ЭКРАНАХ
    ========================================================================== */ 
 @media screen and (min-width: 1200px) {
-    /* Ограничиваем только текстовые абзацы, списки и заголовки внутри контента */
-    main p, 
-    main ul:not(.errorlist), 
-    main ol, 
-    main h1, 
-    main h2, 
-    main h3, 
-    main h4 {
-        max-width: 800px !important; /* Идеальная ширина для чтения текста */
-        margin-left: 0 !important;   /* Выравнивание по левому краю */
+    /* Ограничиваем заголовки, абзацы, списки и спаны внутри контента */
+    .main-content-col p, 
+    .main-content-col span,
+    .main-content-col li,
+    .main-content-col h1, 
+    .main-content-col h2, 
+    .main-content-col h3, 
+    .main-content-col h4 {
+        max-width: 850px !important;
+        width: 100% !important;
+        margin-left: 0 !important;
         margin-right: auto !important;
-        white-space: normal !important;
+        display: block !important;
+    }
+
+    /* Исключение: внутри таблиц текст должен свободно растягиваться по ячейкам */
+    .main-content-col table p, 
+    .main-content-col table span, 
+    .main-content-col table li {
+        max-width: 100% !important;
+        display: inline !important;
     }
 }
-
