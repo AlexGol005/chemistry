@@ -128,3 +128,147 @@
             <div class="ck-inner-text">{% autoescape off %}{{ obj.examples }}{% endautoescape %}</div>
         </div>
     {% endif %}
+
+        {# БЛОК: ССЫЛКИ #}
+    {% if obj.trening %}
+        <div class="content-block ck-editor-content" data-block-type="links">
+            <h4 class="text-center font-weight-bold">Ссылки</h4><br>
+            <div class="text-center"><a href="{{ obj.trening }}" target="_blank" class="btn btn-link"> ссылка </a></div>
+        </div>
+    {% endif %}
+
+    {# ВСТРОЕННЫЙ PDF ПЛЕЕР #}
+    {% if obj.presentation and obj.file_extension == '.pdf' %}
+        <div style="margin-top: 20px;">
+            <embed src="{{ obj.presentation.url }}#toolbar=0&navpanes=0" type="application/pdf" width="100%" height="600px" />
+        </div>
+    {% endif %}
+
+    {# ВИДЕОРОЛИКИ #}
+    {% if obj.video %}
+        <div class="text-center mt-4 mb-4">
+            <a href="{{ obj.video }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Посмотрите интересное видео!</a>
+        </div>
+    {% endif %}
+
+    {# Оставшиеся основные картинки 3-6 с ленивой загрузкой #}
+    {% if obj.img3 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img3.url }}" loading="lazy" decoding="async"></div><br>{% endif %}
+    {% if obj.img4 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img4.url }}" loading="lazy" decoding="async"></div><br>{% endif %}
+    {% if obj.img5 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img5.url }}" loading="lazy" decoding="async"></div><br>{% endif %}
+    {% if obj.img6 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img6.url }}" loading="lazy" decoding="async"></div><br>{% endif %}
+
+    <!-- ================================================================= -->
+    <!-- НИЖНИЙ БЛОК ИЗ СВОРАЧИВАЕМЫХ КНОПОК ОДИНАКОВОГО СТИЛЯ -->
+    <!-- ================================================================= -->
+    <div class="d-flex flex-column align-items-center mt-5 mb-5">
+
+        {# 1. КНОПКА: СЛАЙДЫ ПРЕЗЕНТАЦИИ #}
+        {% if obj.extra_images.all %}
+            <button class="btn btn-lg mt-3 mb-3 px-5 text-white font-weight-bold alive-btn-base btn-illustrations" 
+                    type="button" data-toggle="collapse" data-target="#collapseOrgGallery" 
+                    aria-expanded="false" aria-controls="collapseOrgGallery">
+                🖼 Показать слайды презентации ({{ obj.extra_images.count }} шт.)
+            </button>
+            <div class="collapse w-100" id="collapseOrgGallery">
+                <div class="pt-3">
+                    {% for item in obj.extra_images.all %}
+                        <img class="bd-placeholder-img rounded img-fluid mx-auto d-block mb-4" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ item.image.url }}" loading="lazy" decoding="async">
+                    {% endfor %}
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-sm btn-outline-secondary mb-4" type="button" data-toggle="collapse" data-target="#collapseOrgGallery" aria-expanded="false" aria-controls="collapseOrgGallery">🔼 Свернуть слайды</button>
+                </div>
+            </div>
+        {% endif %}
+
+        {# 2. КНОПКА: ПОЛЕЗНЫЕ ССЫЛКИ / ДОП. ВИДЕО #}
+        {% if obj.extra_videos.all %}
+            <button class="btn btn-lg mt-3 mb-3 px-5 text-white font-weight-bold alive-btn-base btn-links" 
+                    type="button" data-toggle="collapse" data-target="#collapseExtraVideos" 
+                    aria-expanded="false" aria-controls="collapseExtraVideos">
+                🔗 Полезные видеоссылки ({{ obj.extra_videos.count }} шт.)
+            </button>
+            <div class="collapse w-100" id="collapseExtraVideos">
+                <div class="card card-body text-center bg-light mb-4 mx-auto" style="max-width: 600px; border-radius: 15px;">
+                    <h4 class="mb-3 font-weight-bold text-dark">Дополнительные видео</h4>
+                    <div class="d-flex flex-column align-items-center">
+                        {% for vid in obj.extra_videos.all %}
+                            <a href="{{ vid.video_url }}" class="btn btn-link text-decoration-none my-1" target="_blank" rel="noopener noreferrer" style="font-size: 13pt; font-weight: 500;">
+                                🚀 {% if vid.title %}{{ vid.title }}{% else %}Видео {{ forloop.counter }}{% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-sm btn-outline-secondary mt-3" type="button" data-toggle="collapse" data-target="#collapseExtraVideos" aria-expanded="false" aria-controls="collapseExtraVideos">🔼 Свернуть ссылки</button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {# 3. КНОПКА: ПОКАЗАТЬ ПРИМЕРЫ РЕАКЦИЙ #}
+        {% if qw %}
+            <button class="btn btn-lg mt-3 mb-3 px-5 text-white font-weight-bold alive-btn-base btn-reactions" 
+                    type="button" data-toggle="collapse" data-target="#collapseOrgReactions" 
+                    aria-expanded="false" aria-controls="collapseOrgReactions">
+                🧪 Показать примеры реакций
+            </button>
+            <div class="collapse w-100" id="collapseOrgReactions">
+                <div class="card card-body bg-light mb-4 p-4" style="border-radius: 15px;">
+                    <div class="text-center mb-4">
+                        <small style="font-size: 12pt; color: #6c757d; font-weight: 500;">(реакции приведены без коэффициентов)</small>
+                    </div>
+                    {% for j in qw %}
+                        <p style="display: block; width: 100%; text-align: center !important; font-size: 14pt; margin-left: auto; margin-right: auto; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.5;">
+                            <a href="{% url 'organiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-none">
+                                {% autoescape off %}
+                                {% if j.reagent1 %} {{ j.reagent1 }} {% endif %}{% if j.reagent2 %} + {{ j.reagent2 }} {% endif %}{% if j.reagent3 %} + {{ j.reagent3 }} {% endif %} = 
+                                {% if j.product1 %} {{ j.product1 }} {% endif %}{% if j.product2 %} + {{ j.product2 }} {% endif %}{% if j.product3 %} + {{ j.product3 }} {% endif %}{% if j.product4 %} +{{ j.product4 }} {% endif %}
+                                {% endautoescape %}
+                            </a>
+                        </p>
+                    {% endfor %}
+                    <div class="text-center">
+                        <button class="btn btn-sm btn-outline-secondary mt-3" type="button" data-toggle="collapse" data-target="#collapseOrgReactions" aria-expanded="false" aria-controls="collapseOrgReactions">🔼 Свернуть примеры</button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {# ТАБЛИЦЫ #}
+        <div class="text-center mt-4">
+            <a href="{% url 'tables' %}" class="btn btn-primary px-4" target="_blank" rel="noopener noreferrer"> Таблицы </a>
+        </div>
+
+    </div>
+</div>
+
+{# НАДЕЖНЫЙ ЖЕСТКИЙ СКРИПТ ДЕКОДИРОВАНИЯ ТЕГОВ И СТИРАНИЯ ПРОЧЕРКОВ #}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function fixHtmlContent(element) {
+            let html = element.innerHTML;
+            while (html.includes('&lt;') || html.includes('&gt;') || html.includes('&amp;lt;')) {
+                let worker = document.createElement('div');
+                worker.innerHTML = html;
+                html = worker.textContent || worker.innerText;
+            }
+            element.innerHTML = html;
+        }
+
+        let mainHeader = document.querySelector('h2');
+        if (mainHeader) { fixHtmlContent(mainHeader); }
+
+        document.querySelectorAll('.ck-editor-content').forEach(function(block) {
+            let textContainer = block.querySelector('.ck-inner-text') || block;
+            fixHtmlContent(textContainer);
+
+            let cleanText = textContainer.innerText.replace(/[\s\n\t\r​\u200B\u00A0]/g, '');
+            
+            if (cleanText === "" || cleanText === "-" || cleanText === "—") {
+                block.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}
+
