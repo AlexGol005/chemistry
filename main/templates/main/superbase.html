@@ -344,7 +344,23 @@
     overflow-wrap: break-word !important;
     white-space: normal !important;
   }
-</style>
+
+  /* ЖЕСТКИЙ ФИКС ЗАЗОРА МЕЖДУ КОНТЕНТОМ И САЙДБАРOМ НА ПК */
+  @media screen and (min-width: 1200px) {
+    /* Находим левую колонку с контентом */
+    main .row.no-gutters > .col-8 {
+      max-width: 63% !important;
+      flex: 0 0 63% !important;
+    }
+    /* Находим правую колонку с сайдбаром */
+    main .row.no-gutters > .col-4 {
+      max-width: 32% !important;
+      flex: 0 0 32% !important;
+      margin-left: auto !important; /* Эта строчка отодвинет сайдбар вправо, создав пустой коридор */
+    }
+  }
+</style> <!-- ЗДЕСЬ ЗАКРЫВАЕТСЯ ВАШ СУЩЕСТВУЮЩИЙ БЛОК СТИЛЕЙ -->
+
 
 
 
