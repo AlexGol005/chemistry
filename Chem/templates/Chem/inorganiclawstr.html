@@ -106,12 +106,12 @@
     </div>
 
     {# БЛОК: ОСНОВНОЙ ТЕКСТ #}
-    {% if obj.text and obj.text|striptags|trim != "-" and obj.text|striptags|trim != "—" and obj.text|striptags|trim != "" %}
+    {% if obj.text and obj.text != "-" and obj.text != "—" and obj.text|striptags != "" %}
         <div class="content-block">{{ obj.text|safe }}</div>
     {% endif %}
 
-    {# БЛОК: ОБЩАЯ ФОРМУЛА ЗАКОНА (С исправленной фильтрацией прочерков) #}
-    {% if obj.formula and obj.formula|striptags|trim != "-" and obj.formula|striptags|trim != "—" and obj.formula|striptags|trim != "" %}
+    {# БЛОК: ОБЩАЯ ФОРМУЛА ЗАКОНА #}
+    {% if obj.formula and obj.formula != "-" and obj.formula != "—" and obj.formula|striptags != "" and "—" not in obj.formula|striptags and "-" not in obj.formula|striptags %}
         <div class="content-block">
             <h4 class="text-center font-weight-bold">Общая формула закона</h4><br>
             {{ obj.formula|safe }}
@@ -120,10 +120,10 @@
 
     {# Старые картинки 1 и 2 #}
     {% if obj.img1 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img1.url }}"><br></div>{% endif %}
-    {% if obj.img2 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img2.url }}"><br></div>{% endif %}
+    {% if obj.img2 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img2.url }}"><br></div>{% endif %}
 
     {# БЛОК: ПРИМЕРЫ #}
-    {% if obj.examples and obj.examples|striptags|trim != "-" and obj.examples|striptags|trim != "—" and obj.examples|striptags|trim != "" %}
+    {% if obj.examples and obj.examples != "-" and obj.examples != "—" and obj.examples|striptags != "" %}
         <div class="content-block">
             <h4 class="text-center font-weight-bold">Примеры</h4><br>
             {{ obj.examples|safe }}
@@ -131,7 +131,7 @@
     {% endif %}
     
     {# БЛОК: ИСКЛЮЧЕНИЯ #}
-    {% if obj.exceptions and obj.exceptions|striptags|trim != "-" and obj.exceptions|striptags|trim != "—" and obj.exceptions|striptags|trim != "" %}
+    {% if obj.exceptions and obj.exceptions != "-" and obj.exceptions != "—" and obj.exceptions|striptags != "" %}
         <div class="content-block">
             <h4 class="text-center font-weight-bold">Исключения</h4><br>
             {{ obj.exceptions|safe }}
@@ -139,7 +139,7 @@
     {% endif %}
     
     {# БЛОК: ССЫЛКИ #}
-    {% if obj.trening and obj.trening|striptags|trim != "-" and obj.trening|striptags|trim != "—" and obj.trening|striptags|trim != "" %}
+    {% if obj.trening and obj.trening != "-" and obj.trening != "—" and obj.trening|striptags != "" %}
         <div class="content-block">
             <h4 class="text-center font-weight-bold">Ссылки</h4><br>
             <div class="text-center"><a href="{{ obj.trening }}" target="_blank" class="btn btn-link"> ссылка </a></div>
@@ -166,9 +166,10 @@
     <br><br>
     {# Оставшиеся старые картинки 3-6 #}
     {% if obj.img3 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img3.url }}"></div><br>{% endif %}
-    {% if obj.img4 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img4.url }}"></div><br>{% endif %}
-    {% if obj.img5 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img5.url }}"></div><br>{% endif %}
-    {% if obj.img6 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img6.url }}"></div><br>{% endif %}
+    {% if obj.img4 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img4.url }}"></div><br>{% endif %}
+    {% if obj.img5 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img5.url }}"></div><br>{% endif %}
+    {% if obj.img6 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img6.url }}"></div><br>{% endif %}
+
         <!-- ================================================================= -->
     <!-- НИЖНИЙ БЛОК ИЗ ТРЕХ КНОПОК ОДИНАКОВОГО СТИЛЯ И РАЗМЕРА -->
     <!-- ================================================================= -->
@@ -247,4 +248,3 @@
     </div>
 </div>
 {% endblock %}
-
