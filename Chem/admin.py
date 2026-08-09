@@ -154,7 +154,7 @@ admin.site.register(Inorganiclaw, InorganiclawAdmin)
 
 
 
-
+# реакции неорганической химии
 
 # 1. Класс для загрузки/выгрузки реакции
 class InorganicReactionResource(resources.ModelResource):
@@ -179,7 +179,8 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
     form = InorganicReactionAdminForm
     autocomplete_fields = ['number']
     
-    # Добавили 'level' в список отображения, чтобы сразу видеть результат
+
+    list_filter = ("number",)
     list_display = ('pk', 'metatitle', 'level') 
     search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
     save_as = True
@@ -410,6 +411,7 @@ class OrganicReactionAdmin(ImportExportActionModelAdmin):
     autocomplete_fields = ['number']
     list_display = ('pk', 'metatitle')
     search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
+    list_filter = ("number",)
     save_as = True
 
     def save_model(self, request, obj, form, change):
