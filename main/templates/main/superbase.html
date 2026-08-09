@@ -345,21 +345,38 @@
     white-space: normal !important;
   }
 
-  /* ЖЕСТКИЙ ФИКС ЗАЗОРА МЕЖДУ КОНТЕНТОМ И САЙДБАРOМ НА ПК */
+  /* 6. ГЛОБАЛЬНОЕ ОГРАНИЧЕНИЕ ШИРИНЫ ВСЕГО САЙТА НА БОЛЬШИХ МОНИТОРАХ */
   @media screen and (min-width: 1200px) {
-    /* Находим левую колонку с контентом */
-    main .row.no-gutters > .col-8 {
-      max-width: 63% !important;
-      flex: 0 0 63% !important;
+    main .container-fluid.table-list {
+      max-width: 1300px !important; /* Сайт больше не растянется на весь экран, текст станет легко читать */
+      margin-left: auto !important;  /* Центрируем весь сайт по центру экрана */
+      margin-right: auto !important;
     }
-    /* Находим правую колонку с сайдбаром */
+  }
+
+  /* 7. ГОРИЗОНТАЛЬНЫЙ ЗАЗОР МЕЖДУ КОНТЕНТОМ И САЙДБАРOМ НА ПК */
+  @media screen and (min-width: 1200px) {
+    main .row.no-gutters > .col-8 {
+      max-width: 64% !important;
+      flex: 0 0 64% !important;
+    }
     main .row.no-gutters > .col-4 {
       max-width: 32% !important;
       flex: 0 0 32% !important;
-      margin-left: auto !important; /* Эта строчка отодвинет сайдбар вправо, создав пустой коридор */
+      margin-left: auto !important; /* Отталкивает сайдбар вправо, создавая коридор */
     }
   }
-</style> <!-- ЗДЕСЬ ЗАКРЫВАЕТСЯ ВАШ СУЩЕСТВУЮЩИЙ БЛОК СТИЛЕЙ -->
+
+  /* 8. ВЕРТИКАЛЬНЫЙ ЗАЗОР МЕЖДУ КОНТЕНТОМ И САЙДБАРОМ НА МОБИЛЬНЫХ ТЕЛЕФОНАХ */
+  @media screen and (max-width: 1199px) {
+    main .row.no-gutters > .col-4 {
+      margin-top: 40px !important;    /* Физически отодвигает сайдбар вниз от таблиц контента */
+      border-top: 1px solid #dee2e6; /* Делает аккуратную тонкую разделительную линию сверху */
+      padding-top: 20px !important;  /* Делает отступ от этой линии до заголовка "Поиск" */
+    }
+  }
+</style>
+
 
 
 
