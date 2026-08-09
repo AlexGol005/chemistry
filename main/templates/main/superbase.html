@@ -58,7 +58,7 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
     </button>
     
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <!-- Стили в теге <style> гарантируют, что ВСЕ элементы меню будут строго одной высоты и не будут прыгать -->
+        <!-- Стили гарантируют, что ВСЕ элементы меню будут строго одной высоты и не будут прыгать -->
         <style>
             #navbarNavDropdown .nav-item {
                 display: flex;
@@ -117,9 +117,6 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
                     </li>
                 {% endif %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'contacts' %}">Контакты</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" href="{% url 'blog' %}">Блог о ЛО</a>
                 </li>
             {% endif %}                  
@@ -144,9 +141,8 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
                 {% else %}
                     {% if request.user.profile.userid != "chem" %}
                         <li class="nav-item">
-                            <a href="{% url 'profile' %}" class="btn btn-outline-warning btn-fixed-lg"> 
-                                ЛК Лаборатории {% if request.user.profile.short_name %}({{ request.user.profile.short_name }}){% endif %}
-                            </a>
+                            <!-- Кнопка очищена от вывода short_name -->
+                            <a href="{% url 'profile' %}" class="btn btn-outline-warning btn-fixed-lg">ЛК Лаборатории</a>
                         </li>
                         <li class="nav-item">
                             <a href="{% url 'exit' %}" class="btn btn-outline-warning btn-fixed-sm">Выйти</a>
