@@ -1,18 +1,15 @@
 {% extends 'main/superbase.html' %}
 {% load static %}
 
-
-
-
 {% block aside %}
-            <div class="col-4">
+            <!-- Добавили pl-xl-4, чтобы на ПК боковая панель не прижималась к основному тексту -->
+            <div class="col-4 pl-xl-4">
                 <center><h6 class="mt-4">Сегодня</h6></center>                        
                 <center><div id="current_date_time_block"></div></center>
                 <h4>
                 <center>
                     <script type="text/javascript">
                         /* функция добавления ведущих нулей */
-                        /* (если число меньше десяти, перед числом добавляем ноль) */
                         function zero_first_format(value)
                         {
                             if (value < 10)
@@ -36,27 +33,29 @@
                             return day+"."+month+"."+year+" "+hours+":"+minutes+":"+seconds;
                         }
                     
-                        /* выводим текущую дату и время на сайт в блок с id "current_date_time_block" */
+                        /* выводим текущую дату и время на сайт */
                         document.getElementById('current_date_time_block').innerHTML = date_time();
                     </script>
                 </center>
                 </h4>
+                
                 <center><h6 class="mt-2">Объявления</h6></center>
                 <p><center>{{last_ad.text}}</center></p>
+                
+                <!-- ИСПРАВЛЕНО: Убран дубликат last_ad.text из блока цитат -->
                 <center><h6 class="mt-2">Цитаты</h6></center>
-                <p><center>{{last_ad.text}}</center></p>
                 <p><center>Работаешь добросовестно, так и в глаза людям глядеть не совестно. (русская народная поговорка)</center></p>
                 <p><center>«Чем усерднее вы работаете, тем более удачливым вы становитесь». Томас Джефферсон</center></p>
-                 <center><img width=90%  src="{% static 'main/img/5.jpg' %}" class="img_thumbnail"></center>
+                
+                <!-- ИСПРАВЛЕНО: Заменен класс img_thumbnail на корректный img-thumbnail -->
+                <center><img width="90%" src="{% static 'main/img/5.jpg' %}" class="img-thumbnail"></center>
+                
                 <center><h4 class="mt-2">Новости</h4></center>
                 <p><center>{{last_news.text}}</center></p>
             </div>
 {% endblock %}
- <div class="col-8">
-             {% block content %}
-             {% endblock %}
- </div>
-            
 
-
-         
+<div class="col-8">
+     {% block content %}
+     {% endblock %}
+</div>
