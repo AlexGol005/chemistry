@@ -254,7 +254,7 @@ main center a {
     width: 100% !important;
 }
 
-sudo bash -c 'cat << EOF >> /var/www/labjournaleq/LabBookeq/static/main/css/main.css
+
 
 /* ========================================================================== 
    8. АДАПТИВНОСТЬ ТАБЛИЦ И БОКОВОЙ ПАНЕЛИ НА СМАРТФОНАХ
@@ -338,3 +338,23 @@ sudo bash -c 'cat << EOF >> /var/www/labjournaleq/LabBookeq/static/main/css/main
     overflow-wrap: break-word !important;
     white-space: normal !important;
 }
+
+/* ========================================================================== 
+   9. ОГРАНИЧЕНИЕ ШИРИНЫ ТЕКСТА НА БОЛЬШИХ ЭКРАНАХ
+   ========================================================================== */ 
+@media screen and (min-width: 1200px) {
+    /* Ограничиваем только текстовые абзацы, списки и заголовки внутри контента */
+    main p, 
+    main ul:not(.errorlist), 
+    main ol, 
+    main h1, 
+    main h2, 
+    main h3, 
+    main h4 {
+        max-width: 800px !important; /* Идеальная ширина для чтения текста */
+        margin-left: 0 !important;   /* Выравнивание по левому краю */
+        margin-right: auto !important;
+        white-space: normal !important;
+    }
+}
+
