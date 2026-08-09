@@ -998,20 +998,40 @@ class ChemSearchResultView(TemplateView):
 
 
 
+from django.views.generic import TemplateView
+from django.db.models import Q
+from .models import NamesCompaunds, InorganicReaction # Укажите ваши точные импорты моделей
+
 class CompaundStrView(TemplateView):
     """страница химического вещества"""
     template_name = 'Chem/compaund.html'
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
-        ind=self.kwargs['str']
+        ind = self.kwargs['str']
         objcontent = NamesCompaunds.objects.get(pk=ind) 
         f = objcontent.formula
         context['objcontent'] = objcontent
 
-        qw = InorganicReaction.objects.filter(Q(reagent1__icontains=f) | Q(reagent2__icontains=f) | Q(reagent3__icontains=f) | Q(product1__icontains=f) | Q(product2__icontains=f) | Q(product3__icontains=f) | Q(product4__icontains=f) )
+        # 1. АВТОМАТИЧЕСКИЙ ПЕРЕНОС ПРИ НАЛИЧИИ ВИДЕО
+        # Проверяем основное видео (чтобы не было пустым и не содержало прочерков)
+        has_main_video = objcontent.video and objcontent.video.strip() not in ["", "-", "—"]
+        
+        # Проверяем, есть ли дополнительные видео (если связь extra_videos будет создана)
+        has_extra_videos = False
+        if hasattr(objcontent, 'extra_videos'):
+            has_extra_videos = objcontent.extra_videos.exists()
 
+        # Если видео найдено, а флаг еще не стоит — меняем и сохраняем
+        if (has_main_video or has_extra_videos) and not objcontent.is_interesting:
+            objcontent.is_interesting = True
+            objcontent.save(update_fields=['is_interesting']) # Оптимизированное сохранение только одного поля
+
+        # 2. ПОЛУЧЕНИЕ РЕАКЦИЙ С УЧАСТИЕМ ВЕЩЕСТВА
+        qw = InorganicReaction.objects.filter(
+            Q(reagent1__icontains=f) | Q(reagent2__icontains=f) | Q(reagent3__icontains=f) |
+            Q(product1__icontains=f) | Q(product2__icontains=f) | Q(product3__icontains=f) | Q(product4__icontains=f)
+        )
         context['qw'] = qw
         
         return context
