@@ -48,147 +48,94 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
 <body class="main-page-body h-100">
     
 {# здесь рисуем шапку сайта #}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <!-- Логотип без внешних рамок и лишних отступов -->
-    <a href="/"><img src="{% static 'main/img/3.png' %}" alt="Лого" style="max-height: 40px; display: block;"></a>
-    
-    <!-- Кнопка мобильного меню (исправлена под современный Bootstrap 5) -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar navbar-expand-lg navbar-light bg-light align-items-center">
+    <a href="/" class="navbar-brand d-flex align-items-center">
+        <img src="{% static 'main/img/3.png' %}" alt="Лого" style="max-height: 40px;">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <!-- Класс d-flex и align-items-center выравнивают ВСЕ элементы меню строго по одной горизонтальной линии -->
         <ul class="navbar-nav justify-content-center align-items-center w-100">
-                <li class="nav-item active">
-                    <a class="nav-link active text-dark fw-bold" aria-current="page" href="/">JournalLab</a>
-                </li>
+            <li class="nav-item active">
+                <a class="nav-link active" aria-current="page" href="/">JournalLab</a>
+            </li>
 
-                {% if 'chem' not in request.path and request.user.profile.userid != "chem" %}                         
+            {# Блок для НЕ химических страниц #}
+            {% if 'chem' not in request.path and request.user.profile.userid != "chem" %}                         
                 <li class="nav-item">
-                    <a class="nav-link text-dark fw-medium" href="{% url 'about' %}">О&nbsp;сайте</a>
+                    <a class="nav-link" href="{% url 'about' %}">О&nbsp;сайте</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark fw-medium" href="{% url 'eq' %}">Инфраструктура</a>
+                    <a class="nav-link" href="{% url 'eq' %}">Инфраструктура</a>
                 </li>
-                {% if user.is_authenticated %}
-                {% if USER_HAVE_RIGHTS %}
-                <li class="nav-item">
-                    <a class="nav-link text-dark fw-medium" href="{% url 'managerequipment' %}">Управление инфраструктурой</a>
-                </li>
+                {% if user.is_authenticated and USER_HAVE_RIGHTS %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'managerequipment' %}">Управление инфраструктурой</a>
+                    </li>
                 {% endif %}
-                {% endif %}
                 <li class="nav-item">
-                    <a class="nav-link text-dark fw-medium" href="{% url 'contacts' %}">Контакты</a>
+                    <a class="nav-link" href="{% url 'contacts' %}">Контакты</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark fw-medium" href="{% url 'blog' %}">Про оборудование</a>
+                    <a class="nav-link" href="{% url 'blog' %}">Про оборудование</a>
                 </li>
-                {% endif %}                  
-                
-                <li class="nav-item">
-                    <a class="nav-link text-dark fw-medium" href="{% url 'chem' %}">Химия</a>
-                </li>
+            {% endif %}                  
+            
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'chem' %}">Химия</a>
+            </li>
+        
+            <!-- Убрали mt-2, чтобы кнопка не падала вниз относительно текста -->
+            <li class="nav-item">               
+                <a href="{% url 'contact_page' %}" class="btn btn-warning mx-2" style="width: 210px;">Форма обратной связи</a>
+            </li>
 
-                <!-- КНОПКИ: Стилизованы точечно, чтобы не ломать высоту и не слипаться -->
-                <li class="nav-item header-item-spacing">               
-                    <a href="{% url 'contact_page' %}" class="btn btn-warning header-btn-layout">Форма обратной связи</a>
-                </li>
-                
-                {# Этот элемент li с hr убран на ПК, так как он ломал вертикальное выравнивание, но оставлен для мобильных #}
-                <li class="d-lg-none w-100"><hr class="dropdown-divider m-2"></li>
-
-                {% if 'chem' not in request.path %}   
-                    {% if not user.is_authenticated %}
-                        <li class="nav-item header-item-spacing">
-                            <a href="{% url 'heademployeereg' %}" class="btn btn-outline-success header-btn-layout">попробовать бесплатно</a>
+            {# Авторизация для НЕ химических страниц #}
+            {% if 'chem' not in request.path %}   
+                {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="{% url 'heademployeereg' %}" class="btn btn-outline-success mx-2">попробовать бесплатно</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'user' %}" class="btn btn-outline-info mx-2">войти</a>
+                    </li>
+                {% else %}
+                    {% if request.user.profile.userid != "chem" %}
+                        <li class="nav-item">
+                            <a href="{% url 'profile' %}" class="btn btn-outline-warning mx-2"> 
+                                ЛК Управление Лабораторией {% if request.user.profile.short_name %}{{ request.user.profile.short_name }}{% endif %}
+                            </a>
                         </li>
-                        <li class="nav-item header-item-spacing">
-                            <a href="{% url 'user' %}" class="btn btn-outline-info header-btn-layout">войти</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item header-item-spacing">
-                            {% if request.user.profile.userid != "chem" %}
-                                {% if request.user.profile.short_name %}
-                                     <a href="{% url 'profile' %}" class="btn btn-outline-warning header-btn-layout text-truncate" style="max-width: 240px;"> ЛК Управление Лабораторией {{ request.user.profile.short_name }}</a>
-                                {% else %}
-                                     <a href="{% url 'profile' %}" class="btn btn-outline-warning header-btn-layout text-truncate" style="max-width: 240px;"> ЛК Управление Лабораторией</a>
-                                {% endif %}
-                            {% endif %}
-                        </li>
-                        <li class="nav-item header-item-spacing">
-                             <!-- Исправлена ошибка безопасности выхода (POST запрос) -->
-                             <form action="{% url 'exit' %}" method="post" style="display: inline-block; margin: 0; padding: 0;">
-                                 {% csrf_token %}
-                                 <button type="submit" class="btn btn-outline-warning header-btn-layout">выйти</button>
-                             </form>
-                        </li>
-                     {% endif %} 
-                 {% endif %} 
-
-                {% if 'chem' in request.path %}   
-                    {% if not user.is_authenticated %}
-                        <li class="nav-item header-item-spacing">
-                            <a href="{% url 'chemuser' %}" class="btn btn-outline-info header-btn-layout">войти</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item header-item-spacing">
-                             <a href="{% url 'chemprofile' %}" class="btn btn-outline-warning header-btn-layout text-truncate" style="max-width: 240px;"> ЛК Изучение Химии</a>
-                        </li>
-                        <li class="nav-item header-item-spacing">
-                             <!-- Исправлена ошибка безопасности выхода для Химии (POST запрос) -->
-                             <form action="{% url 'chemexit' %}" method="post" style="display: inline-block; margin: 0; padding: 0;">
-                                 {% csrf_token %}
-                                 <button type="submit" class="btn btn-outline-warning header-btn-layout">выйти</button>
-                             </form>
+                        <li class="nav-item">
+                            <a href="{% url 'exit' %}" class="btn btn-outline-warning mx-2">выйти</a>
                         </li>
                     {% endif %} 
-                 {% endif %} 
+                {% endif %} 
+            {% endif %} 
+
+            {# Авторизация для химических страниц #}
+            {% if 'chem' in request.path %}   
+                {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="{% url 'chemuser' %}" class="btn btn-outline-info mx-2">войти</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a href="{% url 'chemprofile' %}" class="btn btn-outline-warning mx-2">ЛК Изучение Химии</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'chemexit' %}" class="btn btn-outline-warning mx-2">выйти</a>
+                    </li>
+                {% endif %} 
+            {% endif %} 
         </ul>
     </div>
 </nav>
-
-<!-- Минимальные и жесткие стили для исправления отступов и вылетов (встроены локально) -->
-<style>
-    /* Базовый сброс высоты и выравнивания кнопок в одну линию на ПК */
-    .header-btn-layout {
-        height: 38px !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        white-space: nowrap !important;
-        font-weight: 500 !important;
-        margin: 0 !important; /* Убираем ваши mr-2 ml-2 mt-2, так как они ломали сетку */
-    }
-
-    /* Равномерные зазоры на мобильных и ПК без съезжания краев */
-    .header-item-spacing {
-        padding: 4px !important; /* Отступ на мобильных */
-    }
-
-    @media (min-width: 992px) {
-        /* На компьютерах делаем ровный боковой зазор между кнопками */
-        .header-item-spacing {
-            padding: 0 0 0 10px !important; 
-        }
-        /* Самый первый элемент после меню не должен иметь левого отступа */
-        .navbar-nav > .header-item-spacing:first-of-type {
-            padding-left: 15px !important; 
-        }
-    }
-
-    /* На телефонах растягиваем кнопки ровно по ширине, чтобы ничего не резалось */
-    @media (max-width: 991px) {
-        .header-btn-layout {
-            width: 100% !important;
-            max-width: 100% !important;
-        }
-        .header-item-spacing {
-            width: 100% !important;
-            text-align: center;
-        }
-    }
-</style>
 {# конец шапки #}
+
 
 
 
