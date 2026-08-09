@@ -156,23 +156,7 @@ admin.site.register(Inorganiclaw, InorganiclawAdmin)
 
 
 
-class InorganicReactionAdmin(ImportExportActionModelAdmin):
-    resource_class = InorganicReactionResource
-    form = InorganicReactionAdminForm
-    autocomplete_fields = ['number']
-    
-    list_display = ('pk', 'metatitle', 'level') 
-    
-    # Используем встроенный фильтр Django для ForeignKey.
-    # RelatedOnlyFieldListFilter покажет только те законы, для которых реально создана хотя бы одна реакция.
-    list_filter = (
-        ('law', admin.RelatedOnlyFieldListFilter), 
-        'level',
-    )
-    
-    search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
-    save_as = True
-    # ... весь остальной ваш код (actions, save_model) остается без изменений ...
+
 
 
 
@@ -321,6 +305,139 @@ class OrganiclawAdmin(ImportExportActionModelAdmin):
 # фиксация формы в админке законы органической химии
 admin.site.register(Organiclaw, OrganiclawAdmin)
 
+
+# Класс для загрузки/выгрузки неорганических реакций
+class InorganiclawResource(resources.ModelResource):
+    class Meta:
+        model = InorganicReaction
+        skip_unchanged = True
+        report_skipped = True   
+
+
+# Класс добавления стилей к окну неорганической реакции (CKEditor)
+class InorganicReactionAdminForm(forms.ModelForm):
+    extra = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+
+    class Meta:
+        model = InorganicReaction
+        fields = '__all__'
+        
+
+# Основной класс админки неорганической реакции   
+class InorganicReactionAdmin(ImportExportActionModelAdmin):
+    resource_class = InorganiclawResource  
+    form = InorganicReactionAdminForm
+    autocomplete_fields = ['number']
+    
+    # Добавили 'law' в отображение и настроили фильтры
+    list_display = ('pk', 'metatitle', 'level', 'law') 
+    search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
+    save_as = True
+
+    # Умный фильтр по закону (RelatedOnlyFieldListFilter) + фильтр по уровню
+    list_filter = (
+        ('law', admin.RelatedOnlyFieldListFilter),
+        'level',
+    )
+
+    # Действия для массовой установки уровней ОГЭ/ЕГЭ
+    actions = ['mass_set_level_oge', 'mass_set_level_ege']
+
+    @admin.action(description='Установить уровень "ОГЭ" для выбранных реакций')
+    def mass_set_level_oge(self, request, queryset):
+        updated_count = queryset.update(level='ОГЭ') 
+        self.message_user(request, f'Успешно установлен уровень "ОГЭ" для {updated_count} реакций.', messages.SUCCESS)
+
+    @admin.action(description='Установить уровень "ЕГЭ" для выбранных реакций')
+    def mass_set_level_ege(self, request, queryset):
+        updated_count = queryset.update(level='ЕГЭ') 
+        self.message_user(request, f'Успешно установлен уровень "ЕГЭ" для {updated_count} реакций.', messages.SUCCESS)
+
+    # Метод сохранения с валидацией неорганических веществ
+    def save_model(self, request, obj, form, change):
+        items_to_check = [
+            obj.reagent1, obj.reagent2, obj.reagent3, 
+            obj.product1, obj.product2, obj.product3, obj.product4
+        ]
+        
+        for item in items_to_check:
+            if item is not None and item != "" and not NamesCompaunds.objects.filter(formula=item).exists():
+                messages.warning(request, f"Внимание: вещества '{item}' нет в модели названий.")
+
+        super().save_model(request, obj, form, change)
+
+        if change:
+            messages.success(request, f"Редактирована запись № {obj.pk}")
+        else:
+            messages.success(request, f"Создана новая запись № {obj.pk}")
+
+
+# Регистрация неорганических реакций
+admin.site.register(InorganicReaction, InorganicReactionAdmin)
+
+
+# Класс для загрузки/выгрузки органических реакций
+class OrganicReactionResource(resources.ModelResource):
+    class Meta:
+        model = OrganicReaction
+        skip_unchanged = True
+        report_skipped = True   
+
+
+# Класс добавления стилей к окну органической реакции (CKEditor)
+class OrganicReactionAdminForm(forms.ModelForm):
+    extra = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+
+    class Meta:
+        model = OrganicReaction
+        fields = '__all__'
+        
+
+# Основной класс админки органической реакции   
+class OrganicReactionAdmin(ImportExportActionModelAdmin):
+    resource_class = OrganicReactionResource
+    form = OrganicReactionAdminForm
+    autocomplete_fields = ['number']
+    
+    # Добавили 'law' в отображение и подключили умный фильтр по закону
+    list_display = ('pk', 'metatitle', 'law')
+    list_filter = (
+        ('law', admin.RelatedOnlyFieldListFilter),
+    )
+    
+    search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
+    save_as = True
+
+    # Оптимизированный метод сохранения с проверкой органических веществ в один запрос
+    def save_model(self, request, obj, form, change):
+        check_values = [
+            obj.reagent1, obj.reagent2, obj.reagent3,
+            obj.product1, obj.product2, obj.product3, obj.product4
+        ]
+
+        names_to_verify = {name for name in check_values if name}
+
+        if names_to_verify:
+            existing_names = set(
+                OrganicNames.objects.filter(molecule_short__in=names_to_verify)
+                .values_list('molecule_short', flat=True)
+            )
+
+            missing_names = names_to_verify - existing_names
+
+            for name in missing_names:
+                messages.warning(request, f"Внимание: вещества '{name}' нет в модели названий (поле molecule_short).")
+
+        super().save_model(request, obj, form, change)
+        
+        if change:
+            messages.success(request, f"Редактирована запись № {obj.pk}")
+        else:
+            messages.success(request, f"Создана новая запись № {obj.pk}")
+
+        
+# Регистрация органических реакций
+admin.site.register(OrganicReaction, OrganicReactionAdmin)
 
 
 
