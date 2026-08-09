@@ -179,10 +179,16 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
     form = InorganicReactionAdminForm
     autocomplete_fields = ['number']
     
-    # Добавили 'level' в список отображения, чтобы сразу видеть результат
-    list_display = ('pk', 'metatitle', 'level') 
+    # Добавили 'law' в таблицу отображения рядом с уровнем
+    list_display = ('pk', 'metatitle', 'level', 'law') 
     search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
     save_as = True
+
+    # ДОБАВЛЕНО: Умный фильтр по законам и фильтр по уровням
+    list_filter = (
+        ('law', admin.RelatedOnlyFieldListFilter),
+        'level',
+    )
 
     # Регистрируем ДВА отдельных действия в выпадающем меню списка
     actions = ['mass_set_level_oge', 'mass_set_level_ege']
@@ -231,6 +237,7 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
 
 # 4. Фиксация формы в админке реакции
 admin.site.register(InorganicReaction, InorganicReactionAdmin)
+
 
 
 
@@ -384,8 +391,6 @@ admin.site.register(Organiclaw, OrganiclawAdmin)
 
 
 
-# реакции ох классы для отображения в админке
-
 # класс для загрузки/выгрузки реакции ох
 class OrganicReactionResource(resources.ModelResource):
     class Meta:
@@ -398,7 +403,6 @@ class OrganicReactionResource(resources.ModelResource):
 class OrganicReactionAdminForm(forms.ModelForm):
     extra = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
 
-
     class Meta:
         model = OrganicReaction
         fields = '__all__'
@@ -408,7 +412,15 @@ class OrganicReactionAdmin(ImportExportActionModelAdmin):
     resource_class = OrganicReactionResource
     form = OrganicReactionAdminForm
     autocomplete_fields = ['number']
-    list_display = ('pk', 'metatitle')
+    
+    # ДОБАВЛЕНО: 'law' в таблицу, чтобы видеть закон протекания реакции
+    list_display = ('pk', 'metatitle', 'law')
+    
+    # ДОБАВЛЕНО: Умный фильтр, отображающий только законы, привязанные к реакциям ОХ
+    list_filter = (
+        ('law', admin.RelatedOnlyFieldListFilter),
+    )
+    
     search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
     save_as = True
 
