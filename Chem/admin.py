@@ -236,7 +236,7 @@ admin.site.register(InorganicReaction, InorganicReactionAdmin)
 
 
 
-# === СТРУКТУРЫ ДЛЯ БЕСКОНЕЧНОГО ДОБАВЛЕНИЯ КОНТЕНТА К ЗАКОНАМ ОБЩЕЙ ХИМИИ ===
+# === СТРУКТУРЫ ДЛЯ БЕСКОНЕЧНОГО ДОБАВЛЕНИЯ КОНТЕНТА К ЗАКОНАМ  ХИМИИ ===
 
 class AtomlawImageInline(admin.TabularInline):
     model = AtomlawImage
@@ -274,7 +274,7 @@ class AtomlawAdmin(ImportExportActionModelAdmin):
     form = AtomlawAdminForm
     search_fields = ['pk', 'title', 'text']
     save_as = True
-    list_display = ('pk', 'title')
+    list_display = ('number',  'title', 'pk',)
     
     # Подключаем бесконечные блоки для общей химии в самый низ страницы
     inlines = [AtomlawImageInline, AtomlawVideoInline, AtomlawPresentationInline]
