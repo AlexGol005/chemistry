@@ -1,13 +1,18 @@
 {% extends 'main/superbase.html' %}
 {% load static %}
 
+{# 1. КОРЗИНА ДЛЯ ОСНОВНОГО КОНТЕНТА (Займет левую часть, 8 колонок) #}
 {% block content %}
-     {# Этот блок стирается внучками, и это нормально — пускай они выводят тут свой col-8 #}
-     {% endblock %}
+<div class="col-8 pr-xl-5"> <!-- pr-xl-5 создаст шикарный зазор СПРАВА от текста -->
+    {% block inner_content %}
+    {# Сюда без изменений встанет контент из всех дочерних страниц #}
+    {% endblock %}
+</div>
+{% endblock %}
 
+{# 2. КОРЗИНА ДЛЯ БОКОВОЙ ПАНЕЛИ (Займет правую часть, 4 колонки) #}
 {% block aside %}
-<!-- Добавили класс with-sidebar-layout, чтобы CSS понял: на этой странице есть сайдбар -->
-<div class="col-4 with-sidebar-layout">
+<div class="col-4">
     <center><h6 class="mt-4">Сегодня</h6></center>                        
     <center><div id="current_date_time_block"></div></center>
     <h4>
