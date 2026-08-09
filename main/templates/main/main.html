@@ -6,91 +6,113 @@
 {% endblock %}
 
 {% block content %}
-<!-- Живые стили на основе вашего оригинального синего цвета -->
+<!-- Изолированные жесткие стили для Superbase (защищены от конфликтов с base.html) -->
 <style>
-    .btn-custom-blue {
-        /* Градиент на основе оригинального синего Bootstrap */
-        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    /* Контейнер центрального блока */
+    .superbase-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 0 15px;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    /* Уникальный класс для кнопок, чтобы base.html их не ломал */
+    .superbase-btn {
+        display: block !important;
+        width: 100% !important;
+        max-width: 400px !important;
+        margin: 14px auto !important; /* Жесткий отступ со всех сторон — кнопки никогда не слипнутся */
+        padding: 14px 20px !important;
+        
+        /* Гарантированный ярко-синий градиент */
+        background: linear-gradient(135deg, #0d6efd 0%, #024bbf 100%) !important;
         color: #ffffff !important;
-        border: none;
-        font-weight: 500;
-        letter-spacing: 0.3px;
-        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
-        transition: all 0.2s ease-in-out;
+        
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        text-decoration: none !important;
+        border: none !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+        cursor: pointer !important;
+        box-sizing: border-box;
     }
-    /* Анимация при наведении: кнопка "оживает" и приподнимается */
-    .btn-custom-blue:hover {
-        background: linear-gradient(135deg, #1573f8 0%, #0b5ed7 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(13, 110, 253, 0.35);
+
+    /* Эффект оживания при наведении (для ПК) */
+    @media (hover: hover) {
+        .superbase-btn:hover {
+            background: linear-gradient(135deg, #3085ff 0%, #0d6efd 100%) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 18px rgba(13, 110, 253, 0.4) !important;
+            color: #ffffff !important;
+        }
     }
-    /* Эффект нажатия */
-    .btn-custom-blue:active {
-        transform: translateY(1px);
-        box-shadow: 0 2px 5px rgba(13, 110, 253, 0.2);
+
+    /* Эффект живого нажатия (идеально для мобильных тапов) */
+    .superbase-btn:active {
+        transform: translateY(2px) !important;
+        box-shadow: 0 2px 6px rgba(13, 110, 253, 0.2) !important;
+        background: #024bbf !important;
+    }
+
+    /* Стили для SEO заголовка */
+    .superbase-title {
+        font-size: 1.45rem;
+        font-weight: 700;
+        line-height: 1.4;
+        color: #212529;
+        margin-bottom: 2rem;
+    }
+
+    /* Адаптивное изображение */
+    .superbase-img {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        margin: 2rem auto 0 auto;
+        display: block;
     }
 </style>
 
-<div class="container my-4 my-md-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-lg-8 text-center">
+<div class="superbase-container">
 
-            {% if content_type == "nonchem" %}
-                <!-- SEO Заголовок -->
-                <h1 class="h3 mb-5 fw-bold text-dark lh-base">
-                    Автоматизация учета лабораторного оборудования и микроклимата для вашей лаборатории
-                </h1>
+    {% if content_type == "nonchem" %}
+        <!-- SEO Заголовок H1 -->
+        <h1 class="superbase-title">
+            Автоматизация учета лабораторного оборудования и микроклимата для вашей лаборатории
+        </h1>
 
-                <!-- Блок авторизации (кнопки с гарантированным отступом g-3) -->
-                <div class="row g-3 justify-content-center mb-4">
-                    {% if not user.is_authenticated %}
-                        <div class="col-12 col-sm-5 col-md-4">
-                            <a href="{% url 'heademployeereg' %}" class="btn btn-custom-blue py-2.5 w-100">Регистрация</a>
-                        </div>
-                        <div class="col-12 col-sm-5 col-md-4">
-                            <a href="{% url 'user' %}" class="btn btn-custom-blue py-2.5 w-100">Войти</a>
-                        </div>
-                    {% else %}
-                        <div class="col-12 col-sm-5 col-md-4">
-                            <a href="{% url 'profile' %}" class="btn btn-custom-blue py-2.5 w-100">ID {{ request.user.username }}</a>
-                        </div>
-                        <div class="col-12 col-sm-5 col-md-4">
-                            <a href="{% url 'exit' %}" class="btn btn-custom-blue py-2.5 w-100" style="opacity: 0.9;">Выйти</a>
-                        </div>
-                    {% endif %}
-                </div>
+        <!-- Блок авторизации -->
+        {% if not user.is_authenticated %}
+            <a href="{% url 'heademployeereg' %}" class="superbase-btn">Регистрация</a>
+            <a href="{% url 'user' %}" class="superbase-btn">Войти</a>
+        {% else %}
+            <a href="{% url 'profile' %}" class="superbase-btn">ID {{ request.user.username }}</a>
+            <a href="{% url 'exit' %}" class="superbase-btn">Выйти</a>
+        {% endif %}
 
-                <!-- Главная навигация -->
-                <div class="row g-3 justify-content-center mb-5">
-                    <div class="col-12 col-sm-10 col-md-8">
-                        <a href="{% url 'contact_page' %}" class="btn btn-custom-blue py-3 w-100 mb-3">Задать вопрос администрации сайта</a>
-                        <a href="{% url 'about' %}" class="btn btn-custom-blue py-3 w-100">Что это за сайт?</a>
-                    </div>
-                </div>
+        <!-- Главная навигация -->
+        <a href="{% url 'contact_page' %}" class="superbase-btn">Задать вопрос администрации сайта</a>
+        <a href="{% url 'about' %}" class="superbase-btn">Что это за сайт?</a>
 
-                <!-- Оптимизированная графика -->
-                <div class="mt-4 pt-2">
-                    <img src="{% static 'main/img/2.jpg' %}" 
-                         alt="Интерфейс системы автоматизации учета лабораторного оборудования" 
-                         class="img-fluid rounded shadow-sm d-block mx-auto" 
-                         style="max-width: 450px; width: 100%; height: auto;"
-                         loading="lazy">
-                </div>
+        <!-- Оптимизированное изображение -->
+        <img src="{% static 'main/img/2.jpg' %}" 
+             alt="Интерфейс системы автоматизации учета лабораторного оборудования" 
+             class="superbase-img" 
+             loading="lazy">
 
-            {% elif content_type == "chem" %}
+    {% elif content_type == "chem" %}
 
-                <!-- Раздел Химии -->
-                <h1 class="h3 mb-5 fw-bold text-dark">Изучение химии в лаборатории</h1>
-                
-                <div class="row g-3 justify-content-center">
-                    <div class="col-12 col-sm-10 col-md-8">
-                        <a href="{% url 'chem' %}" class="btn btn-custom-blue py-3 w-100 fs-5">Перейти к изучению химии</a>
-                    </div>
-                </div>
+        <!-- Раздел Химии -->
+        <h1 class="superbase-title">Изучение химии в лаборатории</h1>
+        <a href="{% url 'chem' %}" class="superbase-btn" style="font-size: 18px !important;">Перейти к изучению химии</a>
 
-            {% endif %}
+    {% endif %}
 
-        </div>
-    </div>
 </div>
 {% endblock %}
