@@ -1,81 +1,203 @@
-{% extends 'main/base.html' %}
+{% extends 'main/superbase.html' %}
 {% load static %}
+
 {% block title %}
    Школьная химия ЕГЭ и ОГЭ
 {% endblock %}
 
+{# ПОЛНОСТЬЮ УБИРАЕМ БОКОВОЙ БЛОК ДЛЯ МАКСИМАЛЬНОЙ ШИРИНЫ НА СТРАНИЦЕ #}
+{% block aside %}{% endblock %}
 
 {% block content %}
-<div class="col-8">
-    <center><h3>Школьная химия ЕГЭ и ОГЭ</h3></center>
-    <br>
+<div class="col-12 px-md-5">
+    
+    {# ЯРКИЙ И ПРИВЕТЛИВЫЙ ЗАГЛАВНЫЙ БЛОК #}
+    <div class="text-center mt-4 mb-5 p-4 rounded" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <h1 class="font-weight-bold" style="color: #2c3e50; font-family: Georgia, serif; font-size: 30pt;">🧪 Школьная химия ЕГЭ и ОГЭ</h1>
+        <p class="text-muted mt-2" style="font-size: 13pt;">Выберите интересующий раздел справочника для быстрого доступа к материалам</p>
+    </div>
 
-       <br>
-    <center>
-        <a href="{% url 'pictures' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%"> Мемы и картинки </a>
-    </center>
-    <br>
+    {# ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ ЖИВЫХ КНОПОК И СВОРАЧИВАЕМЫХ МЕНЮ #}
+    <style>
+        .main-collapse-btn {
+            width: 100%;
+            text-align: left !important;
+            padding: 20px 30px;
+            font-size: 18pt;
+            font-weight: bold;
+            color: white !important;
+            border: none;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .main-collapse-btn:hover {
+            transform: translateY(-4px);
+            filter: brightness(1.08);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            text-decoration: none;
+        }
+        .main-collapse-btn:active {
+            transform: translateY(-1px);
+        }
+        .main-collapse-btn::after {
+            content: '▼';
+            font-size: 14pt;
+            transition: transform 0.3s ease;
+        }
+        .main-collapse-btn[aria-expanded="true"]::after {
+            transform: rotate(180deg);
+        }
 
-    <br>
-    <center>
-        <a href="{% url 'tables' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%"> Таблицы </a>
-    </center>
-    <br>
+        /* Индивидуальные градиенты для разделов */
+        .btn-general { background: linear-gradient(45deg, #2193b0, #6dd5ed); box-shadow: 0 4px 15px rgba(33, 147, 176, 0.3); }
+        .btn-organic { background: linear-gradient(45deg, #11998e, #38ef7d); box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3); }
+        .btn-inorganic { background: linear-gradient(45deg, #ff416c, #ff4b2b); box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3); }
+        .btn-memes { background: linear-gradient(45deg, #f7971e, #ffd200); box-shadow: 0 4px 15px rgba(247, 151, 30, 0.3); }
+        .btn-tables { background: linear-gradient(45deg, #00c6ff, #0072ff); box-shadow: 0 4px 15px rgba(0, 114, 255, 0.3); }
+        .btn-resources { background: linear-gradient(45deg, #6f42c1, #a951ed); box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3); }
 
-       <br>
-    <center>
-        <a href="{% url 'atomlaws' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%"> Законы общей химии </a>
-    </center>
-    <br>
+        /* Внутренние контейнеры под раскрытыми кнопками */
+        .collapse-card-body {
+            background: #ffffff;
+            border: 2px solid #f1f3f5;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            padding: 25px;
+            margin-top: -17px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+        }
 
+        /* Адаптивные интерактивные ссылки плиточного меню */
+        .chem-link-item {
+            font-size: 14pt;
+            padding: 12px 18px;
+            border-radius: 8px;
+            color: #495057;
+            transition: all 0.2s ease;
+            display: block;
+            margin-bottom: 8px;
+            background-color: #fafbfc;
+            border: 1px solid #f1f3f5;
+        }
+        .chem-link-item:hover {
+            background-color: #f1f3f5;
+            color: #007bff;
+            padding-left: 26px;
+            text-decoration: none;
+            border-color: #dee2e6;
+        }
+    </style>
 
-   <br>
-    <center>
-        <a href="{% url 'inorganiclaw' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%"> Законы неорганической химии </a>
-    </center>
-    <br>
+    <!-- ================================================================= -->
+    <!-- РАЗДЕЛ: ОБЩАЯ ХИМИЯ -->
+    <!-- ================================================================= -->
+    <button class="main-collapse-btn btn-general" type="button" data-toggle="collapse" data-target="#collapseGeneral" aria-expanded="false" aria-controls="collapseGeneral">
+        <span>🍏 Общая химия</span>
+    </button>
+    <div class="collapse" id="collapseGeneral">
+        <div class="collapse-card-body">
+            <div class="row">
+                <div class="col-12">
+                    <a href="{% url 'atomlaws' %}" class="chem-link-item">➔ Законы общей химии</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- ================================================================= -->
+    <!-- РАЗДЕЛ: ОРГАНИЧЕСКАЯ ХИМИЯ -->
+    <!-- ================================================================= -->
+    <button class="main-collapse-btn btn-organic" type="button" data-toggle="collapse" data-target="#collapseOrganic" aria-expanded="false" aria-controls="collapseOrganic">
+        <span>🌿 Органическая химия</span>
+    </button>
+    <div class="collapse" id="collapseOrganic">
+        <div class="collapse-card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="{% url 'organiclaw' %}" class="chem-link-item">➔ Законы органической химии</a>
+                    <a href="{% url 'organiccompaunds' %}" class="chem-link-item">➔ Органические соединения</a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'organicnamestest_head' %}" class="chem-link-item">➔ Тест: названия органических соединений</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <br>
-    <center>
-        <a href="{% url 'compaunds' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%"> Неорганические вещества </a>
-    </center>
-    <br>
+       <!-- ================================================================= -->
+    <!-- РАЗДЕЛ: НЕОРГАНИЧЕСКАЯ ХИМИЯ -->
+    <!-- ================================================================= -->
+    <button class="main-collapse-btn btn-inorganic" type="button" data-toggle="collapse" data-target="#collapseInorganic" aria-expanded="false" aria-controls="collapseInorganic">
+        <span>🧪 Неорганическая химия</span>
+    </button>
+    <div class="collapse" id="collapseInorganic">
+        <div class="collapse-card-body">
+            <div class="row">
+                <div class="col-12">
+                    <a href="{% url 'inorganiclaw' %}" class="chem-link-item">➔ Законы неорганической химии</a>
+                    <a href="{% url 'compaunds' %}" class="chem-link-item">➔ Неорганические соединения</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- ================================================================= -->
+    <!-- РАЗДЕЛ: МЕМЫ И КАРТИНКИ -->
+    <!-- ================================================================= -->
+    <button class="main-collapse-btn btn-memes" type="button" data-toggle="collapse" data-target="#collapseMemes" aria-expanded="false" aria-controls="collapseMemes">
+        <span>🤡 Мемы и картинки отдельно</span>
+    </button>
+    <div class="collapse" id="collapseMemes">
+        <div class="collapse-card-body">
+            <div class="row">
+                <div class="col-12">
+                    <a href="{% url 'pictures' %}" class="chem-link-item">➔ Открыть галерею химических мемов и картинок</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- ================================================================= -->
+    <!-- РАЗДЕЛ: ТАБЛИЦЫ -->
+    <!-- ================================================================= -->
+    <button class="main-collapse-btn btn-tables" type="button" data-toggle="collapse" data-target="#collapseTables" aria-expanded="false" aria-controls="collapseTables">
+        <span>📊 Таблицы отдельно</span>
+    </button>
+    <div class="collapse" id="collapseTables">
+        <div class="collapse-card-body">
+            <div class="row">
+                <div class="col-12">
+                    <a href="{% url 'tables' %}" class="chem-link-item">➔ Справочные и интерактивные таблицы</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- ================================================================= -->
+    <!-- РАЗДЕЛ: ПОЛЕЗНЫЕ РЕСУРСЫ И ВИДЕО (ОБЪЕДИНЕННЫЙ) -->
+    <!-- ================================================================= -->
+    <button class="main-collapse-btn btn-resources" type="button" data-toggle="collapse" data-target="#collapseResources" aria-expanded="false" aria-controls="collapseResources">
+        <span>🎥 Полезные ресурсы и видео</span>
+    </button>
+    <div class="collapse" id="collapseResources">
+        <div class="collapse-card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="{% url 'links' %}" class="chem-link-item">➔ Дополнительные полезные ресурсы</a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'videor' %}" class="chem-link-item">➔ Химические реакции в видеоматериалах</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-   
-<br>
-   <center>
-        <a href="{% url 'organiclaw' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%"> Законы органической химии </a>
-    </center>
-    <br>
-
-
-    <br>
-    <center>
-        <a href="{% url 'organiccompaunds' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%"> Органические вещества </a>
-    </center>
-    <br>
-
-       <br>
-    <center>
-        <a href="{% url 'organicnamestest_head' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%"> Тест: названия органических веществ </a>
-    </center>
-    <br>
-   
-       <br>
-    <center>
-        <a href="{% url 'links' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%"> Полезные ресурсы </a>
-    </center>
-    <br>
-
-          <br>
-    <center>
-        <a href="{% url 'videor' %}" class="btn btn-primary mr-2 ml-2 mt-2" style="width: 80%"> Химические реакции в видео </a>
-    </center>
-    <br>
-   
 </div>
 {% endblock %}
+
