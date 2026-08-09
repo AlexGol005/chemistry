@@ -152,6 +152,7 @@ class AtomlawImage(models.Model):
 class AtomlawVideo(models.Model):
     atomlaw = models.ForeignKey(Atomlaw, on_delete=models.CASCADE, related_name='extra_videos')
     video_url = models.CharField('Ссылка на видео', max_length=10000)
+    title = models.CharField('Название', max_length=255, blank=True, null=True)
 
     class Meta:
         verbose_name = 'Дополнительное видео (Общая)'
@@ -184,6 +185,7 @@ class InorganiclawImage(models.Model):
 class InorganiclawVideo(models.Model):
     law = models.ForeignKey(Inorganiclaw, on_delete=models.CASCADE, related_name='extra_videos')
     video_url = models.CharField('Ссылка на видео', max_length=10000)
+    title = models.CharField('Название', max_length=255, blank=True, null=True)
 
     class Meta:
         verbose_name = 'Доп. видео (Неорганика)'
@@ -216,6 +218,7 @@ class OrganiclawImage(models.Model):
 class OrganiclawVideo(models.Model):
     law = models.ForeignKey(Organiclaw, on_delete=models.CASCADE, related_name='extra_videos')
     video_url = models.CharField('Ссылка на видео', max_length=10000)
+    title = models.CharField('Название', max_length=255, blank=True, null=True)
 
     class Meta:
         verbose_name = 'Доп. видео (Органика)'
