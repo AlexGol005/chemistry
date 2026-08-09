@@ -43,7 +43,13 @@
             transform: translateY(-1px); 
         }
 
-        /* Цвета кнопок по аналогии с законами */
+        /* Цвета кнопок */
+        .btn-illustrations {
+            background: linear-gradient(45deg, #007bff, #00c6ff); 
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4); 
+        }
+        .btn-illustrations:hover { box-shadow: 0 8px 25px rgba(0, 123, 255, 0.6); }
+
         .btn-links {
             background: linear-gradient(45deg, #6f42c1, #a951ed); 
             box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4); 
@@ -81,7 +87,7 @@
         </div>
     {% endif %}   
    
-    {# Блоки картинок 1, 2, 3 с защитой от медленного интернета #}
+    {# Картинки 1, 2, 3 с защитой от медленного интернета #}
     {% if objcontent.img1 %}
         <div class="media text-muted flex-column align-items-center pt-3">
             <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img1.url }}" loading="lazy" decoding="async">
@@ -101,113 +107,3 @@
     {% endif %}
 
     <hr>
-    {# Блоки картинок 4, 5, 6 с защитой от медленного интернета #}
-    {% if objcontent.img4 %}
-        <div class="media text-muted flex-column align-items-center pt-3">
-            <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 70%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img4.url }}" loading="lazy" decoding="async">
-        </div><br>
-    {% endif %}
-
-    {% if objcontent.img5 %}
-        <div class="media text-muted flex-column align-items-center pt-3">
-            <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 70%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img5.url }}" loading="lazy" decoding="async">
-        </div><br>
-    {% endif %}
-
-    {% if objcontent.img6 %}
-        <div class="media text-muted flex-column align-items-center pt-3">
-            <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 70%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img6.url }}" loading="lazy" decoding="async">
-        </div><br>
-    {% endif %}
-
-    <!-- ================================================================= -->
-    <!-- НИЖНИЙ БЛОК ИЗ СВОРАЧИВАЕМЫХ КНОПОК ЕДИНОГО СТИЛЯ -->
-    <!-- ================================================================= -->
-    <div class="d-flex flex-column align-items-center mt-5 mb-5">
-
-        {# 1. КНОПКА: ПОЛЕЗНЫЕ ССЫЛКИ (ВИДЕОМАТЕРИАЛЫ) #}
-        {% if objcontent.video or objcontent.extra_videos.all %}
-            <button class="btn btn-lg mt-3 mb-3 px-5 text-white font-weight-bold alive-btn-base btn-links" 
-                    type="button" data-toggle="collapse" data-target="#collapseCompoundVideos" 
-                    aria-expanded="false" aria-controls="collapseCompoundVideos">
-                🔗 Полезные ссылки
-            </button>
-            <div class="collapse w-100" id="collapseCompoundVideos">
-                <div class="card card-body text-center bg-light mb-4 mx-auto" style="max-width: 600px; border-radius: 15px;">
-                    <h4 class="mb-3 font-weight-bold text-dark">Видеоматериалы</h4>
-                    <div class="d-flex flex-column align-items-center">
-                        {% if objcontent.video %}
-                            <a href="{{ objcontent.video }}" class="btn btn-link text-decoration-none my-1 text-primary" target="_blank" rel="noopener noreferrer" style="font-size: 13pt; font-weight: bold;">
-                                🎬 Посмотреть основное видео по ссылке
-                            </a>
-                        {% endif %}
-                        {% for vid in objcontent.extra_videos.all %}
-                            <a href="{{ vid.video_url }}" class="btn btn-link text-decoration-none my-1" target="_blank" rel="noopener noreferrer" style="font-size: 13pt; font-weight: 500;">
-                                🚀 {% if vid.title %}{{ vid.title }}{% else %}Видео {{ forloop.counter }}{% endif %}
-                            </a>
-                        {% endfor %}
-                    </div>
-                    <div class="text-center">
-                        <button class="btn btn-sm btn-outline-secondary mt-3" type="button" data-toggle="collapse" data-target="#collapseCompoundVideos" aria-expanded="false" aria-controls="collapseCompoundVideos">🔼 Свернуть ссылки</button>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-
-        {# 2. КНОПКА: ПОКАЗАТЬ ПРИМЕРЫ РЕАКЦИЙ #}
-        {% if qw %}
-            <button class="btn btn-lg mt-3 mb-3 px-5 text-white font-weight-bold alive-btn-base btn-reactions" 
-                    type="button" data-toggle="collapse" data-target="#collapseCompoundReactions" 
-                    aria-expanded="false" aria-controls="collapseCompoundReactions">
-                🧪 Показать примеры реакций
-            </button>
-            <div class="collapse w-100" id="collapseCompoundReactions">
-                <div class="card card-body bg-light mb-4 p-4" style="border-radius: 15px;">
-                    <div class="text-center mb-4">
-                        <small style="font-size: 12pt; color: #6c757d; font-weight: 500;">(реакции приведены без коэффициентов)</small>
-                    </div>
-                    {% for j in qw %}
-                        <p style="display: block; width: 100%; text-align: center !important; font-size: 14pt; margin-left: auto; margin-right: auto; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.5;">
-                            <a href="{% url 'inorganiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-none font-weight-500">
-                                {% autoescape off %}
-                                {% if j.reagent1 %} {{ j.reagent1 }} {% endif %}{% if j.reagent2 %} + {{ j.reagent2 }} {% endif %}{% if j.reagent3 %} + {{ j.reagent3 }} {% endif %} = 
-                                {% if j.product1 %} {{ j.product1 }} {% endif %}{% if j.product2 %} + {{ j.product2 }} {% endif %}{% if j.product3 %} + {{ j.product3 }} {% endif %}{% if j.product4 %} +{{ j.product4 }} {% endif %}
-                                {% endautoescape %}
-                            </a>
-                        </p>
-                    {% endfor %}
-                    <div class="text-center">
-                        <button class="btn btn-sm btn-outline-secondary mt-3" type="button" data-toggle="collapse" data-target="#collapseCompoundReactions" aria-expanded="false" aria-controls="collapseCompoundReactions">🔼 Свернуть примеры реакций</button>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-
-    </div>
-</div>
-
-{# НАДЕЖНЫЙ ЖЕСТКИЙ СКРИПТ ДЕКОДИРОВАНИЯ ТЕГОВ И СТИРАНИЯ ПРОЧЕРКОВ #}
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        function fixHtmlContent(element) {
-            let html = element.innerHTML;
-            while (html.includes('&lt;') || html.includes('&gt;') || html.includes('&amp;lt;')) {
-                let worker = document.createElement('div');
-                worker.innerHTML = html;
-                html = worker.textContent || worker.innerText;
-            }
-            element.innerHTML = html;
-        }
-
-        document.querySelectorAll('.ck-editor-content').forEach(function(block) {
-            let textContainer = block.querySelector('.ck-inner-text') || block;
-            fixHtmlContent(textContainer);
-
-            let cleanText = textContainer.innerText.replace(/[\s\n\t\r​\u200B\u00A0]/g, '');
-            if (cleanText === "" || cleanText === "-" || cleanText === "—") {
-                block.style.display = 'none';
-            }
-        });
-    });
-</script>
-{% endblock %}
