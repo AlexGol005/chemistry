@@ -370,7 +370,7 @@ class Videor(models.Model):
 
 
 
-class OrganicNames(models.Model): # Используем стандартный models.Model
+class OrganicNames(models.Model):
     """ названия органических веществ """
     name1 = models.CharField('Название 1', max_length=255, blank=True, null=True, unique=True)
     name2 = models.CharField('Название 2', max_length=255, blank=True, null=True)
@@ -381,14 +381,10 @@ class OrganicNames(models.Model): # Используем стандартный 
     molecule_short = models.TextField('Текстовая структурная формула', null=True, blank=True)
     appearance = models.TextField('Внешний вид', blank=True, null=True) 
     img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
-                                        
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
-                                      
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
     img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
-                                        
     img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
-                                      
     img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
     organic_class = models.CharField('Класс', blank=True, null=True, default='ЕГЭ', choices=ORGANIC_CLASSES)
@@ -399,21 +395,16 @@ class OrganicNames(models.Model): # Используем стандартный 
 
     @property
     def mol_object(self):
-        """Метод для получения объекта RDKit из строки SMILES"""
         if self.molecule:
             return Chemrdkit.MolFromSmiles(self.molecule)
         return None
 
-        def __str__(self):
-            # Вместо return self.name (где name может быть None)
-            return str(self.name1) if self.name1 else "Без названия"
+    def __str__(self):
+        return str(self.name1) if self.name1 else "Без названия"
 
     def clean(self):
-        # Ищем существующую запись с такими же полями
         duplicate = OrganicNames.objects.filter(name1=self.name1).exclude(pk=self.pk).first()
-        
         if duplicate:
-            # Выбрасываем ошибку с PK дубликата
             raise ValidationError(
                 f"Ошибка! Место уже занято. Дублирующая запись имеет ID: {duplicate.pk}"
             )
@@ -563,32 +554,31 @@ class NamesCompaunds(models.Model):
     name = models.TextField('Все названия этого соединения', blank=True, null=True)    
     appearance = models.TextField('Внешний вид', blank=True, null=True) 
     img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
-                                        
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
-                                      
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
     img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
-                                        
     img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
-                                      
     img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
     is_interesting = models.BooleanField('вещество о котором надо узнать больше', default=False)
     
     class Meta:
-        verbose_name = 'Название химического вещества'
-        verbose_name_plural = 'Названия химических веществ'
+        verbose_name = 'Неорганическое соединение'
+        verbose_name_plural = 'Неорганические соединения'
 
     def clean(self):
-        # Ищем существующую запись с такими же полями
         duplicate = NamesCompaunds.objects.filter(formula=self.formula).exclude(pk=self.pk).first()
-        
         if duplicate:
-            # Выбрасываем ошибку с PK дубликата
             raise ValidationError(
                 f"Ошибка! Место уже занято. Дублирующая запись имеет ID: {duplicate.pk}"
             )
         super().clean()
+
+
+
+
+
+
 
 
 
@@ -690,5 +680,54 @@ class CompoundExtraVideo(models.Model):
     def __str__(self):
         return self.title if self.title else f"Видео для {self.compound.formula}"
 
+# =================================================================
+# ДОБАВИТЬ ЭТИ ЧЕТЫРЕ КЛАССА В САМЫЙ КОНЕЦ ФАЙЛА MODELS.PY:
+# =================================================================
 
+class CompoundExtraLink(models.Model):
+    """Полезные ссылки для неорганического соединения"""
+    compound = models.ForeignKey(NamesCompaunds, on_delete=models.CASCADE, related_name='extra_videos', verbose_name="Неорганическое соединение")
+    link_url = models.CharField('Ссылка', max_length=10000)
+    title = models.CharField('Название ссылки (необязательно)', max_length=500, blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Полезная ссылка'
+        verbose_name_plural = 'Полезные ссылки'
+
+    def __str__(self):
+        return self.title if self.title else f"Ссылка для {self.compound.formula}"
+
+
+class CompoundExtraImage(models.Model):
+    """Дополнительные иллюстрации для неорганического соединения"""
+    compound = models.ForeignKey(NamesCompaunds, on_delete=models.CASCADE, related_name='extra_images', verbose_name="Неорганическое соединение")
+    image = models.ImageField('Иллюстрация', upload_to='user_images')
+
+    class Meta:
+        verbose_name = 'Дополнительная иллюстрация'
+        verbose_name_plural = 'Дополнительные иллюстрации'
+
+
+class OrganicExtraLink(models.Model):
+    """Полезные ссылки для органического соединения"""
+    compound = models.ForeignKey(OrganicNames, on_delete=models.CASCADE, related_name='extra_videos', verbose_name="Органическое соединение")
+    link_url = models.CharField('Ссылка', max_length=10000)
+    title = models.CharField('Название ссылки (необязательно)', max_length=500, blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Полезная ссылка'
+        verbose_name_plural = 'Полезные ссылки'
+
+    def __str__(self):
+        return self.title if self.title else f"Ссылка для {self.compound.name1}"
+
+
+class OrganicExtraImage(models.Model):
+    """Дополнительные иллюстрации для органического соединения"""
+    compound = models.ForeignKey(OrganicNames, on_delete=models.CASCADE, related_name='extra_images', verbose_name="Органическое соединение")
+    image = models.ImageField('Иллюстрация', upload_to='user_images')
+
+    class Meta:
+        verbose_name = 'Дополнительная иллюстрация'
+        verbose_name_plural = 'Дополнительные иллюстрации'
 
