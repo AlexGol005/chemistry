@@ -95,77 +95,7 @@ class JSMEWidget(forms.Widget):
         return mark_safe(html)
 
 
-# органические соединения органические вещества
 
-
-# === 1. ФОРМА ДЛЯ АДМИНКИ ===
-class OrganicNamesAdminForm(forms.ModelForm):
-    class Meta:
-        model = OrganicNames
-        fields = '__all__'
-        widgets = {
-            'molecule': JSMEWidget(),
-            'appearance': CKEditorUploadingWidget(),
-        }
-
-
-# === 2. ФИЛЬТР ПО КОНКРЕТНЫМ КЛАССАМ (С КРАСИВЫМИ НАЗВАНИЯМИ) ===
-class OrganicClassChoicesFilter(admin.SimpleListFilter):
-    title = 'Класс органики'  # Заголовок блока в правой панели
-    parameter_name = 'class_slug'
-
-    def lookups(self, request, model_admin):
-        # Используем ваш глобальный список ORGANIC_CLASSES (кортежи вида: ('slug', 'Название'))
-        # Если в базе есть записи, фильтр покажет их понятные русские имена
-        return ORGANIC_CLASSES
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(organic_class=self.value())
-        return queryset
-
-
-# === 3. ФИЛЬТР ДЛЯ ПОИСКА ЗАПИСЕЙ С ПУСТЫМ ПОЛЕМ ORGANIC_CLASS ===
-class OrganicClassEmptyFilter(admin.SimpleListFilter):
-    title = 'Наличие класса (organic_class)'  # Заголовок в правой панели
-    parameter_name = 'empty_class'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('empty', 'Не заполнено'),
-            ('filled', 'Заполнено'),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == 'empty':
-            # Фильтруем и NULL, и пустые строки
-            return queryset.filter(organic_class__isnull=True) | queryset.filter(organic_class='')
-        if self.value() == 'filled':
-            # Исключаем все пустые варианты
-            return queryset.exclude(organic_class__isnull=True).exclude(organic_class='')
-        return queryset
-
-
-# === 4. ОСНОВНОЙ КЛАСС АДМИНКИ ===
-@admin.register(OrganicNames)
-class OrganicNamesAdmin(admin.ModelAdmin):
-    form = OrganicNamesAdminForm
-    search_fields = ['name1', 'name2', 'name3']
-    list_display = ('pk', 'name1', 'molecule_short', 'organic_class')
-    
-    # ИСПРАВЛЕНИЕ: Подключаем оба фильтра в боковую панель админки
-    list_filter = (OrganicClassChoicesFilter, OrganicClassEmptyFilter)
-
-    def save_model(self, request, obj, form, change):
-        # Сначала вызываем стандартное сохранение
-        super().save_model(request, obj, form, change)
-        
-        # Формируем и выводим ваше кастомное сообщение
-        if change:
-            msg = f"Редактирована запись № {obj.pk}"
-        else:
-            msg = f"Создана запись № {obj.pk}"
-        messages.success(request, msg)
 
         
 # === СТРУКТУРЫ ДЛЯ БЕСКОНЕЧНОГО ДОБАВЛЕНИЯ КОНТЕНТА К ЗАКОНАМ НЕОРГАНИЧЕСКОЙ ХИМИИ ===
@@ -302,39 +232,7 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
 # 4. Фиксация формы в админке реакции
 admin.site.register(InorganicReaction, InorganicReactionAdmin)
 
-# вещества классы для отображения в админке
-# класс для загрузки/выгрузки вещества
-class NamesCompaundsResource(resources.ModelResource):
-    class Meta:
-        model = NamesCompaunds
-        skip_unchanged = True
-        report_skipped = True
 
-# класс добавления стилей к окну вещества
-class NamesCompaundsAdminForm(forms.ModelForm):
-    appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
-    class Meta:
-        model = NamesCompaunds
-        fields = '__all__'
-
-# класс подробностей вещества
-class NamesCompaundsAdmin(ImportExportActionModelAdmin):
-    resource_class = NamesCompaundsResource
-    form = NamesCompaundsAdminForm
-    search_fields = ['pk', 'formula', 'name']
-    save_as = True
-    
-    # Выводим новые поля в общую таблицу админки
-    list_display = ('pk', 'formula', 'name', 'is_interesting',   )
-    
-    # Позволяет ставить и снимать галочку "интересное" прямо из общего списка, не заходя внутрь вещества
-    list_editable = ('is_interesting',)
-    
-    # Добавляет удобный блок фильтрации в правой колонке админки
-    list_filter = ('is_interesting',   )
-
-# фиксация формы в админке вещества
-admin.site.register(NamesCompaunds, NamesCompaundsAdmin)
 
 
 # === СТРУКТУРЫ ДЛЯ БЕСКОНЕЧНОГО ДОБАВЛЕНИЯ КОНТЕНТА К ЗАКОНАМ ОБЩЕЙ ХИМИИ ===
@@ -544,3 +442,141 @@ admin.site.register(OrganicReaction, OrganicReactionAdmin)
 
 
 admin.site.register(Pictures)
+
+# =================================================================
+# ВСТРОЕННЫЕ БЛОКИ ДЛЯ БЕСКОНЕЧНЫХ ССЫЛОК И ИЛЛЮСТРАЦИЙ
+# =================================================================
+
+class CompoundExtraLinkInline(admin.TabularInline):
+    model = CompoundExtraLink
+    extra = 1
+    fields = ['link_url', 'title']
+    verbose_name = 'Полезная ссылка'
+    verbose_name_plural = 'Полезные ссылки'
+
+
+class CompoundExtraImageInline(admin.TabularInline):
+    model = CompoundExtraImage
+    extra = 1
+    verbose_name = 'Дополнительная иллюстрация'
+    verbose_name_plural = 'Дополнительные иллюстрации'
+
+
+class OrganicExtraLinkInline(admin.TabularInline):
+    model = OrganicExtraLink
+    extra = 1
+    fields = ['link_url', 'title']
+    verbose_name = 'Полезная ссылка'
+    verbose_name_plural = 'Полезные ссылки'
+
+
+class OrganicExtraImageInline(admin.TabularInline):
+    model = OrganicExtraImage
+    extra = 1
+    verbose_name = 'Дополнительная иллюстрация'
+    verbose_name_plural = 'Дополнительные иллюстрации'
+
+
+# =================================================================
+# 1. АДМИНКА ДЛЯ: НЕОРГАНИЧЕСКИЕ СОЕДИНЕНИЯ (NamesCompaunds)
+# =================================================================
+
+class NamesCompaundsResource(resources.ModelResource):
+    class Meta:
+        model = NamesCompaunds
+        skip_unchanged = True
+        report_skipped = True
+
+
+class NamesCompaundsAdminForm(forms.ModelForm):
+    appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+    class Meta:
+        model = NamesCompaunds
+        fields = '__all__'
+
+
+@admin.register(NamesCompaunds)
+class NamesCompaundsAdmin(ImportExportActionModelAdmin):
+    resource_class = NamesCompaundsResource
+    form = NamesCompaundsAdminForm
+    search_fields = ['pk', 'formula', 'name']
+    save_as = True
+    list_display = ('pk', 'formula', 'name', 'is_interesting')
+    list_editable = ('is_interesting',)
+    list_filter = ('is_interesting',)
+    
+    # Подключаем бесконечные ссылки и иллюстрации в карточку неорганики
+    inlines = [CompoundExtraLinkInline, CompoundExtraImageInline]
+
+
+# =================================================================
+# 2. АДМИНКА ДЛЯ: ОРГАНИЧЕСКИЕ СОЕДИНЕНИЯ (OrganicNames)
+# =================================================================
+
+class OrganicNamesAdminForm(forms.ModelForm):
+    class Meta:
+        model = OrganicNames
+        fields = '__all__'
+        widgets = {
+            'molecule': JSMEWidget(),
+            'appearance': CKEditorUploadingWidget(),
+        }
+
+
+class OrganicClassChoicesFilter(admin.SimpleListFilter):
+    title = 'Класс органики'
+    parameter_name = 'class_slug'
+
+    def lookups(self, request, model_admin):
+        return ORGANIC_CLASSES
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(organic_class=self.value())
+        return queryset
+
+
+class OrganicClassEmptyFilter(admin.SimpleListFilter):
+    title = 'Наличие класса (organic_class)'
+    parameter_name = 'empty_class'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('empty', 'Не заполнено'),
+            ('filled', 'Заполнено'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'empty':
+            return queryset.filter(organic_class__isnull=True) | queryset.filter(organic_class='')
+        if self.value() == 'filled':
+            return queryset.exclude(organic_class__isnull=True).exclude(organic_class='')
+        return queryset
+
+
+@admin.register(OrganicNames)
+class OrganicNamesAdmin(admin.ModelAdmin):
+    form = OrganicNamesAdminForm
+    search_fields = ['name1', 'name2', 'name3']
+    
+    # Добавляем поле "is_interesting" в вывод таблицы органики
+    list_display = ('pk', 'name1', 'molecule_short', 'organic_class', 'is_interesting')
+    
+    # Позволяет ставить/снимать галочку "интересное" прямо из общего списка органических соединений
+    list_editable = ('is_interesting',)
+    
+    # Добавляем фильтр интересного к вашим фильтрам классов
+    list_filter = (OrganicClassChoicesFilter, OrganicClassEmptyFilter, 'is_interesting')
+
+    # Подключаем бесконечные ссылки и иллюстрации в карточку органики
+    inlines = [OrganicExtraLinkInline, OrganicExtraImageInline]
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if change:
+            msg = f"Редактирована запись № {obj.pk}"
+        else:
+            msg = f"Создана запись № {obj.pk}"
+        messages.success(request, msg)
+
+
