@@ -10,7 +10,7 @@
 <div class="col-12">
     <div class="text-center">
         <h3><a href="/chem/inorganiclaw"> Законы неорганической химии </a></h3>
-        <h2>Закон № {{ obj.number }} <br>{{ obj.title }}</h2>
+        <h2>Закон № {{ obj.number }} <br>{% autoescape off %}{{ obj.title }}{% endautoescape %}</h2>
     </div>
 
     {# ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ ЖИВЫХ КНОПОК #}
@@ -107,14 +107,14 @@
 
     {# БЛОК: ОСНОВНОЙ ТЕКСТ #}
     {% if obj.text %}
-        <div class="content-block ck-editor-content">{{ obj.text|safe }}</div>
+        <div class="content-block ck-editor-content">{% autoescape off %}{{ obj.text }}{% endautoescape %}</div>
     {% endif %}
 
     {# БЛОК: ОБЩАЯ ФОРМУЛА ЗАКОНА #}
     {% if obj.formula %}
-        <div class="content-block ck-editor-content">
+        <div class="content-block ck-editor-content" data-block-type="formula">
             <h4 class="text-center font-weight-bold">Общая формула закона</h4><br>
-            {{ obj.formula|safe }}
+            <div class="ck-inner-text">{% autoescape off %}{{ obj.formula }}{% endautoescape %}</div>
         </div>
     {% endif %}
 
@@ -124,23 +124,23 @@
 
     {# БЛОК: ПРИМЕРЫ #}
     {% if obj.examples %}
-        <div class="content-block ck-editor-content">
+        <div class="content-block ck-editor-content" data-block-type="examples">
             <h4 class="text-center font-weight-bold">Примеры</h4><br>
-            {{ obj.examples|safe }}
+            <div class="ck-inner-text">{% autoescape off %}{{ obj.examples }}{% endautoescape %}</div>
         </div>
     {% endif %}
     
     {# БЛОК: ИСКЛЮЧЕНИЯ #}
     {% if obj.exceptions %}
-        <div class="content-block ck-editor-content">
+        <div class="content-block ck-editor-content" data-block-type="exceptions">
             <h4 class="text-center font-weight-bold">Исключения</h4><br>
-            {{ obj.exceptions|safe }}
+            <div class="ck-inner-text">{% autoescape off %}{{ obj.exceptions }}{% endautoescape %}</div>
         </div>
     {% endif %}
     
     {# БЛОК: ССЫЛКИ #}
     {% if obj.trening %}
-        <div class="content-block ck-editor-content">
+        <div class="content-block ck-editor-content" data-block-type="links">
             <h4 class="text-center font-weight-bold">Ссылки</h4><br>
             <div class="text-center"><a href="{{ obj.trening }}" target="_blank" class="btn btn-link"> ссылка </a></div>
         </div>
@@ -169,8 +169,7 @@
     {% if obj.img4 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img4.url }}"></div><br>{% endif %}
     {% if obj.img5 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img5.url }}"></div><br>{% endif %}
     {% if obj.img6 %}<div class="media text-muted flex-column align-items-center pt-3"><img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width:100%; max-height:80vh; object-fit:contain; height:auto;" src="{{ obj.img6.url }}"></div><br>{% endif %}
-
-        <!-- ================================================================= -->
+    <!-- ================================================================= -->
     <!-- НИЖНИЙ БЛОК ИЗ ТРЕХ КНОПОК ОДИНАКОВОГО СТИЛЯ И РАЗМЕРА -->
     <!-- ================================================================= -->
     <div class="d-flex flex-column align-items-center mt-5 mb-5">
@@ -248,23 +247,38 @@
     </div>
 </div>
 
-{# ИНТЕЛЛЕКТУАЛЬНЫЙ СКРИПТ ОЧИСТКИ ТЕГОВ И СКРЫТИЯ ПРОЧЕРКОВ #}
+{# НАДЕЖНЫЙ ЖЕСТКИЙ СКРИПТ ДЕКОДИРОВАНИЯ ТЕГОВ И СТИРАНИЯ ПРОЧЕРКОВ #}
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll('.ck-editor-content').forEach(function(block) {
-            // 1. Убираем двойное экранирование (если теги вывелись текстом)
-            let txt = block.innerHTML;
-            if (txt.includes('&lt;') || txt.includes('&gt;')) {
-                let tempDiv = document.createElement('div');
-                tempDiv.innerHTML = txt;
-                block.innerHTML = tempDiv.textContent || tempDiv.innerText;
+        // Функция для глубокого рендеринга текста, если он вывелся в виде сырых тегов
+        function fixHtmlContent(element) {
+            let html = element.innerHTML;
+            // Пока в строке остаются экранированные сущности, превращаем их в реальный HTML
+            while (html.includes('&lt;') || html.includes('&gt;') || html.includes('&amp;lt;')) {
+                let worker = document.createElement('div');
+                worker.innerHTML = html;
+                html = worker.textContent || worker.innerText;
             }
+            element.innerHTML = html;
+        }
 
-            // 2. Проверяем реальное текстовое содержимое блока (игнорируя теги и невидимые пробелы)
-            let cleanText = block.innerText.replace(/[\s\n\t\r​\u200B\u00A0]/g, '');
+        // Фиксим теги в основном заголовке h2, если они там проскочили
+        let mainHeader = document.querySelector('h2');
+        if (mainHeader) { fixHtmlContent(mainHeader); }
+
+        // Фиксим и фильтруем контентные блоки
+        document.querySelectorAll('.ck-editor-content').forEach(function(block) {
+            // Выбираем целевой контейнер с текстом внутри блока (если есть заголовок h4)
+            let textContainer = block.querySelector('.ck-inner-text') || block;
             
-            // Если блок пустой, содержит только знаки "-" или "—"
-            if (cleanText === "" || cleanText === "-" || cleanText === "—" || cleanText === "Примеры-" || cleanText === "Исключения-" || cleanText === "Общаяформулазакона-") {
+            // Превращаем текстовые теги в реальный HTML
+            fixHtmlContent(textContainer);
+
+            // Получаем чистый текст без тегов и пробелов для проверки на прочерки
+            let cleanText = textContainer.innerText.replace(/[\s\n\t\r​\u200B\u00A0]/g, '');
+            
+            // Если после очистки контейнер пуст или содержит только дефис/тире — полностью прячем весь блок
+            if (cleanText === "" || cleanText === "-" || cleanText === "—") {
                 block.style.display = 'none';
             }
         });
