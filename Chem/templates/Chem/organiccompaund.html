@@ -15,18 +15,14 @@
 <div class="col-12">
 
     <div class="text-center mt-3">
-        <h4><a href="{% url 'organiccompaunds' %}">Органическое соединение</a></h4>
+        <h4><a href="{% url 'organiccompaunds' %}">Органическое вещество</a></h4>
         
-        {# Компактный вывод molecule_short сразу после ссылки #}
-        {% if objcontent.molecule_short %}
-            <p style="font-family: Georgia, serif; font-size: 18pt; color: #555;">{{ objcontent.molecule_short }}</p>
-        {% endif %}
-
-        {# Названия name1 - name4 через "или" #}
+        <!-- 1. Название 1 -->
         <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin: auto;"> 
             {{ objcontent.name1 }} 
         </p>
         
+        <!-- 2. Другие названия через "или" -->
         {% if objcontent.name2 %}
             <div style="margin: 5px 0; color: #777; font-style: italic;">или</div>
             <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin: auto;"> 
@@ -48,15 +44,22 @@
             </p>
         {% endif %}
 
-        {# Крупная молекулярная формула #}
+        <!-- 3. Брутто-формула (Молекулярная формула) -->
         {% if objcontent.formula %}
             <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 38pt; margin: 20px auto; color: #2c3e50; font-weight: bold;"> 
                 {{ objcontent.formula }} 
             </p>
         {% endif %}
+
+        <!-- 4. Линейная текстовая структурная формула -->
+        {% if objcontent.molecule_short %}
+            <p style="font-family: Georgia, serif; font-size: 18pt; color: #555; margin-top: 15px;">
+                {{ objcontent.molecule_short }}
+            </p>
+        {% endif %}
     </div>
 
-    {# Рендеринг SMILES структуры молекулы #}
+    <!-- 5. Структура, отрисованная редактором (SMILES) -->
     {% if objcontent.molecule %}
         <br>
         <div class="text-center">{% render_smiles objcontent.molecule width=200 height=200 %}</div>
@@ -115,7 +118,7 @@
         }
     </style>
 
-    {# БЛОК: ВНЕШНИЙ ВИД И ОПИСАНИЕ С КРАСИВОЙ СИНЕЙ ПОЛОСКОЙ #}
+    <!-- 6. Подробности (Внешний вид) с синей полоской -->
     {% if objcontent.appearance %}
         <div class="content-block ck-editor-content mx-auto" style="border-left: 6px solid #00aaff; background-color: #f8fdff; max-width: 80%; box-shadow: 2px 2px 8px rgba(0,0,0,0.05); margin: 20px auto;">
             <div class="ck-inner-text" style="font-family: Georgia, serif; font-size: 12pt; color: #333;">
@@ -123,8 +126,8 @@
             </div>
         </div>
     {% endif %}   
-    
-    {# Изображения 1, 2, 3 с защитой от медленного интернета #}
+
+        <!-- 7. Изображения 1-6 с защитой от медленного интернета -->
     {% if objcontent.img1 %}
         <div class="media text-muted flex-column align-items-center pt-3">
             <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img1.url }}" loading="lazy" decoding="async">
@@ -140,27 +143,23 @@
             <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img3.url }}" loading="lazy" decoding="async">
         </div><br>
     {% endif %}
-
-    <hr>
-
-        {# Картинки 4, 5, 6 с защитой от медленного интернета #}
     {% if objcontent.img4 %}
         <div class="media text-muted flex-column align-items-center pt-3">
             <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 70%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img4.url }}" loading="lazy" decoding="async">
         </div><br>
     {% endif %}
-
     {% if objcontent.img5 %}
         <div class="media text-muted flex-column align-items-center pt-3">
             <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 70%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img5.url }}" loading="lazy" decoding="async">
         </div><br>
     {% endif %}
-
     {% if objcontent.img6 %}
         <div class="media text-muted flex-column align-items-center pt-3">
             <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 70%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img6.url }}" loading="lazy" decoding="async">
         </div><br>
     {% endif %}
+
+    <hr>
 
     <!-- ================================================================= -->
     <!-- НИЖНИЙ БЛОК ИЗ СВОРАЧИВАЕМЫХ КНОПОК ЕДИНОГО СТИЛЯ -->
