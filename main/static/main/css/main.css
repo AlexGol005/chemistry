@@ -338,28 +338,4 @@ sudo bash -c 'cat << EOF >> /var/www/labjournaleq/LabBookeq/static/main/css/main
     overflow-wrap: break-word !important;
     white-space: normal !important;
 
-/* ========================================================================== 
-   ЖЕСТКИЙ ЗАЗОР МЕЖДУ ВНУЧКАМИ И САЙДБАРОМ
-   ========================================================================== */
-@media screen and (min-width: 1200px) {
-    /* Находим блок col-8 или col-md-8, который идет СТРОГО перед нашим сайдбаром */
-    div[class*="col-8"] + .with-sidebar-layout,
-    main .col-8 + .with-sidebar-layout {
-        border-left: 40px solid transparent !important; /* Создает идеальный прозрачный коридор-зазор в 40px */
-        background-clip: padding-box !important;        /* Гарантирует, что фон сайдбара не залезет на зазор */
-    }
-}
 
-/* ========================================================================== 
-   ФИНАЛЬНЫЙ ФИКС: РАСТАЛКИВАЕМ ТЕКСТ И АБСОЛЮТНЫЙ САЙДБАР
-   ========================================================================== */
-@media screen and (min-width: 1300px) {
-    /* Находим левую колонку с контентом на больших экранах */
-    main .row.no-gutters > div[class*="col-"],
-    .table-list .row > div[class*="col-8"] {
-        /* Принудительно создаем пустой коридор справа, 
-           куда текст физически не сможет залезть (240px сайдбар + 50px чистый зазор) */
-        padding-right: 290px !important; 
-        box-sizing: border-box !important;
-    }
-}
