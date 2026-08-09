@@ -347,7 +347,8 @@
 
   /* 6. ГЛОБАЛЬНОЕ ОГРАНИЧЕНИЕ ШИРИНЫ ВСЕГО САЙТА НА БОЛЬШИХ МОНИТОРАХ */
   @media screen and (min-width: 1200px) {
-    main .container-fluid.table-list {
+    main .container-fluid.table-list,
+    .container-fluid.table-list {
       max-width: 1300px !important; /* Сайт больше не растянется на весь экран, текст станет легко читать */
       margin-left: auto !important;  /* Центрируем весь сайт по центру экрана */
       margin-right: auto !important;
@@ -356,29 +357,38 @@
 
   /* 7. ГОРИЗОНТАЛЬНЫЙ ЗАЗОР МЕЖДУ КОНТЕНТОМ И САЙДБАРOМ НА ПК */
   @media screen and (min-width: 1200px) {
-    main .row.no-gutters > .col-8 {
+    main .row.no-gutters > .col-8,
+    .table-list .row > .col-8 {
       max-width: 64% !important;
       flex: 0 0 64% !important;
     }
-    main .row.no-gutters > .col-4 {
+    main .row.no-gutters > .col-4,
+    .table-list .row > .col-4 {
       max-width: 32% !important;
       flex: 0 0 32% !important;
       margin-left: auto !important; /* Отталкивает сайдбар вправо, создавая коридор */
     }
   }
 
-  /* 8. ВЕРТИКАЛЬНЫЙ ЗАЗОР МЕЖДУ КОНТЕНТОМ И САЙДБАРОМ НА МОБИЛЬНЫХ ТЕЛЕФОНАХ */
+  /* 8. ИСПРАВЛЕНО: НАДЕЖНЫЙ ВЕРТИКАЛЬНЫЙ ЗАЗОР И ФИКС ДУБЛИРОВАНИЯ НА МОБИЛЬНЫХ */
   @media screen and (max-width: 1199px) {
-    main .row.no-gutters > .col-4 {
-      margin-top: 40px !important;    /* Физически отодвигает сайдбар вниз от таблиц контента */
-      border-top: 1px solid #dee2e6; /* Делает аккуратную тонкую разделительную линию сверху */
-      padding-top: 20px !important;  /* Делает отступ от этой линии до заголовка "Поиск" */
+    /* Нацеливаемся напрямую на aside и форму поиска внутри правого блока */
+    main .row.no-gutters > .col-4,
+    .table-list .row > .col-4,
+    aside {
+      margin-top: 50px !important;   /* Жестко толкает сайдбар вниз от таблиц контента */
+      border-top: 2px solid #dee2e6 !important; /* Рисует красивую разделительную линию */
+      padding-top: 25px !important;  /* Делает отступ сверху от линии до слова Поиск */
+      display: block !important;
+    }
+
+    /* Убираем дублирование слова "Поиск": скрываем мелкую внутреннюю метку формы Crispy */
+    .col-4 form div.form-group label,
+    aside form div.form-group label {
+      display: none !important;
     }
   }
 </style>
 
-
-
-
-
 </body> <!-- ТЕГ BODY ТЕПЕРЬ В САМОМ КОНЦЕ -->
+
