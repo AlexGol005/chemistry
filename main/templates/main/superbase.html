@@ -38,24 +38,9 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
 </script>
 <noscript><div><img src="https://top-fwz1.mail.ru/counter?id=3475315;js=na" style="position:absolute;left:-9999px;" alt="Top.Mail.Ru" /></div></noscript>
 <!-- /Top.Mail.Ru counter -->
-{#код счетчика#}
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript" >
-   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-   m[i].l=1*new Date();
-   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-   ym(101384023, "init", {
-        clickmap:true,
-        trackLinks:true,
-        accurateTrackBounce:true,
-        webvisor:true
-   });
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/101384023" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
+<!-- Yandex.Metrika counter -->
+
 {#конец кода счётчика#}
 </head>
 
@@ -98,37 +83,80 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
                 </li>
             </ul>
 
-            <!-- Блок функциональных кнопок (жесткое выравнивание d-lg-inline-flex и align-items-stretch) -->
-            <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 mt-2 mt-lg-0 justify-content-end">
-                <a href="{% url 'contact_page' %}" class="btn btn-warning px-3 d-flex align-items-center justify-content-center" style="white-space: nowrap; height: 38px;">Обратная связь</a>
+            <!-- Дополнительные адаптивные стили для экранов ПК -->
+            <style>
+                @media (min-width: 992px) {
+                    .desktop-gap {
+                        margin-left: 12px !important;
+                        margin-bottom: 0 !important;
+                    }
+                    .desktop-first {
+                        margin-left: 0 !important;
+                    }
+                }
+            </style>
+
+            <!-- Блок функциональных кнопок с жесткими инлайновыми отступами для мобильных -->
+            <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center justify-content-end mt-2 mt-lg-0 w-100">
+                
+                <!-- Кнопка 1: Обратная связь -->
+                <a href="{% url 'contact_page' %}" 
+                   class="btn btn-warning px-3 d-flex align-items-center justify-content-center desktop-first" 
+                   style="white-space: nowrap; height: 38px; margin-bottom: 12px !important;">
+                   Обратная связь
+                </a>
 
                 {% if 'chem' not in request.path %}   
                     {% if not user.is_authenticated %}
-                        <a href="{% url 'heademployeereg' %}" class="btn btn-success px-3 d-flex align-items-center justify-content-center" style="white-space: nowrap; height: 38px;">Попробовать бесплатно</a>
-                        <a href="{% url 'user' %}" class="btn btn-outline-primary px-3 d-flex align-items-center justify-content-center" style="white-space: nowrap; height: 38px;">Войти</a>
+                        <!-- Кнопка 2: Регистрация -->
+                        <a href="{% url 'heademployeereg' %}" 
+                           class="btn btn-success px-3 d-flex align-items-center justify-content-center desktop-gap" 
+                           style="white-space: nowrap; height: 38px; margin-bottom: 12px !important;">
+                           Попробовать бесплатно
+                        </a>
+                        <!-- Кнопка 3: Войти -->
+                        <a href="{% url 'user' %}" 
+                           class="btn btn-outline-primary px-3 d-flex align-items-center justify-content-center desktop-gap" 
+                           style="white-space: nowrap; height: 38px; margin-bottom: 12px !important;">
+                           Войти
+                        </a>
                     {% else %}
+                        <!-- Кнопка 2: Личный кабинет (Лаборатория) -->
                         {% if request.user.profile.userid != "chem" %}
-                            <a href="{% url 'profile' %}" class="btn btn-primary px-3 text-truncate d-flex align-items-center justify-content-center" style="max-width: 250px; white-space: nowrap; height: 38px;">
+                            <a href="{% url 'profile' %}" 
+                               class="btn btn-primary px-3 text-truncate d-flex align-items-center justify-content-center desktop-gap" 
+                               style="max-width: 100%; white-space: nowrap; height: 38px; margin-bottom: 12px !important;" 
+                               title="ЛК {% if request.user.profile.short_name %}{{ request.user.profile.short_name }}{% else %}Управление Лабораторией{% endif %}">
                                 ЛК {% if request.user.profile.short_name %}{{ request.user.profile.short_name }}{% else %}Управление Лабораторией{% endif %}
                             </a>
                         {% endif %} 
-                        <!-- Форма выхода с нулевыми отступами и фиксированной высотой кнопки -->
-                        <form action="{% url 'exit' %}" method="post" class="m-0 p-0 d-block" style="height: 38px;">
+                        <!-- Кнопка 3: Выйти (Лаборатория) -->
+                        <form action="{% url 'exit' %}" method="post" class="m-0 p-0 desktop-gap" style="margin-bottom: 12px !important;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-secondary px-3 w-100 h-100" style="white-space: nowrap;">Выйти</button>
+                            <button type="submit" class="btn btn-outline-secondary px-3 w-100" style="white-space: nowrap; height: 38px;">Выйти</button>
                         </form>
                     {% endif %} 
                 {% endif %} 
 
                 {% if 'chem' in request.path %}   
                     {% if not user.is_authenticated %}
-                        <a href="{% url 'chemuser' %}" class="btn btn-outline-primary px-3 d-flex align-items-center justify-content-center" style="white-space: nowrap; height: 38px;">Войти</a>
+                        <!-- Кнопка 2: Войти (Химия) -->
+                        <a href="{% url 'chemuser' %}" 
+                           class="btn btn-outline-primary px-3 d-flex align-items-center justify-content-center desktop-gap" 
+                           style="white-space: nowrap; height: 38px; margin-bottom: 12px !important;">
+                           Войти
+                        </a>
                     {% else %}
-                        <a href="{% url 'chemprofile' %}" class="btn btn-primary px-3 d-flex align-items-center justify-content-center" style="white-space: nowrap; height: 38px;">ЛК Изучение Химии</a>
-                        <!-- Форма выхода ХИМИЯ -->
-                        <form action="{% url 'chemexit' %}" method="post" class="m-0 p-0 d-block" style="height: 38px;">
+                        <!-- Кнопка 2: Личный кабинет (Химия) -->
+                        <a href="{% url 'chemprofile' %}" 
+                           class="btn btn-primary px-3 d-flex align-items-center justify-content-center desktop-gap" 
+                           style="white-space: nowrap; height: 38px; margin-bottom: 12px !important;">
+                           ЛК Изучение Химии
+                        </a>
+                        <!-- Кнопка 3: Выйти (Химия) -->
+                        <form action="{% url 'chemexit' %}" method="post" class="m-0 p-0 desktop-gap" style="margin-bottom: 12px !important;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-secondary px-3 w-100 h-100" style="white-space: nowrap;">Выйти</button>
+                            <button type="submit" class="btn btn-outline-secondary px-3 w-100" style="white-space: nowrap; height: 38px;">Выйти</button>
                         </form>
                     {% endif %} 
                 {% endif %} 
@@ -137,6 +165,7 @@ _tmr.push({id: "3475315", type: "pageView", start: (new Date()).getTime()});
     </div>
 </nav>
 {# конец шапки #}
+
 
        
 
