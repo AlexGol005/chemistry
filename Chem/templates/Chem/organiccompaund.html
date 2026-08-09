@@ -14,55 +14,45 @@
 {% block content %}
 <div class="col-12">
 
-    <div class="text-center mt-3">
-        <h4><a href="{% url 'organiccompaunds' %}">Органическое вещество</a></h4>
+    <div class="mt-3" style="max-width: 85%; margin-left: auto; margin-right: auto;">
+        <h4 class="text-center mb-4"><a href="{% url 'organiccompaunds' %}">Органическое соединение</a></h4>
         
-        <!-- 1. Название 1 -->
-        <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin: auto;"> 
+        <!-- Основное название (крупнее) -->
+        <p style="font-family: Georgia, serif; font-size: 22pt; font-weight: bold; margin-bottom: 5px; color: #2c3e50;"> 
             {{ objcontent.name1 }} 
         </p>
         
-        <!-- 2. Другие названия через "или" -->
-        {% if objcontent.name2 %}
-            <div style="margin: 5px 0; color: #777; font-style: italic;">или</div>
-            <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin: auto;"> 
-                {{ objcontent.name2 }} 
+        <!-- Остальные названия в один блок через запятую (чуть мельче) -->
+        {% if objcontent.name2 or objcontent.name3 or objcontent.name4 %}
+            <p style="font-family: Georgia, serif; font-size: 13pt; color: #6c757d; margin-bottom: 25px; line-height: 1.4;">
+                <span class="font-style: italic;">Синонимы:</span>
+                {% if objcontent.name2 %}{{ objcontent.name2 }}{% endif %}{% if objcontent.name3 %}, {{ objcontent.name3 }}{% endif %}{% if objcontent.name4 %}, {{ objcontent.name4 }}{% endif %}
             </p>
         {% endif %}
 
-        {% if objcontent.name3 %}
-            <div style="margin: 5px 0; color: #777; font-style: italic;">или</div>
-            <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin: auto;"> 
-                {{ objcontent.name3 }} 
-            </p>
-        {% endif %}
-
-        {% if objcontent.name4 %}
-            <div style="margin: 5px 0; color: #777; font-style: italic;">или</div>
-            <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; margin: auto;"> 
-                {{ objcontent.name4 }} 
-            </p>
-        {% endif %}
-
-        <!-- 3. Брутто-формула (Молекулярная формула) -->
+        <!-- Линейный блок: Брутто-формула -->
         {% if objcontent.formula %}
-            <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 38pt; margin: 20px auto; color: #2c3e50; font-weight: bold;"> 
-                {{ objcontent.formula }} 
+            <p style="font-family: Georgia, serif; font-size: 20pt; margin-bottom: 10px; color: #333;"> 
+                <strong>Брутто-формула:</strong> {{ objcontent.formula }} 
             </p>
         {% endif %}
 
-        <!-- 4. Линейная текстовая структурная формула -->
+        <!-- Линейный блок: Сокращенная структурная формула -->
         {% if objcontent.molecule_short %}
-            <p style="font-family: Georgia, serif; font-size: 18pt; color: #555; margin-top: 15px;">
-                {{ objcontent.molecule_short }}
+            <p style="font-family: Georgia, serif; font-size: 16pt; color: #444; margin-bottom: 30px;">
+                <strong>Сокращенная структурная формула:</strong> {{ objcontent.molecule_short }}
             </p>
         {% endif %}
     </div>
 
-    <!-- 5. Структура, отрисованная редактором (SMILES) -->
+    <!-- Заголовок и графическая структура (SMILES) -->
     {% if objcontent.molecule %}
-        <br>
-        <div class="text-center">{% render_smiles objcontent.molecule width=200 height=200 %}</div>
+        <div class="text-center mt-4">
+            <h3 style="font-family: Georgia, serif; font-weight: bold; color: #2c3e50;">Структурная формула</h3>
+            <div class="mt-3">
+                {% render_smiles objcontent.molecule width=200 height=200 %}
+            </div>
+        </div>
         <br>
     {% endif %}
 
@@ -118,7 +108,7 @@
         }
     </style>
 
-    <!-- 6. Подробности (Внешний вид) с синей полоской -->
+    <!-- Подробности (Внешний вид) с синей полоской -->
     {% if objcontent.appearance %}
         <div class="content-block ck-editor-content mx-auto" style="border-left: 6px solid #00aaff; background-color: #f8fdff; max-width: 80%; box-shadow: 2px 2px 8px rgba(0,0,0,0.05); margin: 20px auto;">
             <div class="ck-inner-text" style="font-family: Georgia, serif; font-size: 12pt; color: #333;">
@@ -126,8 +116,7 @@
             </div>
         </div>
     {% endif %}   
-
-        <!-- 7. Изображения 1-6 с защитой от медленного интернета -->
+    <!-- Изображения 1-6 с защитой от медленного интернета -->
     {% if objcontent.img1 %}
         <div class="media text-muted flex-column align-items-center pt-3">
             <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img1.url }}" loading="lazy" decoding="async">
@@ -277,4 +266,3 @@
     });
 </script>
 {% endblock %}
-
