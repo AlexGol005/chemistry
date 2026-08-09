@@ -338,7 +338,7 @@
     box-sizing: border-box !important;
   }
 
-  /* 5. Перенос текста, чтобы длинные формулы не распирали ячейки вбок */
+/* 5. Перенос текста, чтобы длинные формулы не распирали ячейки вбок */
   td, th, p, span {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
@@ -367,11 +367,16 @@
     }
   }
 
-  /* 8. ТОЛЬКО УДАЛЕНИЕ ДУБЛИКАТА ПОИСКА НА МОБИЛЬНЫХ (БЕЗ ЗАЗОРОВ) */
+  /* 8. УДАЛЕНИЕ ДУБЛИКАТА ПОИСКА И ВЕРТИКАЛЬНЫЙ ЗАЗОР НА МОБИЛЬНЫХ */
   @media screen and (max-width: 1199px) {
     /* Точечно скрываем мелкую внутреннюю метку формы Crispy, убирая дублирование слова Поиск */
     main .row.no-gutters > .col-4 form div.form-group label {
       display: none !important;
+    }
+
+    /* Создаем зазор сверху, когда боковая колонка опускается под главную */
+    main .row.no-gutters > .col-4 {
+      margin-top: 30px !important; /* Размер отступа в пикселях */
     }
   }
 </style>
