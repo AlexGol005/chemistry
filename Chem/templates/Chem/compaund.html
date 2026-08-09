@@ -3,137 +3,211 @@
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 
-{#название страницы#}
-{#стандартная#}
 {% block title %}
-Вещество
+{{ objcontent.name }}
 {% endblock %}
-{#конец названия страницы#}
 
-    {% block metaname %}<meta name="description" content="{{objcontent.metatitle}}" >{% endblock %}
-    {% block keywords %}<meta name="keywords" content="{{objcontent.keywords}}">{% endblock %}
-    {% block description %}<meta name="description" content="{{objcontent.description}}">{% endblock %}
+{% block metaname %}<meta name="description" content="{{ objcontent.metatitle }}">{% endblock %}
+{% block keywords %}<meta name="keywords" content="{{ objcontent.keywords }}">{% endblock %}
+{% block description %}<meta name="description" content="{{ objcontent.description }}">{% endblock %}
     
 {% block content %}
-{% autoescape off %}
 <div class="col-12">
          
-   <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
-       {{objcontent.name}} </p>    </center>
+    <div class="text-center mt-3">
+        <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
+            {{ objcontent.name }} 
+        </p>    
+        <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 38pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
+            {{ objcontent.formula }} 
+        </p>    
+    </div>
     <br>
-  <center>  <p style="width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 38pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;"> 
-      {{objcontent.formula}} </p>    </center>
- <br>
-                 {% if objcontent.appearance %}
-            <center> 
 
-            <table class="table table-bordered flexy1">
-                <td>
-                     <div style="font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums; text-align: left !important; ">
-                  {{objcontent.appearance}}
-                          </div>
-                                 </td>
-            </table>
-</center>                       
-                 {% endif %}   
+    {# ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ ЖИВЫХ КНОПОК И КОНТЕНТНЫХ БЛОКОВ #}
+    <style>
+        .alive-btn-base {
+            border: none; 
+            border-radius: 50px; 
+            font-size: 16pt; 
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            display: inline-block;
+        }
+        .alive-btn-base:hover {
+            transform: translateY(-4px); 
+            filter: brightness(1.05); 
+            text-decoration: none; 
+        }
+        .alive-btn-base:active {
+            transform: translateY(-1px); 
+        }
 
-<!-- Блок для видео -->
-{% if objcontent.video %}
-<br>
-<center>
-    <a href="{{ objcontent.video }}" target="_blank" rel="noopener noreferrer">
-        <h3>Смотрите видео по ссылке</h3>
-    </a>
-</center>
-{% endif %}
-    
+        /* Цвета кнопок по аналогии с законами */
+        .btn-links {
+            background: linear-gradient(45deg, #6f42c1, #a951ed); 
+            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4); 
+        }
+        .btn-links:hover { box-shadow: 0 8px 25px rgba(111, 66, 193, 0.6); }
+
+        .btn-reactions {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b); 
+            box-shadow: 0 4px 15px rgba(255, 75, 43, 0.4); 
+        }
+        .btn-reactions:hover { box-shadow: 0 8px 25px rgba(255, 75, 43, 0.6); }
+
+        /* Чистые контентные блоки без ломающих таблиц */
+        .content-block {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .content-block p {
+            margin-top: 0 !important;
+            margin-bottom: 1.2rem !important;
+            display: block !important;
+            line-height: 1.6;
+        }
+    </style>
+
+    {# БЛОК: ВНЕШНИЙ ВИД / ОПИСАНИЕ #}
+    {% if objcontent.appearance %}
+        <div class="content-block ck-editor-content">
+            <div style="font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums; text-align: left !important;">
+                {% autoescape off %}{{ objcontent.appearance }}{% endautoescape %}
+            </div>
+        </div>
+    {% endif %}   
    
-<!-- Блок для первого изображения -->
-{% if objcontent.img1 %}
-<center>
-    <div class="media text-muted flex-column align-items-center pt-3">
-        <img class="bd-placeholder-img mr-2 rounded" style="width: 60%; height: auto;" src="{{ objcontent.img1.url }}">
+    {# Блоки картинок 1, 2, 3 с защитой от медленного интернета #}
+    {% if objcontent.img1 %}
+        <div class="media text-muted flex-column align-items-center pt-3">
+            <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img1.url }}" loading="lazy" decoding="async">
+        </div><br>
+    {% endif %}
+
+    {% if objcontent.img2 %}
+        <div class="media text-muted flex-column align-items-center pt-3">
+            <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img2.url }}" loading="lazy" decoding="async">
+        </div><br>
+    {% endif %}
+
+    {% if objcontent.img3 %}
+        <div class="media text-muted flex-column align-items-center pt-3">
+            <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img3.url }}" loading="lazy" decoding="async">
+        </div><br>
+    {% endif %}
+
+    <hr>
+    {# Блоки картинок 4, 5, 6 с защитой от медленного интернета #}
+    {% if objcontent.img4 %}
+        <div class="media text-muted flex-column align-items-center pt-3">
+            <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 70%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img4.url }}" loading="lazy" decoding="async">
+        </div><br>
+    {% endif %}
+
+    {% if objcontent.img5 %}
+        <div class="media text-muted flex-column align-items-center pt-3">
+            <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 70%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img5.url }}" loading="lazy" decoding="async">
+        </div><br>
+    {% endif %}
+
+    {% if objcontent.img6 %}
+        <div class="media text-muted flex-column align-items-center pt-3">
+            <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 70%; max-height: 80vh; object-fit: contain; height: auto;" src="{{ objcontent.img6.url }}" loading="lazy" decoding="async">
+        </div><br>
+    {% endif %}
+
+    <!-- ================================================================= -->
+    <!-- НИЖНИЙ БЛОК ИЗ СВОРАЧИВАЕМЫХ КНОПОК ЕДИНОГО СТИЛЯ -->
+    <!-- ================================================================= -->
+    <div class="d-flex flex-column align-items-center mt-5 mb-5">
+
+        {# 1. КНОПКА: ПОЛЕЗНЫЕ ССЫЛКИ (ВИДЕОМАТЕРИАЛЫ) #}
+        {% if objcontent.video or objcontent.extra_videos.all %}
+            <button class="btn btn-lg mt-3 mb-3 px-5 text-white font-weight-bold alive-btn-base btn-links" 
+                    type="button" data-toggle="collapse" data-target="#collapseCompoundVideos" 
+                    aria-expanded="false" aria-controls="collapseCompoundVideos">
+                🔗 Полезные ссылки
+            </button>
+            <div class="collapse w-100" id="collapseCompoundVideos">
+                <div class="card card-body text-center bg-light mb-4 mx-auto" style="max-width: 600px; border-radius: 15px;">
+                    <h4 class="mb-3 font-weight-bold text-dark">Видеоматериалы</h4>
+                    <div class="d-flex flex-column align-items-center">
+                        {% if objcontent.video %}
+                            <a href="{{ objcontent.video }}" class="btn btn-link text-decoration-none my-1 text-primary" target="_blank" rel="noopener noreferrer" style="font-size: 13pt; font-weight: bold;">
+                                🎬 Посмотреть основное видео по ссылке
+                            </a>
+                        {% endif %}
+                        {% for vid in objcontent.extra_videos.all %}
+                            <a href="{{ vid.video_url }}" class="btn btn-link text-decoration-none my-1" target="_blank" rel="noopener noreferrer" style="font-size: 13pt; font-weight: 500;">
+                                🚀 {% if vid.title %}{{ vid.title }}{% else %}Видео {{ forloop.counter }}{% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-sm btn-outline-secondary mt-3" type="button" data-toggle="collapse" data-target="#collapseCompoundVideos" aria-expanded="false" aria-controls="collapseCompoundVideos">🔼 Свернуть ссылки</button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {# 2. КНОПКА: ПОКАЗАТЬ ПРИМЕРЫ РЕАКЦИЙ #}
+        {% if qw %}
+            <button class="btn btn-lg mt-3 mb-3 px-5 text-white font-weight-bold alive-btn-base btn-reactions" 
+                    type="button" data-toggle="collapse" data-target="#collapseCompoundReactions" 
+                    aria-expanded="false" aria-controls="collapseCompoundReactions">
+                🧪 Показать примеры реакций
+            </button>
+            <div class="collapse w-100" id="collapseCompoundReactions">
+                <div class="card card-body bg-light mb-4 p-4" style="border-radius: 15px;">
+                    <div class="text-center mb-4">
+                        <small style="font-size: 12pt; color: #6c757d; font-weight: 500;">(реакции приведены без коэффициентов)</small>
+                    </div>
+                    {% for j in qw %}
+                        <p style="display: block; width: 100%; text-align: center !important; font-size: 14pt; margin-left: auto; margin-right: auto; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.5;">
+                            <a href="{% url 'inorganiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-none font-weight-500">
+                                {% autoescape off %}
+                                {% if j.reagent1 %} {{ j.reagent1 }} {% endif %}{% if j.reagent2 %} + {{ j.reagent2 }} {% endif %}{% if j.reagent3 %} + {{ j.reagent3 }} {% endif %} = 
+                                {% if j.product1 %} {{ j.product1 }} {% endif %}{% if j.product2 %} + {{ j.product2 }} {% endif %}{% if j.product3 %} + {{ j.product3 }} {% endif %}{% if j.product4 %} +{{ j.product4 }} {% endif %}
+                                {% endautoescape %}
+                            </a>
+                        </p>
+                    {% endfor %}
+                    <div class="text-center">
+                        <button class="btn btn-sm btn-outline-secondary mt-3" type="button" data-toggle="collapse" data-target="#collapseCompoundReactions" aria-expanded="false" aria-controls="collapseCompoundReactions">🔼 Свернуть примеры реакций</button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
     </div>
-</center>
-{% endif %}
-
-<!-- Блок для второго изображения -->
-{% if objcontent.img2 %}
-<center>
-    <div class="media text-muted flex-column align-items-center pt-3">
-        <img class="bd-placeholder-img mr-2 rounded" style="width: 60%; height: auto;" src="{{ objcontent.img2.url }}">
-    </div>
-</center>
-{% endif %}
-
-<!-- Блок для третьего изображения -->
-{% if objcontent.img3 %}
-<center>
-    <div class="media text-muted flex-column align-items-center pt-3">
-        <img class="bd-placeholder-img mr-2 rounded" style="width: 60%; height: auto;" src="{{ objcontent.img3.url }}">
-    </div>
-</center>
-{% endif %}
-
-  <hr>
-    <br>
-<!-- {% for j in qw %} -->
-
-    
-               <center>  <div class="media text-muted flex-column align-items-center pt-3">
-       {% if obj.img4 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img4.url }}">{% endif %}
-
-</div></center> 
-    <br> 
-               <center>  <div class="media text-muted flex-column align-items-center pt-3">
-       {% if obj.img5 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img5.url }}">{% endif %}
-
-</div></center> 
-    <br> 
-                   <center>  <div class="media text-muted flex-column align-items-center pt-3">
-       {% if obj.img6 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img6.url }}">{% endif %}
-
-</div></center> 
-    <br> 
-
-
-             <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 20pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
-<a href="{% url 'inorganiclawtestanswer' j.pk %}" target="_blank" rel="noopener noreferrer">
-           {% if j.reagent1 %}       
-       {{j.reagent1}} 
-         {% endif %}
-                 
-         {% if j.reagent2 %}
-          +  {{j.reagent2}}
-         {% endif %}
-
-        {% if j.reagent3 %}
-          +  {{j.reagent3}}
-         {% endif %}
-
-         =
-{% if j.product1 %}
-{{j.product1}} 
-                  {% endif %}
-     {% if j.product2 %}
-          + {{j.product2}}
-         {% endif %}
-      {% if j.product3 %}
-          + {{j.product3}}
-         {% endif %}
-      {% if j.product4 %}
-          +{{j.product4}}
-         {% endif %}
-
-</a>
-</p>
-
-
-  
- <!-- {% endfor %} -->
-
-
 </div>
 
-{% endautoescape %}
+{# НАДЕЖНЫЙ ЖЕСТКИЙ СКРИПТ ДЕКОДИРОВАНИЯ ТЕГОВ И СТИРАНИЯ ПРОЧЕРКОВ #}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function fixHtmlContent(element) {
+            let html = element.innerHTML;
+            while (html.includes('&lt;') || html.includes('&gt;') || html.includes('&amp;lt;')) {
+                let worker = document.createElement('div');
+                worker.innerHTML = html;
+                html = worker.textContent || worker.innerText;
+            }
+            element.innerHTML = html;
+        }
+
+        document.querySelectorAll('.ck-editor-content').forEach(function(block) {
+            let textContainer = block.querySelector('.ck-inner-text') || block;
+            fixHtmlContent(textContainer);
+
+            let cleanText = textContainer.innerText.replace(/[\s\n\t\r​\u200B\u00A0]/g, '');
+            if (cleanText === "" || cleanText === "-" || cleanText === "—") {
+                block.style.display = 'none';
+            }
+        });
+    });
+</script>
 {% endblock %}
