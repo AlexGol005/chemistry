@@ -356,41 +356,42 @@
 
   /* 7. ГОРИЗОНТАЛЬНЫЙ ЗАЗОР МЕЖДУ КОНТЕНТОМ И САЙДБАРOМ НА ПК */
   @media screen and (min-width: 1200px) {
-    main .row.no-gutters > .col-4,
-    .table-list .row > .col-4 {
+    main .row.no-gutters > .col-8 {
+      max-width: 64% !important;
+      flex: 0 0 64% !important;
+    }
+    main .row.no-gutters > .col-4 {
       max-width: 32% !important;
       flex: 0 0 32% !important;
       margin-left: auto !important; /* Отталкивает сайдбар вправо, создавая коридор */
     }
-    main .row.no-gutters > .col-8,
-    .table-list .row > .col-8 {
-      max-width: 64% !important;
-      flex: 0 0 64% !important;
-    }
   }
 
-  /* 8. ИСПРАВЛЕНО: ЖЕСТКИЙ ВНУТРЕННИЙ ЗАЗОР И ФИКС ДУБЛИРОВАНИЯ НА МОБИЛЬНЫХ */
+  /* 8. ИСПРАВЛЕНО: НОВЫЙ МЕТОД РАСТАЛКИВАНИЯ КОНТЕНТА НА МОБИЛЬНЫХ */
   @media screen and (max-width: 1199px) {
-    /* Создаем виртуальный пустой блок на мобильном прямо ПЕРЕД содержимым сайдбара */
-    main .row.no-gutters > .col-4::before,
-    .table-list .row > .col-4::before {
-      content: "" !important;
-      display: block !important;
-      height: 50px !important;       /* Физическая высота зазора на телефоне */
-      width: 100% !important;
-    }
-
-    /* Сбрасываем внешние шаги, чтобы розовая полоса гарантированно не появлялась */
-    main .row.no-gutters > .col-4,
-    .table-list .row > .col-4 {
+    /* Сбрасываем внешние шаги у самой колонки, чтобы точно не было розовых полос */
+    main .row.no-gutters > .col-4 {
       margin-top: 0 !important;      
     }
 
-    /* Точечно скрываем мелкую внутреннюю метку формы Crispy, убирая дублирование слова Поиск */
+    /* Расталкиваем блоки: даем пагинации жесткий отступ снизу */
+    .pagination-container {
+      margin-bottom: 40px !important;
+      display: block !important;
+    }
+
+    /* Расталкиваем блоки: даем первому заголовку сайдбара жесткий отступ сверху */
+    main .col-4 center h4,
+    .col-4 h4 {
+      margin-top: 40px !important;
+      display: block !important;
+    }
+
+    /* Скрываем мелкую внутреннюю метку формы Crispy, убирая дублирование слова Поиск */
     main .row.no-gutters > .col-4 form div.form-group label {
       display: none !important;
     }
   }
 </style>
 
-</body> <!-- ТЕГ BODY ТЕПЕРЬ В САМОМ КОНЦЕ И БЕЗ ЛИШНИХ ТЕГОВ DIV -->
+</body> <!-- ТЕГ BODY В САМОМ КОНЦЕ, ВСЕ КОЛОНКИ СЕТКИ ВЕРНУЛИСЬ НА МЕСТО -->
