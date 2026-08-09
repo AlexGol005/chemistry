@@ -17,15 +17,10 @@
 {% block content %}
 <div class="col-12 px-md-5">
     
-    {# СТРОГИЙ ПРИВЕТСТВЕННЫЙ БЛОК С ПРОБИРКОЙ #}
+    {# СТРОГИЙ ПРИВЕТСТВЕННЫЙ БЛОК С ПРОБИРКОЙ 🧪 #}
     <div class="text-center mt-4 mb-5 p-4 rounded" style="background-color: #f8f9fa; border: 1px solid #e9ecef;">
         <h1 class="font-weight-bold d-flex align-items-center justify-content-center flex-wrap" style="color: #343a40; font-family: Georgia, serif; font-size: 26pt;">
-            <!-- Классическая синяя пробирка из прошлых версий справочника -->
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 15px;">
-                <path d="M10 2h4M12 2v15M16 17a4 4 0 0 1-8 0V2h8v15z" />
-                <path d="M9 13h6" stroke-width="1.5" />
-                <path d="M8.5 16h7" stroke-width="1.5" />
-            </svg>
+            <span style="margin-right: 15px;">🧪</span> 
             Учебный сайт для подготовки к ОГЭ и ЕГЭ по химии
         </h1>
     </div>
@@ -79,12 +74,11 @@
             display: flex;
             align-items: center;
         }
-        .btn-title-wrapper img {
-            width: 28px;
-            height: 28px;
+        .btn-title-wrapper .chem-emoji {
+            font-size: 20pt;
             margin-right: 15px;
-            object-fit: contain;
-            flex-shrink: 0;
+            line-height: 1;
+            display: inline-block;
         }
 
         .collapse-card-body {
@@ -118,12 +112,11 @@
     </style>
 
     <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ТАБЛИЦЫ (СТРУКТУРНАЯ ТАБЛИЦА МЕНДЕЛЕЕВА) -->
+    <!-- РАЗДЕЛ: ТАБЛИЦЫ -->
     <!-- ================================================================= -->
     <button class="main-collapse-btn btn-tables-top" type="button" data-toggle="collapse" data-target="#collapseTables" aria-expanded="false" aria-controls="collapseTables">
         <div class="btn-title-wrapper">
-            <!-- Качественная иконка таблицы Менделеева из папки статики -->
-            <img src="{% static 'images/periodic-table.png' %}" alt="Таблица">
+            <span class="chem-emoji">🔲</span>
             <span>Справочные таблицы</span>
         </div>
     </button>
@@ -138,12 +131,11 @@
     </div>
 
     <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ОБЩАЯ ХИМИЯ (ИКОНКА АТОМА) -->
+    <!-- РАЗДЕЛ: ОБЩАЯ ХИМИЯ -->
     <!-- ================================================================= -->
     <button class="main-collapse-btn btn-general-pastel" type="button" data-toggle="collapse" data-target="#collapseGeneral" aria-expanded="false" aria-controls="collapseGeneral">
         <div class="btn-title-wrapper">
-            <!-- Эстетичная иконка атома в мягком мятно-зеленом стиле -->
-            <img src="{% static 'images/atom.png' %}" alt="Атом">
+            <span class="chem-emoji">⚛️</span>
             <span>Общая химия</span>
         </div>
     </button>
@@ -158,13 +150,12 @@
     </div>
 
     <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ОРГАНИЧЕСКАЯ ХИМИЯ (БЕНЗОЛ / РЕТОРТА) -->
+    <!-- РАЗДЕЛ: ОРГАНИЧЕСКАЯ ХИМИЯ -->
     <!-- ================================================================= -->
     <button class="main-collapse-btn btn-organic-pastel" type="button" data-toggle="collapse" data-target="#collapseOrganic" aria-expanded="false" aria-controls="collapseOrganic">
         <div class="btn-title-wrapper">
-            <!-- Профессиональное изображение реторты и бензольного кольца нафталина -->
-            <img src="{% static 'images/organic-retort.png' %}" alt="Органика">
-            <span>Organicheskaya himiya</span>
+            <span class="chem-emoji">⚗️</span>
+            <span>Органическая химия</span>
         </div>
     </button>
     <div class="collapse" id="collapseOrganic">
@@ -180,13 +171,12 @@
             </div>
         </div>
     </div>
-    <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: НЕОРГАНИЧЕСКАЯ ХИМИЯ (ПРОБИРКА + РЕШЕТКА) -->
+        <!-- ================================================================= -->
+    <!-- РАЗДЕЛ: НЕОРГАНИЧЕСКАЯ ХИМИЯ -->
     <!-- ================================================================= -->
     <button class="main-collapse-btn btn-inorganic-pastel" type="button" data-toggle="collapse" data-target="#collapseInorganic" aria-expanded="false" aria-controls="collapseInorganic">
         <div class="btn-title-wrapper">
-            <!-- Готовая иконка кристаллической решетки и пробирки из папки статики -->
-            <img src="{% static 'images/inorganic-crystal.png' %}" alt="Неорганика">
+            <span class="chem-emoji">💎</span>
             <span>Неорганическая химия</span>
         </div>
     </button>
@@ -206,8 +196,7 @@
     <!-- ================================================================= -->
     <button class="main-collapse-btn btn-memes-pastel" type="button" data-toggle="collapse" data-target="#collapseMemes" aria-expanded="false" aria-controls="collapseMemes">
         <div class="btn-title-wrapper">
-            <!-- Готовая иконка смайла в очках из папки статики -->
-            <img src="{% static 'images/cool-emoji.png' %}" alt="Мемы">
+            <span class="chem-emoji">😎</span>
             <span>Мемы и картинки</span>
         </div>
     </button>
@@ -222,12 +211,11 @@
     </div>
 
     <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ПОЛЕЗНЫЕ РЕСУРСЫ И ВИДЕО (МЯГКИЙ СИНЕ-СЕРЫЙ ЦВЕТ) -->
+    <!-- РАЗДЕЛ: ПОЛЕЗНЫЕ РЕСУРСЫ И ВИДЕО (НЕЖНЫЙ СИНЕ-СЕРЫЙ ЦВЕТ) -->
     <!-- ================================================================= -->
     <button class="main-collapse-btn" style="background-color: #f1f5f9; border-color: #cbd5e1;" type="button" data-toggle="collapse" data-target="#collapseResources" aria-expanded="false" aria-controls="collapseResources">
         <div class="btn-title-wrapper">
-            <!-- Готовая иконка книги/видео из папки статики -->
-            <img src="{% static 'images/book-video.png' %}" alt="Ресурсы">
+            <span class="chem-emoji">📖</span>
             <span>Полезные ссылки и видеоматериалы</span>
         </div>
     </button>
@@ -238,7 +226,7 @@
                     <a href="{% url 'links' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Дополнительные полезные сайты и литература</a>
                 </div>
                 <div class="col-md-6">
-                    <a href="{% url 'videor' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Видеоопыты и chemical реакции наглядно</a>
+                    <a href="{% url 'videor' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Видеоопыты и химические реакции наглядно</a>
                 </div>
             </div>
         </div>
@@ -261,3 +249,5 @@
 
 </div>
 {% endblock %}
+
+
