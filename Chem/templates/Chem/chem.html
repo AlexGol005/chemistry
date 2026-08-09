@@ -143,34 +143,13 @@
         <div class="collapse-card-body">
             <div class="row">
                 <div class="col-12">
-                    <a href="{% url 'atomlaws' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Законы общей химии для подготовки к экзаменам</a>
+                    <a href="{% url 'atomlaws' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Законы общей химии для подготовки к ОГЭ и ЕГЭ</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ================================================================= -->
-    <!-- РАЗДЕЛ: ОРГАНИЧЕСКАЯ ХИМИЯ -->
-    <!-- ================================================================= -->
-    <button class="main-collapse-btn btn-organic-pastel" type="button" data-toggle="collapse" data-target="#collapseOrganic" aria-expanded="false" aria-controls="collapseOrganic">
-        <div class="btn-title-wrapper">
-            <span class="chem-emoji">⚗️</span>
-            <span>Органическая химия</span>
-        </div>
-    </button>
-    <div class="collapse" id="collapseOrganic">
-        <div class="collapse-card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <a href="{% url 'organiclaw' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Законы органической химии для ЕГЭ и ОГЭ</a>
-                    <a href="{% url 'organiccompaunds' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Органические соединения</a>
-                </div>
-                <div class="col-md-6">
-                    <a href="{% url 'organicnamestest_head' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Тест: номенклатура и названия органических соединений</a>
-                </div>
-            </div>
-        </div>
-    </div>
+
         <!-- ================================================================= -->
     <!-- РАЗДЕЛ: НЕОРГАНИЧЕСКАЯ ХИМИЯ -->
     <!-- ================================================================= -->
@@ -186,6 +165,29 @@
                 <div class="col-12">
                     <a href="{% url 'inorganiclaw' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Законы неорганической химии</a>
                     <a href="{% url 'compaunds' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Неорганические соединения</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- ================================================================= -->
+    <!-- РАЗДЕЛ: ОРГАНИЧЕСКАЯ ХИМИЯ -->
+    <!-- ================================================================= -->
+    <button class="main-collapse-btn btn-organic-pastel" type="button" data-toggle="collapse" data-target="#collapseOrganic" aria-expanded="false" aria-controls="collapseOrganic">
+        <div class="btn-title-wrapper">
+            <span class="chem-emoji">⚗️</span>
+            <span>Органическая химия</span>
+        </div>
+    </button>
+    <div class="collapse" id="collapseOrganic">
+        <div class="collapse-card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="{% url 'organiclaw' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Законы органической химии</a>
+                    <a href="{% url 'organiccompaunds' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Органические соединения</a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'organicnamestest_head' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Тест: номенклатура и названия органических соединений</a>
                 </div>
             </div>
         </div>
@@ -234,10 +236,10 @@
 
     {# НЕНАВЯЗЧИВЫЙ БЛОК ОБРАТНОЙ СВЯЗИ В САМОМ НИЗУ #}
     <div class="text-center mt-5 pt-4 pb-2 border-top" style="font-size: 11pt; color: #6c757d;">
-        <p class="mb-1">Нашли ошибку или хотите предложить улучшение справочника?</p>
+        <p class="mb-1">Хотите предложить улучшение справочника или ищете репетитора по химии?</p>
         <p>
             Связаться с автором: 
-            <a href="https://vk.ru" target="_blank" rel="noopener noreferrer" class="mx-2 text-decoration-none" style="color: #4c75a3;">
+            <a href="https://vk.ru/alexgolovkina" target="_blank" rel="noopener noreferrer" class="mx-2 text-decoration-none" style="color: #4c75a3;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: text-top; margin-right: 2px;"><path d="M22.12 11.23c-.15-.36-.53-.5-.53-.5h-2.73s-.2 0-.35.1c-.13.08-.22.24-.22.24s-.43 1.15-1 1.9c-1.2 1.57-1.7 1.65-1.9 1.53-.46-.3-.35-1.18-.35-1.8 0-1.96.3-2.78-.58-3-1-.24-1.72-.25-2.56-.25-1.07 0-1.98.02-2.5.27-.34.17-.6.55-.44.57.2.03.65.13.9.46.3.4.3 1.34.3 1.34s.03.82-.13 1.14c-.1.2-.5.5-.96.07C7.54 12.3 6.9 11 6.9 11s-.1-.2-.22-.26C6.54 10.66 6.33 10.6 6.33 10.6H3.5s-.28 0-.4.12c-.1.1-.02.34-.02.34s2.55 6 5.43 9c2.64 2.76 5.65 2.58 5.65 2.58h1.08s.33 0 .5-.17c.15-.17.15-.5.15-.5s-.02-1.46.66-1.67c.67-.2 1.53 1.4 2.45 2.03.7.48 1.23.38 1.23.38h2.44s.74 0 .87-.36c.13-.36-.1-.1-.1-1.07 0-1-.44-2.22-1.46-3.4-.82-1-2-2.1-2.4-2.65-.54-.7-.4-.82 0-1.48.02-.03 1-1.43 2.1-3z"/></svg>ВКонтакте
             </a> 
             | 
