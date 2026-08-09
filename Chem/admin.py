@@ -275,6 +275,7 @@ class AtomlawAdmin(ImportExportActionModelAdmin):
     search_fields = ['pk', 'title', 'text']
     save_as = True
     list_display = ('number',  'title', 'pk',)
+    ordering = ('number',)
     
     # Подключаем бесконечные блоки для общей химии в самый низ страницы
     inlines = [AtomlawImageInline, AtomlawVideoInline, AtomlawPresentationInline]
