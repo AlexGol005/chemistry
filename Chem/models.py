@@ -10,6 +10,12 @@ LEVEL = [
         ('ЕГЭ', 'ЕГЭ'),
     ]
 
+POLYMER_TYPE_CHOICES = [('synthetic', 'Синтетический'), 
+                        ('artificial', 'Искусственный'),
+                        ('natural_organic', 'Природный органический'),
+                        ('natural_inorganic', 'Природный неорганический')]
+
+
 class Atomlaw(models.Model):
     """ Законы общей химии """
     date = models.DateField('Дата', auto_now_add=True)
@@ -392,6 +398,9 @@ class OrganicNames(models.Model):
     test_structure_to_name = models.BooleanField('тест структура-название да', default=True)
     test_formula_to_class = models.BooleanField('тест формула-класс веществ да', default=True)
     is_interesting = models.BooleanField('вещество о котором надо узнать больше', default=False)
+    polymer_type = models.CharField('Тип полимера', max_length=50, choices=POLYMER_TYPE_CHOICES, blank=True, null=True)
+    monomer_name = models.CharField('Название мономера', max_length=255, blank=True, null=True)
+
 
     @property
     def mol_object(self):
