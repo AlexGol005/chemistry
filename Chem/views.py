@@ -1376,7 +1376,30 @@ from django.db.models import F
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from .models import OrganicNames, UserQuestionProgress, ORGANIC_GROUPS, CLASS_ISOMERS, CLASS_GENERAL_FORMULAS, ORGANIC_CLASSES
+from rdkit import Chem  # Если используется Chemredkit, замените импорт или используйте его ниже
+
+# Импортируем ваши модели и константы из текущего приложения
+from .models import (
+    OrganicNames, 
+    UserQuestionProgress, 
+    ORGANIC_GROUPS, 
+    CLASS_ISOMERS, 
+    CLASS_GENERAL_FORMULAS, 
+    ORGANIC_CLASSES
+)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_chemistry_meta(request):
+    """
+    Отдает мобильному приложению справочную информацию 
+    для построения экрана выбора категорий теста.
+    """
+    return Response({
+        "organic_groups": ORGANIC_GROUPS,
+        "general_formulas": CLASS_GENERAL_FORMULAS
+    })
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -1495,6 +1518,87 @@ def api_start_test(request):
         "total_questions": len(questions_data),
         "questions": questions_data
     })
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def api_check_answer(request):
+    """
+    Принимает ответ от mobile-приложения, сверяет его по логике бэкенда,
+    фиксирует интервальное повторение и возвращает полный разбор результата.
+    """
+    question_id = request.data.get('id')
+    mode = request.data.get('mode', 'name_to_mol')
+    user_ans = str(request.data.get('user_answer', '')).strip()
+
+    if not question_id:
+        return Response({"error": "Не передан id вопроса"}, status=400)
+
+    try:
+        obj = OrganicNames.objects.get(id=question_id)
+        is_correct = False
+        both_answers_text = ""
+        general_formula = ""
+        classes_dict = dict(ORGANIC_CLASSES)
+
+        # 1. РЕЖИМ: НАЗВАНИЕ -> СТРУКТУРА (Проверка графа RDKit)
+        if mode == 'name_to_mol':
+            m1 = Chem.MolFromSmiles(user_ans)
+            m2 = obj.mol_object  # Используем ваше свойство mol_object из модели
+            if m1 and m2:
+                is_correct = Chem.MolToSmiles(m1) == Chem.MolToSmiles(m2)
+            else:
+                return Response({
+                    "is_correct": False, 
+                    "error": "Не удалось распознать структуру молекулы. Проверьте валентности атомов."
+                })
+
+        # 2. РЕЖИМ: СТРУКТУРА -> НАЗВАНИЕ (Текстовый ввод названия)
+        elif mode == 'mol_to_name':
+            valid_names = [name.strip().lower() for name in [obj.name1, obj.name2, obj.name3, obj.name4] if name]
+            is_correct = user_ans.lower() in valid_names
+
+        # 3. РЕЖИМ: ФОРМУЛА -> КЛАСС (Выбор класса с учетом межклассовых изомеров)
+        elif mode == 'form_to_class':
+            correct_class = obj.organic_class
+            isomer_class = CLASS_ISOMERS.get(correct_class)
+            
+            correct_label = classes_dict.get(correct_class, "Неизвестный класс")
+            isomer_label = classes_dict.get(isomer_class, "")
+
+            general_formula = CLASS_GENERAL_FORMULAS.get(correct_class, "")
+
+            if user_ans == correct_class or (isomer_class and user_ans == isomer_class):
+                is_correct = True
+
+            if isomer_label:
+                both_answers_text = f"У данных классов одинаковая брутто-формула. Верны оба ответа: {correct_label} и {isomer_label}."
+
+        # === ФИКСАЦИЯ ПРОГРЕССА ИНТЕРВАЛЬНОГО ПОВТОРЕНИЯ ===
+        if request.user.is_authenticated:
+            progress, created = UserQuestionProgress.objects.get_or_create(
+                user=request.user, question=obj
+            )
+            progress.skip_count = 30 if is_correct else 0
+            progress.save()
+
+        # Собираем строку всех правильных названий для вывода работы над ошибками
+        names_list = [name.strip() for name in [obj.name1, obj.name2, obj.name3, obj.name4] if name and str(name).strip()]
+        all_names_string = ", ".join(names_list) if names_list else "Название отсутствует"
+
+        return Response({
+            "is_correct": is_correct,
+            "correct_class_slug": obj.organic_class,
+            "correct_class_label": classes_dict.get(obj.organic_class, ""),
+            "all_correct_names": all_names_string,
+            "true_smiles": obj.molecule,
+            "general_formula": general_formula,
+            "both_answers_text": both_answers_text,
+        })
+
+    except OrganicNames.DoesNotExist:
+        return Response({"error": "Вещество не найдено в базе данных"}, status=404)
 # === КОНЕЦ БЛОКА МОБИЛЬНОЕ ПРИЛОЖЕНИЕ ===
+
 
 
