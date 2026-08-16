@@ -410,34 +410,35 @@
     }
   }
 
-  /* 9. ЕСТЕСТВЕННОЕ СЖАТИЕ ТАБЛИЦ + СИММЕТРИЯ ШАПКИ НА МОБИЛЬНЫХ */
+  /* 9. ЕСТЕСТВЕННОЕ СЖАТИЕ ТАБЛИЦ + ГАРАНТИРОВАННАЯ ШИРИНА ШАПКИ НА МОБИЛЬНЫХ */
   @media screen and (max-width: 767px) {
-    /* 1. Позволяем тексту внутри ячеек максимально ужиматься, чтобы влезть в экран */
+    /* 1. Позволяем тексту внутри ячеек максимально ужиматься, если это возможно */
     main .row.no-gutters > .col-8 table td, 
     main .row.no-gutters > .col-8 table th {
       font-size: 11px !important;    
       padding: 4px 2px !important;    
     }
 
-    /* 2. Разрешаем странице расширяться, если таблица всё же не поместилась */
+    /* 2. Важнейший фикс: сбрасываем ограничения, чтобы body растягивался строго по ширине самой широкой таблицы */
     html, body {
-      width: auto !important;
+      width: 100% !important;
+      display: table !important; /* На уровне html/body это безопасно и заставит весь документ принять ширину самого широкого элемента */
       overflow-x: visible !important;
     }
 
-    /* 3. Фиксируем шапку и футер от обрывов */
+    /* 3. Фиксируем шапку и футер от обрывов: теперь они наследуют реальную ширину растянутого body */
     header, .navbar, nav, footer, .bg-body-tertiary {
       width: 100% !important;
-      min-width: 100vw !important;     
+      min-width: 100% !important; /* Берет 100% от растянутого таблицей тела сайта */
     }
 
-    /* 4. ВОЗВРАЩАЕМ ЛОГОТИП СЛЕВА, А МЕНЮ СПРАВА */
+    /* 4. Возвращаем логотип налево, а меню направо (внутри флекс-контейнера) */
     header .container, 
     header .container-fluid, 
     .navbar .container, 
     .navbar .container-fluid {
       display: flex !important;
-      justify-content: space-between !important; /* Расталкивает логотип и меню по краям экрана */
+      justify-content: space-between !important; 
       align-items: center !important;
       width: 100% !important;
     }
