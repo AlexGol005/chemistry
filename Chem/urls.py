@@ -89,6 +89,7 @@ urlpatterns = [
     # === МОБИЛЬНОЕ ПРИЛОЖЕНИЕ ===
 
     path('api/meta/', views.get_chemistry_meta, name='api_meta'),
+    path('api/test/start/', views.api_start_test, name='api_start_test'),
 
     # === КОНЕЦ БЛОКА МОБИЛЬНОЕ ПРИЛОЖЕНИЕ ===
 
