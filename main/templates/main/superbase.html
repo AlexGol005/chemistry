@@ -371,26 +371,44 @@
     }
   }
 
-  /* 8. ИСПРАВЛЕНИЕ ДЛЯ МОБИЛЬНЫХ: ОСТАВЛЯЕМ В ОДИН РЯД И ДЕЛАЕМ БОКОВОЙ ЗАЗОР */
+  /* 8. ИСПРАВЛЕНИЕ ДЛЯ ПЛАНШЕТОВ И МОБИЛЬНЫХ: АДАПТИВНЫЙ СБРОС КОЛОНОК */
   @media screen and (max-width: 1199px) {
     /* Точечно скрываем мелкую внутреннюю метку формы Crispy, убирая дублирование слова Поиск */
     main .row.no-gutters > .col-4 form div.form-group label {
       display: none !important;
     }
 
-    /* Уменьшаем ширину главной колонки, чтобы осталось место для зазора */
-    main .row.no-gutters > .col-8 {
-      max-width: 63% !important;
-      flex: 0 0 63% !important;
+    /* --- ЭКРАНЫ ПЛАНШЕТОВ (от 768px до 1199px) --- */
+    @media (min-width: 768px) {
+      /* Сохраняем аккуратный двухколоночный ряд с зазором */
+      main .row.no-gutters > .col-8 {
+        max-width: 63% !important;
+        flex: 0 0 63% !important;
+      }
+      main .row.no-gutters > .col-4 {
+        max-width: 32% !important;
+        flex: 0 0 32% !important;
+        margin-left: auto !important; /* Создает воздушный коридор */
+      }
     }
 
-    /* Уменьшаем ширину боковой колонки и отодвигаем её вправо */
-    main .row.no-gutters > .col-4 {
-      max-width: 32% !important;
-      flex: 0 0 32% !important;
-      margin-left: auto !important; /* Создает воздушный коридор между колонками */
+    /* --- СМАРТФОНЫ И МОБИЛЬНЫЕ (меньше 768px) --- */
+    @media (max-width: 767px) {
+      /* Сбрасываем сетку: блоки встают друг под друга на 100% ширины */
+      main .row.no-gutters > .col-8,
+      main .row.no-gutters > .col-4 {
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+      
+      /* Добавляем аккуратный отступ сверху для боковой колонки, когда она упала вниз */
+      main .row.no-gutters > .col-4 {
+        margin-top: 30px !important; 
+      }
     }
   }
-</style>
+
 
 </body> <!-- ТЕГ BODY В САМОМ КОНЦЕ -->
