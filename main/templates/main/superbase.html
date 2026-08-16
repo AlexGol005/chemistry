@@ -409,18 +409,15 @@
       }
     }
   }
-  /* 9. ФИКС ОБРЫВА ШАПКИ И ФУТЕРА НА МОБИЛЬНЫХ ИЗ-ЗА ШИРОКИХ ТАБЛИЦ */
-  @media screen and (max-width: 767px) {
-    /* Разрешаем всей странице растягиваться вбок вслед за широким контентом */
-    html, body {
-      min-width: max-content !important; 
-      width: 100%;
-    }
 
-    /* Принудительно растягиваем фон шапки, навигации и футера на всю получившуюся ширину */
-    header, .navbar, nav, footer, .bg-body-tertiary {
+  /* 9. СКРОЛЛ ДЛЯ БОЛЬШИХ ТАБЛИЦ НА МОБИЛЬНЫХ */
+  @media screen and (max-width: 767px) {
+    /* Ограничиваем главную колонку экраном телефона и включаем внутреннюю прокрутку */
+    main .row.no-gutters > .col-8 {
       width: 100% !important;
-      min-width: 100% !important;
+      max-width: 100% !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
     }
   }
 
