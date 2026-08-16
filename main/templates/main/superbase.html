@@ -409,6 +409,20 @@
       }
     }
   }
+  /* 9. ФИКС ОБРЫВА ШАПКИ И ФУТЕРА НА МОБИЛЬНЫХ ИЗ-ЗА ШИРОКИХ ТАБЛИЦ */
+  @media screen and (max-width: 767px) {
+    /* Разрешаем всей странице растягиваться вбок вслед за широким контентом */
+    html, body {
+      min-width: max-content !important; 
+      width: 100%;
+    }
+
+    /* Принудительно растягиваем фон шапки, навигации и футера на всю получившуюся ширину */
+    header, .navbar, nav, footer, .bg-body-tertiary {
+      width: 100% !important;
+      min-width: 100% !important;
+    }
+  }
 
 
 </body> <!-- ТЕГ BODY В САМОМ КОНЦЕ -->
