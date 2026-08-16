@@ -1378,15 +1378,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rdkit import Chem  # Если используется Chemredkit, замените импорт или используйте его ниже
 
-# Импортируем ваши модели и константы из текущего приложения
-from .models import (
-    OrganicNames, 
-    UserQuestionProgress, 
-    ORGANIC_GROUPS, 
-    CLASS_ISOMERS, 
-    CLASS_GENERAL_FORMULAS, 
-    ORGANIC_CLASSES
-)
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
