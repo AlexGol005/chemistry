@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'main',
     'users.apps.UsersConfig',
     'rest_framework',
+    'rest_framework.authtoken',
     'crispy_forms',
     'equipment',
     'contact_form',
