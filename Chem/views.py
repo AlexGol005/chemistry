@@ -1368,3 +1368,133 @@ class OrganicCompaundSearchResultView(TemplateView):
             context['objects'] = objects
             context['form'] = SearchForm(initial={'searchword': searchword})
         return context
+
+
+# === МОБИЛЬНОЕ ПРИЛОЖЕНИЕ ===
+import random
+from django.db.models import F
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from .models import OrganicNames, UserQuestionProgress, ORGANIC_GROUPS, CLASS_ISOMERS, CLASS_GENERAL_FORMULAS, ORGANIC_CLASSES
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def api_start_test(request):
+    """
+    Генерирует сбалансированный тест из 10 вопросов на основе 
+    выбранного режима и групп веществ, без использования сессий.
+    """
+    mode = request.data.get('mode', 'name_to_mol')
+    selected_group_names = request.data.get('selected_groups', [])
+
+    # 1. Раскрываем выбранные ГРУППЫ в плоский список КЛАССОВ
+    selected_classes = []
+    for group in ORGANIC_GROUPS:
+        if mode == 'form_to_class' or group['name'] in selected_group_names or not selected_group_names:
+            selected_classes.extend(group['classes'])
+
+    # 2. Ограничение для школьного режима "Формула -> Класс"
+    if mode == 'form_to_class':
+        allowed_keys = [
+            'alkanes', 'alkenes', 'alkynes', 'alkadienes', 'cycloalkanes', 'alcohols', 'ethers', 
+            'aldehydes', 'ketones', 'saturated_monobasic_carboxylic_acids', 'esters', 'amino_acids', 
+            'diols', 'triols', 'phenols', 'primary_amines', 'secondary_amines', 'tertiary_amines', 
+            'Ароматические амины', 'halogen_derivatives'
+        ]
+        selected_classes = [c for c in selected_classes if c in allowed_keys]
+
+    # 3. Фильтруем базовый QuerySet по режимам
+    queryset = OrganicNames.objects.all()
+    if mode == 'name_to_mol':
+        queryset = queryset.filter(test_name_to_structure=True)
+    elif mode == 'mol_to_name':
+        queryset = queryset.filter(test_structure_to_name=True)
+    elif mode == 'form_to_class':
+        queryset = queryset.filter(test_formula_to_class=True).exclude(formula__isnull=True).exclude(formula__exact='')
+
+    # 4. Система интервального повторения (если пользователь авторизован)
+    if request.user.is_authenticated:
+        UserQuestionProgress.objects.filter(user=request.user, skip_count__gt=0).update(
+            skip_count=F('skip_count') - 1
+        )
+        skipped_ids = UserQuestionProgress.objects.filter(user=request.user, skip_count__gt=0).values_list('question_id', flat=True)
+        queryset_filtered = queryset.exclude(id__in=skipped_ids)
+        if queryset_filtered.count() >= 10:
+            queryset = queryset_filtered
+
+    # 5. Оптимизированная выборка ID и группировка по классам
+    raw_questions = queryset.filter(organic_class__in=selected_classes).values('id', 'organic_class')
+    
+    class_pools = {}
+    for q in raw_questions:
+        class_pools.setdefault(q['organic_class'], []).append(q['id'])
+        
+    for c_slug in class_pools:
+        random.shuffle(class_pools[c_slug])
+
+    # 6. Алгоритм фиксированной длины теста с перемешиванием классов
+    final_ids = []
+    target_questions_count = 10
+    active_slugs = list(class_pools.keys())
+    random.shuffle(active_slugs)
+
+    while len(final_ids) < target_questions_count and active_slugs:
+        for c_slug in list(active_slugs):
+            if class_pools[c_slug]:
+                q_id = class_pools[c_slug].pop(0)
+                final_ids.append(q_id)
+                if len(final_ids) == target_questions_count:
+                    break
+            else:
+                active_slugs.remove(c_slug)
+                
+    random.shuffle(final_ids)
+
+    if not final_ids:
+        return Response({"error": "По вашему запросу вопросы не найдены"}, status=404)
+
+    # 7. Извлечение полных данных карточек и генерация "умных" вариантов ответов
+    substances = OrganicNames.objects.filter(id__in=final_ids)
+    substances_ordered = sorted(substances, key=lambda obj: final_ids.index(obj.id))
+    classes_dict = dict(ORGANIC_CLASSES)
+
+    questions_data = []
+    for sub in substances_ordered:
+        names = [n for n in [sub.name1, sub.name2, sub.name3, sub.name4] if n]
+        display_name = random.choice(names) if names else sub.name1
+        
+        options = []
+        if mode == 'form_to_class':
+            current_class = sub.organic_class
+            options.append(current_class)
+            
+            isomer_class = CLASS_ISOMERS.get(current_class)
+            if isomer_class and isomer_class in selected_classes:
+                options.append(isomer_class)
+
+            remaining_classes = [c for c in selected_classes if c not in options]
+            random.shuffle(remaining_classes)
+            while len(options) < 4 and remaining_classes:
+                options.append(remaining_classes.pop(0))
+
+            random.shuffle(options)
+            options = [{"slug": opt, "label": classes_dict.get(opt, opt)} for opt in options]
+
+        questions_data.append({
+            "id": sub.id,
+            "display_name": display_name,
+            "organic_class": sub.organic_class,
+            "formula": sub.formula,
+            "molecule_smiles": sub.molecule,
+            "options": options
+        })
+
+    return Response({
+        "mode": mode,
+        "total_questions": len(questions_data),
+        "questions": questions_data
+    })
+# === КОНЕЦ БЛОКА МОБИЛЬНОЕ ПРИЛОЖЕНИЕ ===
+
+
