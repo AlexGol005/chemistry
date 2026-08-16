@@ -410,7 +410,7 @@
     }
   }
 
-  /* 9. ЕСТЕСТВЕННОЕ СЖАТИЕ ТАБЛИЦ И ИСПРАВЛЕНИЕ ШАПКИ НА МОБИЛЬНЫХ */
+  /* 9. ЕСТЕСТВЕННОЕ СЖАТИЕ ТАБЛИЦ + СИММЕТРИЯ ШАПКИ НА МОБИЛЬНЫХ */
   @media screen and (max-width: 767px) {
     /* 1. Позволяем тексту внутри ячеек максимально ужиматься, чтобы влезть в экран */
     main .row.no-gutters > .col-8 table td, 
@@ -425,11 +425,21 @@
       overflow-x: visible !important;
     }
 
-    /* 3. Фиксируем шапку и футер без поломки их внутреннего содержимого */
+    /* 3. Фиксируем шапку и футер от обрывов */
     header, .navbar, nav, footer, .bg-body-tertiary {
-      display: block !important;       /* Возвращаем стандартное блочное поведение */
       width: 100% !important;
-      min-width: 100vw !important;     /* Заставляем шапку растягиваться минимум на всю ширину экрана смартфона */
+      min-width: 100vw !important;     
+    }
+
+    /* 4. ВОЗВРАЩАЕМ ЛОГОТИП СЛЕВА, А МЕНЮ СПРАВА */
+    header .container, 
+    header .container-fluid, 
+    .navbar .container, 
+    .navbar .container-fluid {
+      display: flex !important;
+      justify-content: space-between !important; /* Расталкивает логотип и меню по краям экрана */
+      align-items: center !important;
+      width: 100% !important;
     }
   }
 
