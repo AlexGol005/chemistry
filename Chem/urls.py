@@ -86,4 +86,10 @@ urlpatterns = [
     path('chem/organic_remove_reaction-reaction/<int:reaction_id>/', views.organic_remove_reaction, name='organic_remove_reaction'),
     path('chem/oganic_my-list/', views.organic_my_reactions_list, name='organic_my_reactions_list'),
     path('profile/organic-test/', views.OrganicFavoritesTestHeadView.as_view(), name='organic_favorites_test_head'),
+    # === МОБИЛЬНОЕ ПРИЛОЖЕНИЕ ===
+
+    path('api/meta/', views.get_chemistry_meta, name='api_meta'),
+
+    # === КОНЕЦ БЛОКА МОБИЛЬНОЕ ПРИЛОЖЕНИЕ ===
+
     ]
