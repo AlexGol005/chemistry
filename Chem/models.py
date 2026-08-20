@@ -5,11 +5,12 @@ from PIL import Image
 from django.core.exceptions import ValidationError
 from rdkit import Chem as Chemrdkit
 
-# Кастомный менеджер для фильтрации
 class VisibleManager(models.Manager):
 
   def get_queryset(self):
-    return super().get_queryset().filter(is_hidden=False)
+    # Фильтруем по названию нашего поля: оставляем только те, где True
+    return super().get_queryset().filter(is_visible=True)
+
 
 LEVEL = [
         ('ОГЭ', 'ОГЭ'),
