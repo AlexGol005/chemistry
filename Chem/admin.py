@@ -487,41 +487,48 @@ class OrganicExtraImageInline(admin.TabularInline):
 
 
 # =================================================================
-# 1. АДМИНКА ДЛЯ: НЕОРГАНИЧЕСКИЕ СОЕДИНЕНИЯ (NamesCompaunds)
+# АДМИНКА ДЛЯ: СОЕДИНЕНИЯ / НЕОРГАНИКА (NamesCompaunds)
 # =================================================================
 
 # 1. СНАЧАЛА РЕСУРС (ОБЯЗАТЕЛЬНО ВЫШЕ АДМИНКИ)
 class NamesCompaundsResource(resources.ModelResource):
-    class Meta:
-        model = NamesCompaunds
-        skip_unchanged = True
-        report_skipped = True
+
+  class Meta:
+    model = NamesCompaunds
+    skip_unchanged = True
+    report_skipped = True
 
 
 # 2. ПОТОМ ФОРМА
 class NamesCompaundsAdminForm(forms.ModelForm):
-    appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
-    class Meta:
-        model = NamesCompaunds
-        fields = '__all__'
+  appearance = forms.CharField(
+      label='Подробности', widget=CKEditorUploadingWidget(), required=False
+  )
+
+  class Meta:
+    model = NamesCompaunds
+    fields = '__all__'
 
 
-# 3. И ТОЛЬКО ПОТОМ КЛАСС АДМИНКИ
+# 3. И В САМОМ КОНЦЕ КЛАСС АДМИНКИ
 @admin.register(NamesCompaunds)
 class NamesCompaundsAdmin(ImportExportActionModelAdmin):
-    resource_class = NamesCompaundsResource
-    form = NamesCompaundsAdminForm
-    
-    def get_queryset(self, request):
-        return NamesCompaunds.all_objects.get_queryset()
+  resource_class = NamesCompaundsResource
+  form = NamesCompaundsAdminForm
 
-    search_fields = ['pk', 'formula', 'name']
-    save_as = True
-    list_display = ('pk', 'formula', 'name', 'is_interesting')
-    list_editable = ('is_interesting',)
-    list_filter = ('is_interesting',)
-    
-    inlines = [CompoundExtraLinkInline, CompoundExtraImageInline]
+  # Метод отображения всех скрытых записей в админке
+  def get_queryset(self, request):
+    return NamesCompaunds.all_objects.get_queryset()
+
+  search_fields = ['pk', 'formula', 'name']
+  save_as = True
+  list_display = ('pk', 'formula', 'name', 'is_interesting')
+  list_editable = ('is_interesting',)
+  list_filter = ('is_interesting',)
+
+  # Подключаем бесконечные ссылки и иллюстрации в карточку неорганики
+  inlines = [CompoundExtraLinkInline, CompoundExtraImageInline]
+
 
 
 
@@ -530,32 +537,91 @@ class NamesCompaundsAdmin(ImportExportActionModelAdmin):
 # 2. АДМИНКА ДЛЯ: ОРГАНИЧЕСКИЕ СОЕДИНЕНИЯ (OrganicNames)
 # =================================================================
 
+# 1. СНАЧАЛА ФОРМА
+class OrganicNamesAdminForm(forms.ModelForm):
+
+  class Meta:
+    model = OrganicNames
+    fields = '__all__'
+    widgets = {
+        'molecule': JSMEWidget(),
+        'appearance': CKEditorUploadingWidget(),
+    }
+
+
+# Кастомные фильтры
+class OrganicClassChoicesFilter(admin.SimpleListFilter):
+  title = 'Класс органики'
+  parameter_name = 'class_slug'
+
+  def lookups(self, request, model_admin):
+    return ORGANIC_CLASSES
+
+  def queryset(self, request, queryset):
+    if self.value():
+      return queryset.filter(organic_class=self.value())
+    return queryset
+
+
+class OrganicClassEmptyFilter(admin.SimpleListFilter):
+  title = 'Наличие класса (organic_class)'
+  parameter_name = 'empty_class'
+
+  def lookups(self, request, model_admin):
+    return (
+        ('empty', 'Не заполнено'),
+        ('filled', 'Заполнено'),
+    )
+
+  def queryset(self, request, queryset):
+    if self.value() == 'empty':
+      return queryset.filter(organic_class__isnull=True) | queryset.filter(
+          organic_class=''
+      )
+    if self.value() == 'filled':
+      return queryset.exclude(organic_class__isnull=True).exclude(
+          organic_class=''
+      )
+    return queryset
+
+
+# 2. ЗАТЕМ КЛАСС АДМИНКИ
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
-    form = OrganicNamesAdminForm
-    
-    # ВСЯ МАГИЯ ТУТ: заставляем админку органики показывать вообще ВСЕ записи
-    def get_queryset(self, request):
-        return OrganicNames.all_objects.get_queryset()
+  form = OrganicNamesAdminForm
 
-    search_fields = ['name1', 'name2', 'name3']
-    
-    # Добавляем поле "is_interesting" в вывод таблицы органики
-    list_display = ('pk', 'name1', 'molecule_short', 'organic_class', 'is_interesting')
-    
-    # Позволяет ставить/снимать галочку "интересное" прямо из общего списка органических соединений
-    list_editable = ('is_interesting',)
-    
-    # Добавляем фильтр интересного к вашим фильтрам классов
-    list_filter = (OrganicClassChoicesFilter, OrganicClassEmptyFilter, 'is_interesting')
+  # Метод отображения всех скрытых записей в админке органики
+  def get_queryset(self, request):
+    return OrganicNames.all_objects.get_queryset()
 
-    # Подключаем бесконечные ссылки и иллюстрации в карточку органики
-    inlines = [OrganicExtraLinkInline, OrganicExtraImageInline]
+  search_fields = ['name1', 'name2', 'name3']
 
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-        if change:
-            msg = f"Редактирована запись № {obj.pk}"
-        else:
-            msg = f"Создана запись № {obj.pk}"
-        messages.success(request, msg)
+  # Добавляем поле "is_interesting" в вывод таблицы органики
+  list_display = (
+      'pk',
+      'name1',
+      'molecule_short',
+      'organic_class',
+      'is_interesting',
+  )
+
+  # Позволяет ставить/снимать галочку "интересное" прямо из общего списка
+  list_editable = ('is_interesting',)
+
+  # Добавляем фильтр интересного к вашим фильтрам классов
+  list_filter = (
+      OrganicClassChoicesFilter,
+      OrganicClassEmptyFilter,
+      'is_interesting',
+  )
+
+  # Подключаем бесконечные ссылки и иллюстрации в карточку органики
+  inlines = [OrganicExtraLinkInline, OrganicExtraImageInline]
+
+  def save_model(self, request, obj, form, change):
+    super().save_model(request, obj, form, change)
+    if change:
+      msg = f'Редактирована запись № {obj.pk}'
+    else:
+      msg = f'Создана запись № {obj.pk}'
+    messages.success(request, msg)
