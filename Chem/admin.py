@@ -184,6 +184,9 @@ class InorganicReactionAdmin(ImportExportActionModelAdmin):
     list_display = ('pk', 'metatitle', 'level') 
     search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
     save_as = True
+    def get_queryset(self, request):
+        return InorganicReaction.all_objects.get_queryset()
+
 
     # Регистрируем ДВА отдельных действия в выпадающем меню списка
     actions = ['mass_set_level_oge', 'mass_set_level_ege']
@@ -414,6 +417,9 @@ class OrganicReactionAdmin(ImportExportActionModelAdmin):
     search_fields = ['pk', 'reagent1', 'reagent2', 'metatitle'] 
     list_filter = ("number__number",)
     save_as = True
+    def get_queryset(self, request):
+        return OrganicReaction.all_objects.get_queryset()
+    
 
     def save_model(self, request, obj, form, change):
         # Собираем все значения реагентов и продуктов
@@ -484,24 +490,15 @@ class OrganicExtraImageInline(admin.TabularInline):
 # 1. АДМИНКА ДЛЯ: НЕОРГАНИЧЕСКИЕ СОЕДИНЕНИЯ (NamesCompaunds)
 # =================================================================
 
-class NamesCompaundsResource(resources.ModelResource):
-    class Meta:
-        model = NamesCompaunds
-        skip_unchanged = True
-        report_skipped = True
-
-
-class NamesCompaundsAdminForm(forms.ModelForm):
-    appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
-    class Meta:
-        model = NamesCompaunds
-        fields = '__all__'
-
-
 @admin.register(NamesCompaunds)
 class NamesCompaundsAdmin(ImportExportActionModelAdmin):
     resource_class = NamesCompaundsResource
     form = NamesCompaundsAdminForm
+    
+    # ВСЯ МАГИЯ ТУТ: заставляем админку неорганики отображать абсолютно ВСЕ записи
+    def get_queryset(self, request):
+        return NamesCompaunds.all_objects.get_queryset()
+
     search_fields = ['pk', 'formula', 'name']
     save_as = True
     list_display = ('pk', 'formula', 'name', 'is_interesting')
@@ -512,54 +509,19 @@ class NamesCompaundsAdmin(ImportExportActionModelAdmin):
     inlines = [CompoundExtraLinkInline, CompoundExtraImageInline]
 
 
+
 # =================================================================
 # 2. АДМИНКА ДЛЯ: ОРГАНИЧЕСКИЕ СОЕДИНЕНИЯ (OrganicNames)
 # =================================================================
 
-class OrganicNamesAdminForm(forms.ModelForm):
-    class Meta:
-        model = OrganicNames
-        fields = '__all__'
-        widgets = {
-            'molecule': JSMEWidget(),
-            'appearance': CKEditorUploadingWidget(),
-        }
-
-
-class OrganicClassChoicesFilter(admin.SimpleListFilter):
-    title = 'Класс органики'
-    parameter_name = 'class_slug'
-
-    def lookups(self, request, model_admin):
-        return ORGANIC_CLASSES
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(organic_class=self.value())
-        return queryset
-
-
-class OrganicClassEmptyFilter(admin.SimpleListFilter):
-    title = 'Наличие класса (organic_class)'
-    parameter_name = 'empty_class'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('empty', 'Не заполнено'),
-            ('filled', 'Заполнено'),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == 'empty':
-            return queryset.filter(organic_class__isnull=True) | queryset.filter(organic_class='')
-        if self.value() == 'filled':
-            return queryset.exclude(organic_class__isnull=True).exclude(organic_class='')
-        return queryset
-
-
 @admin.register(OrganicNames)
 class OrganicNamesAdmin(admin.ModelAdmin):
     form = OrganicNamesAdminForm
+    
+    # ВСЯ МАГИЯ ТУТ: заставляем админку органики показывать вообще ВСЕ записи
+    def get_queryset(self, request):
+        return OrganicNames.all_objects.get_queryset()
+
     search_fields = ['name1', 'name2', 'name3']
     
     # Добавляем поле "is_interesting" в вывод таблицы органики
