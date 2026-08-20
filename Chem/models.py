@@ -5,6 +5,12 @@ from PIL import Image
 from django.core.exceptions import ValidationError
 from rdkit import Chem as Chemrdkit
 
+# Кастомный менеджер для фильтрации
+class VisibleManager(models.Manager):
+
+  def get_queryset(self):
+    return super().get_queryset().filter(is_hidden=False)
+
 LEVEL = [
         ('ОГЭ', 'ОГЭ'),
         ('ЕГЭ', 'ЕГЭ'),
@@ -325,6 +331,16 @@ class Pictures(models.Model):
     """ картинки """
 
     img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
+          # Новое поле: по умолчанию True (показывать)
+    is_visible = models.BooleanField(
+      default=True,
+      verbose_name='Отображать на сайте',
+    )
+
+    # Переопределяем менеджер
+    objects = VisibleManager()
+    # Менеджер для доступа вообще ко всем записям (пригодится в админке)
+    all_objects = models.Manager()
 
                                         
 
@@ -362,6 +378,16 @@ class Videor(models.Model):
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
                                       
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
+    is_visible = models.BooleanField(
+      default=True,
+      verbose_name='Отображать на сайте',
+    )
+
+    # Переопределяем менеджер
+    objects = VisibleManager()
+    # Менеджер для доступа вообще ко всем записям (пригодится в админке)
+    all_objects = models.Manager()
+        
                                         
     def __str__(self):
         return f'{self.title}'
@@ -400,6 +426,15 @@ class OrganicNames(models.Model):
     is_interesting = models.BooleanField('вещество о котором надо узнать больше', default=False)
     polymer_type = models.CharField('Тип полимера', max_length=50, choices=POLYMER_TYPE_CHOICES, blank=True, null=True)
     monomer_name = models.CharField('Название мономера', max_length=255, blank=True, null=True)
+    is_visible = models.BooleanField(
+      default=True,
+      verbose_name='Отображать на сайте',
+    )
+
+    # Переопределяем менеджер
+    objects = VisibleManager()
+    # Менеджер для доступа вообще ко всем записям (пригодится в админке)
+    all_objects = models.Manager()
 
 
     @property
@@ -462,6 +497,15 @@ class OrganicReaction(models.Model):
                                       
     img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
+    is_visible = models.BooleanField(
+      default=True,
+      verbose_name='Отображать на сайте',
+    )
+
+    # Переопределяем менеджер
+    objects = VisibleManager()
+    # Менеджер для доступа вообще ко всем записям (пригодится в админке)
+    all_objects = models.Manager()
 
     def __str__(self):
         try:
@@ -529,6 +573,15 @@ class InorganicReaction(models.Model):
                                       
     img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
+    is_visible = models.BooleanField(
+      default=True,
+      verbose_name='Отображать на сайте',
+    )
+
+    # Переопределяем менеджер
+    objects = VisibleManager()
+    # Менеджер для доступа вообще ко всем записям (пригодится в админке)
+    all_objects = models.Manager()
 
     def __str__(self):
         try:
@@ -570,6 +623,15 @@ class NamesCompaunds(models.Model):
     img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
     is_interesting = models.BooleanField('вещество о котором надо узнать больше', default=False)
+    is_visible = models.BooleanField(
+      default=True,
+      verbose_name='Отображать на сайте',
+    )
+
+    # Переопределяем менеджер
+    objects = VisibleManager()
+    # Менеджер для доступа вообще ко всем записям (пригодится в админке)
+    all_objects = models.Manager()
     
     class Meta:
         verbose_name = 'Неорганическое соединение'
