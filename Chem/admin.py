@@ -490,12 +490,28 @@ class OrganicExtraImageInline(admin.TabularInline):
 # 1. АДМИНКА ДЛЯ: НЕОРГАНИЧЕСКИЕ СОЕДИНЕНИЯ (NamesCompaunds)
 # =================================================================
 
+# 1. СНАЧАЛА РЕСУРС (ОБЯЗАТЕЛЬНО ВЫШЕ АДМИНКИ)
+class NamesCompaundsResource(resources.ModelResource):
+    class Meta:
+        model = NamesCompaunds
+        skip_unchanged = True
+        report_skipped = True
+
+
+# 2. ПОТОМ ФОРМА
+class NamesCompaundsAdminForm(forms.ModelForm):
+    appearance = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget(), required=False)
+    class Meta:
+        model = NamesCompaunds
+        fields = '__all__'
+
+
+# 3. И ТОЛЬКО ПОТОМ КЛАСС АДМИНКИ
 @admin.register(NamesCompaunds)
 class NamesCompaundsAdmin(ImportExportActionModelAdmin):
     resource_class = NamesCompaundsResource
     form = NamesCompaundsAdminForm
     
-    # ВСЯ МАГИЯ ТУТ: заставляем админку неорганики отображать абсолютно ВСЕ записи
     def get_queryset(self, request):
         return NamesCompaunds.all_objects.get_queryset()
 
@@ -505,8 +521,8 @@ class NamesCompaundsAdmin(ImportExportActionModelAdmin):
     list_editable = ('is_interesting',)
     list_filter = ('is_interesting',)
     
-    # Подключаем бесконечные ссылки и иллюстрации в карточку неорганики
     inlines = [CompoundExtraLinkInline, CompoundExtraImageInline]
+
 
 
 
