@@ -15,7 +15,7 @@
         margin: 40px auto;
         width: 100%;
         max-width: 1200px;
-        padding: 0 15px; /* Защитные поля по бокам */
+        padding: 0 15px; /* Защитные боковые поля */
         box-sizing: border-box;
         font-family: 'Courier New', Courier, monospace; 
         font-size: clamp(16pt, 4vw, 26pt); 
@@ -30,7 +30,7 @@
         border-radius: 0.25rem;
         box-shadow: 0 .125rem .25rem rgba(0,0,0,0.075);
         max-width: 100%;
-        word-break: break-all; /* Безопасный перенос длинной строки внутри блока */
+        word-break: break-all; /* Безопасный перенос длинных формул */
         text-align: center;
     }
 
@@ -47,9 +47,14 @@
         display: inline-flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
         min-width: 120px;
+        max-width: 100%; /* Защита от выламывания за экран */
         vertical-align: middle;
         flex-shrink: 0;
+        text-align: center;
+        padding: 0 5px;
+        box-sizing: border-box;
     }
 
     .chem-condition-text {
@@ -59,10 +64,13 @@
         border-bottom: 2px solid #666; 
         padding: 0 5px 2px 5px; 
         margin-bottom: -10px; 
-        white-space: nowrap;
+        /* РЕШЕНИЕ: Разрешаем перенос длинного условия */
+        white-space: normal; 
+        word-break: break-word; 
+        max-width: 100%;
     }
 
-    /* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ ТЕЛЕФОНОВ */
+    /* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ ТЕЛЕФОНОВ (Экраны до 768px) */
     @media (max-width: 768px) {
         .chem-question-container {
             flex-direction: column; /* Выстраиваем всё строго в вертикальный столбик */
@@ -72,7 +80,7 @@
 
         .chem-reagent-box {
             width: 100%; /* Формула занимает всю доступную ширину */
-            font-size: clamp(14pt, 5vw, 18pt); /* Оптимальный размер шрифта на смартфонах */
+            font-size: clamp(14pt, 5vw, 18pt); 
         }
 
         .chem-sign {
@@ -85,7 +93,16 @@
 
         .chem-arrow-block {
             width: 100%;
-            margin: 10px 0;
+            margin: 15px 0;
+            max-width: 90%; /* Оставляем аккуратные поля по бокам */
+        }
+        
+        .chem-condition-text {
+            margin-bottom: 0; /* Корректируем отступ для многострочного текста */
+            border-bottom: none; /* Убираем линию, если текст стал многострочным */
+            background: #f8f9fa; /* Легкая подложка для читаемости */
+            padding: 6px 10px;
+            border-radius: 4px;
         }
     }
 </style>
@@ -98,12 +115,11 @@
     </div>
 
     {% if question_progress %}
-        <!-- Вывод плашки прогресса "реакция № X из Y" как на странице ответа -->
+        <!-- Вывод плашки прогресса "реакция № X из Y" -->
         <div class="test-progress" style="margin: 20px auto; padding: 10px; max-width: 800px; background-color: #f8f9fa; border-left: 4px solid #007bff; font-weight: bold;">
             {{ question_progress }}
         </div>
     {% endif %}
-
     <!-- Блок реакции (Формулы с адаптивной разметкой) -->
     <div class="chem-question-container">
         
@@ -120,7 +136,7 @@
             <div class="chem-reagent-box">{{ reagent3 }}</div>
         {% endif %}
 
-        <!-- Направленная стрелка условий -->
+        <!-- Направленная стрелка условий с защитой от длинного текста -->
         <div class="chem-arrow-block">
             {% if condition %}
                 <div class="chem-condition-text">
