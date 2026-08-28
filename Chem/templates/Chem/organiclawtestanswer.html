@@ -2,20 +2,26 @@
 {% load crispy_forms_tags %}
 {% load mol_extras %}
 
+{% block title %}Реакция органики{% endblock %}
+
 {% block content %}
 {% autoescape off %}
 <style>
-    /* Контейнер для всей реакции с разрешением переноса блоков */
+    /* Общие стили контейнера уравнения */
     .chem-equation-container {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
-        gap: 5px;
-        margin: 40px 0;
+        gap: 10px;
+        margin: 25px auto;
         width: 100%;
+        max-width: 1200px;
+        padding: 0 20px; /* Безопасные боковые поля, чтобы ничего не вылезало */
+        box-sizing: border-box;
     }
-    /* Блок: Формула + Название (неразрывный внутри) */
+
+    /* Блок вещества (Формула + Название) */
     .chem-item {
         display: inline-flex;
         flex-direction: column;
@@ -23,57 +29,132 @@
         vertical-align: middle;
         margin: 10px;
         flex-shrink: 0;
+        max-width: 100%;
     }
+
     .chem-formula { 
         font-size: 23pt; 
-        white-space: nowrap; 
         font-family: Georgia, serif; 
+        word-break: break-all; /* Безопасный перенос длинных формул на смартфонах */
+        text-align: center;
     }
+
     .chem-name {
-        font-size: 16pt; 
-        color: #444;
+        font-size: 14pt; 
+        color: #2c3e50;
         margin-top: 5px;
         font-weight: bold;
         text-align: center;
     }
+
+    /* Обертка для графических структур SMILES */
+    .mol-box { 
+        min-width: 160px; 
+        min-height: 160px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        background: #fafafa;
+        border-radius: 8px;
+        padding: 5px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    /* Знаки плюс и равно */
     .chem-operator { 
-        font-size: 25pt; 
+        font-size: 26pt; 
         font-weight: bold; 
         margin: 0 15px;
         flex-shrink: 0;
+        color: #333;
     }
-    .mol-box { 
-        min-width: 150px; 
-        min-height: 150px; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
+
+    /* Обертка для медиа-картинок (img1-img6) */
+    .responsive-img-container img {
+        max-width: 90%;
+        height: auto;
+        margin-bottom: 15px;
+        border-radius: 6px;
+    }
+
+    /* АДАПТИВНОСТЬ ПОД МОБИЛЬНЫЕ ТЕЛЕФОНЫ (Экраны до 768px) */
+    @media (max-width: 768px) {
+        .chem-equation-container {
+            flex-direction: column; /* Обе линии (и текст, и картинки) выстраиваются в вертикальный столбик */
+            gap: 15px;
+            padding: 0 25px; /* Увеличенные защитные поля по краям экрана */
+        }
+
+        .chem-item {
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        .chem-formula {
+            font-size: 18pt; /* Оптимальный читаемый размер для телефона */
+        }
+
+        .chem-operator {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin: 8px 0;
+            font-size: 28pt; /* Плюсы и равно становятся крупными разделителями строк */
+        }
+        
+        .mol-box {
+            width: 100%;
+            max-width: 200px; /* Картинка SMILES центрируется и не раздувает экран */
+            margin: 0 auto;
+        }
     }
 </style>
 
-<div class="col-12">
+<div class="col-12" style="padding: 0 10px;">
     <!-- Блок Избранного -->
     {% if obj %}
         <div style="margin-bottom: 20px;">
             {% if obj.id in favorite_ids %}
-                <span>✅ В списке</span>
+                <span class="badge badge-success" style="font-size: 11pt; padding: 6px 12px;">✅ В моем списке</span>
                 <form action="{% url 'organic_remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
                     {% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
                 </form>
             {% else %}
                 <form action="{% url 'organic_add_reaction' obj.id %}" method="post" style="display:inline;">
-                    {% csrf_token %}<button type="submit" class="btn btn-primary">Добавить в список</button>
+                    {% csrf_token %}<button type="submit" class="btn btn-primary">Добавить в мой список</button>
                 </form>
             {% endif %}
         </div>
     {% endif %}
 
     <br>
-    {% if obj.number %}<a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank">открыть правило</a>{% endif %}
-    {% if percent %}<p>Процент верных ответов: {{percent}} %</p>{% endif %}
+    {% if obj.number %}<a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank" class="btn btn-link px-0">открыть правило</a>{% endif %}
+    
+    {% if percent %}
+        <p style="font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums;">
+            Процент верных ответов {{ percent }} %
+        </p>
+        <div class="test-progress" style="margin: 15px 0; padding: 10px; background-color: #f8f9fa; border-left: 4px solid #007bff; font-weight: bold;">
+            {{ question_progress }}
+        </div>
 
-    <!-- ЛИНИЯ 1: ТЕКСТОВЫЕ ФОРМУЛЫ И НАЗВАНИЯ (Берем из obj напрямую) -->
-    <div class="chem-equation-container">
+        <div class="level-badge-container" style="margin: 15px 0; display: inline-flex; align-items: center; font-family: sans-serif;">
+            <span style="font-size: 14px; color: #5a626a; margin-right: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
+                Уровень:
+            </span>
+            {% if level == "ОГЭ" %}
+                <span style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; letter-spacing: 1px; box-shadow: 0 2px 6px rgba(0,123,255,0.2); border: 1px solid rgba(0,0,0,0.05);">ОГЭ</span>
+            {% elif level == "ЕГЭ" %}
+                <span style="background: linear-gradient(135deg, #dc3545, #bd2130); color: white; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; letter-spacing: 1px; box-shadow: 0 2px 6px rgba(220,53,69,0.2); border: 1px solid rgba(0,0,0,0.05);">ЕГЭ</span>
+            {% else %}
+                <span style="background: #e9ecef; color: #495057; padding: 5px 14px; border-radius: 20px; font-weight: 600; font-size: 13px;">{{ level|default:"Не указан" }}</span>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- ЛИНИЯ 1: ТЕКСТОВЫЕ ФОРМУЛЫ И НАЗВАНИЯ ВЕЩЕСТВ -->
+    <h4 class="text-muted mt-4" style="font-size: 11pt; text-align: center; text-transform: uppercase; letter-spacing: 1px;">Текстовая схема реакции</h4>
+    <div class="chem-equation-container" style="background-color: #fdfdfd; border-radius: 8px; padding: 20px 10px; border: 1px solid #f3f3f3;">
         
         <!-- Реагент 1 -->
         <div class="chem-item">
@@ -105,7 +186,6 @@
             <span class="chem-name">{% if obj_n4 %}<a href="/chem/organiccompaund/{{ obj_n4.pk }}/" target="_blank">{{ obj_n4.name1 }}</a>{% endif %}</span>
         </div>
 
-        <!-- Продукт 2 -->
         {% if obj.product2 %}
             <span class="chem-operator">+</span>
             <div class="chem-item">
@@ -114,7 +194,6 @@
             </div>
         {% endif %}
 
-        <!-- Продукт 3 -->
         {% if obj.product3 %}
             <span class="chem-operator">+</span>
             <div class="chem-item">
@@ -123,7 +202,6 @@
             </div>
         {% endif %}
 
-        <!-- Продукт 4 -->
         {% if obj.product4 %}
             <span class="chem-operator">+</span>
             <div class="chem-item">
@@ -132,50 +210,115 @@
             </div>
         {% endif %}
     </div>
-
-    <!-- ЛИНИЯ 2: КАРТИНКИ (SMILES) -->
-    <div class="chem-equation-container" style="border-top: 1px solid #eee; padding-top: 30px;">
+    <!-- ЛИНИЯ 2: ГРАФИЧЕСКИЕ СТРУКТУРНЫЕ КАРТИНКИ (SMILES РЕНДЕР) -->
+    <h4 class="text-muted mt-5" style="font-size: 11pt; text-align: center; text-transform: uppercase; letter-spacing: 1px;">Структурные формулы (SMILES)</h4>
+    <div class="chem-equation-container" style="border-top: 2px dashed #eee; padding-top: 25px;">
+        
+        <!-- Структура Реагента 1 -->
         <div class="chem-item">
             <div class="mol-box">{% if obj_n1.molecule %}{% render_smiles obj_n1.molecule width=180 height=180 %}{% endif %}</div>
+            <span class="chem-name" style="font-size: 11pt; color: #6c757d; font-weight: normal; margin-top: 4px;">{{ obj.reagent1 }}</span>
         </div>
+
         {% if obj_n2.molecule %}
             <span class="chem-operator">+</span>
-            <div class="chem-item"><div class="mol-box">{% render_smiles obj_n2.molecule width=180 height=180 %}</div></div>
+            <div class="chem-item">
+                <div class="mol-box">{% render_smiles obj_n2.molecule width=180 height=180 %}</div>
+                <span class="chem-name" style="font-size: 11pt; color: #6c757d; font-weight: normal; margin-top: 4px;">{{ obj.reagent2 }}</span>
+            </div>
+        {% endif %}
+
+        {% if obj_n3.molecule %}
+            <span class="chem-operator">+</span>
+            <div class="chem-item">
+                <div class="mol-box">{% render_smiles obj_n3.molecule width=180 height=180 %}</div>
+                <span class="chem-name" style="font-size: 11pt; color: #6c757d; font-weight: normal; margin-top: 4px;">{{ obj.reagent3 }}</span>
+            </div>
         {% endif %}
 
         <span class="chem-operator">=</span>
 
+        <!-- Структура Продукта 1 -->
         <div class="chem-item">
             <div class="mol-box">{% if obj_n4.molecule %}{% render_smiles obj_n4.molecule width=180 height=180 %}{% endif %}</div>
+            <span class="chem-name" style="font-size: 11pt; color: #6c757d; font-weight: normal; margin-top: 4px;">{{ obj.product1 }}</span>
         </div>
+
         {% if obj_n5.molecule %}
             <span class="chem-operator">+</span>
-            <div class="chem-item"><div class="mol-box">{% render_smiles obj_n5.molecule width=180 height=180 %}</div></div>
+            <div class="chem-item">
+                <div class="mol-box">{% render_smiles obj_n5.molecule width=180 height=180 %}</div>
+                <span class="chem-name" style="font-size: 11pt; color: #6c757d; font-weight: normal; margin-top: 4px;">{{ obj.product2 }}</span>
+            </div>
         {% endif %}
+
         {% if obj_n6.molecule %}
             <span class="chem-operator">+</span>
-            <div class="chem-item"><div class="mol-box">{% render_smiles obj_n6.molecule width=180 height=180 %}</div></div>
+            <div class="chem-item">
+                <div class="mol-box">{% render_smiles obj_n6.molecule width=180 height=180 %}</div>
+                <span class="chem-name" style="font-size: 11pt; color: #6c757d; font-weight: normal; margin-top: 4px;">{{ obj.product3 }}</span>
+            </div>
         {% endif %}
+
         {% if obj_n7.molecule %}
             <span class="chem-operator">+</span>
-            <div class="chem-item"><div class="mol-box">{% render_smiles obj_n7.molecule width=180 height=180 %}</div></div>
+            <div class="chem-item">
+                <div class="mol-box">{% render_smiles obj_n7.molecule width=180 height=180 %}</div>
+                <span class="chem-name" style="font-size: 11pt; color: #6c757d; font-weight: normal; margin-top: 4px;">{{ obj.product4 }}</span>
+            </div>
         {% endif %}
     </div>
 
-    <center><p style="font-size: 20pt; margin: 30px 0;">{{ obj.condition }}</p></center>
+    <!-- Условия протекания реакции -->
+    <center>     
+         <p style="text-align: center; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums; font-size: 20pt; margin: 30px 0;">
+             {% if condition %}{{ condition }}{% endif %}
+         </p>
+    </center>
 
+    <!-- Пояснения (extra) -->
     {% if obj.extra %}
-        <div style="border-left: 6px solid #00aaff; background: #f8fdff; padding: 15px; text-align: left; max-width: 80%; margin: 0 auto; border-radius: 4px;">
-             <p style="font-size: 15pt; margin: 0;">{{ obj.extra }}</p>
-        </div>
+        <center> 
+            <table class="table table-bordered flexy1" style="max-width: 90%;">
+                <td>
+                     <p style="width: 100%; text-align: left !important; font-family: Georgia, serif; font-size: 15pt; font-variant-numeric: oldstyle-nums; margin: 0;">
+                         {{ obj.extra }}
+                     </p>
+                </td>
+            </table>
+        </center>                       
     {% endif %}   
 
-    <br>
-    {% if next_index %}
-       <center><a href="{% url 'organiclawtestquestion' next_index %}" class="btn btn-primary mt-2">Следующая реакция</a></center> 
-    {% else %}
-       <center><a href="/chem/organiclaw" class="btn btn-primary mt-2">Тест завершен</a></center> 
-    {% endif %}   
+    <!-- Иллюстрации и видеоразборы -->
+    <div class="responsive-img-container text-center mt-4">
+        {% if obj.video %}
+            <div class="mb-3">
+                <a href="{{ obj.video }}" target="_blank" rel="noopener noreferrer">
+                    <h3>Смотрите видео по ссылке</h3>
+                </a>
+            </div>
+        {% endif %}
+        
+        {% if obj.img1 %}<img src="{{ obj.img1.url }}">{% endif %}
+        {% if obj.img2 %}<img src="{{ obj.img2.url }}">{% endif %}
+        {% if obj.img3 %}<img src="{{ obj.img3.url }}">{% endif %}
+        {% if obj.img4 %}<img src="{{ obj.img4.url }}">{% endif %}
+        {% if obj.img5 %}<img src="{{ obj.img5.url }}">{% endif %}
+        {% if obj.img6 %}<img src="{{ obj.img6.url }}">{% endif %}
+    </div>
+    
+    <!-- Навигация -->
+    <div class="text-center mt-4 mb-5">
+        {% if next_index %}
+            <a href="{% url 'organiclawtestquestion' next_index %}" class="btn btn-primary mt-2 mx-2"> 
+                Следующая химическая реакция
+            </a>
+        {% else %}
+            <a href="/chem/organiclaw" class="btn btn-primary mt-2 mx-2">   
+                Тест завершен, спасибо! Перейти в тему
+            </a>
+        {% endif %}
+    </div>
 </div>
 {% endautoescape %}
 {% endblock %}
