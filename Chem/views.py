@@ -674,9 +674,12 @@ def remove_reaction(request, reaction_id):
 
 # конец вьюшек тест реакции неорганики - головы для теста по законам и вопрос-ответ
 
-# начало вьюшек тест реакции органики - головы для теста по законам и вопрос-ответ
+# ==========================================
+# 1. ГОЛОВЫ ТЕСТА (СТАРТОВЫЕ СТРАНИЦЫ И ИНИЦИАЛИЗАЦИЯ)
+# ==========================================
 
 class OrganicLawTestHeadView(TemplateView):
+    """ Стартовая страница теста по конкретной теме органики. """
     template_name = 'Chem/organiclawtesthead.html'
 
     def get_context_data(self, **kwargs):
@@ -684,72 +687,78 @@ class OrganicLawTestHeadView(TemplateView):
         num = self.kwargs['num'] 
         topic = get_object_or_404(Organiclaw, pk=num) 
         
-        current_list = self.request.session.get('question_list', [])
-        current_next = self.request.session.get('next_index')
+        all_reactions = OrganicReaction.objects.filter(number=topic)
+        total_db_count = all_reactions.count()
         
-        # Если зашли в НОВУЮ тему (текущий id не из этой темы), тоже сбрасываем
-        # Но для простоты: если нет текущего индекса — инициируем
-        if not current_next:
-            all_reactions = OrganicReaction.objects.filter(number=topic)
-            question_ids = list(all_reactions.values_list('pk', flat=True))
-            
-            if question_ids:
-                import random
-                random.shuffle(question_ids)
-                q1 = question_ids.pop(0)
-                
-                self.request.session['question_list'] = question_ids
-                self.request.session['next_index'] = q1
-                self.request.session['all_count'] = 0
-                self.request.session['correct_count'] = 0
-                self.request.session['incorrect_count'] = 0
-                context['q1'] = q1
-            else:
-                context['q1'] = None
-        else:
-            context['q1'] = current_next
-
-        context['count'] = OrganicReaction.objects.filter(number=topic).count()
+        context['count'] = total_db_count
         context['numbertitle'] = topic.title 
         context['obj'] = topic
+
+        question_ids = list(all_reactions.values_list('pk', flat=True))
+        random.shuffle(question_ids)
+        
+        if question_ids:
+            q1 = question_ids.pop(0)
+            context['q1'] = q1
+            
+            self.request.session['org_question_list'] = question_ids
+            self.request.session['org_next_index'] = q1
+            self.request.session['org_all_count'] = 0
+            self.request.session['org_correct_count'] = 0
+            self.request.session['org_incorrect_count'] = 0
+            self.request.session['org_total_test_questions'] = total_db_count
+        else:
+            context['q1'] = None
+            self.request.session['org_total_test_questions'] = 0
+
         return context
 
+
 class OrganicFavoritesTestHeadView(LoginRequiredMixin, View):
+    """ Инициализация теста по сохраненным реакциям из Избранного пользователя. """
     def get(self, request):
-        # Получаем актуальный список избранного
         fav_ids = list(request.user.organic_favorite_reactions.values_list('reaction_id', flat=True))
+        total_db_count = len(fav_ids)
         
         if not fav_ids:
             return redirect('organic_my_reactions_list')
 
-        # ВСЕГДА перемешиваем заново при входе в этот режим
-        import random
         random.shuffle(fav_ids)
-
         first_id = fav_ids.pop(0)
         
-        # Перезаписываем сессию свежими данными
-        request.session['question_list'] = fav_ids
-        request.session['next_index'] = first_id
-        request.session['all_count'] = 0
-        request.session['correct_count'] = 0
-        request.session['incorrect_count'] = 0
+        request.session['org_question_list'] = fav_ids
+        request.session['org_next_index'] = first_id
+        request.session['org_all_count'] = 0
+        request.session['org_correct_count'] = 0
+        request.session['org_incorrect_count'] = 0
+        request.session['org_total_test_questions'] = total_db_count
         
         return redirect('organiclawtestquestion', str=first_id)
 
 
+# ==========================================
+# 2. СТРАНИЦА ВОПРОСА (ОТОБРАЖЕНИЕ И ПРОВЕРКА ОТВЕТА)
+# ==========================================
+
 class OrganicChemTestQuestionView(TemplateView):
-    """ Выводит вопрос теста — только текст реакции и условия """
+    """ Выводит вопрос теста — только текст реакции и поля для ввода """
     template_name = 'Chem/organiclawtestquestion.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs['str']
         
-        # Получаем объект реакции
         qw = get_object_or_404(OrganicReaction, pk=ind)
         
-        # Передаем данные для текстового отображения реакции
+        total_questions = self.request.session.get('org_total_test_questions', 0)
+        current_num = self.request.session.get('org_all_count', 0) + 1
+        
+        if current_num > total_questions and total_questions > 0:
+            current_num = total_questions
+            
+        context['question_progress'] = f"реакция № {current_num} из {total_questions}"
+        context['level'] = qw.level
+
         context.update({
             'reagent1': qw.reagent1,
             'reagent2': qw.reagent2,
@@ -758,11 +767,9 @@ class OrganicChemTestQuestionView(TemplateView):
             'form': OrganicTestForm(), 
             'q1': ind,
             'obj': qw,
-            'items': self.request.session.get('question_list', []),
+            'items': self.request.session.get('org_question_list', []),
+            'count': len(self.request.session.get('org_question_list', []))
         })
-
-        # Увеличиваем общий счетчик вопросов в сессии
-        self.request.session['all_count'] = self.request.session.get('all_count', 0) + 1
         
         return context
 
@@ -770,10 +777,7 @@ class OrganicChemTestQuestionView(TemplateView):
         ind = int(self.kwargs['str'])
         qw = get_object_or_404(OrganicReaction, pk=ind)
         
-        # Синонимы для отсутствия ответа
         no_ans = ["not", "ytn", "нет", "none", "-"]
-        
-        # Поля из нашей новой формы OrganicTestForm
         raw_fields = ['field1', 'field2', 'field3', 'field4']
         user_answers = []
 
@@ -793,35 +797,40 @@ class OrganicChemTestQuestionView(TemplateView):
 
         if user_upper == correct_upper:
             messages.success(request, "Верно!")
-            self.request.session['correct_count'] = self.request.session.get('correct_count', 0) + 1
+            self.request.session['org_correct_count'] = self.request.session.get('org_correct_count', 0) + 1
         else:
             messages.error(request, 'Не верно :(')
-            self.request.session['incorrect_count'] = self.request.session.get('incorrect_count', 0) + 1
+            self.request.session['org_incorrect_count'] = self.request.session.get('org_incorrect_count', 0) + 1
 
-        # ИЗВЛЕКАЕМ СЛЕДУЮЩИЙ ID ЗДЕСЬ (ОДИН РАЗ ПРИ ОТВЕТЕ)
-        question_list = self.request.session.get('question_list', [])
+        self.request.session['org_all_count'] = self.request.session.get('org_all_count', 0) + 1
+
+        question_list = self.request.session.get('org_question_list', [])
         if question_list:
             next_index = question_list.pop(0)
-            self.request.session['next_index'] = next_index
-            self.request.session['question_list'] = question_list
+            self.request.session['org_next_index'] = next_index
+            self.request.session['org_question_list'] = question_list
         else:
-            self.request.session['next_index'] = None
+            self.request.session['org_next_index'] = None
             
         return redirect('organiclawtestanswer', str=ind)
 
+# ==========================================
+# 3. СТРАНИЦА ОТВЕТА (РЕЗУЛЬТАТЫ, СТРУКТУРНЫЕ ФОРМУЛЫ SMILES)
+# ==========================================
 
 class OrganicChemTestAnswerView(TemplateView):
+    """ Показывает правильный ответ, процент успеха, названия веществ и их SMILES """
     template_name = 'Chem/organiclawtestanswer.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ind = self.kwargs.get('str')
         
-        # 1. Получаем реакцию
         qw = get_object_or_404(OrganicReaction, pk=ind)
         context['obj'] = qw
+        context['level'] = qw.level
 
-        # 2. ПОИСК СОЕДИНЕНИЙ (Имена и SMILES)
+        # Поиск связанных соединений (Имена и SMILES) в OrganicNames
         struct_list = [
             qw.reagent1, qw.reagent2, qw.reagent3, 
             qw.product1, qw.product2, qw.product3, qw.product4
@@ -835,7 +844,7 @@ class OrganicChemTestAnswerView(TemplateView):
             else:
                 context[f'obj_n{i}'] = None
 
-        # 3. ИЗБРАННОЕ
+        # Проверка Избранного для текущего пользователя
         if self.request.user.is_authenticated:
             context['favorite_ids'] = list(
                 OrganicUserReaction.objects.filter(user=self.request.user)
@@ -844,16 +853,18 @@ class OrganicChemTestAnswerView(TemplateView):
         else:
             context['favorite_ids'] = []
 
-        # 4. СТАТИСТИКА
-        all_c = self.request.session.get('all_count', 0) or 0
-        corr_c = self.request.session.get('correct_count', 0) or 0
+        # Расчет статистики и получение прогресса
+        all_c = self.request.session.get('org_all_count', 0) or 0
+        corr_c = self.request.session.get('org_correct_count', 0) or 0
         context['percent'] = round((corr_c / all_c) * 100) if all_c > 0 else 0
         
-        # 5. ОЧЕРЕДЬ ТЕСТА
-        # ТЕПЕРЬ ПРОСТО БЕРЕМ ГОТОВЫЙ СЛЕДУЮЩИЙ ИНДЕКС (БЕЗ POP)
-        # Это защищает от удаления вопроса при обновлении страницы или добавлении в избранное
-        next_id = self.request.session.get('next_index')
-        q_list = self.request.session.get('question_list', [])
+        total_questions = self.request.session.get('org_total_test_questions', 0)
+        current_num = all_c if all_c > 0 else 1
+        context['question_progress'] = f"реакция № {current_num} из {total_questions}"
+        
+        # Получение данных очереди теста без удаления (безопасно при F5)
+        next_id = self.request.session.get('org_next_index')
+        q_list = self.request.session.get('org_question_list', [])
         
         context['next_index'] = next_id
         context['items'] = q_list
@@ -862,15 +873,19 @@ class OrganicChemTestAnswerView(TemplateView):
         return context
 
 
+# ==========================================
+# 4. ФУНКЦИИ ИЗБРАННОГО (ДОБАВЛЕНИЕ, УДАЛЕНИЕ, СПИСОК)
+# ==========================================
+
 def organic_add_to_list(request, reaction_id):
     """ Добавление органической реакции в список пользователя """
     if request.user.is_authenticated:
-        # Используем get_or_create, чтобы не плодить дубликаты
         OrganicUserReaction.objects.get_or_create(
             user=request.user, 
             reaction_id=reaction_id
         )
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
 
 def organic_remove_reaction(request, reaction_id):
     """ Удаление органической реакции из списка пользователя """
@@ -884,18 +899,15 @@ def organic_remove_reaction(request, reaction_id):
 
 @login_required
 def organic_my_reactions_list(request):
-    """Выводит список всех избранных органических реакций пользователя"""
-    # Получаем все объекты связей пользователя с реакциями
+    """ Выводит страницу со списком всех избранных реакций текущего пользователя """
     my_reactions = OrganicUserReaction.objects.filter(user=request.user).select_related('reaction')
     
     return render(request, 'Chem/organic_my_list.html', {
         'my_reactions': my_reactions
     })
 
-
-
-        
 # конец вьюшек тест - реакции органики - головы для теста по законам и вопрос-ответ
+
 
 
 
