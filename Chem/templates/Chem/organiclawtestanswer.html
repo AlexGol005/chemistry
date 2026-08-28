@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% load mol_extras %}
 
-{% block title %}Реакция органики{% endblock %}
+{% block title %}реакция{% endblock %}
 
 {% block content %}
 {% autoescape off %}
@@ -17,7 +17,7 @@
         margin: 25px auto;
         width: 100%;
         max-width: 1200px;
-        padding: 0 20px; /* Безопасные боковые поля, чтобы ничего не вылезало */
+        padding: 0 20px; /* Безопасные боковые поля */
         box-sizing: border-box;
     }
 
@@ -35,7 +35,7 @@
     .chem-formula { 
         font-size: 23pt; 
         font-family: Georgia, serif; 
-        word-break: break-all; /* Безопасный перенос длинных формул на смартфонах */
+        word-break: break-all; /* Перенос длинных формул на смартфонах */
         text-align: center;
     }
 
@@ -80,9 +80,9 @@
     /* АДАПТИВНОСТЬ ПОД МОБИЛЬНЫЕ ТЕЛЕФОНЫ (Экраны до 768px) */
     @media (max-width: 768px) {
         .chem-equation-container {
-            flex-direction: column; /* Обе линии (и текст, и картинки) выстраиваются в вертикальный столбик */
+            flex-direction: column; /* Элементы выстраиваются в вертикальный столбик */
             gap: 15px;
-            padding: 0 25px; /* Увеличенные защитные поля по краям экрана */
+            padding: 0 25px; /* Увеличенные защитные поля */
         }
 
         .chem-item {
@@ -91,7 +91,7 @@
         }
 
         .chem-formula {
-            font-size: 18pt; /* Оптимальный читаемый размер для телефона */
+            font-size: 18pt; 
         }
 
         .chem-operator {
@@ -99,12 +99,12 @@
             width: 100%;
             text-align: center;
             margin: 8px 0;
-            font-size: 28pt; /* Плюсы и равно становятся крупными разделителями строк */
+            font-size: 28pt; /* Крупные разделители строго по центру */
         }
         
         .mol-box {
             width: 100%;
-            max-width: 200px; /* Картинка SMILES центрируется и не раздувает экран */
+            max-width: 200px; 
             margin: 0 auto;
         }
     }
@@ -153,8 +153,7 @@
     {% endif %}
 
     <!-- ЛИНИЯ 1: ТЕКСТОВЫЕ ФОРМУЛЫ И НАЗВАНИЯ ВЕЩЕСТВ -->
-    <h4 class="text-muted mt-4" style="font-size: 11pt; text-align: center; text-transform: uppercase; letter-spacing: 1px;">Текстовая схема реакции</h4>
-    <div class="chem-equation-container" style="background-color: #fdfdfd; border-radius: 8px; padding: 20px 10px; border: 1px solid #f3f3f3;">
+    <div class="chem-equation-container" style="background-color: #fdfdfd; border-radius: 8px; padding: 20px 10px; border: 1px solid #f3f3f3; margin-top: 20px;">
         
         <!-- Реагент 1 -->
         <div class="chem-item">
@@ -211,8 +210,7 @@
         {% endif %}
     </div>
     <!-- ЛИНИЯ 2: ГРАФИЧЕСКИЕ СТРУКТУРНЫЕ КАРТИНКИ (SMILES РЕНДЕР) -->
-    <h4 class="text-muted mt-5" style="font-size: 11pt; text-align: center; text-transform: uppercase; letter-spacing: 1px;">Структурные формулы (SMILES)</h4>
-    <div class="chem-equation-container" style="border-top: 2px dashed #eee; padding-top: 25px;">
+    <div class="chem-equation-container" style="border-top: 2px dashed #eee; padding-top: 25px; margin-top: 20px;">
         
         <!-- Структура Реагента 1 -->
         <div class="chem-item">
