@@ -97,6 +97,8 @@ urlpatterns = [
     path('polymertest/question/<int:index>/', views.PolymerTestQuestionView.as_view(), name='polymertest_question'),
     path('polymertest/answer/<int:index>/', views.PolymerTestAnswerView.as_view(), name='polymertest_answer'),
     path('polymertest/finished/', views.PolymerTestFinishedView.as_view(), name='polymertest_finished'),
+    path('polymertest/head/', views.PolymerTestHeadView.as_view(), name='polymertest_head'),
+
 
 
     ]
