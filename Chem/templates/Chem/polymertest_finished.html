@@ -1,0 +1,90 @@
+{% extends 'main/superbase.html' %}
+
+{% block title %}
+Тест завершен | Итоги
+{% endblock %}
+
+{% block content %}
+<div class="col-12 mt-4">
+    <div class="card shadow-sm mx-auto" style="max-width: 600px; border-radius: 15px;">
+        <div class="card-body p-4 text-center">
+            
+            <h2 class="mb-4" style="font-family: Georgia, serif; font-weight: bold; color: #2c3e50;">
+                🏁 Тест успешно завершен!
+            </h2>
+
+            <!-- Круговой блок с процентом правильных ответов -->
+            <div class="mx-auto my-4 d-flex align-items-center justify-content-center" 
+                 style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #f0f7ff, #e1f0ff); border: 4px solid #007bff; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.15);">
+                <div>
+                    <span style="font-size: 28pt; font-weight: bold; color: #007bff; display: block; line-height: 1;">
+                        {{ percent }}%
+                    </span>
+                    <span style="font-size: 10pt; color: #6c757d; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
+                        успех
+                    </span>
+                </div>
+            </div>
+
+            <!-- Текстовый результат набранных баллов -->
+            <p class="mb-4" style="font-family: Georgia, serif; font-size: 16pt; color: #495057;">
+                Ваш результат: <strong>{{ score }}</strong> из <strong>{{ total }}</strong> правильных ответов.
+            </p>
+
+            <!-- Мотивирующее сообщение в зависимости от процента -->
+            <div class="p-3 mb-4 rounded" style="background-color: #f8f9fa; font-size: 12pt; font-style: italic; color: #6c757d;">
+                {% if percent == 100 %}
+                    🥇 Идеальный результат! Вы превосходно знаете химию полимеров!
+                {% elif percent >= 80 %}
+                    🌟 Отличный результат! Прекрасные знания по выбранной теме.
+                {% elif percent >= 50 %}
+                    👍 Хорошо, но есть куда стремиться. Попробуйте пройти тест еще раз!
+                {% else %}
+                    📚 Рекомендуется повторить свойства полимеров и их мономеров на страницах соединений.
+                {% endif %}
+            </div>
+
+            <hr class="my-4">
+
+            <!-- ЖИВАЯ КНОПКА ВОЗВРАТА К НАСТРОЙКАМ -->
+            <div class="mt-4">
+                <a href="{% url 'polymertest_start' %}?mode={{ mode }}" 
+                   class="btn btn-lg text-white font-weight-bold px-5 py-3 alive-btn-base btn-restart"
+                   style="max-width: 85%; display: inline-block;">
+                    🔄 Пройти тест заново
+                </a>
+            </div>
+
+            <!-- Дополнительная ссылка на главную органики -->
+            <div class="mt-3">
+                <a href="{% url 'organiccompaunds' %}" class="text-muted" style="text-decoration: underline; font-size: 11pt;">
+                    Перейти к списку соединений
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Стилизация живой кнопки перезапуска */
+    .alive-btn-base {
+        border: none; 
+        border-radius: 50px; 
+        font-size: 15pt; 
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        cursor: pointer;
+    }
+    .btn-restart {
+        background: linear-gradient(45deg, #6f42c1, #a951ed); 
+        box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4); 
+    }
+    .btn-restart:hover {
+        transform: translateY(-4px); 
+        box-shadow: 0 8px 25px rgba(111, 66, 193, 0.6) !important;
+        filter: brightness(1.05);
+        color: #fff !important;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
