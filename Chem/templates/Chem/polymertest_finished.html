@@ -46,12 +46,21 @@
 
             <hr class="my-4">
 
-            <!-- ЖИВАЯ КНОПКА ВОЗВРАТА К НАСТРОЙКАМ -->
+            <!-- КНОПКА ВОЗВРАТА К НАСТРОЙКАМ ТЕКУЩЕГО РЕЖИМА -->
             <div class="mt-4">
                 <a href="{% url 'polymertest_start' %}?mode={{ mode }}" 
                    class="btn btn-lg text-white font-weight-bold px-5 py-3 alive-btn-base btn-restart"
                    style="max-width: 85%; display: inline-block;">
                     🔄 Пройти тест заново
+                </a>
+            </div>
+
+            <!-- КНОПКА ПОЛНОГО СБРОСА И ПЕРЕХОДА К ВЫБОРУ РЕЖИМОВ -->
+            <div class="mt-2">
+                <a href="{% url 'polymertest_head' %}" 
+                   class="btn btn-lg text-white font-weight-bold px-5 py-3 alive-btn-base btn-change-mode"
+                   style="max-width: 85%; display: inline-block;">
+                    📋 Выбрать другой режим теста
                 </a>
             </div>
 
@@ -67,19 +76,30 @@
 </div>
 
 <style>
-    /* Стилизация живой кнопки перезапуска */
+    /* Стилизация живых кнопок */
     .alive-btn-base {
         border: none; 
         border-radius: 50px; 
-        font-size: 15pt; 
+        font-size: 14pt; 
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         cursor: pointer;
     }
     .btn-restart {
+        background: linear-gradient(45deg, #007bff, #00c6ff); 
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4); 
+    }
+    .btn-restart:hover {
+        transform: translateY(-4px); 
+        box-shadow: 0 8px 25px rgba(0, 123, 255, 0.6) !important;
+        filter: brightness(1.05);
+        color: #fff !important;
+        text-decoration: none;
+    }
+    .btn-change-mode {
         background: linear-gradient(45deg, #6f42c1, #a951ed); 
         box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4); 
     }
-    .btn-restart:hover {
+    .btn-change-mode:hover {
         transform: translateY(-4px); 
         box-shadow: 0 8px 25px rgba(111, 66, 193, 0.6) !important;
         filter: brightness(1.05);
