@@ -92,6 +92,12 @@ urlpatterns = [
     path('api/test/start/', views.api_start_test, name='api_start_test'),
 
     # === КОНЕЦ БЛОКА МОБИЛЬНОЕ ПРИЛОЖЕНИЕ ===
+    # === СИСТЕМА ТЕСТИРОВАНИЯ ПОЛИМЕРОВ ===
+    path('polymertest/start/', views.PolymerTestStartView.as_view(), name='polymertest_start'),
+    path('polymertest/question/<int:index>/', views.PolymerTestQuestionView.as_view(), name='polymertest_question'),
+    path('polymertest/answer/<int:index>/', views.PolymerTestAnswerView.as_view(), name='polymertest_answer'),
+    path('polymertest/finished/', views.PolymerTestFinishedView.as_view(), name='polymertest_finished'),
+
 
     ]
     # === МОБИЛЬНОЕ ПРИЛОЖЕНИЕ ===
