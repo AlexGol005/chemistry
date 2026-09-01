@@ -23,21 +23,22 @@ from .models import OrganicNames, UserQuestionProgress  # Подключаем �
 # =====================================================================
 
 # =====================================================================
-# 1. ПУЛЬТ УПРАВЛЕНИЯ И СТАРТ ТЕСТА ПОЛИМЕРОВ
+# 1. ПУЛЬТ УПРАВЛЕНИЯ И СТАРТ ТЕСТА ПОЛИМЕРОВ (ФИЛЬТРАЦИЯ ПО ТИПАМ)
 # =====================================================================
 class PolymerTestStartView(View):
     def get(self, request):
-        # Получаем выбранный режим (по умолчанию: мономер -> полимер)
+        # Получаем выбранный режим теста из GET-параметров
         mode = request.GET.get('mode', 'monomer_to_polymer')
-        # Восстанавливаем из сессии группы, выбранные пользователем ранее
-        previously_selected_groups = request.session.get('polymer_last_selected_groups', [])
+        # Восстанавливаем из сессии типы полимеров, выбранные пользователем ранее
+        previously_selected_types = request.session.get('polymer_last_selected_types', [])
         
-        # Формируем список групп чекбоксов для формы настроек
+        # Формируем список чекбоксов на основе вашего POLYMER_TYPE_CHOICES
         selectable_groups = []
-        for group in POLYMER_GROUPS:
+        for type_slug, type_name in POLYMER_TYPE_CHOICES:
             selectable_groups.append({
-                'name': group['name'],
-                'is_checked': group['name'] in previously_selected_groups
+                'slug': type_slug,
+                'name': type_name,
+                'is_checked': type_slug in previously_selected_types or not previously_selected_types
             })
 
         context = {
@@ -49,26 +50,24 @@ class PolymerTestStartView(View):
     def post(self, request):
         # Определяем рабочий режим тестирования
         mode = request.POST.get('mode') or request.GET.get('mode') or 'monomer_to_polymer'
-        # Считываем отмеченные пользователем группы полимеров
-        selected_group_names = request.POST.getlist('selected_groups')
+        # Считываем отмеченные пользователем типы полимеров (slug-коды)
+        selected_types = request.POST.getlist('selected_groups')
 
-        # Сохраняем текущий выбор групп в сессию
-        request.session['polymer_last_selected_groups'] = selected_group_names
+        # Сохраняем текущий выбор типов в сессию пользователя
+        request.session['polymer_last_selected_types'] = selected_types
 
         # Полностью сбрасываем состояние и счетчики предыдущего теста
-        for key in ['polymertest_ids', 'polymertest_score', 'polymertest_mode', 'polymertest_allowed_classes']:
+        for key in ['polymertest_ids', 'polymertest_score', 'polymertest_mode', 'polymertest_allowed_types']:
             request.session.pop(key, None)
 
-        # Превращаем выбранные группы в плоский список slug-классов органических веществ
-        selected_classes = []
-        for group in POLYMER_GROUPS:
-            if group['name'] in selected_group_names or not selected_group_names:
-                selected_classes.extend(group['classes'])
+        # Если пользователь не выбрал ни одного чекбокса, то по умолчанию берем вообще все типы
+        if not selected_types:
+            selected_types = [t[0] for t in POLYMER_TYPE_CHOICES]
 
-        # Запрашиваем из базы только активные соединения, подходящие под выбранные классы
-        queryset = OrganicNames.objects.filter(organic_class__in=selected_classes, is_visible=True)
+        # Запрашиваем из базы только видимые записи, у которых тип совпадает с выбранными
+        queryset = OrganicNames.objects.filter(polymer_type__in=selected_types, is_visible=True)
         
-        # Фильтруем пустые записи: в выборку попадают только объекты с заполненными целевыми полями
+        # Фильтруем пустые записи под конкретный режим
         if mode == 'monomer_to_polymer':
             queryset = queryset.exclude(monomer_name__isnull=True).exclude(monomer_name__exact='')
         elif mode == 'polymer_to_type':
@@ -76,43 +75,44 @@ class PolymerTestStartView(View):
         elif mode == 'appearance_to_polymer':
             queryset = queryset.exclude(appearance__isnull=True).exclude(appearance__exact='')
 
-        # Извлекаем ID и классы для реализации алгоритма балансировки тем
-        raw_questions = queryset.values('id', 'organic_class')
-        class_pools = {}
+        # Балансировка вопросов: группируем пулы теперь по polymer_type, чтобы темы чередовались
+        raw_questions = queryset.values('id', 'polymer_type')
+        type_pools = {}
         for q in raw_questions:
-            class_pools.setdefault(q['organic_class'], []).append(q['id'])
+            type_pools.setdefault(q['polymer_type'], []).append(q['id'])
             
-        # Случайно перемешиваем вопросы внутри каждого отдельного класса
-        for c_slug in class_pools:
-            random.shuffle(class_pools[c_slug])
+        # Случайно перемешиваем вопросы внутри каждого отдельного типа
+        for t_slug in type_pools:
+            random.shuffle(type_pools[t_slug])
 
-        # Алгоритм циклического отбора: берем по одному вопросу из каждого класса по очереди
+        # Алгоритм циклического отбора до 10 вопросов из разных типов полимеров
         final_ids = []
         target_questions_count = 10
-        active_slugs = list(class_pools.keys())
+        active_slugs = list(type_pools.keys())
         random.shuffle(active_slugs)
 
         while len(final_ids) < target_questions_count and active_slugs:
-            for c_slug in list(active_slugs):
-                if class_pools[c_slug]:
-                    q_id = class_pools[c_slug].pop(0)
+            for t_slug in list(active_slugs):
+                if type_pools[t_slug]:
+                    q_id = type_pools[t_slug].pop(0)
                     final_ids.append(q_id)
                     if len(final_ids) == target_questions_count:
                         break
                 else:
-                    active_slugs.remove(c_slug)
+                    active_slugs.remove(t_slug)
                     
-        # Итоговое перемешивание, чтобы вопросы из разных классов шли в случайном порядке
+        # Итоговое перемешивание результирующего списка
         random.shuffle(final_ids)
 
         # Сохраняем параметры новой сессии тестирования
         request.session['polymertest_ids'] = final_ids
         request.session['polymertest_score'] = 0
         request.session['polymertest_mode'] = mode
-        request.session['polymertest_allowed_classes'] = selected_classes
+        request.session['polymertest_allowed_types'] = selected_types
         request.session.modified = True
         
         return redirect('polymertest_question', index=0)
+
 # =====================================================================
 # БЛОК VIEWS ДЛЯ СИСТЕМЫ ТЕСТИРОВАНИЯ ПОЛИМЕРОВ — ЧАСТЬ 2
 # =====================================================================
