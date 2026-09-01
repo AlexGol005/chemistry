@@ -1,0 +1,91 @@
+{% extends 'main/superbase.html' %}
+
+{% block title %}
+Настройка теста по полимерам
+{% endblock %}
+
+{% block content %}
+<div class="col-12 mt-4">
+    <div class="card shadow-sm mx-auto" style="max-width: 600px; border-radius: 15px;">
+        <div class="card-body p-4">
+            <h3 class="text-center mb-4" style="font-family: Georgia, serif; color: #2c3e50; font-weight: bold;">
+                🧪 Тестирование по полимерам
+            </h3>
+            
+            <form method="post" action="{% url 'polymertest_start' %}">
+                {% csrf_token %}
+                
+                <!-- Передаем выбранный режим скрытым полем -->
+                <input type="hidden" name="mode" value="{{ mode }}">
+
+                <!-- Блок вывода информации о текущем режиме -->
+                <div class="alert alert-info text-center mb-4" style="border-radius: 10px;">
+                    <span style="font-size: 13pt; font-weight: bold;">Текущий режим:</span><br>
+                    <span style="font-size: 15pt;">
+                        {% if mode == 'monomer_to_polymer' %}
+                            🔗 Мономер ⇄ Полимер
+                        {% elif mode == 'polymer_to_type' %}
+                            📋 Полимер ⇄ Тип полимера
+                        {% elif mode == 'appearance_to_polymer' %}
+                            👁 Внешний вид ⇄ Полимер
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Блок выбора типов полимеров (Ваша классификация) -->
+                <div class="mb-4">
+                    <label class="form-label font-weight-bold mb-2" style="font-size: 12pt; color: #495057;">
+                        Выберите типы полимеров для включения в тест:
+                    </label>
+                    <div class="p-3 border rounded" style="background-color: #f8f9fa; border-radius: 10px;">
+                        {% for group in selectable_groups %}
+                            <div class="custom-control custom-checkbox mb-2">
+                                <input type="checkbox" 
+                                       class="custom-control-input" 
+                                       id="check_{{ group.slug }}" 
+                                       name="selected_groups" 
+                                       value="{{ group.slug }}"
+                                       {% if group.is_checked %}checked{% endif %}>
+                                <label class="custom-control-label" for="check_{{ group.slug }}" style="font-size: 12pt; cursor: pointer;">
+                                    {{ group.name }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <small class="form-text text-muted mt-2">
+                        * Если не выбрана ни одна галочка, в тест попадут все типы полимеров.
+                    </small>
+                </div>
+
+                <!-- Кнопка запуска в стилистике живых кнопок -->
+                <div class="text-center mt-4">
+                    <button type="submit" 
+                            class="btn btn-lg text-white font-weight-bold px-5" 
+                            style="background: linear-gradient(45deg, #007bff, #00c6ff); border: none; border-radius: 50px; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4); font-size: 16pt; cursor: pointer; transition: all 0.3s ease;">
+                        🚀 Начать тест (10 вопросов)
+                    </button>
+                </div>
+            </form>
+
+            <!-- Ссылка на смену режима назад на пульт управления (если нужно) -->
+            <div class="text-center mt-3">
+                <a href="{% url 'organicnamestest_head' %}" class="text-muted" style="text-decoration: underline;">
+                    Вернуться к выбору разделов
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Эффект легкого всплытия для живой кнопки при наведении */
+    button[type="submit"]:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0, 123, 255, 0.6) !important;
+        filter: brightness(1.05);
+    }
+    button[type="submit"]:active {
+        transform: translateY(-1px);
+    }
+</style>
+{% endblock %}
