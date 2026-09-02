@@ -127,60 +127,89 @@ class PolymerTestStartView(View):
 # =====================================================================
 
 # =====================================================================
-# 2. СТРАНИЦА ТЕКУЩЕГО ВОПРОСА
+# 2. СТРАНИЦА ТЕКУЩЕГО ВОПРОСА (БЕЗ ВАРИАНТОВ ОТВЕТОВ)
 # =====================================================================
 class PolymerTestQuestionView(View):
     def get(self, request, index):
-        # Извлекаем пул сгенерированных ID и выбранный режим теста из сессии
         test_ids = request.session.get('polymertest_ids', [])
         mode = request.session.get('polymertest_mode', 'monomer_to_polymer')
 
-        # Если тест пуст или индекс вышел за границы — отправляем на финал
         if not test_ids or index >= len(test_ids):
             return redirect('polymertest_finished')
 
-        # Загружаем текущий объект полимера
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
         options = []
 
-        # Генерация вариантов ответов под режим: Полимер -> Тип полимера
+        # Режим Полимер -> Тип полимера оставляем с кнопками (так как типов всего 4)
         if mode == 'polymer_to_type':
-            # Первым добавляем правильный код типа
             options.append(obj.polymer_type)
-            # Из константы POLYMER_TYPE_CHOICES берем оставшиеся несовпадающие варианты
             all_types = [t for t in POLYMER_TYPE_CHOICES if t != obj.polymer_type]
             random.shuffle(all_types)
             while len(options) < 4 and all_types:
                 options.append(all_types.pop(0))
             random.shuffle(options)
             
-            # Конвертируем технические slug-коды в понятные текстовые названия для шаблона
             type_dict = dict(POLYMER_TYPE_CHOICES)
             options = [(opt, type_dict.get(opt, opt)) for opt in options]
-
-        # Генерация вариантов для режимов: Мономер -> Полимер и Внешний вид -> Полимер
-        elif mode in ['monomer_to_polymer', 'appearance_to_polymer']:
-            # Правильным ответом является основное название полимера
-            options.append(obj.name1)
-            # Добираем из всей таблицы случайные полимеры в качестве дистракторов
-            distractors = list(OrganicNames.objects.filter(is_visible=True).exclude(id=obj.id).values_list('name1', flat=True))
-            distractors = [d for d in distractors if d]
-            random.shuffle(distractors)
-            
-            while len(options) < 4 and distractors:
-                candidate = distractors.pop(0)
-                if candidate not in options:
-                    options.append(candidate)
-            random.shuffle(options)
 
         context = {
             'polymer': obj,
             'index': index,
             'mode': mode,
             'total_questions': len(test_ids),
-            'test_options': options
+            'test_options': options  # Используется только для режима polymer_to_type
         }
         return render(request, f'Chem/polymertest_question_{mode}.html', context)
+
+
+# =====================================================================
+# 3. ОБРАБОТКА И ПРОВЕРКА ОТВЕТА (ТОЧНОЕ СРАВНЕНИЕ С NAME1-NAME4)
+# =====================================================================
+class PolymerTestAnswerView(View):
+    def post(self, request, index):
+        mode = request.session.get('polymertest_mode', 'monomer_to_polymer')
+        user_ans = (request.POST.get('user_answer') or "").strip()
+        
+        test_ids = request.session.get('polymertest_ids', [])
+        if not test_ids or index >= len(test_ids):
+            return redirect('polymertest_start')
+
+        obj = get_object_or_404(OrganicNames, id=test_ids[index])
+        is_correct = False
+        user_label = user_ans
+
+        if mode == 'polymer_to_type':
+            is_correct = (user_ans == obj.polymer_type)
+            type_dict = dict(POLYMER_TYPE_CHOICES)
+            user_label = type_dict.get(user_ans, "Не выбрано")
+            correct_label = type_dict.get(obj.polymer_type, "")
+
+        elif mode in ['monomer_to_polymer', 'appearance_to_polymer']:
+            # Собираем все непустые названия полимера из полей name1, name2, name3, name4
+            valid_names = []
+            for name in [obj.name1, obj.name2, obj.name3, obj.name4]:
+                if name and str(name).strip():
+                    valid_names.append(str(name).strip().lower())
+            
+            # Проверяем, совпадает ли введенный пользователем ответ хотя бы с одним полем
+            is_correct = user_ans.lower() in valid_names
+            user_label = user_ans if user_ans else "Ничего не введено"
+            correct_label = obj.name1
+
+        if is_correct:
+            request.session['polymertest_score'] = request.session.get('polymertest_score', 0) + 1
+            request.session.modified = True
+
+        return render(request, 'Chem/polymertest_answer.html', {
+            'polymer': obj,
+            'is_correct': is_correct,
+            'user_answer_label': user_label,
+            'correct_label': correct_label,
+            'next_index': index + 1,
+            'total_questions': len(test_ids),
+            'mode': mode
+        })
+
 
 
 # =====================================================================
