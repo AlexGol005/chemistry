@@ -20,7 +20,7 @@ LEVEL = [
 POLYMER_TYPE_CHOICES = [('synthetic', 'Синтетический'), 
                         ('artificial', 'Искусственный'),
                         ('natural_organic', 'Природный органический'),
-                        ('inorganic', 'неорганический')]
+                        ('inorganic', 'Неорганический')]
 
 
 class Atomlaw(models.Model):
