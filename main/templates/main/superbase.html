@@ -201,21 +201,23 @@
 
        
 
-    {# здесь рисуем всплывающие при разных действиях сообщения  #}       
+{# здесь рисуем всплывающие при разных действиях сообщения  #}       
     <div class="container mt-5 table-list no-gutters">
         <div class="row no-gutters">
             <div class="col-md-12 no-gutters">
             {% if messages %}
                 {% for mess in messages %}
                 <div class="TransactionAmount Badresult">
-                    <div class="alert alert=success"><b><font color="red"  size="5">* {{ mess }}</font></b></div>
+                    <!-- Исправлено alert=success на alert-danger (так как это ошибка) и добавлен |safe -->
+                    <div class="alert alert-danger"><b><font color="red" size="5">* {{ mess|safe }}</font></b></div>
                 </div>
                 {% endfor %}
             {% endif %}
             </div>
          </div>
     </div>
-    {# конец сообщений #}           
+    {# конец сообщений #}
+        
 
 
 
