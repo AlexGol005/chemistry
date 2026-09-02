@@ -1,10 +1,11 @@
 {% extends 'main/superbase.html' %}
 {% load crispy_forms_tags %}
-{% load mol_extras %} {# Обязательно загружаем библиотеку тегов для render_smiles #}
+{% load mol_extras %}
 
 {% block title %}Тест: {{ obj.metatitle }}{% endblock %}
 
 {% block content %}
+{% autoescape off %}
 <style>
     /* Главный контейнер уравнения */
     .chem-question-container {
@@ -12,7 +13,7 @@
         justify-content: center;
         align-items: center;
         flex-wrap: wrap;
-        gap: 15px;
+        gap: 10px;
         margin: 40px auto;
         width: 100%;
         max-width: 1200px;
@@ -20,7 +21,7 @@
         box-sizing: border-box;
     }
 
-    /* Блок вещества (Графика + Название) */
+    /* Блок вещества (Формула + Название) */
     .chem-item {
         display: inline-flex;
         flex-direction: column;
@@ -46,17 +47,16 @@
     }
 
     /* Название вещества строго под формулой */
-    .chem-name-under {
-        font-size: 13pt; 
+    .chem-name {
+        font-size: 14pt; 
         color: #2c3e50;
-        margin-top: 8px;
+        margin-top: 5px;
         font-weight: bold;
         text-align: center;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* Знаки плюс и знак вопроса */
-    .chem-sign {
+    /* Знаки плюс и стрелки */
+    .chem-operator {
         font-size: 26pt;
         color: #6c757d;
         margin: 0 10px;
@@ -106,11 +106,11 @@
 
         .mol-box {
             width: 100%;
-            max-width: 220px; 
+            max-width: 200px; 
             margin: 0 auto;
         }
 
-        .chem-sign {
+        .chem-operator {
             display: block;
             width: 100%;
             text-align: center;
@@ -148,42 +148,32 @@
         </div>
     {% endif %}
 
-    <!-- Блок реакции (ГРАФИЧЕСКИЕ ФОРМУЛЫ С НАЗВАНИЯМИ НА СТРАНИЦЕ ВОПРОСА) -->
+    <!-- Блок реакции (Сделано в точности как на странице ответа) -->
     <div class="chem-question-container">
         
-        <!-- Реагент 1 -->
+        <!-- Структура Реагента 1 -->
         <div class="chem-item">
             <div class="mol-box">
                 {% if obj_n1.molecule %}
                     {% render_smiles obj_n1.molecule width=180 height=180 %}
                 {% endif %}
             </div>
-            {% if obj_n1.name1 %}
-                <span class="chem-name-under">{{ obj_n1.name1 }}</span>
-            {% endif %}
+            <span class="chem-name">{% if obj_n1 %}<a href="/chem/organiccompaund/{{ obj_n1.pk }}/" target="_blank">{{ obj_n1.name1 }}</a>{% endif %}</span>
         </div>
 
         {% if obj_n2.molecule %}
-            <div class="chem-sign">+</div>
+            <span class="chem-operator">+</span>
             <div class="chem-item">
-                <div class="mol-box">
-                    {% render_smiles obj_n2.molecule width=180 height=180 %}
-                </div>
-                {% if obj_n2.name1 %}
-                    <span class="chem-name-under">{{ obj_n2.name1 }}</span>
-                {% endif %}
+                <div class="mol-box">{% render_smiles obj_n2.molecule width=180 height=180 %}</div>
+                <span class="chem-name">{% if obj_n2 %}<a href="/chem/organiccompaund/{{ obj_n2.pk }}/" target="_blank">{{ obj_n2.name1 }}</a>{% endif %}</span>
             </div>
         {% endif %}
 
         {% if obj_n3.molecule %}
-            <div class="chem-sign">+</div>
+            <span class="chem-operator">+</span>
             <div class="chem-item">
-                <div class="mol-box">
-                    {% render_smiles obj_n3.molecule width=180 height=180 %}
-                </div>
-                {% if obj_n3.name1 %}
-                    <span class="chem-name-under">{{ obj_n3.name1 }}</span>
-                {% endif %}
+                <div class="mol-box">{% render_smiles obj_n3.molecule width=180 height=180 %}</div>
+                <span class="chem-name">{% if obj_n3 %}<a href="/chem/organiccompaund/{{ obj_n3.pk }}/" target="_blank">{{ obj_n3.name1 }}</a>{% endif %}</span>
             </div>
         {% endif %}
 
@@ -197,7 +187,8 @@
             <span style="font-size: 40pt; line-height: 1; color: #333;">&rarr;</span>
         </div>
         
-        <div class="chem-sign text-muted" style="font-style: italic; font-weight: normal; font-size: 32pt; margin-left: 15px;">?</div>
+        <!-- Знак вопроса вместо продуктов -->
+        <span class="chem-operator text-muted" style="font-style: italic; font-weight: normal; font-size: 32pt; margin-left: 15px;">?</span>
     </div>
 
     <!-- Блок ввода ответов -->
@@ -210,6 +201,7 @@
         </form>
     </div>
 </div>
+{% endautoescape %}
 {% endblock %}
 
 {% block aside %}
