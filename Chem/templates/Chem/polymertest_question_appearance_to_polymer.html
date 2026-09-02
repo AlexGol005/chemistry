@@ -9,7 +9,7 @@
     <div class="card shadow-sm mx-auto" style="max-width: 750px; border-radius: 15px;">
         <div class="card-body p-4">
             
-            <!-- Прогресс-бар и номер вопроса -->
+            <!-- Шапка вопроса и прогресс-бар -->
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="text-muted" style="font-size: 11pt;">
                     Режим: 👁 Внешний вид &rarr; Полимер
@@ -22,31 +22,37 @@
             <!-- Текст вопроса -->
             <div class="text-center my-3">
                 <h4 style="font-family: Georgia, serif; color: #2c3e50; line-height: 1.5; font-weight: bold;">
-                    Какой полимер соответствует данному описанию внешнего вида и свойств?
+                    Напишите название полимера, соответствующего описанию внешнего вида:
                 </h4>
             </div>
 
-            <!-- Блок с описанием внешнего вида в вашей фирменной стилистике с синей полосой -->
+            <!-- Блок описания внешнего вида из базы данных -->
             <div class="content-block ck-editor-content mx-auto my-4" 
                  style="border-left: 6px solid #00aaff; background-color: #f8fdff; padding: 20px; border-radius: 4px; box-shadow: 2px 2px 8px rgba(0,0,0,0.05);">
                 <div class="ck-inner-text" style="font-family: Georgia, serif; font-size: 13pt; color: #333; line-height: 1.6;">
-                    {% autoescape off %}{{ polymer.appearance }}{% endescape %}
+                    {% autoescape off %}{{ polymer.appearance }}{% endautoescape %}
                 </div>
             </div>
-
-            <!-- Форма отправки ответа с «живыми» кнопками названий полимеров -->
+            <!-- Форма ввода текстового ответа -->
             <form method="post" action="{% url 'polymertest_answer' index %}">
                 {% csrf_token %}
-                <div class="d-flex flex-column align-items-center mt-4">
-                    {% for option in test_options %}
-                        <button type="submit" 
-                                name="user_answer" 
-                                value="{{ option }}" 
-                                class="btn btn-block text-white font-weight-bold alive-btn-base btn-answer mb-3 py-3"
-                                style="max-width: 85%;">
-                            {{ option }}
-                        </button>
-                    {% endfor %}
+                <div class="form-group mx-auto mt-4" style="max-width: 85%;">
+                    <input type="text" 
+                           name="user_answer" 
+                           class="form-control form-control-lg text-center" 
+                           placeholder="Введите название полимера..." 
+                           required 
+                           autofocus 
+                           autocomplete="off"
+                           style="border-radius: 30px; font-size: 14pt; border: 2px solid #ced4da; padding: 25px;">
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button type="submit" 
+                            class="btn btn-lg text-white font-weight-bold px-5 py-3 alive-btn-base btn-submit"
+                            style="max-width: 85%;">
+                        Ответить ➔
+                    </button>
                 </div>
             </form>
 
@@ -55,16 +61,14 @@
 </div>
 
 <style>
-    /* Стилизация «живых» кнопок выбора ответов */
     .alive-btn-base {
         border: none; 
         border-radius: 50px; 
         font-size: 14pt; 
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         cursor: pointer;
-        display: inline-block;
     }
-    .btn-answer {
+    .btn-submit {
         background: linear-gradient(45deg, #007bff, #00c6ff); 
         box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); 
     }
@@ -72,10 +76,13 @@
         transform: translateY(-4px); 
         filter: brightness(1.08); 
         box-shadow: 0 8px 25px rgba(0, 123, 255, 0.5) !important;
-        text-decoration: none; 
     }
     .alive-btn-base:active {
         transform: translateY(-1px); 
+    }
+    input[type="text"]:focus {
+        border-color: #00c6ff !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 198, 255, 0.25) !important;
     }
 </style>
 {% endblock %}
