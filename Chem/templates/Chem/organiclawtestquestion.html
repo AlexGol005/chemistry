@@ -1,5 +1,6 @@
 {% extends 'main/superbase.html' %}
 {% load crispy_forms_tags %}
+{% load mol_extras %} {# Обязательно загружаем библиотеку тегов для render_smiles #}
 
 {% block title %}Тест: {{ obj.metatitle }}{% endblock %}
 
@@ -11,35 +12,56 @@
         justify-content: center;
         align-items: center;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 15px;
         margin: 40px auto;
         width: 100%;
         max-width: 1200px;
         padding: 0 15px; /* Защитные боковые поля */
         box-sizing: border-box;
-        font-family: 'Courier New', Courier, monospace; 
-        font-size: clamp(16pt, 4vw, 26pt); 
-        font-weight: bold;
     }
 
-    /* Блок отдельного реагента */
-    .chem-reagent-box {
-        padding: 10px 15px;
-        background-color: #fff;
-        border: 1px solid #dee2e6;
-        border-radius: 0.25rem;
-        box-shadow: 0 .125rem .25rem rgba(0,0,0,0.075);
+    /* Блок вещества (Графика + Название) */
+    .chem-item {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        vertical-align: middle;
+        margin: 10px;
+        flex-shrink: 0;
         max-width: 100%;
-        word-break: break-all; /* Безопасный перенос длинных формул */
-        text-align: center;
     }
 
-    /* Знаки плюса и стрелки */
+    /* Обертка для графических структур SMILES */
+    .mol-box { 
+        min-width: 180px; 
+        min-height: 180px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        background: #fafafa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 5px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    /* Название вещества строго под формулой */
+    .chem-name-under {
+        font-size: 13pt; 
+        color: #2c3e50;
+        margin-top: 8px;
+        font-weight: bold;
+        text-align: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Знаки плюс и знак вопроса */
     .chem-sign {
         font-size: 26pt;
         color: #6c757d;
         margin: 0 10px;
         flex-shrink: 0;
+        font-weight: bold;
     }
 
     /* Контейнер стрелки и условий */
@@ -64,7 +86,6 @@
         border-bottom: 2px solid #666; 
         padding: 0 5px 2px 5px; 
         margin-bottom: -10px; 
-        /* РЕШЕНИЕ: Разрешаем перенос длинного условия */
         white-space: normal; 
         word-break: break-word; 
         max-width: 100%;
@@ -75,12 +96,18 @@
         .chem-question-container {
             flex-direction: column; /* Выстраиваем всё строго в вертикальный столбик */
             gap: 15px;
-            padding: 0 20px; /* Увеличенные поля безопасности слева и справа */
+            padding: 0 20px; 
         }
 
-        .chem-reagent-box {
-            width: 100%; /* Формула занимает всю доступную ширину */
-            font-size: clamp(14pt, 5vw, 18pt); 
+        .chem-item {
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        .mol-box {
+            width: 100%;
+            max-width: 220px; 
+            margin: 0 auto;
         }
 
         .chem-sign {
@@ -88,19 +115,19 @@
             width: 100%;
             text-align: center;
             margin: 5px 0;
-            font-size: 30pt; /* Делаем плюс и стрелку выразительными разделителями */
+            font-size: 30pt; 
         }
 
         .chem-arrow-block {
             width: 100%;
             margin: 15px 0;
-            max-width: 90%; /* Оставляем аккуратные поля по бокам */
+            max-width: 90%; 
         }
         
         .chem-condition-text {
-            margin-bottom: 0; /* Корректируем отступ для многострочного текста */
-            border-bottom: none; /* Убираем линию, если текст стал многострочным */
-            background: #f8f9fa; /* Легкая подложка для читаемости */
+            margin-bottom: 0; 
+            border-bottom: none; 
+            background: #f8f9fa; 
             padding: 6px 10px;
             border-radius: 4px;
         }
@@ -120,20 +147,44 @@
             {{ question_progress }}
         </div>
     {% endif %}
-    <!-- Блок реакции (Формулы с адаптивной разметкой) -->
+
+    <!-- Блок реакции (ГРАФИЧЕСКИЕ ФОРМУЛЫ С НАЗВАНИЯМИ НА СТРАНИЦЕ ВОПРОСА) -->
     <div class="chem-question-container">
         
         <!-- Реагент 1 -->
-        <div class="chem-reagent-box">{{ reagent1 }}</div>
+        <div class="chem-item">
+            <div class="mol-box">
+                {% if obj_n1.molecule %}
+                    {% render_smiles obj_n1.molecule width=180 height=180 %}
+                {% endif %}
+            </div>
+            {% if obj_n1.name1 %}
+                <span class="chem-name-under">{{ obj_n1.name1 }}</span>
+            {% endif %}
+        </div>
 
-        {% if reagent2 %}
+        {% if obj_n2.molecule %}
             <div class="chem-sign">+</div>
-            <div class="chem-reagent-box">{{ reagent2 }}</div>
+            <div class="chem-item">
+                <div class="mol-box">
+                    {% render_smiles obj_n2.molecule width=180 height=180 %}
+                </div>
+                {% if obj_n2.name1 %}
+                    <span class="chem-name-under">{{ obj_n2.name1 }}</span>
+                {% endif %}
+            </div>
         {% endif %}
 
-        {% if reagent3 %}
+        {% if obj_n3.molecule %}
             <div class="chem-sign">+</div>
-            <div class="chem-reagent-box">{{ reagent3 }}</div>
+            <div class="chem-item">
+                <div class="mol-box">
+                    {% render_smiles obj_n3.molecule width=180 height=180 %}
+                </div>
+                {% if obj_n3.name1 %}
+                    <span class="chem-name-under">{{ obj_n3.name1 }}</span>
+                {% endif %}
+            </div>
         {% endif %}
 
         <!-- Направленная стрелка условий с защитой от длинного текста -->
@@ -146,7 +197,7 @@
             <span style="font-size: 40pt; line-height: 1; color: #333;">&rarr;</span>
         </div>
         
-        <div class="chem-sign text-muted" style="font-style: italic; font-weight: normal; font-size: 24pt;">?</div>
+        <div class="chem-sign text-muted" style="font-style: italic; font-weight: normal; font-size: 32pt; margin-left: 15px;">?</div>
     </div>
 
     <!-- Блок ввода ответов -->
