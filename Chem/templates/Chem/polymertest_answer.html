@@ -25,18 +25,14 @@
 
             <!-- Разбор правильного ответа -->
             <div class="p-3 border rounded mb-4" style="background-color: #f8f9fa; border-radius: 10px;">
-                <p class="mb-2" style="font-size: 13pt; font-family: Georgia, serif;">
-                    <strong>Загаданный полимер:</strong> 
-                    <span style="font-size: 15pt; color: #2c3e50; font-weight: bold;">{{ polymer.name1 }}</span>
+                <p class="mb-2" style="font-size: 13pt; font-family: Georgia, serif; line-height: 1.4;">
+                    <strong>Загаданный полимер (все названия):</strong> <br>
+                    <span style="font-size: 14pt; color: #2c3e50; font-weight: bold;">{{ polymer.all_names_string }}</span>
                 </p>
                 
                 {% if mode == 'polymer_to_type' %}
                     <p class="mb-0" style="font-size: 12pt; font-family: Georgia, serif;">
                         <strong>Правильный тип:</strong> <span class="badge badge-info px-3 py-1" style="font-size: 11pt;">{{ correct_label }}</span>
-                    </p>
-                {% elif mode == 'monomer_to_polymer' %}
-                    <p class="mb-0" style="font-size: 12pt; font-family: Georgia, serif;">
-                        <strong>Исходный мономер:</strong> <span style="color: #e74c3c; font-weight: bold;">{{ polymer.monomer_name }}</span>
                     </p>
                 {% endif %}
             </div>
@@ -46,6 +42,13 @@
                 <h5 class="text-center mb-3" style="font-family: Georgia, serif; font-weight: bold; color: #495057;">
                     📚 Справочная информация
                 </h5>
+
+                <!-- ВСЕГДА ВЫВОДИМ НАЗВАНИЕ МОНОМЕРА В СПРАВОЧНОМ БЛОКЕ -->
+                {% if polymer.monomer_name %}
+                    <p style="font-family: Georgia, serif; font-size: 13pt; margin-bottom: 8px;"> 
+                        <strong>Название мономера:</strong> <span style="color: #e74c3c; font-weight: bold;">{{ polymer.monomer_name }}</span>
+                    </p>
+                {% endif %}
 
                 {% if polymer.formula %}
                     <p style="font-family: Georgia, serif; font-size: 13pt; margin-bottom: 8px;"> 
