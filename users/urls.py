@@ -18,7 +18,9 @@ urlpatterns = [
     path('profile/', UserView.ProfileView.as_view(), name='profile'),
     
     path('login/', UserView.CustomLoginView.as_view(template_name='users/user.html'), name='user'),
-    path('exit/', authViews.LogoutView.as_view(template_name='users/exit.html'), name='exit'),
+    path('exit/', authViews.LogoutView.as_view(), name='exit'),
+
+
     
     path('password-reset/', PasswordResetView.as_view(template_name = "users/password_reset_form.html"), name='password_reset'),
     path('password-reset/done/', PasswordResetDoneView.as_view(template_name = "users/password_reset_done.html"), name='password_reset_done'),
@@ -28,7 +30,7 @@ urlpatterns = [
     path('chem/chemprofile/', UserView.ChemProfileView.as_view(), name='chemprofile'),
     path('chem/chemprofilereg/', views.Chemprofilereg, name='chemprofilereg'),
     path('chem/chemuserlogin/', authViews.LoginView.as_view(template_name='users/chemuser.html', next_page='chemprofile'), name='chemuser'),
-    path('chem/exit/', authViews.LogoutView.as_view(template_name='users/exit.html', next_page='chemuser'), name='chemexit'),
+    path('chem/exit/', authViews.LogoutView.as_view(next_page='chemuser'), name='chemexit'),
 
 
 ]
