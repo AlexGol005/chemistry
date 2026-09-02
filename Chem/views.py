@@ -131,37 +131,39 @@ class PolymerTestStartView(View):
 # =====================================================================
 class PolymerTestQuestionView(View):
     def get(self, request, index):
-        # Извлекаем пул сгенерированных ID и выбранный режим теста из сессии
         test_ids = request.session.get('polymertest_ids', [])
         mode = request.session.get('polymertest_mode', 'monomer_to_polymer')
 
-        # Если тест пуст или индекс вышел за границы — отправляем на финал
         if not test_ids or index >= len(test_ids):
             return redirect('polymertest_finished')
 
-        # Загружаем текущий объект полимера
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
         options = []
 
+        # В режиме внешнего вида убираем лишнюю фразу из текста описания, если она там есть
+        if mode == 'appearance_to_polymer' and obj.appearance:
+            phrase_to_remove = "приведена структурная формула мономера"
+            # Удаляем фразу без учета регистра, если она встречается в тексте
+            if phrase_to_remove in obj.appearance.lower():
+                # Находим точное написание фразы в тексте для корректной замены
+                start_idx = obj.appearance.lower().find(phrase_to_remove)
+                exact_phrase = obj.appearance[start_idx:start_idx + len(phrase_to_remove)]
+                obj.appearance = obj.appearance.replace(exact_phrase, "")
+
         # Генерация вариантов ответов под ваш режим: Полимер -> Тип полимера
         if mode == 'polymer_to_type':
-            # Добавляем строку-код текущего типа полимера
             options.append(obj.polymer_type)
             
-            # ИСПРАВЛЕНО: Сравниваем строку-код obj.polymer_type со строкой-кодом t_slug из кортежа (t_slug, t_name)
             all_types = [t_slug for t_slug, t_name in POLYMER_TYPE_CHOICES if t_slug != obj.polymer_type]
             random.shuffle(all_types)
             
-            # Добираем остальные коды типов, чтобы вариантов стало ровно 4
             while len(options) < 4 and all_types:
                 options.append(all_types.pop(0))
             random.shuffle(options)
             
-            # Превращаем коды в пары (код, текстовое_название) для шаблона
             type_dict = dict(POLYMER_TYPE_CHOICES)
             options = [(opt, type_dict.get(opt, opt)) for opt in options]
 
-        # Генерация вариантов для остальных режимов (текстовый ввод, варианты не используются)
         elif mode in ['monomer_to_polymer', 'appearance_to_polymer']:
             pass
 
@@ -173,6 +175,7 @@ class PolymerTestQuestionView(View):
             'test_options': options
         }
         return render(request, f'Chem/polymertest_question_{mode}.html', context)
+
 
 
 
