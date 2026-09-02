@@ -19,16 +19,15 @@ from django.db.models import F
 from .models import OrganicNames, UserQuestionProgress  # Подключаем модель прогресса
 
 # =====================================================================
-# БЛОК VIEWS ДЛЯ СИСТЕМЫ ТЕСТИРОВАНИЯ ПОЛИМЕРОВ — ЧАСТЬ 1
+# 🧬 БЛОК VIEWS ДЛЯ СИСТЕМЫ ТЕСТИРОВАНИЯ ПОЛИМЕРОВ
 # =====================================================================
+
 # =====================================================================
 # 0. ГЛАВНАЯ СТРАНИЦА ВЫБОРА РЕЖИМА ПОЛИМЕРОВ (ПУЛЬТ УПРАВЛЕНИЯ)
 # =====================================================================
 class PolymerTestHeadView(View):
     def get(self, request):
         return render(request, 'Chem/polymertest_head.html')
-
-
 
 
 # =====================================================================
@@ -84,6 +83,21 @@ class PolymerTestStartView(View):
         elif mode == 'appearance_to_polymer':
             queryset = queryset.exclude(appearance__isnull=True).exclude(appearance__exact='')
 
+        # --- СИСТЕМА ИНТЕРВАЛЬНОГО ПОВТОРЕНИЯ ДЛЯ ПОЛИМЕРОВ (КАК В ОРГАНИКЕ) ---
+        if request.user.is_authenticated:
+            # Уменьшаем счетчик пропуска на 1 для всех отложенных вопросов пользователя
+            from django.db.models import F
+            UserQuestionProgress.objects.filter(user=request.user, skip_count__gt=0).update(
+                skip_count=F('skip_count') - 1
+            )
+            # Собираем ID вопросов, которые пользователю пока рано видеть
+            skipped_ids = UserQuestionProgress.objects.filter(user=request.user, skip_count__gt=0).values_list('question_id', flat=True)
+            queryset_filtered = queryset.exclude(id__in=skipped_ids)
+            
+            # Исключаем выученные вопросы только если оставшихся хватит на полноценный тест (минимум 10)
+            if queryset_filtered.count() >= 10:
+                queryset = queryset_filtered
+
         # Балансировка вопросов: группируем пулы теперь по polymer_type, чтобы темы чередовались
         raw_questions = queryset.values('id', 'polymer_type')
         type_pools = {}
@@ -121,49 +135,50 @@ class PolymerTestStartView(View):
         request.session.modified = True
         
         return redirect('polymertest_question', index=0)
-
 # =====================================================================
-# БЛОК VIEWS ДЛЯ СИСТЕМЫ ТЕСТИРОВАНИЯ ПОЛИМЕРОВ — ЧАСТЬ 2
-# =====================================================================
-
-# =====================================================================
-# 2. СТРАНИЦА ТЕКУЩЕГО ВОПРОСА (БЕЗ ВАРИАНТОВ ОТВЕТОВ)
+# 2. СТРАНИЦА ТЕКУЩЕГО ВОПРОСА
 # =====================================================================
 class PolymerTestQuestionView(View):
     def get(self, request, index):
+        # Извлекаем пул сгенерированных ID и выбранный режим теста из сессии
         test_ids = request.session.get('polymertest_ids', [])
         mode = request.session.get('polymertest_mode', 'monomer_to_polymer')
 
+        # Если тест пуст или индекс вышел за границы — отправляем на финал
         if not test_ids or index >= len(test_ids):
             return redirect('polymertest_finished')
 
+        # Загружаем текущий объект полимера
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
         options = []
 
-        # В режиме внешнего вида убираем лишнюю фразу из текста описания, если она там есть
+        # Очистка текста от фразы-подсказки для режима внешнего вида
         if mode == 'appearance_to_polymer' and obj.appearance:
             phrase_to_remove = "приведена структурная формула мономера"
-            # Удаляем фразу без учета регистра, если она встречается в тексте
             if phrase_to_remove in obj.appearance.lower():
-                # Находим точное написание фразы в тексте для корректной замены
                 start_idx = obj.appearance.lower().find(phrase_to_remove)
                 exact_phrase = obj.appearance[start_idx:start_idx + len(phrase_to_remove)]
                 obj.appearance = obj.appearance.replace(exact_phrase, "")
 
         # Генерация вариантов ответов под ваш режим: Полимер -> Тип полимера
         if mode == 'polymer_to_type':
+            # Добавляем строку-код текущего типа полимера
             options.append(obj.polymer_type)
             
+            # Сравниваем строку-код obj.polymer_type со строкой-кодом t_slug из кортежа (t_slug, t_name)
             all_types = [t_slug for t_slug, t_name in POLYMER_TYPE_CHOICES if t_slug != obj.polymer_type]
             random.shuffle(all_types)
             
+            # Добираем остальные коды типов, чтобы вариантов стало ровно 4
             while len(options) < 4 and all_types:
                 options.append(all_types.pop(0))
             random.shuffle(options)
             
+            # Превращаем коды в пары (код, текстовое_название) для шаблона
             type_dict = dict(POLYMER_TYPE_CHOICES)
             options = [(opt, type_dict.get(opt, opt)) for opt in options]
 
+        # Для остальных режимов (текстовый ввод) варианты не генерируются
         elif mode in ['monomer_to_polymer', 'appearance_to_polymer']:
             pass
 
@@ -175,8 +190,6 @@ class PolymerTestQuestionView(View):
             'test_options': options
         }
         return render(request, f'Chem/polymertest_question_{mode}.html', context)
-
-
 
 
 # =====================================================================
@@ -202,72 +215,26 @@ class PolymerTestAnswerView(View):
             correct_label = type_dict.get(obj.polymer_type, "")
 
         elif mode in ['monomer_to_polymer', 'appearance_to_polymer']:
+            # Собираем все непустые названия полимера из полей name1, name2, name3, name4
             valid_names = []
             for name in [obj.name1, obj.name2, obj.name3, obj.name4]:
                 if name and str(name).strip():
                     valid_names.append(str(name).strip().lower())
             
+            # Проверяем, совпадает ли введенный пользователем ответ хотя бы с одним полем
             is_correct = user_ans.lower() in valid_names
             user_label = user_ans if user_ans else "Ничего не введено"
             correct_label = obj.name1
 
-        # Собираем названия в отдельную изолированную переменную
-        names_list = []
-        for name in [obj.name1, obj.name2, obj.name3, obj.name4]:
-            if name and str(name).strip():
-                names_list.append(str(name).strip())
-        
-        final_names_string = ", ".join(names_list) if names_list else str(obj)
+        # --- ФИКСАЦИЯ ПРОГРЕССА ДЛЯ ПОЛИМЕРОВ (КАК В ОРГАНИКЕ) ---
+        if request.user.is_authenticated:
+            progress, created = UserQuestionProgress.objects.get_or_create(
+                user=request.user, question=obj
+            )
+            # Если ответ правильный — скрываем вопрос на 30 циклов, если ошибка — сбрасываем в 0
+            progress.skip_count = 30 if is_correct else 0
+            progress.save()
 
-        if is_correct:
-            request.session['polymertest_score'] = request.session.get('polymertest_score', 0) + 1
-            request.session.modified = True
-
-        return render(request, 'Chem/polymertest_answer.html', {
-            'polymer': obj,
-            'polymer_names': final_names_string,  # <-- Передаем напрямую в контекст
-            'is_correct': is_correct,
-            'user_answer_label': user_label,
-            'correct_label': correct_label,
-            'next_index': index + 1,
-            'total_questions': len(test_ids),
-            'mode': mode
-        })
-
-
-
-
-# =====================================================================
-# 3. ОБРАБОТКА И ПРОВЕРКА ОТВЕТА ПОЛЬЗОВАТЕЛЯ
-# =====================================================================
-class PolymerTestAnswerView(View):
-    def post(self, request, index):
-        mode = request.session.get('polymertest_mode', 'monomer_to_polymer')
-        user_ans = (request.POST.get('user_answer') or "").strip()
-        
-        test_ids = request.session.get('polymertest_ids', [])
-        if not test_ids or index >= len(test_ids):
-            return redirect('polymertest_start')
-
-        obj = get_object_or_404(OrganicNames, id=test_ids[index])
-        is_correct = False
-        user_label = user_ans
-
-        # Сверка ответа в режиме классификации по типам
-        if mode == 'polymer_to_type':
-            is_correct = (user_ans == obj.polymer_type)
-            type_dict = dict(POLYMER_TYPE_CHOICES)
-            user_label = type_dict.get(user_ans, "Не выбрано")
-            correct_label = type_dict.get(obj.polymer_type, "")
-
-        # Сверка ответа по текстовому названию (учитываем регистр и синонимы name1-name4)
-        elif mode in ['monomer_to_polymer', 'appearance_to_polymer']:
-            valid_names = [name.strip().lower() for name in [obj.name1, obj.name2, obj.name3, obj.name4] if name]
-            is_correct = user_ans.lower() in valid_names
-            user_label = user_ans
-            correct_label = obj.name1
-
-        # Если ответ верный — инкрементируем счетчик правильных ответов в сессии
         if is_correct:
             request.session['polymertest_score'] = request.session.get('polymertest_score', 0) + 1
             request.session.modified = True
@@ -281,26 +248,21 @@ class PolymerTestAnswerView(View):
             'total_questions': len(test_ids),
             'mode': mode
         })
-# =====================================================================
-# БЛОК VIEWS ДЛЯ СИСТЕМЫ ТЕСТИРОВАНИЯ ПОЛИМЕРОВ — ЧАСТЬ 3
-# =====================================================================
+
 
 # =====================================================================
 # 4. СТРАНИЦА ИТОГОВ (ФИНАЛ)
 # =====================================================================
 class PolymerTestFinishedView(View):
     def get(self, request):
-        # Получаем итоговое количество баллов и общее число вопросов
         score = request.session.get('polymertest_score', 0)
         test_ids = request.session.get('polymertest_ids', [])
         total = len(test_ids)
         current_mode = request.session.get('polymertest_mode', 'monomer_to_polymer')
 
-        # Если тест не проходился, перенаправляем на экран выбора режима
         if total == 0:
             return redirect(f"/chem/polymertest/start/?mode={current_mode}")
 
-        # Рассчитываем итоговый процент правильных ответов
         percent = int((score / total) * 100)
 
         return render(request, 'Chem/polymertest_finished.html', {
