@@ -131,35 +131,49 @@ class PolymerTestStartView(View):
 # =====================================================================
 class PolymerTestQuestionView(View):
     def get(self, request, index):
+        # Извлекаем пул сгенерированных ID и выбранный режим теста из сессии
         test_ids = request.session.get('polymertest_ids', [])
         mode = request.session.get('polymertest_mode', 'monomer_to_polymer')
 
+        # Если тест пуст или индекс вышел за границы — отправляем на финал
         if not test_ids or index >= len(test_ids):
             return redirect('polymertest_finished')
 
+        # Загружаем текущий объект полимера
         obj = get_object_or_404(OrganicNames, id=test_ids[index])
         options = []
 
-        # Режим Полимер -> Тип полимера оставляем с кнопками (так как типов всего 4)
+        # Генерация вариантов ответов под ваш режим: Полимер -> Тип полимера
         if mode == 'polymer_to_type':
+            # Добавляем строку-код текущего типа полимера
             options.append(obj.polymer_type)
-            all_types = [t for t in POLYMER_TYPE_CHOICES if t != obj.polymer_type]
+            
+            # ИСПРАВЛЕНО: Сравниваем строку-код obj.polymer_type со строкой-кодом t_slug из кортежа (t_slug, t_name)
+            all_types = [t_slug for t_slug, t_name in POLYMER_TYPE_CHOICES if t_slug != obj.polymer_type]
             random.shuffle(all_types)
+            
+            # Добираем остальные коды типов, чтобы вариантов стало ровно 4
             while len(options) < 4 and all_types:
                 options.append(all_types.pop(0))
             random.shuffle(options)
             
+            # Превращаем коды в пары (код, текстовое_название) для шаблона
             type_dict = dict(POLYMER_TYPE_CHOICES)
             options = [(opt, type_dict.get(opt, opt)) for opt in options]
+
+        # Генерация вариантов для остальных режимов (текстовый ввод, варианты не используются)
+        elif mode in ['monomer_to_polymer', 'appearance_to_polymer']:
+            pass
 
         context = {
             'polymer': obj,
             'index': index,
             'mode': mode,
             'total_questions': len(test_ids),
-            'test_options': options  # Используется только для режима polymer_to_type
+            'test_options': options
         }
         return render(request, f'Chem/polymertest_question_{mode}.html', context)
+
 
 
 # =====================================================================
