@@ -52,7 +52,7 @@ class CustomLoginView(LoginView):
             messages.error(
                 self.request, 
                 'Ваша учетная запись пригодна для раздела — Изучение Химии. '
-                'Зайдите с <a href="https://xn--h1aal8a3c.site" style="font-weight:bold; text-decoration:underline;">этой страницы</a>.',
+                'Зайдите с <a href="https://xn--h1aal8a3c.site/chem/" style="font-weight:bold; text-decoration:underline;">этой страницы</a>.',
                 extra_tags='safe'
             )
             # Возвращаем пользователя обратно на форму логина с выводом этой ошибки
