@@ -43,18 +43,9 @@
 
             <!-- ИНФОРМАЦИОННАЯ КАРТОЧКА ВЕЩЕСТВА ДЛЯ ПОВТОРЕНИЯ -->
             <div class="border rounded p-3 mb-4" style="background-color: #fff; box-shadow: inset 0 0 10px rgba(0,0,0,0.02);">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0" style="font-family: Georgia, serif; font-weight: bold; color: #495057;">
-                        📚 Справочная информация
-                    </h5>
-                    <!-- ССЫЛКА НА СТРАНИЦУ ПОЛИМЕРА -->
-                    <a href="{% url 'organiccompaund' polymer.name1 %}" 
-                       target="_blank" 
-                       class="btn btn-sm text-white font-weight-bold btn-link-page" 
-                       style="background: linear-gradient(45deg, #6f42c1, #a951ed); border: none; border-radius: 20px; padding: 6px 16px; font-size: 10pt; box-shadow: 0 2px 8px rgba(111, 66, 193, 0.3); transition: all 0.2s ease;">
-                        🔍 Открыть страницу полимера
-                    </a>
-                </div>
+                <h5 class="text-center mb-3" style="font-family: Georgia, serif; font-weight: bold; color: #495057;">
+                    📚 Справочная информация
+                </h5>
 
                 {% if polymer.formula %}
                     <p style="font-family: Georgia, serif; font-size: 13pt; margin-bottom: 8px;"> 
@@ -76,10 +67,49 @@
                 {% endif %}
 
                 {% if polymer.appearance %}
-                    <div style="border-left: 4px solid #00aaff; background-color: #f8fdff; padding: 12px; font-family: Georgia, serif; font-size: 11pt; color: #444; border-radius: 4px;">
+                    <div class="mb-4" style="border-left: 4px solid #00aaff; background-color: #f8fdff; padding: 12px; font-family: Georgia, serif; font-size: 11pt; color: #444; border-radius: 4px;">
                         <strong>Внешний вид:</strong> {% autoescape off %}{{ polymer.appearance }}{% endautoescape %}
                     </div>
                 {% endif %}
+                <!-- БЛОК ИЛЛЮСТРАЦИЙ ПОЛИМЕРА -->
+                {% if polymer.img1 or polymer.img2 or polymer.img3 or polymer.img4 or polymer.img5 or polymer.img6 %}
+                    <div class="mt-4 pt-3 border-top">
+                        <h6 class="text-center mb-3" style="font-family: Georgia, serif; font-weight: bold; color: #6c757d;">
+                            🖼 Иллюстрации материала
+                        </h6>
+                        {% if polymer.img1 %}
+                            <div class="media text-muted flex-column align-items-center pt-2 mb-3">
+                                <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 40vh; object-fit: contain; height: auto;" src="{{ polymer.img1.url }}" loading="lazy" decoding="async">
+                            </div>
+                        {% endif %}
+                        {% if polymer.img2 %}
+                            <div class="media text-muted flex-column align-items-center pt-2 mb-3">
+                                <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 40vh; object-fit: contain; height: auto;" src="{{ polymer.img2.url }}" loading="lazy" decoding="async">
+                            </div>
+                        {% endif %}
+                        {% if polymer.img3 %}
+                            <div class="media text-muted flex-column align-items-center pt-2 mb-3">
+                                <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 40vh; object-fit: contain; height: auto;" src="{{ polymer.img3.url }}" loading="lazy" decoding="async">
+                            </div>
+                        {% endif %}
+                        {% if polymer.img4 %}
+                            <div class="media text-muted flex-column align-items-center pt-2 mb-3">
+                                <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 40vh; object-fit: contain; height: auto;" src="{{ polymer.img4.url }}" loading="lazy" decoding="async">
+                            </div>
+                        {% endif %}
+                        {% if polymer.img5 %}
+                            <div class="media text-muted flex-column align-items-center pt-2 mb-3">
+                                <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 40vh; object-fit: contain; height: auto;" src="{{ polymer.img5.url }}" loading="lazy" decoding="async">
+                            </div>
+                        {% endif %}
+                        {% if polymer.img6 %}
+                            <div class="media text-muted flex-column align-items-center pt-2 mb-3">
+                                <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 40vh; object-fit: contain; height: auto;" src="{{ polymer.img6.url }}" loading="lazy" decoding="async">
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
             </div>
 
             <!-- КНОПКА ПЕРЕХОДА ДАЛЬШЕ -->
@@ -131,13 +161,6 @@
         transform: translateY(-4px); 
         box-shadow: 0 8px 25px rgba(40, 167, 69, 0.6) !important;
         filter: brightness(1.05);
-        color: #fff !important;
-        text-decoration: none;
-    }
-    .btn-link-page:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(111, 66, 193, 0.5) !important;
-        filter: brightness(1.1);
         color: #fff !important;
         text-decoration: none;
     }
