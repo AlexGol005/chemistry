@@ -263,4 +263,5 @@ LOGGING = {
     },
 }
 
+LOGOUT_REDIRECT_URL = '/'
 
