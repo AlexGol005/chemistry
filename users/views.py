@@ -38,16 +38,30 @@ def email(subject, content, user_email):
 
 
 
+from django.contrib import messages
+from django.contrib.auth.views import LoginView
+
 class CustomLoginView(LoginView):
     template_name = 'users/user.html'
 
     def form_valid(self, form):
         user = form.get_user()
+        
         if hasattr(user, 'profile') and user.profile.userid == 'chem':
-            messages.error(self.request, "Ваша учетная запись для пригодна раздела - Изучение Химии. Зайдите с этой страницы")
-            return redirect('chemuser') # или на другую страницу
+            # Добавляем extra_tags='safe', чтобы разрешить HTML внутри сообщения
+            messages.error(
+                self.request, 
+                'Ваша учетная запись пригодна для раздела — Изучение Химии. '
+                'Зайдите с <a href="https://xn--h1aal8a3c.site" style="font-weight:bold; text-decoration:underline;">этой страницы</a>.',
+                extra_tags='safe'
+            )
+            # Возвращаем пользователя обратно на форму логина с выводом этой ошибки
+            return self.form_invalid(form) 
             
-        return super().form_valid(form)
+        # Если проверка пройдена, логиним стандартно
+        from django.contrib.auth import login as auth_login
+        auth_login(self.request, user) #
+        return redirect(self.get_success_url()) #
 
 
 
