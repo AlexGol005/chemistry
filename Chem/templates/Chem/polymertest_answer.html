@@ -23,11 +23,13 @@
                 </div>
             {% endif %}
 
-            <!-- Разбор правильного ответа -->
+            <!-- Разбор правильного ответа: Выводим все синонимы напрямую средствами шаблонизатора -->
             <div class="p-3 border rounded mb-4" style="background-color: #f8f9fa; border-radius: 10px;">
                 <p class="mb-2" style="font-size: 13pt; font-family: Georgia, serif; line-height: 1.4;">
                     <strong>Загаданный полимер (все названия):</strong> <br>
-                    <span style="font-size: 14pt; color: #2c3e50; font-weight: bold;">{{ polymer_names }}</span>
+                    <span style="font-size: 14pt; color: #2c3e50; font-weight: bold;">
+                        {% if polymer.name1 %}{{ polymer.name1 }}{% endif %}{% if polymer.name2 %}, {{ polymer.name2 }}{% endif %}{% if polymer.name3 %}, {{ polymer.name3 }}{% endif %}{% if polymer.name4 %}, {{ polymer.name4 }}{% endif %}
+                    </span>
                 </p>
                 
                 {% if mode == 'polymer_to_type' %}
@@ -51,16 +53,12 @@
                 {% endif %}
 
                 {% if polymer.formula %}
-                    <p style="font-family: Georgia, serif; font-size: 13pt; margin-bottom: 8px;"> 
+                    <p style="font-family: Georgia, serif; font-size: 13pt; margin-bottom: 15px;"> 
                         <strong>Брутто-формула:</strong> {{ polymer.formula }} 
                     </p>
                 {% endif %}
 
-                {% if polymer.molecule_short %}
-                    <p style="font-family: Georgia, serif; font-size: 12pt; color: #555; margin-bottom: 15px;">
-                        <strong>Структурная формула:</strong> {{ polymer.molecule_short }}
-                    </p>
-                {% endif %}
+                <!-- ТЕКСТОВАЯ СТРУКТУРНАЯ ФОРМУЛА ПОЛНОСТЬЮ УБРАНА ОТСЮДА -->
 
                 <!-- Отрисовка структуры через RDKit/SMILES из вашего тега -->
                 {% if polymer.molecule %}
