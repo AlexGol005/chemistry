@@ -1004,6 +1004,19 @@ class OrganicChemTestQuestionView(TemplateView):
         context['question_progress'] = f"реакция № {current_num} из {total_questions}"
         context['level'] = qw.level
 
+        # --- ВОТ ЭТОТ КРИТИЧЕСКИЙ БЛОК МЫ ДОБАВИЛИ ДЛЯ ПОИСКА SMILES ---
+        # Собираем только реагенты (первые 3 элемента)
+        reagent_list = [qw.reagent1, qw.reagent2, qw.reagent3]
+        for i, val in enumerate(reagent_list, 1):
+            if val:
+                target = str(val).strip()
+                # Ищем структуру в базе, используя полный менеджер all_objects
+                found_obj = OrganicNames.all_objects.filter(molecule_short__iexact=target).first()
+                context[f'obj_n{i}'] = found_obj
+            else:
+                context[f'obj_n{i}'] = None
+        # --------------------------------------------------------------
+
         context.update({
             'reagent1': qw.reagent1,
             'reagent2': qw.reagent2,
@@ -1017,6 +1030,7 @@ class OrganicChemTestQuestionView(TemplateView):
         })
         
         return context
+
 
     def post(self, request, *args, **kwargs):
         ind = int(self.kwargs['str'])
