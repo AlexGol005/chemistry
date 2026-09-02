@@ -158,7 +158,12 @@
                             <a href="{% url 'profile' %}" class="btn btn-outline-warning btn-fixed-lg">ЛК Лаборатории</a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'exit' %}" class="btn btn-outline-warning btn-fixed-sm">Выйти</a>
+                            <!-- <a href="{% url 'exit' %}" class="btn btn-outline-warning btn-fixed-sm">Выйти</a> -->
+                            <form action="{% url 'exit' %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" style="background:none; border:none; padding:0; color:blue; text-decoration:underline; cursor:pointer;">Выйти</button>
+</form>
+
                         </li>
                     {% endif %} 
                 {% endif %} 
@@ -175,7 +180,12 @@
                         <a href="{% url 'chemprofile' %}" class="btn btn-outline-warning btn-fixed-lg">ЛК Химии</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'chemexit' %}" class="btn btn-outline-warning btn-fixed-sm">Выйти</a>
+                        <!-- <a href="{% url 'chemexit' %}" class="btn btn-outline-warning btn-fixed-sm">Выйти</a> -->
+                        <form action="{% url 'chemexit' %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" style="background:none; border:none; padding:0; color:blue; text-decoration:underline; cursor:pointer;">Выйти (Химия)</button>
+</form>
+
                     </li>
                 {% endif %} 
             {% endif %} 
