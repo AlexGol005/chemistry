@@ -46,7 +46,7 @@
         border: 1px solid #dee2e6;
     }
 
-    /* Название вещества под формулой */
+    /* Название вещества */
     .chem-name {
         font-size: 14pt; 
         color: #2c3e50;
@@ -91,18 +91,46 @@
         max-width: 100%;
     }
 
-    /* АДАПТИВНОСТЬ ПОД МОБИЛЬНЫЕ ТЕЛЕФОНЫ */
+    /* АДАПТИВНОСТЬ ПОД МОБИЛЬНЫЕ ТЕЛЕФОНЫ (Экраны до 768px) */
     @media (max-width: 768px) {
         .chem-equation-container {
             flex-direction: column;
             gap: 15px;
             padding: 0 25px;
         }
-        .chem-item { width: 100%; margin: 5px 0; }
-        .chem-operator { display: block; width: 100%; text-align: center; margin: 8px 0; font-size: 28pt; }
-        .mol-box { width: 100%; max-width: 200px; margin: 0 auto; }
-        .chem-arrow-block { width: 100%; margin: 15px 0; max-width: 90%; }
-        .chem-condition-text { margin-bottom: 0; border-bottom: none; background: #f8f9fa; padding: 6px 10px; border-radius: 4px; }
+
+        .chem-item {
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        .chem-operator {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin: 8px 0;
+            font-size: 28pt;
+        }
+        
+        .mol-box {
+            width: 100%;
+            max-width: 200px; 
+            margin: 0 auto;
+        }
+
+        .chem-arrow-block {
+            width: 100%;
+            margin: 15px 0;
+            max-width: 90%;
+        }
+        
+        .chem-condition-text {
+            margin-bottom: 0;
+            border-bottom: none;
+            background: #f8f9fa;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
     }
 </style>
 
@@ -114,50 +142,73 @@
     </div>
 
     {% if question_progress %}
+        <!-- Вывод плашки прогресса "реакция № X из Y" -->
         <div class="test-progress" style="margin: 20px auto; padding: 10px; max-width: 800px; background-color: #f8f9fa; border-left: 4px solid #007bff; font-weight: bold;">
             {{ question_progress }}
         </div>
     {% endif %}
 
-    <!-- Блок реакции (Рендерим напрямую через текстовые переменные вопроса) -->
+    <!-- Блок реакции (Вывод СТРУКТУР и НАЗВАНИЙ через связанные Foreign Key объекты) -->
     <div class="chem-equation-container">
         
-        <!-- Реагент 1 -->
-        {% if reagent1 %}
+        <!-- Структура Реагента 1 -->
         <div class="chem-item">
             <div class="mol-box">
-                {% render_smiles reagent1 width=180 height=180 %}
+                {% if obj.reagent1.molecule %}
+                    {% render_smiles obj.reagent1.molecule width=180 height=180 %}
+                {% else %}
+                    {% render_smiles obj.reagent1 width=180 height=180 %}
+                {% endif %}
             </div>
-            <span class="chem-name">{{ reagent1 }}</span>
+            <span class="chem-name">
+                <a href="/chem/organiccompaund/{{ obj.reagent1.pk|default:obj.pk }}/" target="_blank">
+                    {{ obj.reagent1.name1|default:reagent1 }}
+                </a>
+            </span>
         </div>
-        {% endif %}
 
-        <!-- Реагент 2 -->
         {% if reagent2 %}
             <span class="chem-operator">+</span>
             <div class="chem-item">
                 <div class="mol-box">
-                    {% render_smiles reagent2 width=180 height=180 %}
+                    {% if obj.reagent2.molecule %}
+                        {% render_smiles obj.reagent2.molecule width=180 height=180 %}
+                    {% else %}
+                        {% render_smiles obj.reagent2 width=180 height=180 %}
+                    {% endif %}
                 </div>
-                <span class="chem-name">{{ reagent2 }}</span>
+                <span class="chem-name">
+                    <a href="/chem/organiccompaund/{{ obj.reagent2.pk|default:obj.pk }}/" target="_blank">
+                        {{ obj.reagent2.name1|default:reagent2 }}
+                    </a>
+                </span>
             </div>
         {% endif %}
 
-        <!-- Реагент 3 -->
         {% if reagent3 %}
             <span class="chem-operator">+</span>
             <div class="chem-item">
                 <div class="mol-box">
-                    {% render_smiles reagent3 width=180 height=180 %}
+                    {% if obj.reagent3.molecule %}
+                        {% render_smiles obj.reagent3.molecule width=180 height=180 %}
+                    {% else %}
+                        {% render_smiles obj.reagent3 width=180 height=180 %}
+                    {% endif %}
                 </div>
-                <span class="chem-name">{{ reagent3 }}</span>
+                <span class="chem-name">
+                    <a href="/chem/organiccompaund/{{ obj.reagent3.pk|default:obj.pk }}/" target="_blank">
+                        {{ obj.reagent3.name1|default:reagent3 }}
+                    </a>
+                </span>
             </div>
         {% endif %}
 
         <!-- Направленная стрелка условий -->
         <div class="chem-arrow-block">
             {% if condition %}
-                <div class="chem-condition-text">{{ condition }}</div>
+                <div class="chem-condition-text">
+                    {{ condition }}
+                </div>
             {% endif %}
             <span style="font-size: 40pt; line-height: 1; color: #333;">&rarr;</span>
         </div>
