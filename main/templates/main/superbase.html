@@ -161,7 +161,7 @@
                             <!-- <a href="{% url 'exit' %}" class="btn btn-outline-warning btn-fixed-sm">Выйти</a> -->
                             <form action="{% url 'exit' %}" method="post" style="display:inline;">
     {% csrf_token %}
-    <button type="submit" style="background:none; border:none; padding:0; color:blue; text-decoration:underline; cursor:pointer;">Выйти</button>
+    <button type="submit" class="btn btn-outline-warning btn-fixed-sm">Выйти</button>
 </form>
 
                         </li>
@@ -183,7 +183,7 @@
                         <!-- <a href="{% url 'chemexit' %}" class="btn btn-outline-warning btn-fixed-sm">Выйти</a> -->
                         <form action="{% url 'chemexit' %}" method="post" style="display:inline;">
     {% csrf_token %}
-    <button type="submit" style="background:none; border:none; padding:0; color:blue; text-decoration:underline; cursor:pointer;">Выйти (Химия)</button>
+    <button type="submit" class="btn btn-outline-warning btn-fixed-sm"">Выйти (Химия)</button>
 </form>
 
                     </li>
