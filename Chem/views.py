@@ -211,12 +211,13 @@ class PolymerTestAnswerView(View):
             user_label = user_ans if user_ans else "Ничего не введено"
             correct_label = obj.name1
 
-        # ДОБАВЛЕНО: Собираем все заполненные названия через запятую для вывода на странице ответа
+        # Собираем названия в отдельную изолированную переменную
         names_list = []
         for name in [obj.name1, obj.name2, obj.name3, obj.name4]:
             if name and str(name).strip():
                 names_list.append(str(name).strip())
-        obj.all_names_string = ", ".join(names_list) if names_list else "Название отсутствует"
+        
+        final_names_string = ", ".join(names_list) if names_list else str(obj)
 
         if is_correct:
             request.session['polymertest_score'] = request.session.get('polymertest_score', 0) + 1
@@ -224,6 +225,7 @@ class PolymerTestAnswerView(View):
 
         return render(request, 'Chem/polymertest_answer.html', {
             'polymer': obj,
+            'polymer_names': final_names_string,  # <-- Передаем напрямую в контекст
             'is_correct': is_correct,
             'user_answer_label': user_label,
             'correct_label': correct_label,
@@ -231,6 +233,7 @@ class PolymerTestAnswerView(View):
             'total_questions': len(test_ids),
             'mode': mode
         })
+
 
 
 
