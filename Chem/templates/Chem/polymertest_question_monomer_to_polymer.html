@@ -31,14 +31,11 @@
             <form method="post" action="{% url 'polymertest_answer' index %}">
                 {% csrf_token %}
                 <div class="form-group mx-auto mt-4" style="max-width: 85%;">
-                    <input type="text" 
-                           name="user_answer" 
-                           class="form-control form-control-lg text-center" 
-                           placeholder="Например: Полиэтилен" 
-                           required 
-                           autofocus 
-                           autocomplete="off"
-                           style="border-radius: 30px; font-size: 14pt; border: 2px solid #ced4da; padding: 25px;">
+                <input type="text" name="user_answer" class="form-control form-control-lg text-center" 
+                placeholder="Например: Полиэтилен" autofocus autocomplete="off"
+                style="border-radius: 30px; 
+                font-size: 14pt; border: 
+                    2px solid #ced4da; padding: 25px;">
                 </div>
                 
                 <div class="text-center mt-4">
