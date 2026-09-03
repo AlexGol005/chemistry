@@ -41,6 +41,7 @@
         {% if objcontent.molecule_short %}
             <p style="font-family: Georgia, serif; font-size: 16pt; color: #444; margin-bottom: 30px;">
                 <strong>Текстовая структурная формула:</strong> {{ objcontent.molecule_short }}
+                <br>
                 <strong>Класс:</strong> {{ objcontent.get_organic_class_display }}
             </p>
         {% endif %}
