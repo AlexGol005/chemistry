@@ -41,17 +41,12 @@
         {% if objcontent.molecule_short %}
             <p style="font-family: Georgia, serif; font-size: 16pt; color: #444; margin-bottom: 30px;">
                 <strong>Текстовая структурная формула:</strong> {{ objcontent.molecule_short }}
+                <strong>Класс:</strong> {{ objcontent.get_organic_class_display }}
             </p>
         {% endif %}
     </div>
 
-            <!-- Линейный блок: класс -->
-        {% if objcontent.organic_class %}
-            <p style="font-family: Georgia, serif; font-size: 16pt; color: #444; margin-bottom: 30px;">
-                <strong>Класс:</strong> {{ objcontent.organic_class }}
-            </p>
-        {% endif %}
-    </div>
+
 
     <!-- Заголовок и графическая структура (SMILES) -->
     {% if objcontent.molecule %}
