@@ -115,8 +115,8 @@
     {% if user.is_authenticated and obj.id in favorite_ids %}
         <div style="display:inline;">
             <span>✅ В моем списке</span>
-            <!-- Форма для удаления из списка -->
-            <form action="{% url 'remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
+            <!-- Меняем имя URL на органическое -->
+            <form action="{% url 'organic_remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-sm btn-outline-danger">
                     Удалить
@@ -124,17 +124,15 @@
             </form>
         </div>
     {% else %}
-        <!-- Форма для добавления в список -->
-        <form action="{% url 'add_reaction' obj.id %}" method="post" style="display:inline;">
+        <!-- Меняем имя URL на органическое -->
+        <form action="{% url 'organic_add_to_list' obj.id %}" method="post" style="display:inline;">
             {% csrf_token %}
             
             {% if user.is_authenticated %}
-                <!-- Кнопка для авторизованного пользователя -->
                 <button type="submit" class="btn btn-primary">
                     Добавить в мой список
                 </button>
             {% else %}
-                <!-- Блок для неавторизованного пользователя -->
                 <button type="submit" class="btn btn-primary" disabled>
                     Добавить в мой список
                 </button>
@@ -142,7 +140,6 @@
                     Авторизуйтесь или зарегистрируйтесь, чтобы добавлять реакции к себе для повторения.
                 </div>
             {% endif %}
-            
         </form>
     {% endif %}
 {% endif %}
