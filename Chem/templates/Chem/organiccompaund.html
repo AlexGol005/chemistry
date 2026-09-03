@@ -45,6 +45,14 @@
         {% endif %}
     </div>
 
+            <!-- Линейный блок: класс -->
+        {% if objcontent.organic_class %}
+            <p style="font-family: Georgia, serif; font-size: 16pt; color: #444; margin-bottom: 30px;">
+                <strong>Класс:</strong> {{ objcontent.organic_class }}
+            </p>
+        {% endif %}
+    </div>
+
     <!-- Заголовок и графическая структура (SMILES) -->
     {% if objcontent.molecule %}
         <div class="text-center mt-4">
