@@ -841,33 +841,55 @@ class ChemTestQuestionView(TemplateView):
         ind = int(self.kwargs['str'])
         qw = InorganicReaction.objects.get(pk=ind)
         
-        # Сбор ответов
-        answer_list = [request.POST.get(f'field{i}') for i in range(1, 5)]
-        answer_list = ["нет" if val in ["not", "ytn", "Ytn", "Not", "Нет"] else (val or "") for val in answer_list]
-        
-        correct_vals = [qw.product1, qw.product2, qw.product3, qw.product4]
-        clean_ans = sorted([w.upper() for w in answer_list if w])
-        clean_corr = sorted([w.upper() for w in correct_vals if w])
+        no_ans = ["not", "ytn", "Ytn", "Not", "Нет", "нет", "none", "-"]
+        # Сбор ответов пользователя
+        raw_answers = []
+        for i in range(1, 5):
+            val = request.POST.get(f'field{i}', '').strip()
+            if val:
+                if val.lower() in no_ans:
+                    raw_answers.append("нет")
+                else:
+                    raw_answers.append(val)
 
-        if clean_ans == clean_corr:
-            messages.success(request, "Верно!" if clean_corr else "нет ответа")
-            self.request.session['correct_count'] = self.request.session.get('correct_count', 0) + 1
+        correct_vals = [qw.product1, qw.product2, qw.product3, qw.product4]
+        correct_list = [str(w).strip() for w in correct_vals if w]
+
+        clean_ans = sorted([w.upper() for w in raw_answers])
+        clean_corr = sorted([w.upper() for w in correct_list])
+
+        # Проверяем, ввел ли пользователь вообще хоть что-то
+        if len(raw_answers) == 0:
+            request.session['inorg_has_answer'] = False
+            request.session['inorg_is_correct'] = False
+            request.session['incorrect_count'] = request.session.get('incorrect_count', 0) + 1
         else:
-            ans_str = " + ".join(filter(None, answer_list))
-            messages.success(request, f'Не верно :( .Ваш ответ: = {ans_str}')
-            self.request.session['incorrect_count'] = self.request.session.get('incorrect_count', 0) + 1
+            request.session['inorg_has_answer'] = True
+            if clean_ans == clean_corr:
+                request.session['inorg_is_correct'] = True
+                request.session['correct_count'] = request.session.get('correct_count', 0) + 1
+            else:
+                request.session['inorg_is_correct'] = False
+                request.session['incorrect_count'] = request.session.get('incorrect_count', 0) + 1
+
+        # Сохраняем списки ответов для отображения на странице результатов
+        request.session['inorg_last_user_answers'] = raw_answers
+        request.session['inorg_last_correct_answers'] = correct_list
             
         # ИЗВЛЕКАЕМ СЛЕДУЮЩИЙ ID ЗДЕСЬ
-        q_list = self.request.session.get('question_list', [])
+        q_list = request.session.get('question_list', [])
         if q_list:
             next_idx = q_list.pop(0)
-            self.request.session['next_index'] = next_idx
-            self.request.session['question_list'] = q_list
+            request.session['next_index'] = next_idx
+            request.session['question_list'] = q_list
         else:
-            self.request.session['next_index'] = None
+            request.session['next_index'] = None
         
-        self.request.session['answer_list'] = answer_list
+        # Оставляем для совместимости со старым кодом шаблона ответа, если он где-то используется
+        request.session['answer_list'] = raw_answers
+        
         return redirect('inorganiclawtestanswer', str=ind)
+
 
 
 class ChemTestAnswerView(TemplateView):
