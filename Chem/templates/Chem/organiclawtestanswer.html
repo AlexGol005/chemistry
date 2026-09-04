@@ -6,6 +6,8 @@
 
 {% block content %}
 {% autoescape off %}
+{% with messages=None %} <!-- Отключаем дублирование системных сообщений из базового шаблона -->
+
 <style>
     /* Предотвращаем появление горизонтального скролла на мобильных устройствах */
     body, html {
@@ -187,7 +189,43 @@
         </div>
     {% endif %}
 
-    <!-- НАЧАЛО ЕДИНОЙ ЛИНИИ РЕАКЦИИ -->
+<!-- БЛОК ОТОБРАЖЕНИЯ И ПРОВЕРКИ ОТВЕТА (Новая логика с кастомными цветами) -->
+<div class="my-4" style="font-family: sans-serif;">
+    {% if not request.session.org_has_answer %}
+        <!-- Если ответа нет — пишем сине-серым цветом -->
+        <div style="color: #495057; font-weight: bold; background-color: #e9ecef; padding: 15px; border-radius: 6px; border-left: 5px solid #6c757d; font-size: 16px;">
+            Нет ответа
+        </div>
+    {% else %}
+        {% if request.session.org_is_correct %}
+            <!-- Если ответ верный -->
+            <div style="color: #1e7e34; font-weight: bold; background-color: #d4edda; padding: 15px; border-radius: 6px; border-left: 5px solid #28a745; font-size: 16px;">
+                Верно!
+            </div>
+        {% else %}
+            <!-- Если ответ неверный — красная плашка, ваш ответ и правильный ответ -->
+            <div style="color: #bd2130; font-weight: bold; background-color: #f8d7da; padding: 15px; border-radius: 6px; border-left: 5px solid #dc3545; font-size: 16px; margin-bottom: 15px;">
+                Не верно :(
+            </div>
+            
+            <div style="background-color: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 15px; font-size: 14px;">
+                <div style="margin-bottom: 8px; color: #2c3e50;">
+                    <strong>Ваш ответ:</strong> 
+                    <span style="font-family: Georgia, serif; font-size: 15px; background: #fff; padding: 2px 6px; border: 1px solid #ddd; border-radius: 4px;">
+                        {% for ans in request.session.org_last_user_answers %}{{ ans }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}
+                    </span>
+                </div>
+                <div style="color: #2c3e50;">
+                    <strong>Правильный ответ:</strong> 
+                    <span style="font-family: Georgia, serif; font-size: 15px; background: #fff; padding: 2px 6px; border: 1px solid #ddd; border-radius: 4px; color: #1e7e34; font-weight: 600;">
+                        {% for corr in request.session.org_last_correct_answers %}{{ corr }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    </span>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+<!-- НАЧАЛО ЕДИНОЙ ЛИНИИ РЕАКЦИИ -->
     <div class="chem-equation-container">
         
         <!-- Реагент 1 -->
@@ -324,9 +362,8 @@
                 </tr>
             </table>
         </div>                       
-    {% endif %}   
-
-    <!-- Иллюстрации и видеоразборы -->
+    {% endif %}
+<!-- Иллюстрации и видеоразборы -->
     <div class="responsive-img-container text-center mt-4">
         {% if obj.video %}
             <div class="mb-3">
@@ -357,5 +394,7 @@
         {% endif %}
     </div>
 </div>
+
+{% endwith %} <!-- Закрываем тег отключения messages -->
 {% endautoescape %}
 {% endblock %}
