@@ -1078,11 +1078,11 @@ class OrganicChemTestQuestionView(TemplateView):
         else:
             request.session['org_has_answer'] = True
             if user_upper == correct_upper:
-                messages.success(request, "Верно!")
+                # Убрали messages.success, пишем только в сессию
                 request.session['org_is_correct'] = True
                 request.session['org_correct_count'] = request.session.get('org_correct_count', 0) + 1
             else:
-                messages.error(request, 'Не верно :(')
+                # Убрали messages.error, пишем только в сессию
                 request.session['org_is_correct'] = False
                 request.session['org_incorrect_count'] = request.session.get('org_incorrect_count', 0) + 1
 
@@ -1101,6 +1101,7 @@ class OrganicChemTestQuestionView(TemplateView):
             request.session['org_next_index'] = None
             
         return redirect('organiclawtestanswer', str=ind)
+
 
 # ==========================================
 # 3. СТРАНИЦА ОТВЕТА (РЕЗУЛЬТАТЫ, СТРУКТУРНЫЕ ФОРМУЛЫ SMILES)
