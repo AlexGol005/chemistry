@@ -122,144 +122,237 @@
 </p>
 
 
-           <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
+<!-- """страница вывода химреакции по неорганике""" -->
 
-           {% if reagent1 %}       
-  <a href="{% url 'compaund' pkc1 %}" target="_blank" rel="noopener noreferrer">       {{name1}}</a>
-         {% endif %}
-                 
-         {% if reagent2 %}
-          + <a href="{% url 'compaund' pkc2 %}" target="_blank" rel="noopener noreferrer">{{name2}}</a>
-         {% endif %}
+{% extends 'main/superbase.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+реакция
+{% endblock %}
+
+{% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
+{% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
+{% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
+
+{% block content %}
+{% autoescape off %}
+
+<style>
+    /* Предотвращаем появление горизонтального скролла на мобильных устройствах */
+    body, html {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Единые стили для адаптивности картинок на любых экранах */
+    .chem-responsive-img {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+        border-radius: 6px;
+    }
+    @media (min-width: 769px) {
+        .chem-responsive-img-small { max-width: 30%; margin: 0 10px; } /* Аккуратный размер для первых трех картинок на ПК */
+        .chem-responsive-img-large { max-width: 70%; } /* Крупные схемы */
+    }
+</style>
+
+<div class="col-12" style="padding: 0 5px; max-width: 100%; box-sizing: border-box;">
+{% if obj %}
+    {% if user.is_authenticated and obj.id in favorite_ids %}
+        <div style="display:inline-block; margin-bottom: 10px;">
+            <span>✅ В моем списке</span>
+            <form action="{% url 'remove_reaction' obj.id %}" method="post" style="display:inline; margin-left: 10px;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                    Удалить
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <form action="{% url 'add_reaction' obj.id %}" method="post" style="display:inline-block; margin-bottom: 10px;">
+            {% csrf_token %}
+            {% if user.is_authenticated %}
+                <button type="submit" class="btn btn-primary">
+                    Добавить в мой список
+                </button>
+            {% else %}
+                <button type="submit" class="btn btn-primary" disabled>
+                    Добавить в мой список
+                </button>
+                <div style="margin-top: 8px; color: #6c757d; font-size: 0.875rem;">
+                    Авторизуйтесь или зарегистрируйтесь, чтобы добавлять реакции к себе для повторения.
+                </div>
+            {% endif %}
+        </form>
+    {% endif %}
+{% endif %}
+
+    <br>
+    <a href="{% url 'inorganiclawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer" class="btn btn-link px-0">открыть правило</a>            
+ 
+    {% if percent %}
+        <p style="width: 100%; font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums; margin-bottom: 10px;">
+            Процент верных ответов {{ percent }} %
+        </p>
+        <div class="test-progress" style="margin: 15px 0; padding: 10px; background-color: #f8f9fa; border-left: 4px solid #007bff; font-weight: bold; font-size: 14px;">
+            {{ question_progress }}
+        </div>
+
+        <div class="level-badge-container" style="margin: 15px 0; display: inline-flex; align-items: center; font-family: sans-serif;">
+            <span style="font-size: 14px; color: #5a626a; margin-right: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
+                Уровень:
+            </span>
+            {% if level == "ОГЭ" %}
+                <span style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; letter-spacing: 1px; box-shadow: 0 2px 6px rgba(0,123,255,0.2); border: 1px solid rgba(0,0,0,0.05);">
+                    ОГЭ
+                </span>
+            {% elif level == "ЕГЭ" %}
+                <span style="background: linear-gradient(135deg, #dc3545, #bd2130); color: white; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; letter-spacing: 1px; box-shadow: 0 2px 6px rgba(220,53,69,0.2); border: 1px solid rgba(0,0,0,0.05);">
+                    ЕГЭ
+                </span>
+            {% else %}
+                <span style="background: #e9ecef; color: #495057; padding: 5px 14px; border-radius: 20px; font-weight: 600; font-size: 13px;">
+                    {{ level|default:"Не указан" }}
+                </span>
+            {% endif %}
+        </div>
+    {% endif %}
+    <!-- УРАВНЕНИЕ РЕАКЦИИ (ФОРМУЛЫ) -->
+    <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 34pt; font-variant-numeric: oldstyle-nums; margin: 25px auto;">
+        {% if reagent1 %}{{ reagent1 }}{% endif %}                 
+        {% if reagent2 %} + {{ reagent2 }}{% endif %}
+        {% if reagent3 %} + {{ reagent3 }}{% endif %}
+        =
+        {% if product1 %}{{ product1 }}{% endif %}
+        {% if product2 %} + {{ product2 }}{% endif %}
+        {% if product3 %} + {{ product3 }}{% endif %}
+        {% if product4 %} + {{ product4 }}{% endif %}
+    </p>
+
+    <!-- БЛОК ПРОВЕРКИ И ОТОБРАЖЕНИЯ ОТВЕТА ИЗ СЕССИИ -->
+    <div class="my-4" style="font-family: sans-serif; max-width: 600px; margin-left: auto; margin-right: auto;">
+        {% if not request.session.inorg_has_answer %}
+            <!-- Если ответа нет — выводим сине-серую плашку -->
+            <div style="color: #495057; font-weight: bold; background-color: #e9ecef; padding: 15px; border-radius: 6px; border-left: 5px solid #6c757d; font-size: 16px; text-align: center;">
+                Нет ответа
+            </div>
+        {% else %}
+            {% if request.session.inorg_is_correct %}
+                <!-- Если ответ верный -->
+                <div style="color: #1e7e34; font-weight: bold; background-color: #d4edda; padding: 15px; border-radius: 6px; border-left: 5px solid #28a745; font-size: 16px; text-align: center;">
+                    Верно!
+                </div>
+            {% else %}
+                <!-- Если ответ неверный — красная плашка, ваш ответ и правильный эталон -->
+                <div style="color: #bd2130; font-weight: bold; background-color: #f8d7da; padding: 15px; border-radius: 6px; border-left: 5px solid #dc3545; font-size: 16px; margin-bottom: 15px; text-align: center;">
+                    Не верно :(
+                </div>
+                
+                <div style="background-color: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 15px; font-size: 14px;">
+                    <div style="margin-bottom: 8px; color: #2c3e50;">
+                        <strong>Ваш ответ:</strong> 
+                        <span style="font-family: Georgia, serif; font-size: 15px; background: #fff; padding: 2px 6px; border: 1px solid #ddd; border-radius: 4px;">
+                            {% for ans in request.session.inorg_last_user_answers %}{{ ans }}{% if not forloop.last %} + {% endif %}{% empty %}—{% endfor %}
+                        </span>
+                    </div>
+                    <div style="color: #2c3e50;">
+                        <strong>Правильный ответ:</strong> 
+                        <span style="font-family: Georgia, serif; font-size: 15px; background: #fff; padding: 2px 6px; border: 1px solid #ddd; border-radius: 4px; color: #1e7e34; font-weight: 600;">
+                            {% for corr in request.session.inorg_last_correct_answers %}{{ corr }}{% if not forloop.last %} + {% endif %}{% endfor %}
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- ТЕКСТОВЫЕ НАЗВАНИЯ ВЕЩЕСТВ С СЫЛКАМИ -->
+    <p style="display: block; width: 100%; text-align: center !important; font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums; margin: 15px auto;">
+        {% if reagent1 %}       
+            <a href="{% url 'compaund' pkc1 %}" target="_blank" rel="noopener noreferrer">{{ name1 }}</a>
+        {% endif %}
+                     
+        {% if reagent2 %}
+            + <a href="{% url 'compaund' pkc2 %}" target="_blank" rel="noopener noreferrer">{{ name2 }}</a>
+        {% endif %}
 
         {% if reagent3 %}
-          + <a href="{% url 'compaund' pkc3 %}" target="_blank" rel="noopener noreferrer">{{name3}}</a>
-         {% endif %}
+            + <a href="{% url 'compaund' pkc3 %}" target="_blank" rel="noopener noreferrer">{{ name3 }}</a>
+        {% endif %}
 
-         =
-{% if product1 %}
-<a href="{% url 'compaund' pkc4 %}" target="_blank" rel="noopener noreferrer"> {{name4}} </a>
-                  {% endif %}
-     {% if product2 %}
-          + <a href="{% url 'compaund' pkc5 %}" target="_blank" rel="noopener noreferrer">{{name5}}</a>
-         {% endif %}
-      {% if product3 %}
-          + <a href="{% url 'compaund' pkc6 %}" target="_blank" rel="noopener noreferrer">{{name6}}</a>
-         {% endif %}
-      {% if product4 %}
-          + <a href="{% url 'compaund' pkc7 %}" target="_blank" rel="noopener noreferrer">{{name7}}</a>
-         {% endif %}
+        =
+        {% if product1 %}
+            <a href="{% url 'compaund' pkc4 %}" target="_blank" rel="noopener noreferrer">{{ name4 }}</a>
+        {% endif %}
+        {% if product2 %}
+            + <a href="{% url 'compaund' pkc5 %}" target="_blank" rel="noopener noreferrer">{{ name5 }}</a>
+        {% endif %}
+        {% if product3 %}
+            + <a href="{% url 'compaund' pkc6 %}" target="_blank" rel="noopener noreferrer">{{ name6 }}</a>
+        {% endif %}
+        {% if product4 %}
+            + <a href="{% url 'compaund' pkc7 %}" target="_blank" rel="noopener noreferrer">{{ name7 }}</a>
+        {% endif %}
+    </p>
+    <!-- УСЛОВИЯ ПРОТЕКАНИЯ РЕАКЦИИ -->
+    <div class="text-center" style="font-family: Georgia, serif; font-variant-numeric: oldstyle-nums; font-size: 20pt; margin: 25px 0;">
+        {% if condition %}{{ condition }}{% endif %}
+    </div>
 
-
-</p>
-    
-    
-<center>     
-
-         <p style="text-align: center; font-family: Georgia, serif; font-variant-numeric: oldstyle-nums; font-size: 20pt;">
- 
-         {% if condition %}
-                   {{condition}}
-         {% endif %}
-
- </p>
-
-
-
-</center>
-
-
-      <br>  
-
-
-
-                 {% if obj.extra %}
-            <center> 
-
-            <table class="table table-bordered flexy1">
-                <td>
-                     <p style="width: 100%; text-align: left !important; font-family: Georgia, serif; font-size: 15pt; font-variant-numeric: oldstyle-nums; margin-left: auto; margin-right: auto;">
-                  {{ obj.extra}}
-                          </p>
-                                 </td>
+    <!-- ПОЯСНЕНИЯ (EXTRA) -->
+    {% if obj.extra %}
+        <div style="display: flex; justify-content: center; width: 100%; margin: 20px 0;"> 
+            <table class="table table-bordered" style="max-width: 95%; width: 100%;">
+                <tr>
+                    <td style="text-align: left; font-family: Georgia, serif; font-size: 15pt; font-variant-numeric: oldstyle-nums; padding: 15px;">
+                        {{ obj.extra }}
+                    </td>
+                </tr>
             </table>
-</center>                       
-                 {% endif %}   
+        </div>                       
+    {% endif %}   
 
- <br> <br>
-
-
-
-    <!-- Блок для видео -->
-{% if obj.video %}
-<br>
-<center>
-    <a href="{{ obj.video }}" target="_blank" rel="noopener noreferrer">
-        <h3>Смотрите видео по ссылке</h3>
-    </a>
-</center>
-{% endif %}
-    
-<!-- Блок для первого изображения -->
-{% if obj.img1 %}
-<center>
-    <div class="media text-muted flex-column align-items-center pt-3">
-        <img class="bd-placeholder-img mr-2 rounded" style="width: 30%; height: auto;" src="{{ obj.img1.url }}">
+    <!-- ИЛЛЮСТРАЦИИ И ВИДЕОРАЗБОРЫ -->
+    <div class="text-center mt-4" style="width: 100%; max-width: 100%; box-sizing: border-box;">
+        {% if obj.video %}
+            <div class="mb-4">
+                <a href="{{ obj.video }}" target="_blank" rel="noopener noreferrer">
+                    <h3>Смотрите видео по ссылке</h3>
+                </a>
+            </div>
+        {% endif %}
+        
+        {% if obj.img1 %}<img class="chem-responsive-img chem-responsive-img-small rounded shadow-sm" src="{{ obj.img1.url }}" alt="Иллюстрация 1">{% endif %}
+        {% if obj.img2 %}<img class="chem-responsive-img chem-responsive-img-small rounded shadow-sm" src="{{ obj.img2.url }}" alt="Иллюстрация 2">{% endif %}
+        {% if obj.img3 %}<img class="chem-responsive-img chem-responsive-img-small rounded shadow-sm" src="{{ obj.img3.url }}" alt="Иллюстрация 3">{% endif %}
+        
+        {% if obj.img4 %}<img class="chem-responsive-img chem-responsive-img-large rounded shadow-sm" src="{{ obj.img4.url }}" alt="Иллюстрация 4">{% endif %}
+        {% if obj.img5 %}<img class="chem-responsive-img chem-responsive-img-large rounded shadow-sm" src="{{ obj.img5.url }}" alt="Иллюстрация 5">{% endif %}
+        {% if obj.img6 %}<img class="chem-responsive-img chem-responsive-img-large rounded shadow-sm" src="{{ obj.img6.url }}" alt="Иллюстрация 6">{% endif %}
     </div>
-</center>
-{% endif %}
-
-<!-- Блок для второго изображения -->
-{% if obj.img2 %}
-<center>
-    <div class="media text-muted flex-column align-items-center pt-3">
-        <img class="bd-placeholder-img mr-2 rounded" style="width: 30%; height: auto;" src="{{ obj.img2.url }}">
-    </div>
-</center>
-{% endif %}
-
-<!-- Блок для третьего изображения -->
-{% if obj.img3 %}
-<center>
-    <div class="media text-muted flex-column align-items-center pt-3">
-        <img class="bd-placeholder-img mr-2 rounded" style="width: 30%; height: auto;" src="{{ obj.img3.url }}">
-    </div>
-</center>
-{% endif %}
-
     
-               <center>  <div class="media text-muted flex-column align-items-center pt-3">
-       {% if obj.img4 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img4.url }}">{% endif %}
+    <!-- НАВИГАЦИЯ В КОНЦЕ ТЕСТА -->
+    <div class="text-center mt-4 mb-5" style="width: 100%;">
+        {% if next_index %}
+            <a href="{% url 'inorganiclawtestquestion' next_index %}" class="btn btn-primary mt-2 mx-2"> 
+                Следующая химическая реакция
+            </a>
+        {% else %}
+            <a href="/chem/inorganiclaw" class="btn btn-primary mt-2 mx-2">   
+                Тест завершен, спасибо! Перейти в тему
+            </a>
+        {% endif %}   
+    </div>
+</div>
 
-</div></center> 
-    <br> 
-               <center>  <div class="media text-muted flex-column align-items-center pt-3">
-       {% if obj.img5 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img5.url }}">{% endif %}
-
-</div></center> 
-    <br> 
-                   <center>  <div class="media text-muted flex-column align-items-center pt-3">
-       {% if obj.img6 %}<img class="bd-placeholder-img mr-2 rounded" width=70% height=70% src="{{ obj.img6.url }}">{% endif %}
-
-</div></center> 
-    <br> 
-
-    
-    {% if next_index %}
-       <center>   <a href="{% url 'inorganiclawtestquestion' next_index %}"  class="btn btn-primary  mt-2 mr-2 ml-2"> 
-       Следующая химическая реакция
-   </a></center> 
-
-{% elif not next_index %}
-  
-  <center>   <a href="/chem/inorganiclaw"  class="btn btn-primary  mt-2 mr-2 ml-2">   Тест завершен, спасибо! Перейти в тему
-   </a></center> 
- {% endif %}   
-
-
-  <br>   <br>
 {% endautoescape %}
 {% endblock %}
-            {% block aside %}
-<i>*Все реакции приведены без коэффициентов! </i><br>
-      {% endblock %}
+
+{% block aside %}
+<div class="p-3 text-muted" style="font-style: italic; font-size: 14px;">
+    *Все реакции приведены без коэффициентов!
+</div>
+{% endblock %}
+
