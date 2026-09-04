@@ -1070,22 +1070,35 @@ class OrganicChemTestQuestionView(TemplateView):
         user_upper = sorted([a.upper() for a in user_answers])
         correct_upper = sorted([c.upper() for c in correct_list])
 
-        if user_upper == correct_upper:
-            messages.success(request, "Верно!")
-            self.request.session['org_correct_count'] = self.request.session.get('org_correct_count', 0) + 1
+        # Проверяем, ввел ли пользователь вообще хоть что-то
+        if len(user_answers) == 0:
+            request.session['org_has_answer'] = False
+            request.session['org_is_correct'] = False
+            request.session['org_incorrect_count'] = request.session.get('org_incorrect_count', 0) + 1
         else:
-            messages.error(request, 'Не верно :(')
-            self.request.session['org_incorrect_count'] = self.request.session.get('org_incorrect_count', 0) + 1
+            request.session['org_has_answer'] = True
+            if user_upper == correct_upper:
+                messages.success(request, "Верно!")
+                request.session['org_is_correct'] = True
+                request.session['org_correct_count'] = request.session.get('org_correct_count', 0) + 1
+            else:
+                messages.error(request, 'Не верно :(')
+                request.session['org_is_correct'] = False
+                request.session['org_incorrect_count'] = request.session.get('org_incorrect_count', 0) + 1
 
-        self.request.session['org_all_count'] = self.request.session.get('org_all_count', 0) + 1
+        request.session['org_all_count'] = request.session.get('org_all_count', 0) + 1
 
-        question_list = self.request.session.get('org_question_list', [])
+        # Сохраняем списки ответов для отображения на странице результатов
+        request.session['org_last_user_answers'] = user_answers
+        request.session['org_last_correct_answers'] = correct_list
+
+        question_list = request.session.get('org_question_list', [])
         if question_list:
             next_index = question_list.pop(0)
-            self.request.session['org_next_index'] = next_index
-            self.request.session['org_question_list'] = question_list
+            request.session['org_next_index'] = next_index
+            request.session['org_question_list'] = question_list
         else:
-            self.request.session['org_next_index'] = None
+            request.session['org_next_index'] = None
             
         return redirect('organiclawtestanswer', str=ind)
 
