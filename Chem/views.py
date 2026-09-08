@@ -746,6 +746,74 @@ class OrganicNamesTestAnswerView(View):
         names_list = []
         for name in [obj.name1, obj.name2, obj.name3, obj.name4]:
             if name is not None and str(name).strip() != "":
+# === 4. ПРОВЕРКА ОТВЕТА ===
+class OrganicNamesTestAnswerView(View):
+    def post(self, request, index):
+        mode = request.session.get('organicnamestest_mode', 'name_to_mol')
+        user_ans = request.POST.get('user_answer') or request.POST.get('user_smiles') or ""
+        user_ans = user_ans.strip()
+        
+        test_ids = request.session.get('organicnamestest_ids', [])
+        if not test_ids or index >= len(test_ids):
+            return redirect('organicnamestest_head')
+
+        obj = get_object_or_404(OrganicNames, id=test_ids[index])
+        is_correct = False
+        user_label = user_ans
+        both_answers_text = ""
+        general_formula = ""
+
+        if mode == 'name_to_mol':
+            m1 = Chemredactor.MolFromSmiles(user_ans) if 'Chemredactor' in globals() else None
+            m2 = Chemredactor.MolFromSmiles(obj.molecule) if 'Chemredactor' in globals() else None
+            if m1 and m2:
+                is_correct = Chemredactor.MolToSmiles(m1) == Chemredactor.MolToSmiles(m2)
+                
+        elif mode == 'mol_to_name':
+            valid_names = [name.strip().lower() for name in [obj.name1, obj.name2, obj.name3, obj.name4] if name]
+            is_correct = user_ans.lower() in valid_names
+            
+        elif mode == 'form_to_class':
+            correct_class = obj.organic_class
+            classes_dict = dict(ORGANIC_CLASSES)
+            
+            # Находим первый изомер по цепочке из CLASS_ISOMERS
+            isomer_class = CLASS_ISOMERS.get(correct_class) if 'CLASS_ISOMERS' in globals() else None
+            
+            # Для аминов находим третий оставшийся класс, чтобы они ВСЕ ТРИ были верны
+            amine_group = {'primary_amines', 'secondary_amines', 'tertiary_amines'}
+            third_amine = (amine_group - {correct_class, isomer_class}).pop() if correct_class in amine_group else None
+
+            # Ответ верен, если совпал с правильным, с первым изомером или со вторым изомером (для аминов)
+            if user_ans == correct_class or (isomer_class and user_ans == isomer_class) or (third_amine and user_ans == third_amine):
+                is_correct = True
+
+            correct_label = classes_dict.get(correct_class, "Неизвестный класс")
+            isomer_label = classes_dict.get(isomer_class, "")
+
+            if 'CLASS_GENERAL_FORMULAS' in globals():
+                general_formula = CLASS_GENERAL_FORMULAS.get(correct_class, "")
+
+            user_label = classes_dict.get(user_ans, "Не выбрано")
+            
+            # Формируем красивый и понятный текст подсказки для интерфейса
+            if correct_class in amine_group:
+                amine_labels = [classes_dict.get(cl, "") for cl in amine_group if classes_dict.get(cl)]
+                both_answers_text = f"У данных классов одинаковая брутто-формула. Верны все варианты: {', '.join(amine_labels)}."
+            elif isomer_label:
+                both_answers_text = f"У данных классов одинаковая брутто-формула. Верны оба ответа: {correct_label} и {isomer_label}."
+
+        # --- ФИКСАЦИЯ ПРОГРЕССА ИНТЕРВАЛЬНОГО ПОВТОРЕНИЯ ---
+        if request.user.is_authenticated:
+            progress, created = UserQuestionProgress.objects.get_or_create(
+                user=request.user, question=obj
+            )
+            progress.skip_count = 30 if is_correct else 0
+            progress.save()
+
+        names_list = []
+        for name in [obj.name1, obj.name2, obj.name3, obj.name4]:
+            if name is not None and str(name).strip() != "":
                 names_list.append(str(name).strip())
         obj.all_names_string = ", ".join(names_list) if names_list else "Название отсутствует"
 
