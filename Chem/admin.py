@@ -19,6 +19,33 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
+# === СТАРТ БЛОКА АДМИНКИ ДЛЯ ХИМИЧЕСКИХ ПРИЗНАКОВ ===
+
+class TraitResource(resources.ModelResource):
+    class Meta:
+        model = Trait
+        fields = ('id', 'object_name', 'question_text', 'answer')
+        skip_unchanged = True
+        report_skipped = True
+
+
+class TraitAdmin(ImportExportActionModelAdmin):
+    resource_class = TraitResource
+    list_display = ('pk', 'object_name', 'question_text', 'answer', 'image')
+    search_fields = ['pk', 'object_name', 'question_text', 'answer']
+    list_filter = ('question_text',)
+    save_as = True
+
+
+admin.site.register(Trait, TraitAdmin)
+
+# === КОНЕЦ БЛОКА АДМИНКИ ДЛЯ ХИМИЧЕСКИХ ПРИЗНАКОВ ===
+
+
+
+
+
+
 # видеореакции классы для отображения в админке
 
 # класс для загрузки/выгрузки видеореакции
