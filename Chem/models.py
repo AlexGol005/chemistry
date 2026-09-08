@@ -6,23 +6,36 @@ from django.core.exceptions import ValidationError
 from rdkit import Chem as Chemrdkit
 
 
+# === СТАРТ БЛОКА МОДЕЛИ КАЧЕСТВЕННЫХ ПРИЗНАКОВ ===
+
 class Trait(models.Model):
     """
-    Модель-карточка химического признака. Хранит единичный факт для генерации тестов.
-    Позволяет динамически собирать вопрос типа: "Для [object_name] укажите [question_text]"
-    и формировать 6 вариантов ответа, выбирая 1 правильный (answer) и 5 случайных дистракторов.
+    Модель химического признака с фиксированными категориями вопросов.
     """
+    CATEGORY_CHOICES = [
+        ('PRECIPITATE', 'Цвет осадка'),
+        ('SOLUTION', 'Цвет раствора'),
+        ('FLAME', 'Цвет пламени'),
+        ('GAS', 'Запах и цвет газа'),
+    ]
+
     object_name = models.CharField(max_length=100, verbose_name="Объект")
-    question_text = models.CharField(max_length=150, verbose_name="Вопрос")
+    question_category = models.CharField(
+        max_length=20, 
+        choices=CATEGORY_CHOICES, 
+        verbose_name="Категория вопроса"
+    )
     answer = models.CharField(max_length=255, verbose_name="Ответ")
     image = models.ImageField('Иллюстрация', upload_to='chemical_traits', blank=True, null=True)
 
     def __str__(self):
-        return f"{self.object_name} ({self.question_text})"
+        return f"{self.object_name} ({self.get_question_category_display()})"
 
     class Meta:
         verbose_name = "Признак"
         verbose_name_plural = "Признаки"
+
+# === КОНЕЦ БЛОКА МОДЕЛИ КАЧЕСТВЕННЫХ ПРИЗНАКОВ ===
 
 
 
