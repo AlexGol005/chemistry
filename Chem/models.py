@@ -15,6 +15,7 @@ class Trait(models.Model):
     object_name = models.CharField(max_length=100, verbose_name="Объект")
     question_text = models.CharField(max_length=150, verbose_name="Вопрос")
     answer = models.CharField(max_length=255, verbose_name="Ответ")
+    image = models.ImageField('Иллюстрация', upload_to='chemical_traits', blank=True, null=True)
 
     def __str__(self):
         return f"{self.object_name} ({self.question_text})"
@@ -22,6 +23,8 @@ class Trait(models.Model):
     class Meta:
         verbose_name = "Признак"
         verbose_name_plural = "Признаки"
+
+
 
 
 
