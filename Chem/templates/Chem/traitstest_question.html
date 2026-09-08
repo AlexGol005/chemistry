@@ -7,46 +7,52 @@
 {% block content %}
 <!-- === СТАРТ БЛОКА СТРАНИЦЫ ВОПРОСА ТЕСТА ПРИЗНАКОВ === -->
 <div class="col-12 mt-4">
-    <div class="card shadow-sm mx-auto" style="max-width: 750px; border-radius: 15px;">
+    <div class="card shadow-sm mx-auto" style="max-width: 750px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); background: #ffffff;">
         <div class="card-body p-4">
             
             <!-- Прогресс-бар и номер вопроса -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-muted" style="font-size: 11pt;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="text-muted" style="font-size: 11pt; letter-spacing: 0.5px;">
                     Режим: 🧪 Качественные признаки
                 </span>
-                <span class="badge badge-primary px-3 py-2" style="font-size: 11pt; border-radius: 50px;">
+                <span class="badge px-3 py-2" style="font-size: 11pt; border-radius: 50px; background-color: #e3effb; color: #007bff; font-weight: 600;">
                     Вопрос {{ index|add:1 }} из {{ total_questions }}
                 </span>
             </div>
 
             <!-- Центрированный блок вопроса -->
             <div class="text-center my-4">
-                <h5 class="text-muted mb-2" style="font-family: Georgia, serif; font-size: 14pt;">
+                <h5 class="text-muted mb-3" style="font-family: Georgia, serif; font-size: 13pt; font-style: italic;">
                     Для следующего объекта:
                 </h5>
+                
                 <!-- Загаданное вещество -->
-                <p class="mb-3" style="font-family: Georgia, serif; font-size: 26pt; font-weight: bold; color: #007bff; background-color: #f0f7ff; display: inline-block; padding: 10px 25px; border-radius: 10px; border: 1px dashed #b8daff;">
+                <p class="mb-4" style="font-family: Georgia, serif; font-size: 26pt; font-weight: bold; color: #2c3e50; display: inline-block; padding: 5px 15px;">
                     {{ trait.object_name }}
                 </p>
-                <!-- Крупная и заметная целевая категория -->
-                <div class="mt-2">
-                    <h2 style="font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 800; color: #e74c3c; text-transform: uppercase; letter-spacing: 1px; font-size: 22pt;">
-                        🎯 {{ trait.get_question_category_display }}
-                    </h2>
+                
+                <!-- Целевая категория в виде аккуратной таблички на желтоватом пастельном фоне -->
+                <div class="mt-2 d-flex justify-content-center">
+                    <div style="background-color: #fffdf0; border: 1px solid #f3e6a9; padding: 12px 35px; border-radius: 12px; box-shadow: 0 4px 10px rgba(243, 230, 169, 0.25); display: inline-block;">
+                        <span style="font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 700; color: #856404; text-transform: uppercase; letter-spacing: 1.5px; font-size: 15pt;">
+                            📋 {{ trait.get_question_category_display }}
+                        </span>
+                    </div>
                 </div>
             </div>
+
+            <!-- ИЗОБРАЖЕНИЯ ПОЛНОСТЬЮ ИСКЛЮЧЕНЫ ИЗ ШАБЛОНА ВОПРОСА -->
 
             <!-- Форма отправки ответа с адаптивной двухколоночной сеткой -->
             <form method="post" action="{% url 'traitstest_answer' index %}">
                 {% csrf_token %}
-                <div class="row px-2 mt-4">
+                <div class="row px-2 mt-5">
                     {% for option in test_options %}
-                        <div class="col-12 col-md-6 mb-3 px-2">
+                        <div class="col-12 col-md-6 mb-4 px-3">
                             <button type="submit" 
                                     name="user_answer" 
                                     value="{{ option }}" 
-                                    class="btn btn-block text-white font-weight-bold alive-btn-base btn-candy py-3">
+                                    class="btn btn-block text-secondary font-weight-bold alive-btn-base btn-candy-pastel py-3">
                                 {{ option }}
                             </button>
                         </div>
@@ -62,46 +68,42 @@
     /* Базовые свойства кнопок */
     .alive-btn-base {
         border: none; 
-        border-radius: 50px; 
         font-size: 13pt; 
-        transition: all 0.2s ease-in-out;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         cursor: pointer;
         display: block;
         width: 100%;
-        white-space: normal; /* Разрешаем перенос длинного текста внутри кнопки */
+        white-space: normal;
         word-wrap: break-word;
     }
     
-    /* Сочный леденцовый и объемный 3D эффект */
-    .btn-candy {
-        background: linear-gradient(180deg, #24c4dc 0%, #00abc5 50%, #008fa5 100%);
-        /* Блик сверху для создания глянца */
-        background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%), 
-                          linear-gradient(180deg, #17a2b8 0%, #008fa5 100%);
-        /* Двойная тень: глубокая под кнопкой + внутреннее свечение краев */
-        box-shadow: 0 6px 0 #006b7c, 
-                    0 10px 20px rgba(23, 162, 184, 0.35), 
-                    inset 0 1px 2px rgba(255,255,255,0.5);
-        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    /* Полупрозрачные пастельные леденцы, парящие над экраном */
+    .btn-candy-pastel {
+        background: rgba(224, 247, 250, 0.65); /* Полупрозрачный пастельный бирюзовый */
+        color: #4a6b70 !important;
+        border-radius: 50px; /* Идеально круглые края-леденцы */
+        border: 1px solid rgba(178, 235, 242, 0.5);
+        /* Мягкая пастельная парящая тень */
+        box-shadow: 0 8px 20px rgba(178, 235, 242, 0.3), 
+                    inset 0 1px 3px rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(4px); /* Легкое матовое размытие фона */
     }
     
-    /* Анимация поведения при наведении (эффект легкого всплытия) */
+    /* Эффект взлета и парения при наведении */
     .alive-btn-base:hover {
-        transform: translateY(-2px); 
-        filter: brightness(1.08); 
-        box-shadow: 0 8px 0 #006b7c, 
-                    0 12px 25px rgba(23, 162, 184, 0.45), 
-                    inset 0 1px 2px rgba(255,255,255,0.6) !important;
+        transform: translateY(-5px); /* Леденец взлетает выше */
+        background: rgba(178, 235, 242, 0.8);
+        color: #265a63 !important;
+        /* Усиливаем парящую пастельную тень */
+        box-shadow: 0 14px 28px rgba(178, 235, 242, 0.55), 
+                    inset 0 1px 3px rgba(255, 255, 255, 1) !important;
         text-decoration: none; 
-        color: #fff !important;
     }
     
-    /* Физическое прожимание кнопки вглубь при клике */
+    /* Мягкое нажатие при клике */
     .alive-btn-base:active {
-        transform: translateY(4px); 
-        box-shadow: 0 2px 0 #006b7c, 
-                    0 4px 10px rgba(23, 162, 184, 0.2), 
-                    inset 0 1px 1px rgba(0,0,0,0.1) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(178, 235, 242, 0.4) !important;
     }
 </style>
 <!-- === КОНЕЦ БЛОКА СТРАНИЦЫ ВОПРОСА ТЕСТА ПРИЗНАКОВ === -->
