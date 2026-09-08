@@ -5,11 +5,12 @@
 {% endblock %}
 
 {% block content %}
-<!-- === СТАРТ БЛОКА СТРАНИЦЫ ВОПРОСА === -->
+<!-- === СТАРТ БЛОКА СТРАНИЦЫ ВОПРОСА ТЕСТА ПРИЗНАКОВ === -->
 <div class="col-12 mt-4">
     <div class="card shadow-sm mx-auto" style="max-width: 700px; border-radius: 15px;">
         <div class="card-body p-4">
             
+            <!-- Прогресс-бар и номер вопроса -->
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="text-muted" style="font-size: 11pt;">
                     Режим: 🧪 Качественные признаки
@@ -19,6 +20,7 @@
                 </span>
             </div>
 
+            <!-- Текст вопроса -->
             <div class="text-center my-4">
                 <h4 style="font-family: Georgia, serif; color: #2c3e50; line-height: 1.5;">
                     Для указанного объекта выберите правильный признак (<span class="text-lowercase">{{ trait.get_question_category_display }}</span>):
@@ -28,12 +30,9 @@
                 </p>
             </div>
 
-            {% if trait.image %}
-            <div class="text-center mb-4">
-                <img src="{{ trait.image.url }}" alt="Иллюстрация признака" class="img-fluid rounded shadow-sm" style="max-height: 250px; border: 1px solid #dee2e6;">
-            </div>
-            {% endif %}
+            <!-- ИЛЛЮСТРАЦИЯ ИЗ ВОПРОСА ПОЛНОСТЬЮ УБРАНА, ЧТОБЫ НЕ БЫЛО ПОДСКАЗОК -->
 
+            <!-- Форма отправки ответа -->
             <form method="post" action="{% url 'traitstest_answer' index %}">
                 {% csrf_token %}
                 <div class="d-flex flex-column align-items-center mt-4">
@@ -54,6 +53,7 @@
 </div>
 
 <style>
+    /* Стилизация «живых» кнопок выбора ответов */
     .alive-btn-base {
         border: none; 
         border-radius: 50px; 
@@ -76,5 +76,5 @@
         transform: translateY(-1px); 
     }
 </style>
-<!-- === КОНЕЦ БЛОКА СТРАНИЦЫ ВОПРОСА === -->
+<!-- === КОНЕЦ БЛОКА СТРАНИЦЫ ВОПРОСА ТЕСТА ПРИЗНАКОВ === -->
 {% endblock %}
