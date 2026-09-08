@@ -1,0 +1,60 @@
+{% extends 'main/superbase.html' %}
+
+{% block title %}
+Тест по качественным признакам веществ
+{% endblock %}
+
+{% block content %}
+<!-- === СТАРТ БЛОКА СТРАНИЦЫ СТАРТА ТЕСТА === -->
+<div class="col-12 mt-4">
+    <div class="card shadow-sm mx-auto" style="max-width: 650px; border-radius: 15px;">
+        <div class="card-body p-4 text-center">
+            
+            <h3 class="mb-4" style="font-family: Georgia, serif; color: #2c3e50; font-weight: bold;">
+                🧪 Тестирование: Качественные признаки
+            </h3>
+            
+            <p class="text-muted mb-4" style="font-size: 12pt;">
+                Тест проверит ваши знания цветов осадков, растворов, пламени, а также запахов и цветов газов. 
+                Вам предстоит ответить на 10 случайных вопросов с выбором одного из 6 вариантов.
+            </p>
+
+            <form method="post" action="{% url 'traitstest_start' %}" class="w-100 d-flex flex-column align-items-center mt-3">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="btn btn-block text-white font-weight-bold alive-btn-base btn-mode mb-3 py-3"
+                        style="max-width: 85%;">
+                    🚀 Начать тестирование
+                </button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .alive-btn-base {
+        border: none; 
+        border-radius: 50px; 
+        font-size: 14pt; 
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        cursor: pointer;
+        display: inline-block;
+    }
+    .btn-mode {
+        background: linear-gradient(45deg, #007bff, #00c6ff); 
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); 
+    }
+    .alive-btn-base:hover {
+        transform: translateY(-4px); 
+        filter: brightness(1.05); 
+        box-shadow: 0 8px 25px rgba(0, 123, 255, 0.5) !important;
+        color: #fff !important;
+        text-decoration: none; 
+    }
+    .alive-btn-base:active {
+        transform: translateY(-1px); 
+    }
+</style>
+<!-- === КОНЕЦ БЛОКА СТРАНИЦЫ СТАРТА ТЕСТА === -->
+{% endblock %}
