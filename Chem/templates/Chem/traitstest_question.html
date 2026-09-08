@@ -20,7 +20,7 @@
                 </span>
             </div>
 
-            <!-- Центрированный блок вопроса -->
+            <!-- Центрированный block вопроса -->
             <div class="text-center my-4">
                 <h5 class="text-muted mb-3" style="font-family: Georgia, serif; font-size: 13pt; font-style: italic;">
                     Для следующего объекта:
@@ -31,7 +31,7 @@
                     {{ trait.object_name }}
                 </p>
                 
-                <!-- Целевая категория в виде аккуратной таблички на желтоватом пастельном фоне без эмодзи -->
+                <!-- Целевая категория в виде аккуратной таблички на желтоватом пастельном фоне -->
                 <div class="mt-2 d-flex justify-content-center">
                     <div style="background-color: #fffdf0; border: 1px solid #f3e6a9; padding: 12px 35px; border-radius: 12px; box-shadow: 0 4px 10px rgba(243, 230, 169, 0.25); display: inline-block;">
                         <span style="font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 700; color: #856404; text-transform: uppercase; letter-spacing: 1.5px; font-size: 15pt;">
@@ -46,11 +46,11 @@
                 {% csrf_token %}
                 <div class="row px-2 mt-5">
                     {% for option in test_options %}
-                        <div class="col-12 col-md-6 mb-4 px-3">
+                        <div class="col-12 col-md-6 mb-5 px-3">
                             <button type="submit" 
                                     name="user_answer" 
                                     value="{{ option }}" 
-                                    class="btn btn-block text-secondary font-weight-bold alive-btn-base btn-glass-pastel py-3">
+                                    class="btn btn-block text-white font-weight-bold alive-btn-base btn-3d-candy py-3">
                                 {{ option }}
                             </button>
                         </div>
@@ -67,7 +67,7 @@
     .alive-btn-base {
         border: none; 
         font-size: 13pt; 
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         cursor: pointer;
         display: block;
         width: 100%;
@@ -75,36 +75,59 @@
         word-wrap: break-word;
     }
     
-    /* Эффект объемного цветного матового стекла (Glassmorphism) - отчетливо видны сразу */
-    .btn-glass-pastel {
-        background: linear-gradient(135deg, rgba(204, 242, 244, 0.7) 0%, rgba(167, 230, 235, 0.5) 100%);
-        color: #3b5f64 !important;
-        border-radius: 50px; /* Круглые леденцы */
-        /* Выразительный стеклянный контур, подсвечивающий ребро кнопки */
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        /* Мягкие объемные тени и внутренний глянцевый отблеск по краям */
-        box-shadow: 0 8px 24px rgba(135, 219, 224, 0.35), 
-                    inset 0 1px 3px rgba(255, 255, 255, 0.9),
-                    inset 0 -2px 6px rgba(0, 0, 0, 0.03);
-        backdrop-filter: blur(8px); /* Насыщенное матовое размытие */
-        -webkit-backdrop-filter: blur(8px);
+    /* 3D Стеклянный Объемный Леденец - виден во всей красе СРАЗУ до нажатия */
+    .btn-3d-candy {
+        border-radius: 50px; /* Идеально круглые края конфеты */
+        
+        /* Многослойный полупрозрачный стеклянный фон: глянцевый блик + пастельно-бирюзовая основа */
+        background-image: 
+            radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0) 60%), 
+            linear-gradient(180deg, rgba(79, 219, 235, 0.75) 0%, rgba(0, 166, 194, 0.6) 100%);
+        
+        color: #ffffff !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); /* Легкий объем для текста */
+        
+        /* Белый внутренний контур создает стеклянное ребро жесткости */
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        
+        /* СЛОЖНАЯ 3D ТЕНЬ (Работает сразу): 
+           1. 0 5px 0 ...  - создаёт физическую ТОЛЩИНУ и нижнюю грань леденца в 5 пикселей.
+           2. 0 12px 20px ... - создаёт глубокую тень ПАРЕНИЯ, отбрасываемую на экран.
+           3. inset 0 2px 3px ... - внутренний глянцевый отблеск сверху. */
+        box-shadow: 
+            0 5px 0 #007c91, 
+            0 12px 22px rgba(23, 162, 184, 0.35), 
+            inset 0 2px 3px rgba(255, 255, 255, 0.6);
+            
+        backdrop-filter: blur(5px); /* Эффект матового стекла для заднего плана */
+        -webkit-backdrop-filter: blur(5px);
+        
+        transform: translateY(-4px); /* Кнопка ИЗНАЧАЛЬНО парит в воздухе */
     }
     
-    /* Эффект парения при наведении - стекло наливается цветом и взлетает */
+    /* Эффект при наведении - леденец взлетает еще выше, наливается цветом и глянцем */
     .alive-btn-base:hover {
-        transform: translateY(-6px); /* Заметное парение над экраном */
-        background: linear-gradient(135deg, rgba(167, 230, 235, 0.9) 0%, rgba(114, 215, 222, 0.7) 100%);
-        color: #1a444a !important;
-        /* Усиление парящей тени */
-        box-shadow: 0 16px 32px rgba(114, 215, 222, 0.5), 
-                    inset 0 1px 3px rgba(255, 255, 255, 1) !important;
+        transform: translateY(-8px); /* Взлетает выше, увеличивая ширину парения */
+        background-image: 
+            radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 50%), 
+            linear-gradient(180deg, rgba(114, 232, 245, 0.85) 0%, rgba(0, 184, 214, 0.75) 100%);
+        
+        /* Увеличиваем 3D-толщину конфеты и отдаляем тень на экране */
+        box-shadow: 
+            0 7px 0 #007c91, 
+            0 18px 30px rgba(23, 162, 184, 0.45), 
+            inset 0 2px 4px rgba(255, 255, 255, 0.8) !important;
         text-decoration: none; 
     }
     
-    /* Физический клик (мягкий ход кнопки вниз) */
+    /* Эффект физического нажатия - леденец со щелчком утапливается вглубь экрана */
     .alive-btn-base:active {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(114, 215, 222, 0.4) !important;
+        transform: translateY(2px); /* Опускается вниз, почти касаясь поверхности */
+        /* Наша 3D-толщина уменьшается с 5px до 1px, имитируя сжатие */
+        box-shadow: 
+            0 1px 0 #007c91, 
+            0 4px 10px rgba(23, 162, 184, 0.2), 
+            inset 0 1px 1px rgba(0, 0, 0, 0.1) !important;
     }
 </style>
 <!-- === КОНЕЦ БЛОКА СТРАНИЦЫ ВОПРОСА ТЕСТА ПРИЗНАКОВ === -->
