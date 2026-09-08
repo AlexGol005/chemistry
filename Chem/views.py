@@ -439,13 +439,12 @@ CLASS_ISOMERS = {
     'esters': 'saturated_monobasic_carboxylic_acids',
     'amino_acids': 'nitro_compounds',
     'nitro_compounds': 'amino_acids',
-    # Добавлено для школьной химии / ЕГЭ:
-    'primary_amines': 'secondary_amines',
-    'secondary_amines': 'primary_amines',
-    'tertiary_amines': 'primary_amines',
-    'primary_amines': 'tertiary_amines',
-    'tertiary_amines': 'secondary_amines',
-    'secondary_amines': 'tertiary_amines',
+    
+    'primary_amines': ['secondary_amines', 'tertiary_amines'],
+    'secondary_amines': ['primary_amines', 'tertiary_amines'],
+    'tertiary_amines': ['primary_amines', 'secondary_amines']
+
+
     'Нитрилы': 'Циангидрины',
     'Циангидрины': 'Нитрилы',
 }
