@@ -5,6 +5,26 @@ from PIL import Image
 from django.core.exceptions import ValidationError
 from rdkit import Chem as Chemrdkit
 
+
+class Trait(models.Model):
+    """
+    Модель-карточка химического признака. Хранит единичный факт для генерации тестов.
+    Позволяет динамически собирать вопрос типа: "Для [object_name] укажите [question_text]"
+    и формировать 6 вариантов ответа, выбирая 1 правильный (answer) и 5 случайных дистракторов.
+    """
+    object_name = models.CharField(max_length=100, verbose_name="Объект")
+    question_text = models.CharField(max_length=150, verbose_name="Вопрос")
+    answer = models.CharField(max_length=255, verbose_name="Ответ")
+
+    def __str__(self):
+        return f"{self.object_name} ({self.question_text})"
+
+    class Meta:
+        verbose_name = "Признак"
+        verbose_name_plural = "Признаки"
+
+
+
 class VisibleManager(models.Manager):
 
   def get_queryset(self):
