@@ -30,8 +30,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- CKEDITOR -->
-    <script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script> 
-    <script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script> 
+    <!-- <script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script> -->
+    <!--<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>  -->
    
     <!-- Top.Mail.Ru counter -->
     <script type="text/javascript">
@@ -60,7 +60,8 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <!-- Логотип зафиксирован по высоте, чтобы не распирать шапку -->
     <a href="/" class="navbar-brand d-flex align-items-center py-0 m-0">
-        <img src="{% static 'main/img/3.png' %}" alt="Лого" style="height: 38px; width: auto;">
+<img src="{% static 'main/img/3.png' %}" width="150" height="38" alt="Лого" style="height: 38px; width: auto;">
+
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -249,7 +250,7 @@
 
     
 {% block footer %}
-<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}" defer></script>
 
 {{ form.media }}
 
