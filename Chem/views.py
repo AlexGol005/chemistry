@@ -442,7 +442,7 @@ CLASS_ISOMERS = {
     
     'primary_amines': ['secondary_amines', 'tertiary_amines'],
     'secondary_amines': ['primary_amines', 'tertiary_amines'],
-    'tertiary_amines': ['primary_amines', 'secondary_amines']
+    'tertiary_amines': ['primary_amines', 'secondary_amines'],
 
 
     'Нитрилы': 'Циангидрины',
