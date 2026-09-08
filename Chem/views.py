@@ -17,14 +17,15 @@ from .models import OrganicNames, UserQuestionProgress  # Подключаем �
 
 
 # =====================================================================
-# 🧬 БЛОК VIEWS ДЛЯ СИСТЕМЫ ТЕСТИРОВАНИЯ ХИМИЧЕСКИХ ПРИЗНАКОВ С ПОВТОРЕНИЕМ
+# 🧬 БЛОК VIEWS ДЛЯ УПРОЩЕННОЙ СИСТЕМЫ ТЕСТИРОВАНИЯ ХИМИЧЕСКИХ ПРИЗНАКОВ
 # =====================================================================
 
 # =====================================================================
-# 1. ПУЛЬТ УПРАВЛЕНИЯ И СТАРТ ТЕСТА (ГЕНЕРАЦИЯ С УЧЕТОМ ИНТЕРВАЛОВ)
+# 1. СТАРТ ТЕСТА (ФОРМИРОВАНИЕ ПУЛА ИЗ 10 СЛУЧАЙНЫХ ВОПРОСОВ)
 # =====================================================================
 class ChemTraitTestStartView(View):
     def get(self, request):
+        # Отображаем стартовую страницу (правила теста, кнопка "Начать")
         return render(request, 'Chem/traitstest_start.html')
 
     def post(self, request):
@@ -32,32 +33,14 @@ class ChemTraitTestStartView(View):
         for key in ['traitstest_ids', 'traitstest_score']:
             request.session.pop(key, None)
 
-        # Берем базовый набор всех доступных признаков
-        queryset = Trait.objects.all()
-
-        # --- СИСТЕМА ИНТЕРВАЛЬНОГО ПОВТОРЕНИЯ ДЛЯ ПРИЗНАКОВ ---
-        if request.user.is_authenticated:
-            from django.db.models import F
-            # Уменьшаем счетчик пропуска на 1 для всех отложенных вопросов пользователя
-            UserQuestionProgress.objects.filter(user=request.user, skip_count__gt=0).update(
-                skip_count=F('skip_count') - 1
-            )
-            # Собираем ID вопросов, которые пользователю пока рано видеть
-            skipped_ids = UserQuestionProgress.objects.filter(user=request.user, skip_count__gt=0).values_list('question_id', flat=True)
-            queryset_filtered = queryset.exclude(id__in=skipped_ids)
-            
-            # Исключаем выученные вопросы только если оставшихся хватит на полноценный тест (минимум 10)
-            if queryset_filtered.count() >= 10:
-                queryset = queryset_filtered
-
-        # Получаем финальный список ID для текущего прохождения
-        available_ids = list(queryset.values_list('id', flat=True))
+        # Выбираем ID всех существующих признаков
+        available_ids = list(Trait.objects.values_list('id', flat=True))
         
-        # Нам нужно отобрать ровно 10 случайных вопросов
+        # Если вопросов в базе меньше 10, берем сколько есть, иначе ровно 10 случайных
         target_count = min(len(available_ids), 10)
         final_ids = random.sample(available_ids, target_count)
         
-        # Итоговое перемешивание результирующего списка
+        # Итоговое перемешивание пула вопросов
         random.shuffle(final_ids)
 
         # Сохраняем параметры новой сессии тестирования признаков в сессию
@@ -65,26 +48,29 @@ class ChemTraitTestStartView(View):
         request.session['traitstest_score'] = 0
         request.session.modified = True
         
+        # Перенаправляем на первый вопрос теста (индекс 0)
         return redirect('traitstest_question', index=0)
 
 
 # =====================================================================
-# 2. СТРАНИЦА ТЕКУЩЕГО ВОПРОСА (ГЕНЕРАЦИЯ 6 РЕАЛИСТИЧНЫХ ВАРИАНТОВ)
+# 2. СТРАНИЦА ТЕКУЩЕГО ВОПРОСА (СБОРКА 6 ВАРИАНТОВ ИЗ ОДНОЙ КАТЕГОРИИ)
 # =====================================================================
 class ChemTraitTestQuestionView(View):
     def get(self, request, index):
+        # Извлекаем пул сгенерированных ID из сессии
         test_ids = request.session.get('traitstest_ids', [])
 
+        # Если тест пуст или индекс вышел за границы — отправляем на финал
         if not test_ids or index >= len(test_ids):
             return redirect('traitstest_finished')
 
-        # Загружаем текущий объект признака
+        # Загружаем текущий объект химического признака
         obj = get_object_or_404(Trait, id=test_ids[index])
         
-        # Начинаем формировать список вариантов с правильного ответа
+        # Первый вариант ответа в списке — всегда правильный
         options = [obj.answer]
 
-        # Подбираем дистракторы строго из этой же категории (цвет осадка к осадкам и т.д.)
+        # Выбираем другие варианты ответов СТРОГО из этой же категории (например, только цвета пламени)
         wrong_answers = (
             Trait.objects.filter(question_category=obj.question_category)
             .exclude(answer=obj.answer)
@@ -95,7 +81,7 @@ class ChemTraitTestQuestionView(View):
         wrong_answers_list = list(wrong_answers)
         random.shuffle(wrong_answers_list)
 
-        # Добираем варианты ответов, пока их не станет ровно 6
+        # Наполняем массив, пока не станет ровно 6 вариантов (или пока не кончатся уникальные дистракторы)
         while len(options) < 6 and wrong_answers_list:
             options.append(wrong_answers_list.pop(0))
 
@@ -112,7 +98,7 @@ class ChemTraitTestQuestionView(View):
 
 
 # =====================================================================
-# 3. ОБРАБОТКА И ПРОВЕРКА ОТВЕТА (ФИКСАЦИЯ ОШИБОК И ПРОГРЕССА)
+# 3. ОБРАБОТКА И ПРОВЕРКА ОТВЕТА ПОЛЬЗОВАТЕЛЯ
 # =====================================================================
 class ChemTraitTestAnswerView(View):
     def post(self, request, index):
@@ -122,24 +108,19 @@ class ChemTraitTestAnswerView(View):
         if not test_ids or index >= len(test_ids):
             return redirect('traitstest_start')
 
+        # Загружаем текущий объект признака
         obj = get_object_or_404(Trait, id=test_ids[index])
+        
+        # Прямое сравнение ответа пользователя с правильным из базы
         is_correct = (user_ans == obj.answer)
 
-        # --- ФИКСАЦИЯ ПРОГРЕССА С УЧЕТОМ ОШИБОК (ИНТЕРВАЛЬНОЕ ПОВТОРЕНИЕ) ---
-        if request.user.is_authenticated:
-            progress, created = UserQuestionProgress.objects.get_or_create(
-                user=request.user, question=obj
-            )
-            # Если ответ верный — прячем вопрос на 30 циклов. При ошибке сбрасываем в 0, чтобы гонять чаще
-            progress.skip_count = 30 if is_correct else 0
-            progress.save()
-
+        # Подсчет и фиксация общего балла в сессии
         if is_correct:
             request.session['traitstest_score'] = request.session.get('traitstest_score', 0) + 1
             request.session.modified = True
 
         return render(request, 'Chem/traitstest_answer.html', {
-            'trait': obj,                      # Передаем объект целиком для проверки картинки в шаблоне
+            'trait': obj,                      # Передаем объект целиком (для проверки trait.image на фронте)
             'is_correct': is_correct,
             'user_answer_label': user_ans if user_ans else "Ничего не выбрано",
             'correct_label': obj.answer,
@@ -160,6 +141,7 @@ class ChemTraitTestFinishedView(View):
         if total == 0:
             return redirect('traitstest_start')
 
+        # Расчет процента успешных ответов
         percent = int((score / total) * 100)
 
         return render(request, 'Chem/traitstest_finished.html', {
@@ -169,8 +151,9 @@ class ChemTraitTestFinishedView(View):
         })
 
 # =====================================================================
-# КОНЕЦ БЛОКА VIEWS ДЛЯ СИСТЕМЫ ТЕСТИРОВАНИЯ ХИМИЧЕСКИХ ПРИЗНАКОВ
+# КОНЕЦ БЛОКА VIEWS ДЛЯ УПРОЩЕННОЙ СИСТЕМЫ ТЕСТИРОВАНИЯ ХИМИЧЕСКИХ ПРИЗНАКОВ
 # =====================================================================
+
 
 
 
