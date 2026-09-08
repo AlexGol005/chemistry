@@ -31,17 +31,15 @@
                     {{ trait.object_name }}
                 </p>
                 
-                <!-- Целевая категория в виде аккуратной таблички на желтоватом пастельном фоне -->
+                <!-- Целевая категория в виде аккуратной таблички на желтоватом пастельном фоне без эмодзи -->
                 <div class="mt-2 d-flex justify-content-center">
                     <div style="background-color: #fffdf0; border: 1px solid #f3e6a9; padding: 12px 35px; border-radius: 12px; box-shadow: 0 4px 10px rgba(243, 230, 169, 0.25); display: inline-block;">
                         <span style="font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 700; color: #856404; text-transform: uppercase; letter-spacing: 1.5px; font-size: 15pt;">
-                            📋 {{ trait.get_question_category_display }}
+                            {{ trait.get_question_category_display }}
                         </span>
                     </div>
                 </div>
             </div>
-
-            <!-- ИЗОБРАЖЕНИЯ ПОЛНОСТЬЮ ИСКЛЮЧЕНЫ ИЗ ШАБЛОНА ВОПРОСА -->
 
             <!-- Форма отправки ответа с адаптивной двухколоночной сеткой -->
             <form method="post" action="{% url 'traitstest_answer' index %}">
@@ -52,7 +50,7 @@
                             <button type="submit" 
                                     name="user_answer" 
                                     value="{{ option }}" 
-                                    class="btn btn-block text-secondary font-weight-bold alive-btn-base btn-candy-pastel py-3">
+                                    class="btn btn-block text-secondary font-weight-bold alive-btn-base btn-glass-pastel py-3">
                                 {{ option }}
                             </button>
                         </div>
@@ -77,33 +75,36 @@
         word-wrap: break-word;
     }
     
-    /* Полупрозрачные пастельные леденцы, парящие над экраном */
-    .btn-candy-pastel {
-        background: rgba(224, 247, 250, 0.65); /* Полупрозрачный пастельный бирюзовый */
-        color: #4a6b70 !important;
-        border-radius: 50px; /* Идеально круглые края-леденцы */
-        border: 1px solid rgba(178, 235, 242, 0.5);
-        /* Мягкая пастельная парящая тень */
-        box-shadow: 0 8px 20px rgba(178, 235, 242, 0.3), 
-                    inset 0 1px 3px rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(4px); /* Легкое матовое размытие фона */
+    /* Эффект объемного цветного матового стекла (Glassmorphism) - отчетливо видны сразу */
+    .btn-glass-pastel {
+        background: linear-gradient(135deg, rgba(204, 242, 244, 0.7) 0%, rgba(167, 230, 235, 0.5) 100%);
+        color: #3b5f64 !important;
+        border-radius: 50px; /* Круглые леденцы */
+        /* Выразительный стеклянный контур, подсвечивающий ребро кнопки */
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        /* Мягкие объемные тени и внутренний глянцевый отблеск по краям */
+        box-shadow: 0 8px 24px rgba(135, 219, 224, 0.35), 
+                    inset 0 1px 3px rgba(255, 255, 255, 0.9),
+                    inset 0 -2px 6px rgba(0, 0, 0, 0.03);
+        backdrop-filter: blur(8px); /* Насыщенное матовое размытие */
+        -webkit-backdrop-filter: blur(8px);
     }
     
-    /* Эффект взлета и парения при наведении */
+    /* Эффект парения при наведении - стекло наливается цветом и взлетает */
     .alive-btn-base:hover {
-        transform: translateY(-5px); /* Леденец взлетает выше */
-        background: rgba(178, 235, 242, 0.8);
-        color: #265a63 !important;
-        /* Усиливаем парящую пастельную тень */
-        box-shadow: 0 14px 28px rgba(178, 235, 242, 0.55), 
+        transform: translateY(-6px); /* Заметное парение над экраном */
+        background: linear-gradient(135deg, rgba(167, 230, 235, 0.9) 0%, rgba(114, 215, 222, 0.7) 100%);
+        color: #1a444a !important;
+        /* Усиление парящей тени */
+        box-shadow: 0 16px 32px rgba(114, 215, 222, 0.5), 
                     inset 0 1px 3px rgba(255, 255, 255, 1) !important;
         text-decoration: none; 
     }
     
-    /* Мягкое нажатие при клике */
+    /* Физический клик (мягкий ход кнопки вниз) */
     .alive-btn-base:active {
         transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(178, 235, 242, 0.4) !important;
+        box-shadow: 0 4px 12px rgba(114, 215, 222, 0.4) !important;
     }
 </style>
 <!-- === КОНЕЦ БЛОКА СТРАНИЦЫ ВОПРОСА ТЕСТА ПРИЗНАКОВ === -->
