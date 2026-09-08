@@ -440,10 +440,9 @@ CLASS_ISOMERS = {
     'amino_acids': 'nitro_compounds',
     'nitro_compounds': 'amino_acids',
     
-    'primary_amines': ['secondary_amines', 'tertiary_amines'],
-    'secondary_amines': ['primary_amines', 'tertiary_amines'],
-    'tertiary_amines': ['primary_amines', 'secondary_amines'],
-
+    'primary_amines': 'secondary_amines',
+    'secondary_amines': 'tertiary_amines',
+    'tertiary_amines': 'primary_amines,
 
     'Нитрилы': 'Циангидрины',
     'Циангидрины': 'Нитрилы',
