@@ -7,50 +7,50 @@
 {% block content %}
 <!-- === СТАРТ БЛОКА СТРАНИЦЫ ВОПРОСА ТЕСТА ПРИЗНАКОВ === -->
 <div class="col-12 mt-4">
-    <div class="card shadow-sm mx-auto" style="max-width: 750px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); background: #ffffff;">
+    <div class="card shadow-sm mx-auto" style="max-width: 750px; border-radius: 24px; border: 1px solid rgba(0, 0, 0, 0.04); background: #ffffff;">
         <div class="card-body p-4">
             
-            <!-- Прогресс-бар и номер вопроса -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <span class="text-muted" style="font-size: 11pt; letter-spacing: 0.5px;">
+            <!-- Навигационная верхняя панель -->
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <span class="text-muted" style="font-size: 11pt; letter-spacing: 0.5px; font-weight: 500;">
                     Режим: 🧪 Качественные признаки
                 </span>
-                <span class="badge px-3 py-2" style="font-size: 11pt; border-radius: 50px; background-color: #e3effb; color: #007bff; font-weight: 600;">
+                <span class="badge px-3 py-2" style="font-size: 11pt; border-radius: 50px; background-color: #eef5fc; color: #007bff; font-weight: 600;">
                     Вопрос {{ index|add:1 }} из {{ total_questions }}
                 </span>
             </div>
 
-            <!-- Центрированный block вопроса -->
+            <!-- Главный информационный блок вопроса -->
             <div class="text-center my-4">
-                <h5 class="text-muted mb-3" style="font-family: Georgia, serif; font-size: 13pt; font-style: italic;">
+                <h5 class="text-muted mb-3" style="font-family: Georgia, serif; font-size: 14pt; font-style: italic;">
                     Для следующего объекта:
                 </h5>
                 
-                <!-- Загаданное вещество -->
-                <p class="mb-4" style="font-family: Georgia, serif; font-size: 26pt; font-weight: bold; color: #2c3e50; display: inline-block; padding: 5px 15px;">
+                <!-- Название исследуемого вещества -->
+                <p class="mb-4" style="font-family: Georgia, serif; font-size: 28pt; font-weight: bold; color: #1e293b; display: inline-block; padding: 5px 15px;">
                     {{ trait.object_name }}
                 </p>
                 
-                <!-- Целевая категория в виде аккуратной таблички на желтоватом пастельном фоне -->
+                <!-- Целевой вопрос в виде современной минималистичной плашки -->
                 <div class="mt-2 d-flex justify-content-center">
-                    <div style="background-color: #fffdf0; border: 1px solid #f3e6a9; padding: 12px 35px; border-radius: 12px; box-shadow: 0 4px 10px rgba(243, 230, 169, 0.25); display: inline-block;">
-                        <span style="font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 700; color: #856404; text-transform: uppercase; letter-spacing: 1.5px; font-size: 15pt;">
+                    <div style="background-color: #fffbeb; border: 1px solid #fef3c7; padding: 10px 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(251, 191, 36, 0.08); display: inline-block;">
+                        <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700; color: #92400e; text-transform: uppercase; letter-spacing: 1.5px; font-size: 14pt;">
                             {{ trait.get_question_category_display }}
                         </span>
                     </div>
                 </div>
             </div>
 
-            <!-- Форма отправки ответа с адаптивной двухколоночной сеткой -->
+            <!-- Сетка ответов: 2 колонки на ПК, 1 колонка на смартфонах -->
             <form method="post" action="{% url 'traitstest_answer' index %}">
                 {% csrf_token %}
                 <div class="row px-2 mt-5">
                     {% for option in test_options %}
-                        <div class="col-12 col-md-6 mb-5 px-3">
+                        <div class="col-12 col-md-6 mb-4 px-3">
                             <button type="submit" 
                                     name="user_answer" 
                                     value="{{ option }}" 
-                                    class="btn btn-block text-white font-weight-bold alive-btn-base btn-3d-candy py-3">
+                                    class="btn btn-block alive-btn-base btn-premium-glass py-3">
                                 {{ option }}
                             </button>
                         </div>
@@ -63,11 +63,12 @@
 </div>
 
 <style>
-    /* Базовые свойства кнопок */
+    /* Базовая геометрия кнопок */
     .alive-btn-base {
         border: none; 
         font-size: 13pt; 
-        transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Плавная кинематика Apple */
         cursor: pointer;
         display: block;
         width: 100%;
@@ -75,59 +76,46 @@
         word-wrap: break-word;
     }
     
-    /* 3D Стеклянный Объемный Леденец - виден во всей красе СРАЗУ до нажатия */
-    .btn-3d-candy {
-        border-radius: 50px; /* Идеально круглые края конфеты */
+    /* Современный премиальный стеклянный эффект (Glassmorphism) */
+    .btn-premium-glass {
+        border-radius: 16px; /* Современный сглаженный радиус скругления */
+        background: rgba(224, 244, 245, 0.45); /* Нежная, полупрозрачная пастельно-бирюзовая основа */
         
-        /* Многослойный полупрозрачный стеклянный фон: глянцевый блик + пастельно-бирюзовая основа */
-        background-image: 
-            radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0) 60%), 
-            linear-gradient(180deg, rgba(79, 219, 235, 0.75) 0%, rgba(0, 166, 194, 0.6) 100%);
+        /* Глубокий темно-серый контрастный текст для идеальной читаемости */
+        color: #1e3a3e !important; 
+        font-weight: 600;
         
-        color: #ffffff !important;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); /* Легкий объем для текста */
+        /* Имитация премиального стеклянного контура (матовый отблеск по краю) */
+        border: 1px solid rgba(255, 255, 255, 0.65);
         
-        /* Белый внутренний контур создает стеклянное ребро жесткости */
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        
-        /* СЛОЖНАЯ 3D ТЕНЬ (Работает сразу): 
-           1. 0 5px 0 ...  - создаёт физическую ТОЛЩИНУ и нижнюю грань леденца в 5 пикселей.
-           2. 0 12px 20px ... - создаёт глубокую тень ПАРЕНИЯ, отбрасываемую на экран.
-           3. inset 0 2px 3px ... - внутренний глянцевый отблеск сверху. */
+        /* Воздушная, едва заметная пастельная тень, создающая эффект левитации над экраном */
         box-shadow: 
-            0 5px 0 #007c91, 
-            0 12px 22px rgba(23, 162, 184, 0.35), 
-            inset 0 2px 3px rgba(255, 255, 255, 0.6);
+            0 8px 24px rgba(167, 223, 225, 0.2),
+            inset 0 1px 2px rgba(255, 255, 255, 0.5);
             
-        backdrop-filter: blur(5px); /* Эффект матового стекла для заднего плана */
-        -webkit-backdrop-filter: blur(5px);
-        
-        transform: translateY(-4px); /* Кнопка ИЗНАЧАЛЬНО парит в воздухе */
+        /* Эффект матового стекла — размывает элементы интерфейса под кнопкой */
+        backdrop-filter: blur(12px); 
+        -webkit-backdrop-filter: blur(12px);
     }
     
-    /* Эффект при наведении - леденец взлетает еще выше, наливается цветом и глянцем */
+    /* Интерактивное парение при наведении курсора */
     .alive-btn-base:hover {
-        transform: translateY(-8px); /* Взлетает выше, увеличивая ширину парения */
-        background-image: 
-            radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 50%), 
-            linear-gradient(180deg, rgba(114, 232, 245, 0.85) 0%, rgba(0, 184, 214, 0.75) 100%);
+        transform: translateY(-5px); /* Легкое, чистое всплытие */
+        background: rgba(188, 235, 238, 0.7); /* Стекло плавно наливается чуть более плотным пастельным тоном */
+        color: #0d282c !important; /* Усиление контраста текста */
         
-        /* Увеличиваем 3D-толщину конфеты и отдаляем тень на экране */
+        /* Мягкое расширение зоны тени */
         box-shadow: 
-            0 7px 0 #007c91, 
-            0 18px 30px rgba(23, 162, 184, 0.45), 
-            inset 0 2px 4px rgba(255, 255, 255, 0.8) !important;
-        text-decoration: none; 
+            0 16px 32px rgba(135, 212, 214, 0.35),
+            inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
+        text-decoration: none;
     }
     
-    /* Эффект физического нажатия - леденец со щелчком утапливается вглубь экрана */
+    /* Деликатный отклик на нажатие (кнопка мягко уходит вниз) */
     .alive-btn-base:active {
-        transform: translateY(2px); /* Опускается вниз, почти касаясь поверхности */
-        /* Наша 3D-толщина уменьшается с 5px до 1px, имитируя сжатие */
-        box-shadow: 
-            0 1px 0 #007c91, 
-            0 4px 10px rgba(23, 162, 184, 0.2), 
-            inset 0 1px 1px rgba(0, 0, 0, 0.1) !important;
+        transform: translateY(-1px);
+        background: rgba(167, 223, 225, 0.75);
+        box-shadow: 0 4px 12px rgba(135, 212, 214, 0.25) !important;
     }
 </style>
 <!-- === КОНЕЦ БЛОКА СТРАНИЦЫ ВОПРОСА ТЕСТА ПРИЗНАКОВ === -->
