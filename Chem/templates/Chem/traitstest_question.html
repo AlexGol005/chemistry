@@ -6,7 +6,7 @@
 
 {% block content %}
 <!-- === СТРАНИЦА ВОПРОСА: АБСОЛЮТНАЯ АДАПТИВНОСТЬ БЕЗ ЖЕСТКИХ СКАЧКОВ === -->
-<div class="col-12 d-flex align-items-center justify-content-center" style="min-height: 80vh; padding: 15px 0; box-sizing: border-box;">
+<div id="trait-test-anchor" class="col-12 d-flex align-items-center justify-content-center" style="min-height: 80vh; padding: 15px 0; box-sizing: border-box;">
     <div class="card shadow-sm w-100 mx-auto trait-test-card" style="max-width: 720px; min-height: 450px; border-radius: 24px; border: 1px solid rgba(0, 0, 0, 0.04); background: #ffffff; display: flex; flex-direction: column;">
         <div class="card-body p-4 text-center d-flex flex-column justify-content-between" style="box-sizing: border-box; flex-grow: 1; width: 100%;">
             
@@ -20,7 +20,7 @@
                 </span>
             </div>
 
-            <!-- Главный информационный блок вопроса -->
+            <!-- Главный информационный ...лок вопроса -->
             <div class="text-center my-3 py-2 flex-grow-1 d-flex flex-column justify-content-center">
                 <p class="mb-3" style="font-family: Georgia, serif; font-size: 26pt; font-weight: bold; color: #1e293b; line-height: 1.2;">
                     {{ trait.object_name }}
@@ -55,6 +55,20 @@
     </div>
 </div>
 
+<!-- АВТОМАТИЧЕСКАЯ ФОКУСИРОВКА НА ТЕСТЕ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Проверяем, что ширина экрана мобильная (меньше 768px)
+        if (window.innerWidth < 768) {
+            const element = document.getElementById("trait-test-anchor");
+            if (element) {
+                // Мягко пододвигаем экран к началу теста
+                element.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }
+    });
+</script>
+
 <style>
     .alive-btn-base {
         border: none; 
@@ -66,7 +80,7 @@
         align-items: center;
         justify-content: center;
         width: 100%;
-        min-height: 54px; /* Кнопки имеют аккуратную высоту и динамически растягиваются, если текст длинный */
+        min-height: 54px;
         height: auto;
         padding: 10px 15px;
         white-space: normal;
