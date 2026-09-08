@@ -5,13 +5,13 @@
 {% endblock %}
 
 {% block content %}
-<!-- === СТРАНИЦА ВОПРОСА С ИДЕАЛЬНО ФИКСИРОВАННЫМИ ГАБАРИТАМИ === -->
-<div class="col-12 d-flex align-items-center justify-content-center" style="min-height: 80vh; padding: 20px 0;">
-    <div class="card shadow-sm w-100 mx-auto" style="max-width: 750px; height: 520px; border-radius: 24px; border: 1px solid rgba(0, 0, 0, 0.04); background: #ffffff;">
-        <div class="card-body p-4 text-center d-flex flex-column justify-content-between" style="height: 100%;">
+<!-- === СТРАНИЦА ВОПРОСА: АБСОЛЮТНАЯ АДАПТИВНОСТЬ БЕЗ ЖЕСТКИХ СКАЧКОВ === -->
+<div class="col-12 d-flex align-items-center justify-content-center" style="min-height: 80vh; padding: 15px 0; box-sizing: border-box;">
+    <div class="card shadow-sm w-100 mx-auto trait-test-card" style="max-width: 720px; min-height: 450px; border-radius: 24px; border: 1px solid rgba(0, 0, 0, 0.04); background: #ffffff; display: flex; flex-direction: column;">
+        <div class="card-body p-4 text-center d-flex flex-column justify-content-between" style="box-sizing: border-box; flex-grow: 1; width: 100%;">
             
-            <!-- Верхняя панель -->
-            <div class="d-flex justify-content-between align-items-center mb-2">
+            <!-- Навигационная верхняя панель -->
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0">
                 <span class="text-muted" style="font-size: 11pt; letter-spacing: 0.5px; font-weight: 500;">
                     Тест: качественные признаки
                 </span>
@@ -20,31 +20,30 @@
                 </span>
             </div>
 
-            <!-- Информационный блок -->
-            <div class="text-center my-auto py-2">
-                <p class="mb-3" style="font-family: Georgia, serif; font-size: 28pt; font-weight: bold; color: #1e293b; display: inline-block; line-height: 1.2;">
+            <!-- Главный информационный блок вопроса -->
+            <div class="text-center my-3 py-2 flex-grow-1 d-flex flex-column justify-content-center">
+                <p class="mb-3" style="font-family: Georgia, serif; font-size: 26pt; font-weight: bold; color: #1e293b; line-height: 1.2;">
                     {{ trait.object_name }}
                 </p>
-                
                 <div class="mt-1 d-flex justify-content-center">
-                    <div style="background-color: #fffbeb; border: 1px solid #fef3c7; padding: 8px 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(251, 191, 36, 0.08); display: inline-block;">
-                        <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700; color: #92400e; text-transform: uppercase; letter-spacing: 1.5px; font-size: 14pt;">
+                    <div style="background-color: #fffbeb; border: 1px solid #fef3c7; padding: 8px 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(251, 191, 36, 0.08);">
+                        <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700; color: #92400e; text-transform: uppercase; letter-spacing: 1.5px; font-size: 13pt;">
                             {{ trait.get_question_category_display }}
                         </span>
                     </div>
                 </div>
             </div>
 
-            <!-- Сетка ответов -->
-            <form method="post" action="{% url 'traitstest_answer' index %}" class="w-100 mt-auto">
+            <!-- Сетка ответов (4 кнопки) -->
+            <form method="post" action="{% url 'traitstest_answer' index %}" class="w-100 flex-shrink-0 mt-3">
                 {% csrf_token %}
-                <div class="row px-2" style="row-gap: 16px;">
+                <div class="row px-1" style="row-gap: 16px;">
                     {% for option in test_options %}
                         <div class="col-12 col-md-6 px-2">
                             <button type="submit" 
                                     name="user_answer" 
                                     value="{{ option }}" 
-                                    class="btn btn-block alive-btn-base btn-premium-glass py-2.5">
+                                    class="btn btn-block alive-btn-base btn-premium-glass">
                                 {{ option }}
                             </button>
                         </div>
@@ -59,12 +58,17 @@
 <style>
     .alive-btn-base {
         border: none; 
-        font-size: 13pt; 
+        font-size: 12pt; 
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         cursor: pointer;
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 100%;
+        min-height: 54px; /* Кнопки имеют аккуратную высоту и динамически растягиваются, если текст длинный */
+        height: auto;
+        padding: 10px 15px;
         white-space: normal;
         word-wrap: break-word;
         line-height: 1.3;
@@ -83,13 +87,14 @@
         transform: translateY(-4px); 
         background: rgba(132, 225, 235, 0.8); 
         color: #061f23 !important; 
-        border-color: rgba(79, 195, 209, 0.8); 
+        border-color: rgba(79, 195, 209, 0.7); 
         box-shadow: 0 12px 24px rgba(79, 195, 209, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.8) !important;
         text-decoration: none;
     }
     .alive-btn-base:active {
         transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(79, 195, 209, 0.25) !important;
+        box-shadow: 0 4px 10px rgba(79, 195, 209, 0.2) !important;
     }
 </style>
+<!-- === КОНЕЦ БЛОКА СТРАНИЦЫ ВОПРОСА ТЕСТА ПРИЗНАКОВ === -->
 {% endblock %}
