@@ -13,7 +13,7 @@
             <!-- Навигационная верхняя панель -->
             <div class="d-flex justify-content-between align-items-center mb-5">
                 <span class="text-muted" style="font-size: 11pt; letter-spacing: 0.5px; font-weight: 500;">
-                    Режим: 🧪 Качественные признаки
+                    Тест: качественные признаки
                 </span>
                 <span class="badge px-3 py-2" style="font-size: 11pt; border-radius: 50px; background-color: #eef5fc; color: #007bff; font-weight: 600;">
                     Вопрос {{ index|add:1 }} из {{ total_questions }}
@@ -22,10 +22,6 @@
 
             <!-- Главный информационный блок вопроса -->
             <div class="text-center my-4">
-                <h5 class="text-muted mb-3" style="font-family: Georgia, serif; font-size: 14pt; font-style: italic;">
-                    Для следующего объекта:
-                </h5>
-                
                 <!-- Название исследуемого вещества -->
                 <p class="mb-4" style="font-family: Georgia, serif; font-size: 28pt; font-weight: bold; color: #1e293b; display: inline-block; padding: 5px 15px;">
                     {{ trait.object_name }}
@@ -41,7 +37,7 @@
                 </div>
             </div>
 
-            <!-- Сетка ответов: 2 колонки на ПК, 1 колонка на смартфонах -->
+            <!-- Сетка ответов -->
             <form method="post" action="{% url 'traitstest_answer' index %}">
                 {% csrf_token %}
                 <div class="row px-2 mt-5">
@@ -68,7 +64,7 @@
         border: none; 
         font-size: 13pt; 
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Плавная кинематика Apple */
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         cursor: pointer;
         display: block;
         width: 100%;
@@ -78,40 +74,30 @@
     
     /* Современный премиальный стеклянный эффект (Glassmorphism) */
     .btn-premium-glass {
-        border-radius: 16px; /* Современный сглаженный радиус скругления */
-        background: rgba(224, 244, 245, 0.45); /* Нежная, полупрозрачная пастельно-бирюзовая основа */
-        
-        /* Глубокий темно-серый контрастный текст для идеальной читаемости */
+        border-radius: 16px; 
+        background: rgba(224, 244, 245, 0.45); 
         color: #1e3a3e !important; 
         font-weight: 600;
-        
-        /* Имитация премиального стеклянного контура (матовый отблеск по краю) */
         border: 1px solid rgba(255, 255, 255, 0.65);
-        
-        /* Воздушная, едва заметная пастельная тень, создающая эффект левитации над экраном */
         box-shadow: 
             0 8px 24px rgba(167, 223, 225, 0.2),
             inset 0 1px 2px rgba(255, 255, 255, 0.5);
-            
-        /* Эффект матового стекла — размывает элементы интерфейса под кнопкой */
         backdrop-filter: blur(12px); 
         -webkit-backdrop-filter: blur(12px);
     }
     
     /* Интерактивное парение при наведении курсора */
     .alive-btn-base:hover {
-        transform: translateY(-5px); /* Легкое, чистое всплытие */
-        background: rgba(188, 235, 238, 0.7); /* Стекло плавно наливается чуть более плотным пастельным тоном */
-        color: #0d282c !important; /* Усиление контраста текста */
-        
-        /* Мягкое расширение зоны тени */
+        transform: translateY(-5px); 
+        background: rgba(188, 235, 238, 0.7); 
+        color: #0d282c !important; 
         box-shadow: 
             0 16px 32px rgba(135, 212, 214, 0.35),
             inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
         text-decoration: none;
     }
     
-    /* Деликатный отклик на нажатие (кнопка мягко уходит вниз) */
+    /* Деликатный отклик на нажатие */
     .alive-btn-base:active {
         transform: translateY(-1px);
         background: rgba(167, 223, 225, 0.75);
