@@ -5,43 +5,124 @@
 {% endblock %}
 
 {% block content %}
-<!-- === СТАРТ БЛОКА СТРАНИЦЫ РЕЗУЛЬТАТА ОТВЕТА (ЧАСТЬ 1) === -->
+<!-- === СТАРТ БЛОКА СТРАНИЦЫ РЕЗУЛЬТАТА ОТВЕТА === -->
 <div class="col-12 mt-4">
-    <div class="card shadow-sm mx-auto" style="max-width: 750px; border-radius: 15px;">
+    <div class="card shadow-sm mx-auto" style="max-width: 750px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); background: #ffffff;">
         <div class="card-body p-4 text-center">
             
             <!-- Блок статуса ответа: Зеленый если верно, Красный если ошибка -->
             {% if is_correct %}
-                <div class="alert alert-success text-center p-3 mb-4" style="border-radius: 12px; border-left: 6px solid #28a745;">
-                    <h3 class="mb-1" style="font-family: Georgia, serif; font-weight: bold; color: #1e7e34;">🎉 Правильно!</h3>
-                    <p class="mb-0" style="font-size: 12pt;">Вы дали верный ответ.</p>
+                <div class="alert alert-success text-center p-3 mb-4" style="border-radius: 12px; border-left: 6px solid #28a745; background-color: #f6fff8; border-color: #d4edda;">
+                    <h3 class="mb-1" style="font-family: Georgia, serif; font-weight: bold; color: #1e7e34; font-size: 18pt;">🎉 Правильно!</h3>
+                    <p class="mb-0" style="font-size: 11pt; color: #1e7e34;">Вы дали верный ответ.</p>
                 </div>
             {% else %}
-                <div class="alert alert-danger text-center p-3 mb-4" style="border-radius: 12px; border-left: 6px solid #dc3545;">
-                    <h3 class="mb-1" style="font-family: Georgia, serif; font-weight: bold; color: #bd2130;">❌ Неправильно</h3>
-                    <p class="mb-0" style="font-size: 12pt;">Вы выбрали: <strong style="text-decoration: line-through;">{{ user_answer_label }}</strong></p>
+                <div class="alert alert-danger text-center p-3 mb-4" style="border-radius: 12px; border-left: 6px solid #dc3545; background-color: #fff5f5; border-color: #f8d7da;">
+                    <h3 class="mb-1" style="font-family: Georgia, serif; font-weight: bold; color: #bd2130; font-size: 18pt;">❌ Неправильно</h3>
+                    <p class="mb-0" style="font-size: 11pt; color: #bd2130;">Вы выбрали: <strong style="text-decoration: line-through;">{{ user_answer_label }}</strong></p>
                 </div>
             {% endif %}
 
-            <!-- Лаконичный вывод: Объект - Категория - Ответ -->
-            <div class="my-4">
-                <h2 style="font-family: Georgia, serif; font-weight: bold; color: #2c3e50; font-size: 24pt; margin-bottom: 5px;">
+            <!-- Минималистичный и чистый вывод: Объект - Категория - Правильный ответ -->
+            <div class="my-4 pt-2">
+                <h2 style="font-family: Georgia, serif; font-weight: bold; color: #2c3e50; font-size: 26pt; margin-bottom: 5px;">
                     {{ trait.object_name }}
                 </h2>
-                <div class="text-muted font-weight-bold text-uppercase mb-3" style="font-size: 12pt; letter-spacing: 1px; color: #6c757d;">
+                <div class="text-muted font-weight-bold text-uppercase mb-4" style="font-size: 11pt; letter-spacing: 1.5px; color: #7f8c8d;">
                     {{ trait.get_question_category_display }}
                 </div>
-                <div class="mt-2">
-                    <span class="badge badge-info px-4 py-2" style="font-size: 14pt; border-radius: 50px; background-color: #17a2b8;">
+                <div class="mt-3">
+                    <span class="badge px-4 py-2" style="font-size: 14pt; border-radius: 50px; background-color: #e4f7f9; color: #008fa5; border: 1px solid rgba(23, 162, 184, 0.2); font-weight: 700;">
                         {{ correct_label }}
                     </span>
                 </div>
             </div>
 
-            <!-- Вывод картинки без лишнего мусора и заголовков -->
+            <!-- Вывод сгенерированного цветного квадрата без лишнего текстового мусора -->
             {% if trait.image %}
-                <div class="my-4">
-                    <img class="bd-placeholder-img rounded img-fluid mx-auto d-block shadow-sm" style="max-width: 50%; max-height: 35vh; object-fit: contain; height: auto; border: 1px solid #dee2e6;" src="{{ trait.image.url }}" loading="lazy" decoding="async">
+                <div class="my-5 d-flex justify-content-center">
+                    <img class="bd-placeholder-img rounded img-fluid shadow-sm" 
+                         style="max-width: 45%; max-height: 35vh; object-fit: contain; height: auto; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 10px 25px rgba(0,0,0,0.05)!important;" 
+                         src="{{ trait.image.url }}" 
+                         loading="lazy" 
+                         decoding="async">
                 </div>
             {% endif %}
-<!-- === КОНЕЦ БЛОКА СТРАНИЦЫ РЕЗУЛЬТАТА ОТВЕТА (ЧАСТЬ 1) === -->
+
+            <!-- КНОПКА ПЕРЕХОДА ДАЛЬШЕ В СТИЛЕ ЦВЕТНОГО СТЕКЛА -->
+            <div class="text-center mt-5 pt-2">
+                {% if next_index < total_questions %}
+                    <a href="{% url 'traitstest_question' next_index %}" 
+                       class="btn btn-lg text-secondary font-weight-bold px-5 py-3 alive-btn-base btn-glass-nav btn-glass-next"
+                       style="max-width: 80%; display: inline-block;">
+                        ➡️ Следующий вопрос
+                    </a>
+                {% else %}
+                    <a href="{% url 'traitstest_finished' %}" 
+                       class="btn btn-lg text-secondary font-weight-bold px-5 py-3 alive-btn-base btn-glass-nav btn-glass-finish"
+                       style="max-width: 80%; display: inline-block;">
+                        📊 Посмотреть итоги теста
+                    </a>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Базовые свойства парящих кнопок навигации */
+    .alive-btn-base {
+        border: none; 
+        font-size: 14pt; 
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        cursor: pointer;
+    }
+    
+    /* Стилизация объемного матового стекла для навигации */
+    .btn-glass-nav {
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+    
+    /* Стекло для кнопки "Следующий" (Пастельно-синий оттенок) */
+    .btn-glass-next {
+        background: linear-gradient(135deg, rgba(217, 237, 247, 0.7) 0%, rgba(188, 223, 241, 0.5) 100%);
+        color: #2b5468 !important;
+        box-shadow: 0 8px 24px rgba(188, 223, 241, 0.4), 
+                    inset 0 1px 3px rgba(255, 255, 255, 0.9);
+    }
+    .btn-glass-next:hover {
+        background: linear-gradient(135deg, rgba(188, 223, 241, 0.9) 0%, rgba(141, 199, 229, 0.7) 100%);
+        color: #123141 !important;
+        box-shadow: 0 16px 32px rgba(141, 199, 229, 0.55), 
+                    inset 0 1px 3px rgba(255, 255, 255, 1) !important;
+        transform: translateY(-6px);
+        text-decoration: none;
+    }
+    
+    /* Стекло для кнопки "Итоги" (Пастельно-зеленый оттенок) */
+    .btn-glass-finish {
+        background: linear-gradient(135deg, rgba(222, 244, 228, 0.7) 0%, rgba(190, 233, 203, 0.5) 100%);
+        color: #275635 !important;
+        box-shadow: 0 8px 24px rgba(190, 233, 203, 0.4), 
+                    inset 0 1px 3px rgba(255, 255, 255, 0.9);
+    }
+    .btn-glass-finish:hover {
+        background: linear-gradient(135deg, rgba(190, 233, 203, 0.9) 0%, rgba(139, 214, 162, 0.7) 100%);
+        color: #0f3017 !important;
+        box-shadow: 0 16px 32px rgba(139, 214, 162, 0.55), 
+                    inset 0 1px 3px rgba(255, 255, 255, 1) !important;
+        transform: translateY(-6px);
+        text-decoration: none;
+    }
+    
+    /* Физический клик */
+    .alive-btn-base:active {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    }
+</style>
+<!-- === КОНЕЦ БЛОКА СТРАНИЦЫ РЕЗУЛЬТАТА ОТВЕТА === -->
+{% endblock %}
