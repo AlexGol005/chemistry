@@ -24,22 +24,25 @@ from django.utils.safestring import mark_safe
 class TraitResource(resources.ModelResource):
     class Meta:
         model = Trait
-        fields = ('id', 'object_name', 'question_text', 'answer')
+        # Указываем актуальное поле question_category вместо старого question_text
+        fields = ('id', 'object_name', 'question_category', 'answer')
         skip_unchanged = True
         report_skipped = True
 
 
 class TraitAdmin(ImportExportActionModelAdmin):
     resource_class = TraitResource
-    list_display = ('pk', 'object_name', 'question_text', 'answer', 'image')
-    search_fields = ['pk', 'object_name', 'question_text', 'answer']
-    list_filter = ('question_text',)
+    # Исправлено: question_category выводится в список и доступно для фильтрации
+    list_display = ('pk', 'object_name', 'question_category', 'answer', 'image')
+    search_fields = ['pk', 'object_name', 'question_category', 'answer']
+    list_filter = ('question_category',)
     save_as = True
 
 
 admin.site.register(Trait, TraitAdmin)
 
 # === КОНЕЦ БЛОКА АДМИНКИ ДЛЯ ХИМИЧЕСКИХ ПРИЗНАКОВ ===
+
 
 
 
