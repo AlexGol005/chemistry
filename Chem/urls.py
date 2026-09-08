@@ -99,6 +99,11 @@ urlpatterns = [
     path('polymertest/finished/', views.PolymerTestFinishedView.as_view(), name='polymertest_finished'),
     path('polymertest/head/', views.PolymerTestHeadView.as_view(), name='polymertest_head'),
 
+    # === СИСТЕМА ТЕСТИРОВАНИЯ КАЧЕСТВЕННЫХ ПРИЗНАКОВ ===
+    path('traitstest/start/', views.ChemTraitTestStartView.as_view(), name='traitstest_start'),
+    path('traitstest/question/<int:index>/', views.ChemTraitTestQuestionView.as_view(), name='traitstest_question'),
+    path('traitstest/answer/<int:index>/', views.ChemTraitTestAnswerView.as_view(), name='traitstest_answer'),
+    path('traitstest/finished/', views.ChemTraitTestFinishedView.as_view(), name='traitstest_finished'),
 
 
     ]
