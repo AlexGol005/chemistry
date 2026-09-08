@@ -4,17 +4,25 @@
 {% load qr_code %}
 <html lang="ru">
 <head>
-    <meta name="referrer" content="no-referrer-when-downgrade">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %}</title>
-    
-    {% block metaname %}{% endblock %}
-    {% block keywords %}{% endblock %}
-    {% block description %}{% endblock %}
-    {% block any %}{% endblock %}
-    
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <meta http-equiv="Content-Language" content="ru" />
+
+    <!-- Верификация Яндекс.Вебмастера -->
+    <meta name="yandex-verification" content="f0dee23ff927d154" />
+
+    <!-- Заголовок страницы (с базовым названием по умолчанию) -->
+    <title>{% block title %}Подготовка к ЕГЭ и ОГЭ по химии — химия.site{% endblock %}</title>
+    
+    <!-- SEO-блоки для страниц-наследников (теория, тесты) -->
+    {% block description %}<meta name="description" content="Бесплатная подготовка к ЕГЭ и ОГЭ по химии на сайте химия.site. Актуальные учебные материалы, интерактивные химические реакции, тесты и разборы заданий для успешной сдачи экзамена." />{% endblock %}
+    {% block keywords %}<meta name="keywords" content="химия егэ, подготовка к егэ по химии, тесты егэ химия, chemical reactions, теория по химии егэ, химия огэ, подготовка к огэ по химии, тесты огэ химия, теория по химии огэ, химия site" />{% endblock %}
+    {% block metaname %}{% endblock %}
+    {% block any %}{% endblock %}
+</head>
+
+
     
     <!-- КОРРЕКТНЫЙ СТИЛЬ BOOTSTRAP 4 -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
