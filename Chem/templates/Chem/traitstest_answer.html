@@ -1,0 +1,56 @@
+{% extends 'main/superbase.html' %}
+
+{% block title %}
+Результат ответа | Тест по качественным признакам
+{% endblock %}
+
+{% block content %}
+<!-- === СТАРТ БЛОКА СТРАНИЦЫ РЕЗУЛЬТАТА ОТВЕТА === -->
+<div class="col-12 mt-4">
+    <div class="card shadow-sm mx-auto" style="max-width: 750px; border-radius: 15px;">
+        <div class="card-body p-4">
+            
+            {% if is_correct %}
+                <div class="alert alert-success text-center p-3 mb-4" style="border-radius: 12px; border-left: 6px solid #28a745;">
+                    <h3 class="mb-1" style="font-family: Georgia, serif; font-weight: bold; color: #1e7e34;">🎉 Правильно!</h3>
+                    <p class="mb-0" style="font-size: 12pt;">Вы дали верный ответ.</p>
+                </div>
+            {% else %}
+                <div class="alert alert-danger text-center p-3 mb-4" style="border-radius: 12px; border-left: 6px solid #dc3545;">
+                    <h3 class="mb-1" style="font-family: Georgia, serif; font-weight: bold; color: #bd2130;">❌ Неправильно</h3>
+                    <p class="mb-0" style="font-size: 12pt;">Вы выбрали: <strong style="text-decoration: line-through;">{{ user_answer_label }}</strong></p>
+                </div>
+            {% endif %}
+
+            <div class="p-3 border rounded mb-4" style="background-color: #f8f9fa; border-radius: 10px;">
+                <p class="mb-2" style="font-size: 13pt; font-family: Georgia, serif; line-height: 1.4;">
+                    <strong>Химический объект:</strong> <br>
+                    <span style="font-size: 14pt; color: #2c3e50; font-weight: bold;">
+                        {{ trait.object_name }}
+                    </span>
+                </p>
+                
+                <p class="mb-0" style="font-size: 12pt; font-family: Georgia, serif;">
+                    <strong>Правильный ответ (<span class="text-lowercase">{{ trait.get_question_category_display }}</span>):</strong> 
+                    <span class="badge badge-info px-3 py-1" style="font-size: 11pt;">{{ correct_label }}</span>
+                </p>
+            </div>
+
+            <div class="border rounded p-3 mb-4" style="background-color: #fff; box-shadow: inset 0 0 10px rgba(0,0,0,0.02);">
+                <h5 class="text-center mb-3" style="font-family: Georgia, serif; font-weight: bold; color: #495057;">
+                    📚 Справочная информация
+                </h5>
+
+                <p style="font-family: Georgia, serif; font-size: 13pt; margin-bottom: 8px;"> 
+                    <strong>Проверяемый признак:</strong> <span style="color: #e74c3c; font-weight: bold;">{{ trait.get_question_category_display }}</span>
+                </p>
+
+                {% if trait.image %}
+                    <div class="mt-4 pt-3 border-top">
+                        <h6 class="text-center mb-3" style="font-family: Georgia, serif; font-weight: bold; color: #6c757d;">
+                            🖼 Иллюстрация признака
+                        </h6>
+                        <div class="media text-muted flex-column align-items-center pt-2 mb-3">
+                            <img class="bd-placeholder-img rounded img-fluid mx-auto d-block" style="max-width: 60%; max-height: 40vh; object-fit: contain; height: auto;" src="{{ trait.image.url }}" loading="lazy" decoding="async">
+                        </div>
+                    </div>
