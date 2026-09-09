@@ -3,6 +3,16 @@ from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from ajax_select import urls as ajax_select_urls
+from django.contrib.sitemaps.views import sitemap
+from .sitemaps import AutoDjangoSitemap 
+
+
+sitemaps = {
+    'auto_sitemap': AutoDjangoSitemap,
+}
+
+
+
 admin.autodiscover()
 
 urlpatterns = [
@@ -18,6 +28,7 @@ urlpatterns = [
     path('org/', include('administrator.urls')),
     path('chem/', include('Chem.urls')),
     path('hike/', include('hike.urls')),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ]
 
 if settings.DEBUG:
