@@ -1,5 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from django.apps import apps
+from django.urls import reverse
 
 class AutoDjangoSitemap(Sitemap):
     changefreq = "weekly"
@@ -8,17 +9,20 @@ class AutoDjangoSitemap(Sitemap):
     def items(self):
         dynamic_items = []
         
-        # 1. Пробегаемся по всем моделям вашего проекта
         for model in apps.get_models():
-            # 2. Проверяем, настроил ли программист для модели страницу (get_absolute_url)
-            # Если у модели нет своего адреса, Django её просто пропустит!
             if hasattr(model, 'get_absolute_url'):
-                try:
-                    # 3. Забираем все записи из этой модели в карту сайта
-                    # Исключаем технические модели Яндекса/Админки, если они вдруг попадутся
-                    if not model._meta.app_label in ['admin', 'auth', 'contenttypes', 'sessions']:
-                        dynamic_items.extend(list(model.objects.all()))
-                except Exception:
-                    pass
+                # Пропускаем системные приложения
+                if model._meta.app_label in ['admin', 'auth', 'contenttypes', 'sessions']:
+                    continue
                     
+                # Проверяем каждую запись отдельно
+                for obj in model.objects.all():
+                    try:
+                        # Пробуем сгенерировать URL. Если упадет — запись пропустим!
+                        obj.get_absolute_url()
+                        dynamic_items.append(obj)
+                    except Exception:
+                        # Если reverse() выдает ошибку (как measureequipmentcomm), Django просто идет дальше
+                        pass
+                        
         return dynamic_items
