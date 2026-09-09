@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from ajax_select import urls as ajax_select_urls
 from django.contrib.sitemaps.views import sitemap
-from .sitemaps import AutoDjangoSitemap 
+from main.sitemaps import AutoDjangoSitemap 
 
 
 sitemaps = {
