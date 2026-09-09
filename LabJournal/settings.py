@@ -41,6 +41,7 @@ DEBUG = os.getenv('DEBUG') == "true"
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    '0.0.0.0',
     '217.149.22.220',
     'химия.site',
     'www.химия.site',
