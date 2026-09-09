@@ -1,6 +1,6 @@
 {% extends 'main/superbase.html' %}
-{% block title %} {{ obj.title }} {% endblock %}
-{% block metaname %}<meta name="description" content="{{ obj.metatitle }}">{% endblock %}
+
+{% block title %}{% autoescape off %}{{ obj.metatitle|default:obj.title }}{% endautoescape %}{% endblock %}
 {% block keywords %}<meta name="keywords" content="{{ obj.keywords }}">{% endblock %}
 {% block description %}<meta name="description" content="{{ obj.description }}">{% endblock %}
 
