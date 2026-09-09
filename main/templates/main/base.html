@@ -1,6 +1,11 @@
 {% extends 'main/superbase.html' %}
 {% load static %}
 
+{# Проброс SEO-блоков и верификации из конечных страниц в superbase.html #}
+{% block metaname %}{{ block.super }}{% endblock %}
+{% block keywords %}{{ block.super }}{% endblock %}
+{% block description %}{{ block.super }}{% endblock %}
+
 {# 1. КОРЗИНА ДЛЯ ОСНОВНОГО КОНТЕНТА (Займет левую часть, 8 колонок) #}
 {% block content %}
 <div class="col-8 pr-xl-5"> <!-- pr-xl-5 создаст шикарный зазор СПРАВА от текста -->
@@ -32,13 +37,22 @@
                 var seconds = zero_first_format(current_datetime.getSeconds());
                 return day+"."+month+"."+year+" "+hours+":"+minutes+":"+seconds;
             }
-            document.getElementById('current_date_time_block').innerHTML = date_time();
+            // Функция запустится после загрузки DOM
+            window.addEventListener('DOMContentLoaded', function() {
+                var element = document.getElementById('current_date_time_block');
+                if (element) {
+                    element.innerHTML = date_time();
+                    setInterval(function() {
+                        element.innerHTML = date_time();
+                    }, 1000);
+                }
+            });
         </script>
     </center>
     </h4>
     
     <center><h6 class="mt-2">Объявления</h6></center>
-    <p><center>{{last_ad.text}}</center></p>
+    <p><center>{{ last_ad.text }}</center></p>
     
     <center><h6 class="mt-2">Цитаты</h6></center>
     <p><center>Работаешь добросовестно, так и в глаза людям глядеть не совестно. (русская народная поговорка)</center></p>
@@ -47,6 +61,6 @@
     <center><img width="90%" src="{% static 'main/img/5.jpg' %}" class="img-thumbnail"></center>
     
     <center><h4 class="mt-2">Новости</h4></center>
-    <p><center>{{last_news.text}}</center></p>
+    <p><center>{{ last_news.text }}</center></p>
 </div>
 {% endblock %}
