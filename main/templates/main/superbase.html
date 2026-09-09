@@ -20,7 +20,7 @@
     {% block keywords %}<meta name="keywords" content="химия егэ, подготовка к егэ по химии, тесты егэ химия, chemical reactions, теория по химии егэ, химия огэ, подготовка к огэ по химии, тесты огэ химия, теория по химии огэ, химия site" />{% endblock %}
     {% block metaname %}{% endblock %}
     {% block any %}{% endblock %}
-</head>
+
 
 
     
@@ -55,7 +55,43 @@
     </script>
     <noscript><div><img src="https://top-fwz1.mail.ru/counter?id=3475315;js=na" style="position:absolute;left:-9999px;" alt="Top.Mail.Ru" /></div></noscript>
     <!-- /Top.Mail.Ru counter -->
+<!--  тестовый блок 2 от 09.09.2026 -->
+<!-- 1. JavaScript-фикс для картинок из редактора -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Находим все картинки, которые выгружаются из текстового редактора
+    var editorImages = document.querySelectorAll('main img');
+    editorImages.forEach(function(img) {
+      // На мобильных инлайновые атрибуты width и height ломают адаптивность.
+      // Мы полностью очищаем их, перенося управление размерами на CSS.
+      img.removeAttribute('width');
+      img.removeAttribute('height');
+    });
+  });
+</script>
 
+<!-- 2. CSS-правила для умного сжатия картинок -->
+<style>
+  /* Правило применяется к картинкам в контенте */
+  main img {
+    display: block !important;
+    max-width: 100% !important; /* Картинка никогда не станет шире экрана телефона! */
+    width: auto !important;      /* На ПК картинка сохранит свой реальный исходный размер */
+    height: auto !important;     /* Высота уменьшится пропорционально, без искажений */
+    max-height: none !important; /* Убираем любые ограничения по высоте */
+    margin: 15px auto !important;/* Красиво центрируем картинку в тексте */
+  }
+
+  /* Сбрасываем жесткие ограничения контейнеров, в которые CKEditor любит заворачивать фото */
+  figure, figure.image, .image, main td div, main td p {
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+</style>
+
+<!-- конец тестовый блок 2 от 09.09.2026 -->
+    
 </head>
 
 
@@ -111,6 +147,34 @@
             /* Задаем фиксированную ширину для кнопок действий, чтобы они не скакали из-за длины текста */
             .btn-fixed-lg { width: 190px; }
             .btn-fixed-sm { width: 90px; }
+
+/*  тестовый блок 09.09.2026 */
+
+                    /* АДАПТИВНОСТЬ МЕНЮ ДЛЯ СМАРТФОНОВ: сработает только тогда, когда меню сворачивается в бургер */
+        @media screen and (max-width: 991.98px) {
+            #navbarNavDropdown .navbar-nav {
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+            #navbarNavDropdown .nav-item {
+                width: 100% !important; /* Строка списка занимает всю ширину экрана */
+                display: block !important;
+            }
+            #navbarNavDropdown .nav-link, 
+            #navbarNavDropdown .btn,
+            #navbarNavDropdown form,
+            #navbarNavDropdown form button {
+                display: flex !important;
+                width: 100% !important; /* Кнопки и формы растягиваются на всю ширину экрана телефона */
+                max-width: 100% !important;
+                margin: 5px 0 !important; /* Удобные зазоры между кнопками по вертикали */
+                white-space: normal !important; /* Разрешаем тексту кнопок переноситься на узких экранах */
+                height: auto !important; /* Кнопка станет выше, если текст перенесся */
+                min-height: 40px;
+                padding: 8px 12px !important;
+            }
+        }
+/* конец тестовый блок 09.09.2026 */
         </style>
 
         <ul class="navbar-nav justify-content-center align-items-center w-100 text-center flex-wrap">
