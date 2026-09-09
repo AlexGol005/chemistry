@@ -368,19 +368,21 @@ class Pictures(models.Model):
     """ картинки """
 
     img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
-          # Новое поле: по умолчанию True (показывать)
+    
+    # ДОБАВИТЬ ЭТО ПОЛЕ:
+    tags = models.CharField(
+        max_length=255, 
+        blank=True, 
+        verbose_name='Темы для поиска (через запятую)'
+    )
+    
     is_visible = models.BooleanField(
       default=True,
       verbose_name='Отображать на сайте',
     )
 
-    # Переопределяем менеджер
     objects = VisibleManager()
-    # Менеджер для доступа вообще ко всем записям (пригодится в админке)
     all_objects = models.Manager()
-
-                                        
-
 
     class Meta:
         verbose_name = 'картинки'
