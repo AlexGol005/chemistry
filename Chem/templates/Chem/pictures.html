@@ -18,10 +18,11 @@
                      max-width: 100% — растягивает на телефонах.
                      max-height: 80vh — на компьютерах сжимает картинку по вертикали, чтобы она ВСЯ влезала в экран.
                      object-fit: contain — защищает картинку от искажений и сплющивания. -->
-                <img class="bd-placeholder-img rounded img-fluid" 
-                     style="max-width: 100%; max-height: 80vh; width: auto; height: auto; object-fit: contain;" 
-                     src="{{ obj.img1.url }}" 
-                     alt="Мем">
+                    <img class="bd-placeholder-img rounded img-fluid" 
+                    style="max-width: 100%; max-height: 80vh; width: auto; height: auto; object-fit: contain;" 
+                    src="{{ obj.img1.url }}" 
+                    alt="{{ obj.tags|default:'Химический мем' }}"> <!-- ИСПРАВЛЕНО ЗДЕСЬ -->
+
             {% endif %} 
         </div>
     {% endfor %} 
