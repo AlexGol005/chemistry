@@ -1,12 +1,17 @@
 {% extends 'main/superbase.html' %}
 {% load static %}
 
-{# Проброс SEO-блоков и верификации из конечных страниц в superbase.html #}
-{% block metaname %}{{ block.super }}{% endblock %}
+{# 1. ЖЕСТКОЕ ИСПРАВЛЕНИЕ ДЛЯ ВЕРИФИКАЦИИ ЯНДЕКСА #}
+{% block metaname %}
+    {{ block.super }}
+    <!-- Этот тег теперь принудительно внедрится в секцию head через блок metaname -->
+    <meta name="yandex-verification" content="f0dee23ff927d154" />
+{% endblock %}
+
 {% block keywords %}{{ block.super }}{% endblock %}
 {% block description %}{{ block.super }}{% endblock %}
 
-{# 1. КОРЗИНА ДЛЯ ОСНОВНОГО КОНТЕНТА (Займет левую часть, 8 колонок) #}
+{# 2. КОРЗИНА ДЛЯ ОСНОВНОГО КОНТЕНТА (Займет левую часть, 8 колонок) #}
 {% block content %}
 <div class="col-8 pr-xl-5"> <!-- pr-xl-5 создаст шикарный зазор СПРАВА от текста -->
     {% block inner_content %}
@@ -15,7 +20,7 @@
 </div>
 {% endblock %}
 
-{# 2. КОРЗИНА ДЛЯ БОКОВОЙ ПАНЕЛИ (Займет правую часть, 4 колонки) #}
+{# 3. КОРЗИНА ДЛЯ БОКОВОЙ ПАНЕЛИ (Займет правую часть, 4充олонки) #}
 {% block aside %}
 <div class="col-4">
     <center><h6 class="mt-4">Сегодня</h6></center>                        
