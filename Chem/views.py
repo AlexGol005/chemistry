@@ -1550,7 +1550,7 @@ class ChemSearchResultView(TemplateView):
         
         searchword = self.request.GET.get('searchword', '')
 
-        if self.request.GET['searchword']:
+        if self.request.GET.get('searchword'):
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
             objects = Inorganiclaw.objects.\
