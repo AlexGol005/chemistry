@@ -21,28 +21,32 @@ from .models import OrganicNames, UserQuestionProgress  # Подключаем �
 from django.views.generic import ListView
 from django.db.models import Q
 from .models import InorganicReaction, NamesCompaunds
-from .forms import SearchForm  # ИСПОЛЬЗУЕМ ВАШУ ФОРМУ ИЗ ФАЙЛА FORMS.PY
+from .forms import SearchForm  # Используем вашу существующую форму из forms.py
 
 class InorganicReactionListView(ListView):
     model = InorganicReaction
-    template_name = 'Chem/inorganic_reaction_list.html'  # Укажите ваш путь к шаблону списка
-    context_object_name = 'objects'
-    paginate_by = 10
+    template_name = 'Chem/inorganic_reaction_list.html'  # Путь к вашему новому шаблону реакций
+    context_object_name = 'objects'  # Соответствует циклу {% for obj in objects %} в шаблоне
+    paginate_by = 10  # Количество реакций на одну страницу
 
     def get_queryset(self):
+        # Используем стандартный менеджер объектов модели
         queryset = InorganicReaction.objects.all()
         
-        # Безопасно получаем поисковое слово из вашей формы SearchForm
+        # Безопасно получаем поисковое слово из формы через .get()
         query = self.request.GET.get('searchword', '').strip()
         
         if query:
-            # 1. Находим формулы всех веществ, где название или внешний вид содержат поисковый запрос
+            # 1. Находим формулы всех веществ, где название или описание содержат поисковый запрос
+            # Например, по запросу "сульфат меди" найдет строковое значение формулы "CuSO4"
             matching_formulas = NamesCompaunds.objects.filter(
                 Q(name__icontains=query) | Q(appearance__icontains=query)
             ).values_list('formula', flat=True)
             
-            # 2. Фильтруем реакции по найденным формулам или по прямому тексту (если ввели саму формулу)
+            # 2. Фильтруем реакции: ищем совпадение по найденным формулам во всех 7 полях,
+            # либо делаем прямое текстовое совпадение (если пользователь сразу ввел точную формулу)
             queryset = queryset.filter(
+                # Проверка по списку формул, полученных из модели NamesCompaunds
                 Q(reagent1__in=matching_formulas) |
                 Q(reagent2__in=matching_formulas) |
                 Q(reagent3__in=matching_formulas) |
@@ -50,6 +54,8 @@ class InorganicReactionListView(ListView):
                 Q(product2__in=matching_formulas) |
                 Q(product3__in=matching_formulas) |
                 Q(product4__in=matching_formulas) |
+                
+                # Прямой текстовый поиск на случай ввода формулы вручную (например, "CuSO4")
                 Q(reagent1__icontains=query) |
                 Q(reagent2__icontains=query) |
                 Q(reagent3__icontains=query) |
@@ -57,18 +63,19 @@ class InorganicReactionListView(ListView):
                 Q(product2__icontains=query) |
                 Q(product3__icontains=query) |
                 Q(product4__icontains=query)
-            ).distinct()
+            ).distinct()  # Исключаем дубликаты реакций из выдачи
             
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # БЕЗОПАСНО: Ключ 'searchword' больше никогда не уронит сервер, даже если его нет в URL
+        # ИСПРАВЛЕНО НА БЕЗОПАСНЫЙ ВАРИАНТ:
+        # Больше никаких MultiValueDictKeyError, метод .get() никогда не уронит сервер
         searchword = self.request.GET.get('searchword', '')
         context['searchword'] = searchword
         
-        # Передаем вашу форму SearchForm, заполненную GET-данными
+        # Передаем вашу форму SearchForm в шаблон и заполняем её данными из GET
         context['form'] = SearchForm(self.request.GET or None)
         return context
 
