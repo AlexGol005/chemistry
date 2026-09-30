@@ -12,7 +12,7 @@
 {% autoescape off %}
 <div class="col-8">
          
-   <center> <h3><a href="/chem/"> Реакции неорганической химии </a></h3> </center>
+   <center>  <h3><a href="/chem/"> Реакции неорганической химии </a></h3>     </center>
 {# основная таблица #}
 
 {% for obj in objects %}
@@ -20,20 +20,40 @@
     <tbody>
     <tr>
         <td class="ind1"> 
-            {# Выводим саму реакцию: закон (если есть) и схему реагентов #}
+            {# Шапка: Закон, к которому относится реакция #}
             <h4>
                 {% if obj.number %}{{ obj.number.title }}{% else %}Без закона{% endif %}
             </h4>
-            <div class="mt-2" style="font-size: 1.2rem; font-weight: 500;">
-                {{ obj.reagent1|default:"" }} 
+            
+            {# Отображение самой химической реакции #}
+            <div class="mt-3 mb-2" style="font-size: 1.3rem; font-family: 'Georgia', serif; font-weight: bold; color: #2c3e50;">
+                {# Вывод реагентов #}
+                {{ obj.reagent1|default:"" }}
                 {% if obj.reagent2 %} + {{ obj.reagent2 }}{% endif %}
-                {% if obj.reagent3 %} + {{ obj.reagent3 }}{% endif %} 
-                → ...
+                {% if obj.reagent3 %} + {{ obj.reagent3 }}{% endif %}
+                
+                {# Стрелка реакции #}
+                <span style="color: #007bff; font-weight: bold; margin: 0 8px;">→</span>
+                
+                {# Вывод продуктов #}
+                {% if obj.product1 %}{{ obj.product1 }}{% else %}?{% endif %}
+                {% if obj.product2 %} + {{ obj.product2 }}{% endif %}
+                {% if obj.product3 %} + {{ obj.product3 }}{% endif %}
+                {% if obj.product4 %} + {{ obj.product4 }}{% endif %}
             </div>
-            <small class="text-muted d-block mt-1">Условия: {{ obj.condition }} | Уровень: {{ obj.level }}</small>
 
-            {# ИСПРАВЛЕННАЯ ССЫЛКА: передаем pk реакции в именованный параметр str #}
-            <a href="{% url 'inorganiclawtestanswer' str=obj.pk %}" target="_blank" class="btn btn-outline-primary mt-3" style="width: 180px">читать далее</a>
+            {# Дополнительная информация о реакции #}
+            <div class="text-muted" style="font-size: 0.9rem;">
+                <strong>Условия:</strong> {{ obj.condition|default:"нормальные условия" }} | 
+                <strong>Уровень:</strong> {{ obj.level|default:"ОГЭ" }}
+                {% if obj.extra %}
+                    | <strong>Инфо:</strong> {{ obj.extra }}
+                {% endif %}
+            </div>
+            <br>
+
+            {# Переход на детальную страницу теста с передачей ID реакции #}
+            <a href="{% url 'inorganiclawtestanswer' str=obj.pk %}" target="_blank" class="btn btn-outline-primary mt-2" style="width: 180px">читать далее</a>
         </td>
     </tr>
     </tbody>
@@ -43,12 +63,12 @@
 {% endfor %}
 {# конец основной таблицы #}
 
-{# пагинация (с сохранением поискового запроса в URL) #}
+{# пагинация #}
 {% if is_paginated %}
-    <div class="pagination-container text-center json-pagination mt-4">
+    <div class="pagination-container">
         {% if page_obj.has_previous %}
-            <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-primary mt-1">Начало</a>
-            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-primary mt-1">«</a>
+            <a href="?page=1{% if request.GET.searchword %}&searchword={{ request.GET.searchword }}{% endif %}" class="btn btn-outline-primary mt-1">Начало</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.searchword %}&searchword={{ request.GET.searchword }}{% endif %}" class="btn btn-outline-primary mt-1">«</a>
         {% endif %}
 
         {% for num in page_obj.paginator.page_range %}
@@ -56,14 +76,14 @@
                 <!-- Активная страница -->
                 <span class="btn btn-primary mt-1 disabled">{{ num }}</span>
             {% elif num > page_obj.number|add:'-10' and num < page_obj.number|add:'10' %}
-                <!-- Соседние страницы (в радиусе 10 от текущей) -->
-                <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-primary mt-1">{{ num }}</a>
+                <!-- Соседние страницы в радиусе 10 -->
+                <a href="?page={{ num }}{% if request.GET.searchword %}&searchword={{ request.GET.searchword }}{% endif %}" class="btn btn-outline-primary mt-1">{{ num }}</a>
             {% endif %}
         {% endfor %}
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-primary mt-1">»</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-primary mt-1">Последняя</a>
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.searchword %}&searchword={{ request.GET.searchword }}{% endif %}" class="btn btn-outline-primary mt-1">»</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.searchword %}&searchword={{ request.GET.searchword }}{% endif %}" class="btn btn-outline-primary mt-1">Последняя</a>
         {% endif %}
     </div>
 {% endif %}
@@ -71,8 +91,8 @@
 </div>
 
 <div class="col-4">
-    <center> <h4>Поиск</h4> </center>
-    {# action отправляет форму на тот же URL списка реакций, метод GET обязателен #}
+    <center>   <h4>Поиск</h4>  </center>
+    {# Форма отправляет GET-запрос на текущий URL страницы #}
     <form action="" method="GET">
          {% crispy form %}
     </form>
