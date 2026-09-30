@@ -12,7 +12,7 @@
 {% autoescape off %}
 <div class="col-8">
          
-   <center>  <h3><a href="/chem/"> Реакции неорганической химии </a></h3>     </center>
+   <center>  <h3><a href="/chem/reactions/all/"> Реакции неорганической химии </a></h3> </center>
 {# основная таблица #}
 
 {% for obj in objects %}
@@ -20,39 +20,36 @@
     <tbody>
     <tr>
         <td class="ind1"> 
-            {# Шапка: Закон, к которому относится реакция #}
+            {# Вывод связанного закона, если он указан #}
             <h4>
                 {% if obj.number %}{{ obj.number.title }}{% else %}Без закона{% endif %}
             </h4>
             
-            {# Отображение самой химической реакции #}
+            {# Красивый вывод уравнения химической реакции #}
             <div class="mt-3 mb-2" style="font-size: 1.3rem; font-family: 'Georgia', serif; font-weight: bold; color: #2c3e50;">
-                {# Вывод реагентов #}
+                {# Реагенты #}
                 {{ obj.reagent1|default:"" }}
                 {% if obj.reagent2 %} + {{ obj.reagent2 }}{% endif %}
                 {% if obj.reagent3 %} + {{ obj.reagent3 }}{% endif %}
                 
-                {# Стрелка реакции #}
+                {# Стрелка #}
                 <span style="color: #007bff; font-weight: bold; margin: 0 8px;">→</span>
                 
-                {# Вывод продуктов #}
+                {# Продукты #}
                 {% if obj.product1 %}{{ obj.product1 }}{% else %}?{% endif %}
                 {% if obj.product2 %} + {{ obj.product2 }}{% endif %}
                 {% if obj.product3 %} + {{ obj.product3 }}{% endif %}
                 {% if obj.product4 %} + {{ obj.product4 }}{% endif %}
             </div>
 
-            {# Дополнительная информация о реакции #}
+            {# Условия и уровень сложности реакции #}
             <div class="text-muted" style="font-size: 0.9rem;">
                 <strong>Условия:</strong> {{ obj.condition|default:"нормальные условия" }} | 
                 <strong>Уровень:</strong> {{ obj.level|default:"ОГЭ" }}
-                {% if obj.extra %}
-                    | <strong>Инфо:</strong> {{ obj.extra }}
-                {% endif %}
             </div>
             <br>
 
-            {# Переход на детальную страницу теста с передачей ID реакции #}
+            {# Кнопка перехода на вашу детальную страницу теста #}
             <a href="{% url 'inorganiclawtestanswer' str=obj.pk %}" target="_blank" class="btn btn-outline-primary mt-2" style="width: 180px">читать далее</a>
         </td>
     </tr>
@@ -63,7 +60,7 @@
 {% endfor %}
 {# конец основной таблицы #}
 
-{# пагинация #}
+{# пагинация (с сохранением значения searchword в URL) #}
 {% if is_paginated %}
     <div class="pagination-container">
         {% if page_obj.has_previous %}
@@ -76,7 +73,7 @@
                 <!-- Активная страница -->
                 <span class="btn btn-primary mt-1 disabled">{{ num }}</span>
             {% elif num > page_obj.number|add:'-10' and num < page_obj.number|add:'10' %}
-                <!-- Соседние страницы в радиусе 10 -->
+                <!-- Окрестные страницы -->
                 <a href="?page={{ num }}{% if request.GET.searchword %}&searchword={{ request.GET.searchword }}{% endif %}" class="btn btn-outline-primary mt-1">{{ num }}</a>
             {% endif %}
         {% endfor %}
@@ -91,10 +88,10 @@
 </div>
 
 <div class="col-4">
-    <center>   <h4>Поиск</h4>  </center>
-    {# Форма отправляет GET-запрос на текущий URL страницы #}
+    <center> <h4>Поиск</h4> </center>
+    {# action пустой, чтобы форма отправляла GET-запрос на текущий URL новой вьюшки #}
     <form action="" method="GET">
-         {% crispy form %}
+         {% crispy reaction_search_form %}
     </form>
     <br>
 </div>
