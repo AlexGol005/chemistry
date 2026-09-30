@@ -16,6 +16,57 @@ from django.db.models import F
 from .models import OrganicNames, UserQuestionProgress  # Подключаем модель прогресса
 
 
+class InorganicReactionListView(ListView):
+    model = InorganicReaction
+    template_name = 'Chem/inorganic_reaction_list.html'  # Укажите точный путь к вашему шаблону
+    context_object_name = 'objects'  # Совпадает с циклом {% for obj in objects %} в вашем шаблоне
+    paginate_by = 10  # Количество реакций на одну страницу
+
+    def get_queryset(self):
+        # Используем менеджер objects (он выводит только видимые записи)
+        queryset = InorganicReaction.objects.all()
+        
+        # Получаем поисковую строку из GET-запроса формы (название поля 'q')
+        query = self.request.GET.get('q')
+        
+        if query:
+            query = query.strip()
+            
+            # 1. Находим все формулы соединений, где название или внешний вид содержат поисковый запрос
+            matching_formulas = NamesCompaunds.objects.filter(
+                Q(name__icontains=query) | Q(appearance__icontains=query)
+            ).values_list('formula', flat=True)
+            
+            # 2. Фильтруем реакции: ищем совпадение по найденным формулам в реагентах/продуктах,
+            # либо прямое текстовое совпадение с поисковым запросом (если ввели саму формулу)
+            queryset = queryset.filter(
+                Q(reagent1__in=matching_formulas) |
+                Q(reagent2__in=matching_formulas) |
+                Q(reagent3__in=matching_formulas) |
+                Q(product1__in=matching_formulas) |
+                Q(product2__in=matching_formulas) |
+                Q(product3__in=matching_formulas) |
+                Q(product4__in=matching_formulas) |
+                Q(reagent1__icontains=query) |
+                Q(reagent2__icontains=query) |
+                Q(reagent3__icontains=query) |
+                Q(product1__icontains=query) |
+                Q(product2__icontains=query) |
+                Q(product3__icontains=query) |
+                Q(product4__icontains=query)
+            ).distinct()
+            
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Передаем форму в контекст и инициализируем её данными из GET, 
+        # чтобы введенный текст не стирался после отправки формы
+        context['form'] = ReactionSearchForm(self.request.GET or None)
+        return context
+
+
+
 # =====================================================================
 # 🧬 БЛОК VIEWS ДЛЯ СИСТЕМЫ ТЕСТИРОВАНИЯ ХИМИЧЕСКИХ ПРИЗНАКОВ (4 ВАРИАНТА)
 # =====================================================================
