@@ -9,26 +9,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Field
 
-class ReactionSearchForm(forms.Form):
-    # Одно универсальное поле для ввода названия, формулы или внешнего вида
-    q = forms.CharField(
-        label='Поиск вещества (название, формула или описание)',
-        required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'Например: сульфат меди, CuSO4, осадок...'})
-    )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        
-        # Отключаем генерацию тегов <form>...</form>, так как они уже прописаны вручную в вашем HTML
-        self.helper.form_tag = False
-        
-        # Настраиваем внешний вид поля и кнопки
-        self.helper.layout = Layout(
-            Field('q', css_class='form-control'),
-            Submit('submit', 'Найти реакции', css_class='btn btn-primary mt-3 w-100')
-        )
 
 
 
