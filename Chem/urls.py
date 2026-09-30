@@ -105,7 +105,7 @@ urlpatterns = [
     path('traitstest/answer/<int:index>/', views.ChemTraitTestAnswerView.as_view(), name='traitstest_answer'),
     path('traitstest/finished/', views.ChemTraitTestFinishedView.as_view(), name='traitstest_finished'),
 
-    path('inorganiclaw/searchresult/', views.InorganicReactionListView.as_view(), name='inorganiclaw_search'),
+    path('reactions/all/', views.InorganicReactionListView.as_view(), name='all_inorganic_reactions'),
     ]
     # === МОБИЛЬНОЕ ПРИЛОЖЕНИЕ ===
 from rest_framework.authtoken.views import obtain_auth_token
