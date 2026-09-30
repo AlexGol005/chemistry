@@ -1,0 +1,82 @@
+{% extends 'main/superbase.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{# название страницы #}
+{% block title %}
+Реакции неорганической химии
+{% endblock %}
+{# конец названия страницы #}
+
+{% block content %}
+{% autoescape off %}
+<div class="col-8">
+         
+   <center> <h3><a href="/chem/"> Реакции неорганической химии </a></h3> </center>
+{# основная таблица #}
+
+{% for obj in objects %}
+    <table class="table table-bordered flexy1">
+    <tbody>
+    <tr>
+        <td class="ind1"> 
+            {# Выводим саму реакцию: закон (если есть) и схему реагентов #}
+            <h4>
+                {% if obj.number %}{{ obj.number.title }}{% else %}Без закона{% endif %}
+            </h4>
+            <div class="mt-2" style="font-size: 1.2rem; font-weight: 500;">
+                {{ obj.reagent1|default:"" }} 
+                {% if obj.reagent2 %} + {{ obj.reagent2 }}{% endif %}
+                {% if obj.reagent3 %} + {{ obj.reagent3 }}{% endif %} 
+                → ...
+            </div>
+            <small class="text-muted d-block mt-1">Условия: {{ obj.condition }} | Уровень: {{ obj.level }}</small>
+
+            {# ИСПРАВЛЕННАЯ ССЫЛКА: передаем pk реакции в именованный параметр str #}
+            <a href="{% url 'inorganiclawtestanswer' str=obj.pk %}" target="_blank" class="btn btn-outline-primary mt-3" style="width: 180px">читать далее</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+{% empty %}
+    <div class="alert alert-warning text-center">Реакции по вашему запросу не найдены.</div>
+{% endfor %}
+{# конец основной таблицы #}
+
+{# пагинация (с сохранением поискового запроса в URL) #}
+{% if is_paginated %}
+    <div class="pagination-container text-center json-pagination mt-4">
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-primary mt-1">Начало</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-primary mt-1">«</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <!-- Активная страница -->
+                <span class="btn btn-primary mt-1 disabled">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-10' and num < page_obj.number|add:'10' %}
+                <!-- Соседние страницы (в радиусе 10 от текущей) -->
+                <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-primary mt-1">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-primary mt-1">»</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-primary mt-1">Последняя</a>
+        {% endif %}
+    </div>
+{% endif %}
+
+</div>
+
+<div class="col-4">
+    <center> <h4>Поиск</h4> </center>
+    {# action отправляет форму на тот же URL списка реакций, метод GET обязателен #}
+    <form action="" method="GET">
+         {% crispy form %}
+    </form>
+    <br>
+</div>
+{% endautoescape %}
+{% endblock %}
