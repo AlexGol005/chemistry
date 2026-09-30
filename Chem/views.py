@@ -921,7 +921,8 @@ class VideorSearchResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(VideorSearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET['searchword']
+        searchword = self.request.GET.get('searchword', '')
+
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
@@ -1536,7 +1537,9 @@ class ChemSearchResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ChemSearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET['searchword']
+        
+        searchword = self.request.GET.get('searchword', '')
+
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
@@ -1620,7 +1623,8 @@ class AtomlawSearchResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(AtomlawSearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET['searchword']
+        searchword = self.request.GET.get('searchword', '')
+
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
@@ -1703,7 +1707,8 @@ class CompaundSearchResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(CompaundSearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET['searchword']
+        searchword = self.request.GET.get('searchword', '')
+
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
@@ -1843,7 +1848,8 @@ class OrganicChemSearchResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(OrganicChemSearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET['searchword']
+        searchword = self.request.GET.get('searchword', '')
+
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
@@ -1907,7 +1913,8 @@ class OrganicCompaundSearchResultView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(OrganicCompaundSearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET['searchword']
+        searchword = self.request.GET.get('searchword', '')
+
         if self.request.GET['searchword']:
             searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
         if searchword:
