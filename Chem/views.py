@@ -18,61 +18,6 @@ from .models import OrganicNames, UserQuestionProgress  # Подключаем �
 
 
 
-from django.views.generic import ListView
-from django.db.models import Q
-from .models import InorganicReaction, NamesCompaunds
-from .forms import SearchForm  # Используем вашу форму
-
-class InorganicReactionListView(ListView):
-    model = InorganicReaction
-    # Указываем точный путь к новому изолированному шаблону
-    template_name = 'Chem/inorganic_reaction_list.html'  
-    context_object_name = 'objects'
-    paginate_by = 10
-
-    def get_queryset(self):
-        queryset = InorganicReaction.objects.all()
-        
-        # Получаем поисковое слово из формы
-        query = self.request.GET.get('searchword', '').strip()
-        
-        if query:
-            # 1. Находим формулы всех веществ по названию или внешнему виду
-            matching_formulas = NamesCompaunds.objects.filter(
-                Q(name__icontains=query) | Q(appearance__icontains=query)
-            ).values_list('formula', flat=True)
-            
-            # 2. Фильтруем реакции по найденным формулам или по прямому совпадению текста
-            queryset = queryset.filter(
-                Q(reagent1__in=matching_formulas) |
-                Q(reagent2__in=matching_formulas) |
-                Q(reagent3__in=matching_formulas) |
-                Q(product1__in=matching_formulas) |
-                Q(product2__in=matching_formulas) |
-                Q(product3__in=matching_formulas) |
-                Q(product4__in=matching_formulas) |
-                
-                Q(reagent1__icontains=query) |
-                Q(reagent2__icontains=query) |
-                Q(reagent3__icontains=query) |
-                Q(product1__icontains=query) |
-                Q(product2__icontains=query) |
-                Q(product3__icontains=query) |
-                Q(product4__icontains=query)
-            ).distinct()
-            
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # Безопасно передаем значение, чтобы не было конфликтов с другими страницами
-        context['searchword'] = self.request.GET.get('searchword', '')
-        
-        # ИСПОЛЬЗУЕМ УНИКАЛЬНОЕ ИМЯ ПЕРЕМЕННОЙ ДЛЯ ФОРМЫ, ЧТОБЫ НЕ ТРОГАТЬ СТАРЫЙ КОД
-        context['reaction_search_form'] = SearchForm(self.request.GET or None)
-        return context
-
 
 
 
