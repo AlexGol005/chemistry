@@ -105,9 +105,12 @@ urlpatterns = [
     path('traitstest/answer/<int:index>/', views.ChemTraitTestAnswerView.as_view(), name='traitstest_answer'),
     path('traitstest/finished/', views.ChemTraitTestFinishedView.as_view(), name='traitstest_finished'),
 
-    # === блок неорганические реакции ===
+    # === блок неорганические и органические реакции ===
     path('inorganic-reactions-list/', views.all_reactions_view, name='all_reactions'),
     path('inorganic-reaction-item/<slug:slug>/', views.ChemReactionDetailSlugView.as_view(), name='reaction_detail_slug'),
+    path('organic-reactions-list/', views.all_organic_reactions_view, name='all_organic_reactions'),
+    path('organic-reaction-item/<slug:slug>/', views.OrganicReactionDetailSlugView.as_view(), name='organic_reaction_detail_slug'),
+
 
 
 
