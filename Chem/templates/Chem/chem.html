@@ -177,7 +177,7 @@
     <!-- ================================================================= -->
     <!-- РАЗДЕЛ: ОРГАНИЧЕСКАЯ ХИМИЯ -->
     <!-- ================================================================= -->
-    <button class="main-collapse-btn btn-organic-pastel" type="button" data-toggle="collapse" data-target="#collapseOrganic" aria-expanded="false" aria-controls="collapseOrganic">
+<button class="main-collapse-btn btn-organic-pastel" type="button" data-toggle="collapse" data-target="#collapseOrganic" aria-expanded="false" aria-controls="collapseOrganic">
         <div class="btn-title-wrapper">
             <span class="chem-emoji">⚗️</span>
             <span>Органическая химия</span>
@@ -189,6 +189,8 @@
                 <div class="col-md-6">
                     <a href="{% url 'organiclaw' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Законы органической химии</a>
                     <a href="{% url 'organiccompaunds' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Органические соединения</a>
+                    {# НОВАЯ ССЫЛКА НА ВСЕ ОРГАНИЧЕСКИЕ РЕАКЦИИ С ПОИСКОМ #}
+                    <a href="{% url 'all_organic_reactions' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Реакции органической химии</a>
                 </div>
                 <div class="col-md-6">
                     <a href="{% url 'organicnamestest_head' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Тест: номенклатура и названия органических соединений</a>
@@ -198,6 +200,7 @@
             </div>
         </div>
     </div>
+
 
 
     <!-- ================================================================= -->
