@@ -1,0 +1,70 @@
+{% extends 'main/superbase.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Реакции неорганической химии
+{% endblock %}
+
+{% block content %}
+{% autoescape off %}
+<div class="col-8">
+    <center>
+        <h3><a href="{% url 'all_reactions' %}"> Реакции неорганической химии </a></h3>
+    </center>
+
+    {# Вывод списка найденных реакций #}
+    {% for obj in reactions %}
+        <table class="table table-bordered flexy1 mb-4">
+            <tbody>
+                <tr>
+                    <td class="ind1"> 
+                        {# Крупный заголовок с названиями веществ #}
+                        <h4>{{ obj.metatitle }}</h4>
+                        
+                        {# Красивое визуальное уравнение из формул #}
+                        <div class="mt-2 mb-2" style="font-size: 20pt; font-family: Georgia, serif;">
+                            <code>
+                                {{ obj.reagent1 }}
+                                {% if obj.reagent2 %} + {{ obj.reagent2 }}{% endif %}
+                                {% if obj.reagent3 %} + {{ obj.reagent3 }}{% endif %}
+                                ➔ 
+                                {{ obj.product1 }}
+                                {% if obj.product2 %} + {{ obj.product2 }}{% endif %}
+                                {% if obj.product3 %} + {{ obj.product3 }}{% endif %}
+                                {% if obj.product4 %} + {{ obj.product4 }}{% endif %}
+                            </code>
+                        </div>
+                        
+                        {# Метаописание и условия #}
+                        <p class="text-muted small mb-1">{{ obj.description }}</p>
+                        <small class="text-secondary">Условия: {{ obj.condition }} | Уровень: {{ obj.level }}</small>
+                        <br>
+
+                        {# Кнопка перехода на новую ЧПУ страницу #}
+                        {% if obj.slug %}
+                            <a href="{% url 'reaction_detail_slug' obj.slug %}" target="_blank" class="btn btn-outline-primary mt-3" style="width: 180px">читать далее</a>
+                        {% else %}
+                            <span class="text-danger small d-block mt-2">Страница индексируется...</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {% empty %}
+        <div class="alert alert-warning text-center mt-4">
+            Реакции по вашему запросу не найдены. Попробуйте ввести другие формулы или названия.
+        </div>
+    {% endfor %}
+</div>
+
+<div class="col-4">
+    <center><h4>Поиск</h4></center>
+    {# Форма отправляет GET-запрос сама на себя для фильтрации списка #}
+    <form action="" method="GET">
+        {% crispy form %}
+    </form>
+    <br>
+</div>
+{% endautoescape %}
+{% endblock %}
