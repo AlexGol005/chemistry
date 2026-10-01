@@ -8,70 +8,75 @@
 
 {% block content %}
 {% autoescape off %}
-{# flex-column-reverse поднимает поиск наверх на мобильных устройствах, а flex-md-row выстраивает блоки рядом на ПК #}
-<div class="d-flex flex-column-reverse flex-md-row w-100" style="flex-wrap: wrap;">
 
-    {# ЛЕВАЯ КОЛОНКА: СПИСОК ОРГАНИЧЕСКИХ РЕАКЦИЙ (На ПК слева, на телефонах снизу) #}
-    <div class="col-lg-8 col-md-8 col-12">
-        <center>
-            <h3><a href="{% url 'all_organic_reactions' %}"> Реакции органической химии </a></h3>
-        </center>
-
-        {# Вывод списка найденных органических реакций #}
-        {% for obj in reactions %}
-            <table class="table table-bordered flexy1 mb-4">
-                <tbody>
-                    <tr>
-                        <td class="ind1"> 
-                            {# Крупный заголовок с названиями реакций #}
-                            <h4>{{ obj.metatitle }}</h4>
-                            
-                            {# Красивое визуальное уравнение из структурных формул/SMILES #}
-                            <div class="mt-2 mb-2" style="font-size: 20pt; font-family: Georgia, serif;">
-                                <code>
-                                    {{ obj.reagent1 }}
-                                    {% if obj.reagent2 %} + {{ obj.reagent2 }}{% endif %}
-                                    {% if obj.reagent3 %} + {{ obj.reagent3 }}{% endif %}
-                                    ➔ 
-                                    {{ obj.product1 }}
-                                    {% if obj.product2 %} + {{ obj.product2 }}{% endif %}
-                                    {% if obj.product3 %} + {{ obj.product3 }}{% endif %}
-                                    {% if obj.product4 %} + {{ obj.product4 }}{% endif %}
-                                </code>
-                            </div>
-                            
-                            {# Описание и условия #}
-                            <p class="text-muted small mb-1">{{ obj.description }}</p>
-                            <small class="text-secondary">Условия: {{ obj.condition }} | Уровень: {{ obj.level }}</small>
-                            <br>
-
-                            {# Кнопка перехода на новую органическую ЧПУ страницу #}
-                            {% if obj.slug %}
-                                <a href="{% url 'organic_reaction_detail_slug' obj.slug %}" target="_blank" class="btn btn-outline-primary mt-3" style="width: 180px">читать далее</a>
-                            {% else %}
-                                <span class="text-danger small d-block mt-2">Страница индексируется...</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        {% empty %}
-            <div class="alert alert-warning text-center mt-4">
-                Органические реакции по вашему запросу не найдены. Попробуйте ввести другие названия или формулы.
-            </div>
-        {% endfor %}
-    </div>
-
-    {# ПРАВАЯ КОЛОНКА: СТРОКА ПОИСКА (На ПК справа, на мобильных сверху с отступом mb-4) #}
-    <div class="col-lg-4 col-md-4 col-12 mb-4">
-        <center><h4>Поиск</h4></center>
-        {# Форма отправляет GET-запрос сама на себя для фильтрации списка органики #}
-        <form action="" method="GET">
-            {% crispy form %}
-        </form>
-        <br>
-    </div>
-
+{# 1. БЛОК ПОИСКА ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ (Показывается только на смартфонах) #}
+<div class="col-12 d-block d-md-none mb-4">
+    <center><h4>Поиск</h4></center>
+    <form action="" method="GET">
+        {% crispy form %}
+    </form>
+    <hr>
 </div>
+
+{# 2. ОСНОВНОЙ СПИСОК ОРГАНИЧЕСКИХ РЕАКЦИЙ #}
+<div class="col-8">
+    <center>
+        <h3><a href="{% url 'all_organic_reactions' %}"> Реакции органической химии </a></h3>
+    </center>
+
+    {# Вывод списка найденных органических реакций #}
+    {% for obj in reactions %}
+        <table class="table table-bordered flexy1 mb-4">
+            <tbody>
+                <tr>
+                    <td class="ind1"> 
+                        {# Крупный заголовок с названиями реакций #}
+                        <h4>{{ obj.metatitle }}</h4>
+                        
+                        {# Визуальное уравнение из структурных формул/SMILES #}
+                        <div class="mt-2 mb-2" style="font-size: 20pt; font-family: Georgia, serif;">
+                            <code>
+                                {{ obj.reagent1 }}
+                                {% if obj.reagent2 %} + {{ obj.reagent2 }}{% endif %}
+                                {% if obj.reagent3 %} + {{ obj.reagent3 }}{% endif %}
+                                ➔ 
+                                {{ obj.product1 }}
+                                {% if obj.product2 %} + {{ obj.product2 }}{% endif %}
+                                {% if obj.product3 %} + {{ obj.product3 }}{% endif %}
+                                {% if obj.product4 %} + {{ obj.product4 }}{% endif %}
+                            </code>
+                        </div>
+                        
+                        {# Описание и условия (Уровень ЕГЭ/ОГЭ удален) #}
+                        <p class="text-muted small mb-1">{{ obj.description }}</p>
+                        <small class="text-secondary">Условия: {{ obj.condition }}</small>
+                        <br>
+
+                        {# Кнопка перехода на новую органическую ЧПУ страницу #}
+                        {% if obj.slug %}
+                            <a href="{% url 'organic_reaction_detail_slug' obj.slug %}" target="_blank" class="btn btn-outline-primary mt-3" style="width: 180px">читать далее</a>
+                        {% else %}
+                            <span class="text-danger small d-block mt-2">Страница индексируется...</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {% empty %}
+        <div class="alert alert-warning text-center mt-4">
+            Органические реакции по вашему запросу не найдены. Попробуйте ввести другие названия или формулы.
+        </div>
+    {% endfor %}
+</div>
+
+{# 3. БЛОК ПОИСКА ДЛЯ КОМПЬЮТЕРОВ И ПЛАНШЕТОВ (Скрывается на смартфонах) #}
+<div class="col-4 d-none d-md-block">
+    <center><h4>Поиск</h4></center>
+    <form action="" method="GET">
+        {% crispy form %}
+    </form>
+    <br>
+</div>
+
 {% endautoescape %}
 {% endblock %}
