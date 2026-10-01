@@ -4,38 +4,18 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-{{ obj.metatitle|default:"реакция" }} — уравнение, признаки и условия протекания
+реакция
 {% endblock %}
 
-{# Мета-теги для поисковиков (SEO) и соцсетей (Open Graph) #}
-{% block metaname %}
-<meta name="description" content="Уравнение реакции: {{ reagent1 }} {% if reagent2 %}+ {{ reagent2 }}{% endif %} = {{ product1 }}. {{ obj.description|default:'Полное описание, признаки, видеоопыт и условия протекания реакции на сайте.' }}">
-<meta name="keywords" content="{{ obj.keywords|default:'' }}, {{ reagent1 }}, {{ reagent2 }}, {{ product1 }}, химия, неорганика, ОГЭ, ЕГЭ">
-<meta property="og:title" content="{{ obj.metatitle|default:'Химическая реакция' }}">
-<meta property="og:description" content="Уравнение реакции: {{ reagent1 }} {% if reagent2 %}+ {{ reagent2 }}{% endif %} = {{ product1 }}.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="{{ request.build_absolute_uri }}">
-{% if obj.img1 %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ obj.img1.url }}">{% endif %}
-{% endblock %}
+{% block metaname %}<meta name="description" content="{{obj.metatitle}}" >{% endblock %}
+{% block keywords %}<meta name="keywords" content="{{obj.keywords}}">{% endblock %}
+{% block description %}<meta name="description" content="{{obj.description}}">{% endblock %}
 
 {% block content %}
 {% autoescape off %}
 
-{# МИКРОРАЗМЕТКА SCHEMA.ORG ДЛЯ КРАСИВОГО СНИППЕТА В ЯНДЕКСЕ И GOOGLE #}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "{{ obj.metatitle|default:'Химическая реакция' }}",
-  "description": "{{ obj.description|default:'Уравнение и признаки химической реакции' }}",
-  "dependencies": "{{ reagent1 }}{% if reagent2 %}, {{ reagent2 }}{% endif %}{% if reagent3 %}, {{ reagent3 }}{% endif %}",
-  "proficiencyLevel": "{{ level }}",
-  "articleBody": "Уравнение реакции: {{ reagent1 }} {% if reagent2 %}+ {{ reagent2 }}{% endif %} = {{ product1 }} {% if product2 %}+ {{ product2 }}{% endif %}. Условия: {{ condition }}. {{ obj.extra|striptags }}"
-}
-</script>
-
 <style>
-    /* Предотвращаем появление горизонтального скролла на мобильных устройствах */
+    /* Предотвращаем появление horizontal scroll на мобильных устройствах */
     body, html {
         max-width: 100%;
         overflow-x: hidden;
@@ -49,7 +29,7 @@
         border-radius: 6px;
     }
     @media (min-width: 769px) {
-        .chem-responsive-img-small { max-width: 30%; margin: 0 10px; } /* Размер для первых трех картинок на ПК */
+        .chem-responsive-img-small { max-width: 30%; margin: 0 10px; } /* Аккуратный размер для первых трех картинок на ПК */
         .chem-responsive-img-large { max-width: 70%; } /* Крупные схемы */
     }
 </style>
@@ -88,7 +68,7 @@
     <br>
     <a href="{% url 'inorganiclawstr' obj.number.pk %}" target="_blank" rel="noopener noreferrer" class="btn btn-link px-0">открыть правило</a>            
  
-    {# БЛОК СЧЕТЧИКОВ ТЕСТА И ПРОЦЕНТОВ (Скрывается, если это страница поиска) #}
+    {# СПРЯТАНО ДЛЯ РЕЖИМА ПОИСКА #}
     {% if not is_search_page %}
         {% if percent %}
             <p style="width: 100%; font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums; margin-bottom: 10px;">
@@ -130,7 +110,8 @@
         {% if product3 %} + {{ product3 }}{% endif %}
         {% if product4 %} + {{ product4 }}{% endif %}
     </p>
-    {# БЛОК ПРОВЕРКИ И ОТОБРАЖЕНИЯ ОТВЕТА ИЗ СЕССИИ (Полностью скрывается, если это страница поиска) #}
+    <!-- БЛОК ПРОВЕРКИ И ОТОБРАЖЕНИЯ ОТВЕТА ИЗ СЕССИИ -->
+    {# СПРЯТАНО ДЛЯ РЕЖИМА ПОИСКА #}
     {% if not is_search_page %}
         <div class="my-4" style="font-family: sans-serif; max-width: 600px; margin-left: auto; margin-right: auto;">
             {% if not request.session.inorg_has_answer %}
@@ -215,6 +196,7 @@
         </div>                       
     {% endif %}   
 
+    <!-- ИЛЛЮСТРАЦИИ И ВИДЕОРАЗБОРЫ -->
     <div class="text-center mt-4" style="width: 100%; max-width: 100%; box-sizing: border-box;">
         {% if obj.video %}
             <div class="mb-4">
@@ -233,12 +215,14 @@
         {% if obj.img6 %}<img class="chem-responsive-img chem-responsive-img-large rounded shadow-sm" src="{{ obj.img6.url }}" alt="Иллюстрация 6">{% endif %}
     </div>
     
+    <!-- НАВИГАЦИЯ В КОНЦЕ ТЕСТА -->
     <div class="text-center mt-4 mb-5" style="width: 100%;">
         {% if next_index %}
             <a href="{% url 'inorganiclawtestquestion' next_index %}" class="btn btn-primary mt-2 mx-2"> 
                 Следующая химическая реакция
             </a>
         {% else %}
+            {# СПРЯТАНО ДЛЯ РЕЖИМА ПОИСКА #}
             {% if not is_search_page %}
                 <a href="/chem/inorganiclaw" class="btn btn-primary mt-2 mx-2">   
                     Тест завершен, спасибо! Перейти в тему
