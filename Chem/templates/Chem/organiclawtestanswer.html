@@ -98,7 +98,6 @@
         margin-bottom: 15px;
         border-radius: 6px;
     }
-
     /* АДАПТИВНАЯ МОБИЛЬНАЯ ВЁРСТКА (Для экранов смартфонов до 768px) */
     @media (max-width: 768px) {
         .chem-equation-container {
@@ -167,64 +166,70 @@
     <br>
     {% if obj.number %}<a href="{% url 'organiclawstr' obj.number.pk %}" target="_blank" class="btn btn-link px-0">открыть правило</a>{% endif %}
     
-    {% if percent %}
-        <p style="font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums; margin-bottom: 10px;">
-            Процент верных ответов {{ percent }} %
-        </p>
-        <div class="test-progress" style="margin: 10px 0; padding: 10px; background-color: #f8f9fa; border-left: 4px solid #007bff; font-weight: bold; font-size: 14px;">
-            {{ question_progress }}
-        </div>
-
-        <div class="level-badge-container" style="margin: 10px 0; display: inline-flex; align-items: center; font-family: sans-serif;">
-            <span style="font-size: 13px; color: #5a626a; margin-right: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
-                Уровень:
-            </span>
-            {% if level == "ОГЭ" %}
-                <span style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 12px; letter-spacing: 1px;">ОГЭ</span>
-            {% elif level == "ЕГЭ" %}
-                <span style="background: linear-gradient(135deg, #dc3545, #bd2130); color: white; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 12px; letter-spacing: 1px;">ЕГЭ</span>
-            {% else %}
-                <span style="background: #e9ecef; color: #495057; padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 12px;">{{ level|default:"Не указан" }}</span>
-            {% endif %}
-        </div>
-    {% endif %}
-
-<!-- БЛОК ОТОБРАЖЕНИЯ И ПРОВЕРКИ ОТВЕТА (Новая логика с кастомными цветами) -->
-<div class="my-4" style="font-family: sans-serif;">
-    {% if not request.session.org_has_answer %}
-        <!-- Если ответа нет — пишем сине-серым цветом -->
-        <div style="color: #495057; font-weight: bold; background-color: #e9ecef; padding: 15px; border-radius: 6px; border-left: 5px solid #6c757d; font-size: 16px;">
-            Нет ответа
-        </div>
-    {% else %}
-        {% if request.session.org_is_correct %}
-            <!-- Если ответ верный -->
-            <div style="color: #1e7e34; font-weight: bold; background-color: #d4edda; padding: 15px; border-radius: 6px; border-left: 5px solid #28a745; font-size: 16px;">
-                Верно!
-            </div>
-        {% else %}
-            <!-- Если ответ неверный — красная плашка, ваш ответ и правильный ответ -->
-            <div style="color: #bd2130; font-weight: bold; background-color: #f8d7da; padding: 15px; border-radius: 6px; border-left: 5px solid #dc3545; font-size: 16px; margin-bottom: 15px;">
-                Не верно :(
-            </div>
-            
-            <div style="background-color: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 15px; font-size: 14px;">
-                <div style="margin-bottom: 8px; color: #2c3e50;">
-                    <strong>Ваш ответ:</strong> 
-                    <span style="font-family: Georgia, serif; font-size: 15px; background: #fff; padding: 2px 6px; border: 1px solid #ddd; border-radius: 4px;">
-                        {% for ans in request.session.org_last_user_answers %}{{ ans }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}
-                    </span>
-                </div>
-                <div style="color: #2c3e50;">
-                    <strong>Правильный ответ:</strong> 
-                    <span style="font-family: Georgia, serif; font-size: 15px; background: #fff; padding: 2px 6px; border: 1px solid #ddd; border-radius: 4px; color: #1e7e34; font-weight: 600;">
-                        {% for corr in request.session.org_last_correct_answers %}{{ corr }}{% if not forloop.last %}, {% endif %}{% endfor %}
-                    </span>
-                </div>
+    {# СКРЫВАЕМ ПРОГРЕСС И ПРОЦЕНТЫ В РЕЖИМЕ ПОИСКА #}
+    {% if not is_search_page %}
+        {% if percent %}
+            <p style="font-family: Georgia, serif; font-size: 12pt; font-variant-numeric: oldstyle-nums; margin-bottom: 10px;">
+                Процент верных ответов {{ percent }} %
+            </p>
+            <div class="test-progress" style="margin: 10px 0; padding: 10px; background-color: #f8f9fa; border-left: 4px solid #007bff; font-weight: bold; font-size: 14px;">
+                {{ question_progress }}
             </div>
         {% endif %}
     {% endif %}
-</div>
+
+    <div class="level-badge-container" style="margin: 10px 0; display: inline-flex; align-items: center; font-family: sans-serif;">
+        <span style="font-size: 13px; color: #5a626a; margin-right: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
+            Уровень:
+        </span>
+        {% if level == "ОГЭ" %}
+            <span style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 12px; letter-spacing: 1px;">ОГЭ</span>
+        {% elif level == "ЕГЭ" %}
+            <span style="background: linear-gradient(135deg, #dc3545, #bd2130); color: white; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 12px; letter-spacing: 1px;">ЕГЭ</span>
+        {% else %}
+            <span style="background: #e9ecef; color: #495057; padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 12px;">{{ level|default:"Не указан" }}</span>
+        {% endif %}
+    </div>
+
+{# СКРЫВАЕМ ПЛАШКИ ПРОВЕРКИ СЕССИИ В РЕЖИМЕ ПОИСКА #}
+{% if not is_search_page %}
+    <!-- БЛОК ОТОБРАЖЕНИЯ И ПРОВЕРКИ ОТВЕТА (Новая логика с кастомными цветами) -->
+    <div class="my-4" style="font-family: sans-serif;">
+        {% if not request.session.org_has_answer %}
+            <!-- Если ответа нет — пишем сине-серым цветом -->
+            <div style="color: #495057; font-weight: bold; background-color: #e9ecef; padding: 15px; border-radius: 6px; border-left: 5px solid #6c757d; font-size: 16px;">
+                Нет ответа
+            </div>
+        {% else %}
+            {% if request.session.org_is_correct %}
+                <!-- Если ответ верный -->
+                <div style="color: #1e7e34; font-weight: bold; background-color: #d4edda; padding: 15px; border-radius: 6px; border-left: 5px solid #28a745; font-size: 16px;">
+                    Верно!
+                </div>
+            {% else %}
+                <!-- Если ответ неверный — красная плашка, ваш ответ и правильный ответ -->
+                <div style="color: #bd2130; font-weight: bold; background-color: #f8d7da; padding: 15px; border-radius: 6px; border-left: 5px solid #dc3545; font-size: 16px; margin-bottom: 15px;">
+                    Не верно :(
+                </div>
+                
+                <div style="background-color: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 15px; font-size: 14px;">
+                    <div style="margin-bottom: 8px; color: #2c3e50;">
+                        <strong>Ваш ответ:</strong> 
+                        <span style="font-family: Georgia, serif; font-size: 15px; background: #fff; padding: 2px 6px; border: 1px solid #ddd; border-radius: 4px;">
+                            {% for ans in request.session.org_last_user_answers %}{{ ans }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}
+                        </span>
+                    </div>
+                    <div style="color: #2c3e50;">
+                        <strong>Правильный ответ:</strong> 
+                        <span style="font-family: Georgia, serif; font-size: 15px; background: #fff; padding: 2px 6px; border: 1px solid #ddd; border-radius: 4px; color: #1e7e34; font-weight: 600;">
+                            {% for corr in request.session.org_last_correct_answers %}{{ corr }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endif %}
 <!-- НАЧАЛО ЕДИНОЙ ЛИНИИ РЕАКЦИИ -->
     <div class="chem-equation-container">
         
@@ -351,6 +356,13 @@
          {% if condition %}{{ condition }}{% endif %}
     </div>
 
+    {# ВЫВОД ОПИСАНИЯ РЕАКЦИИ (Джинжа-средства: скрываем, если пусто или равно 'None') #}
+    {% if obj.description and obj.description != 'None' and obj.description != '' %}
+        <div style="max-width: 800px; margin: 20px auto; padding: 15px; background-color: #f8f9fa; border-radius: 6px; border: 1px solid #eee; font-size: 14px; text-align: left; color: #495057; line-height: 1.5;">
+            <strong>Описание реакции:</strong> {{ obj.description }}
+        </div>
+    {% endif %}
+
     <!-- Пояснения (extra) -->
     {% if obj.extra %}
         <div style="display: flex; justify-content: center; width: 100%;"> 
@@ -363,7 +375,8 @@
             </table>
         </div>                       
     {% endif %}
-<!-- Иллюстрации и видеоразборы -->
+
+    <!-- Иллюстрации и видеоразборы -->
     <div class="responsive-img-container text-center mt-4">
         {% if obj.video %}
             <div class="mb-3">
@@ -388,9 +401,12 @@
                 Следующая химическая реакция
             </a>
         {% else %}
-            <a href="/chem/organiclaw" class="btn btn-primary mt-2 mx-2">   
-                Тест завершен, спасибо! Перейти в тему
-            </a>
+            {# СКРЫВАЕМ КНОПКУ, ЕСЛИ ЭТО СТРАНИЦА ЧТЕНИЯ ИЗ ПОИСКА #}
+            {% if not is_search_page %}
+                <a href="/chem/organiclaw" class="btn btn-primary mt-2 mx-2">   
+                    Тест завершен, спасибо! Перейти в тему
+                </a>
+            {% endif %}
         {% endif %}
     </div>
 </div>
