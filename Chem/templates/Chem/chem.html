@@ -153,7 +153,7 @@
         <!-- ================================================================= -->
     <!-- РАЗДЕЛ: НЕОРГАНИЧЕСКАЯ ХИМИЯ -->
     <!-- ================================================================= -->
-    <button class="main-collapse-btn btn-inorganic-pastel" type="button" data-toggle="collapse" data-target="#collapseInorganic" aria-expanded="false" aria-controls="collapseInorganic">
+<button class="main-collapse-btn btn-inorganic-pastel" type="button" data-toggle="collapse" data-target="#collapseInorganic" aria-expanded="false" aria-controls="collapseInorganic">
         <div class="btn-title-wrapper">
             <span class="chem-emoji">💎</span>
             <span>Неорганическая химия</span>
@@ -165,6 +165,8 @@
                 <div class="col-12">
                     <a href="{% url 'inorganiclaw' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Законы неорганической химии</a>
                     <a href="{% url 'compaunds' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Неорганические соединения</a>
+                    {# НОВАЯ ССЫЛКА НА ВСЕ РЕАКЦИИ С ПОИСКОМ #}
+                    <a href="{% url 'all_reactions' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Реакции неорганической химии</a>
                     <a href="{% url 'traitstest_start' %}" class="chem-link-item" target="_blank" rel="noopener noreferrer">➔ Тест: признаки веществ</a>
                 </div>
             </div>
