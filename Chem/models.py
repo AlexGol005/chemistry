@@ -501,6 +501,11 @@ class OrganicNames(models.Model):
 
 
 
+import pytils
+from pytils.translit import slugify as russian_slugify
+from django.db import models
+from django.core.exceptions import ValidationError
+
 class OrganicReaction(models.Model):
     """ Реакции органической химии """
     date = models.DateField('Дата', auto_now_add=True)
@@ -508,8 +513,8 @@ class OrganicReaction(models.Model):
     description = models.TextField('Метаописание страницы', blank=True, null=True)    
     keywords = models.TextField('Ключевые слова', blank=True, null=True)
     
-    number = models.ForeignKey(Organiclaw,  on_delete=models.PROTECT,
-                                   verbose_name='Закон', blank=True, null=True)
+    number = models.ForeignKey(Organiclaw, on_delete=models.PROTECT,
+                               verbose_name='Закон', blank=True, null=True)
     
     reagent1 = models.CharField('Реагент1', blank=True, null=True)
     reagent2 = models.CharField('Реагент2', blank=True, null=True)
@@ -525,21 +530,22 @@ class OrganicReaction(models.Model):
     video = models.CharField('Ссылка на видео', blank=True, null=True)
     extra = models.CharField('Дополнительная информация', blank=True, null=True)
     level = models.CharField('Уровень', blank=True, null=True, default='ЕГЭ', choices=LEVEL)
+    
     img1 = models.ImageField('Иллюстрация1', upload_to='user_images', blank=True, null=True)
-                                        
     img2 = models.ImageField('Иллюстрация2', upload_to='user_images', blank=True, null=True)
-                                      
     img3 = models.ImageField('Иллюстрация3', upload_to='user_images', blank=True, null=True)
     img4 = models.ImageField('Иллюстрация4', upload_to='user_images', blank=True, null=True)
-                                        
     img5 = models.ImageField('Иллюстрация5', upload_to='user_images', blank=True, null=True)
-                                      
     img6 = models.ImageField('Иллюстрация6', upload_to='user_images', blank=True, null=True)
     video = models.CharField('Видео', max_length=10000, blank=True, null=True)
+    
     is_visible = models.BooleanField(
-      default=True,
-      verbose_name='Отображать на сайте',
+        default=True,
+        verbose_name='Отображать на сайте',
     )
+
+    # НОВОЕ ПОЛЕ ДЛЯ ЧПУ URL СТРАНИЦЫ
+    slug = models.SlugField('ЧПУ URL страницы', max_length=255, unique=True, blank=True, null=True)
 
     # Переопределяем менеджер
     objects = VisibleManager()
@@ -553,7 +559,7 @@ class OrganicReaction(models.Model):
             try:
                 return f'pk={self.pk}. {self.reagent1} + {self.reagent2}  ?? - {self.metatitle})'
             except:
-                return  f'pk={self.pk}. Не указано!'
+                return f'pk={self.pk}. Не указано!'
 
     class Meta:
         unique_together = ['reagent1', 'reagent2', 'reagent3', 'condition', 'number']
@@ -562,14 +568,36 @@ class OrganicReaction(models.Model):
 
     def clean(self):
         # Ищем существующую запись с такими же полями
-        duplicate = OrganicReaction.objects.filter(reagent1=self.reagent1, reagent2=self.reagent2, reagent3=self.reagent3, condition=self.condition, number=self.number,).exclude(pk=self.pk).first()
+        duplicate = OrganicReaction.objects.filter(
+            reagent1=self.reagent1, 
+            reagent2=self.reagent2, 
+            reagent3=self.reagent3, 
+            condition=self.condition, 
+            number=self.number
+        ).exclude(pk=self.pk).first()
         
         if duplicate:
-            # Выбрасываем ошибку с PK дубликата
             raise ValidationError(
                 f"Ошибка! Место уже занято. Дублирующая запись имеет ID: {duplicate.pk}"
             )
         super().clean()
+
+    # АВТОЗАПОЛНЕНИЕ СЛАГА ПРИ СОХРАНЕНИИ
+    def save(self, *args, **kwargs):
+        # Генерируем слаг только если он пустой и заполнен русский metatitle
+        if not self.slug and self.metatitle:
+            # Превращаем русский текст в латинский ЧПУ-урл
+            base_slug = russian_slugify(self.metatitle)[:200]
+            
+            # Защита от одинаковых metatitle: добавляем цифровой хвост, если слаг уже занят
+            slug = base_slug
+            counter = 1
+            while OrganicReaction.all_objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+            
+        super().save(*args, **kwargs)
 
 
 
