@@ -97,6 +97,9 @@ class ChemReactionDetailSlugView(TemplateView):
         context['count'] = 0
         context['question_progress'] = ""
         context['percent'] = 0
+        
+        # Флаг, сообщающий шаблону, что страница открыта в режиме чтения, а не в тесте
+        context['is_search_page'] = True
 
         # Логика избранного для авторизованного пользователя
         if self.request.user.is_authenticated:
@@ -105,6 +108,7 @@ class ChemReactionDetailSlugView(TemplateView):
             ).values_list('reaction_id', flat=True))
         
         return context
+
 
 
 
