@@ -48,7 +48,7 @@
                         </div>
                         
                         {# Метаописание и условия (Уровень ОГЭ/ЕГЭ удален) #}
-                        <p class="text-muted small mb-1">{{ obj.description }}</p>
+                        <p class="text-muted small mb-1">{{ obj.description|default_if_none:"" }}</p>
                         <small class="text-secondary">Условия: {{ obj.condition }}</small>
                         <br>
 
