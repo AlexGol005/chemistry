@@ -1454,6 +1454,108 @@ class OrganicChemTestAnswerView(TemplateView):
         return context
 
 
+# все реакции органики
+def all_organic_reactions_view(request):
+    # Инициализируем форму поиска данными из GET-запроса
+    form = SearchForm(request.GET or None)
+    
+    # По умолчанию берем все видимые органические реакции
+    reactions = OrganicReaction.objects.all()
+    query = ""
+
+    if form.is_valid():
+        query = form.cleaned_data.get('searchword', '').strip()
+        
+        if query:
+            words = query.split()
+            
+            # Каждое слово из запроса ОБЯЗАТЕЛЬНО должно быть найдено в записи
+            for word in words:
+                # Находим molecule_short из OrganicNames по названиям или брутто-формуле
+                matched_structures = OrganicNames.objects.filter(
+                    Q(name1__icontains=word) | Q(name2__icontains=word) | 
+                    Q(name3__icontains=word) | Q(name4__icontains=word) |
+                    Q(formula__icontains=word)
+                ).values_list('molecule_short', flat=True)
+                
+                structures_list = list(matched_structures)
+                
+                # Ищем совпадения в текстовых полях или по связанным структурам веществ
+                word_query = (
+                    Q(metatitle__icontains=word) | 
+                    Q(description__icontains=word) |
+                    Q(reagent1__in=structures_list) | Q(reagent2__in=structures_list) | Q(reagent3__in=structures_list) |
+                    Q(product1__in=structures_list) | Q(product2__in=structures_list) | Q(product3__in=structures_list) | Q(product4__in=structures_list)
+                )
+                
+                # Запасная проверка на прямое текстовое совпадение структурных формул
+                word_query |= (
+                    Q(reagent1__icontains=word) | Q(reagent2__icontains=word) | Q(reagent3__icontains=word) |
+                    Q(product1__icontains=word) | Q(product2__icontains=word) | Q(product3__icontains=word) | Q(product4__icontains=word)
+                )
+                
+                reactions = reactions.filter(word_query)
+                
+            reactions = reactions.distinct()
+
+    return render(request, 'Chem/all_organic_reactions.html', {
+        'reactions': reactions,
+        'form': form,
+        'query': query
+    })
+
+class OrganicReactionDetailSlugView(TemplateView):
+    template_name = 'Chem/organiclawtestanswer.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Получаем красивый текстовый слаг из URL-адреса
+        slug_url = self.kwargs['slug']
+        
+        # Ищем реакцию по слагу
+        qw = get_object_or_404(OrganicReaction, slug=slug_url)
+        context['obj'] = qw
+        context['level'] = qw.level
+
+        # Полное копирование вашей логики поиска связанных соединений по molecule_short
+        struct_list = [
+            qw.reagent1, qw.reagent2, qw.reagent3, 
+            qw.product1, qw.product2, qw.product3, qw.product4
+        ]
+        
+        for i, val in enumerate(struct_list, 1):
+            if val:
+                target = str(val).strip()
+                found_obj = OrganicNames.objects.filter(molecule_short__iexact=target).first()
+                context[f'obj_n{i}'] = found_obj
+            else:
+                context[f'obj_n{i}'] = None
+
+        # Проверка Избранного (используем вашу OrganicUserReaction)
+        if self.request.user.is_authenticated:
+            context['favorite_ids'] = list(
+                OrganicUserReaction.objects.filter(user=self.request.user)
+                .values_list('reaction_id', flat=True)
+            )
+        else:
+            context['favorite_ids'] = []
+
+        # Сбрасываем тестовые переменные сессии, так как страница открыта из поиска для чтения
+        context['percent'] = 0
+        context['question_progress'] = ""
+        context['next_index'] = None
+        context['items'] = []
+        context['count'] = 0
+        
+        # Передаем маркер страницы чтения
+        context['is_search_page'] = True
+            
+        return context
+
+
+
+
 # ==========================================
 # 4. ФУНКЦИИ ИЗБРАННОГО (ДОБАВЛЕНИЕ, УДАЛЕНИЕ, СПИСОК)
 # ==========================================
