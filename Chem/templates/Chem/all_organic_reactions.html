@@ -37,8 +37,8 @@
                         </div>
                         
                         {# Описание и условия #}
-                        <p class="text-muted small mb-1">{{ obj.description }}</p>
-                        <small class="text-secondary">Условия: {{ obj.condition }} | Уровень: {{ obj.level }}</small>
+                        <p class="text-muted small mb-1">{{ obj.description|default:"" }}</p>
+                        <small class="text-secondary">Условия: {{ obj.condition }}</small>
                         <br>
 
                         {# Кнопка перехода на новую органическую ЧПУ страницу #}
