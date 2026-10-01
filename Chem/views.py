@@ -15,6 +15,96 @@ from django.db.models import F
 
 from .models import OrganicNames, UserQuestionProgress  # Подключаем модель прогресса
 
+def all_reactions_view(request):
+    # Инициализируем форму данными из GET-запроса
+    form = SearchForm(request.GET or None)
+    
+    # По умолчанию берем все видимые реакции
+    reactions = InorganicReaction.objects.all()
+    query = ""
+
+    if form.is_valid():
+        query = form.cleaned_data.get('searchword', '').strip()
+        
+        if query:
+            # Разбиваем поисковую фразу на отдельные слова
+            words = query.split()
+            
+            # Каждое слово из запроса ОБЯЗАТЕЛЬНО должно быть найдено в записи
+            for word in words:
+                # Находим формулы из NamesCompaunds по названию вещества или самой формуле
+                matched_formulas = NamesCompaunds.objects.filter(
+                    Q(name__icontains=word) | Q(formula__icontains=word)
+                ).values_list('formula', flat=True)
+                
+                formulas_list = list(matched_formulas)
+                
+                # Ищем совпадения в текстовых полях или по найденным формулам веществ
+                word_query = (
+                    Q(metatitle__icontains=word) | 
+                    Q(description__icontains=word) |
+                    Q(reagent1__in=formulas_list) | Q(reagent2__in=formulas_list) | Q(reagent3__in=formulas_list) |
+                    Q(product1__in=formulas_list) | Q(product2__in=formulas_list) | Q(product3__in=formulas_list) | Q(product4__in=formulas_list)
+                )
+                
+                # Запасная проверка на прямое текстовое совпадение формул
+                word_query |= (
+                    Q(reagent1__icontains=word) | Q(reagent2__icontains=word) | Q(reagent3__icontains=word) |
+                    Q(product1__icontains=word) | Q(product2__icontains=word) | Q(product3__icontains=word) | Q(product4__icontains=word)
+                )
+                
+                reactions = reactions.filter(word_query)
+                
+            reactions = reactions.distinct()
+
+    return render(request, 'Chem/all_reactions.html', {
+        'reactions': reactions,
+        'form': form,
+        'query': query
+    })
+
+class ChemReactionDetailSlugView(TemplateView):
+    template_name = 'Chem/inorganiclawtestanswer.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Получаем красивый текстовый слаг из URL-адреса
+        slug_url = self.kwargs['slug']
+        
+        # Ищем реакцию по слагу вместо числового ID
+        qw = get_object_or_404(InorganicReaction, slug=slug_url)
+        context['level'] = qw.level
+        
+        # Полное копирование вашей логики заполнения реагентов/продуктов и их имён
+        formulas = [qw.reagent1, qw.reagent2, qw.reagent3, qw.product1, qw.product2, qw.product3, qw.product4]
+        for i, f in enumerate(formulas, 1):
+            nm = NamesCompaunds.objects.filter(formula=f).first()
+            context[f'name{i}'] = nm.name if nm else ""
+            context[f'pkc{i}'] = nm.pk if nm else 1
+            if i <= 3: 
+                context[f'reagent{i}'] = f
+            else: 
+                context[f'product{i-3}'] = f
+
+        context['condition'] = qw.condition
+        context['obj'] = qw  # Передаем объект в переменную 'obj', как требует ваш шаблон
+        
+        # Сбрасываем тестовые переменные, так как это просто страница просмотра из поиска
+        context['my_answer'] = []
+        context['next_index'] = None
+        context['items'] = []
+        context['count'] = 0
+        context['question_progress'] = ""
+        context['percent'] = 0
+
+        # Логика избранного для авторизованного пользователя
+        if self.request.user.is_authenticated:
+            context['favorite_ids'] = list(UserReaction.objects.filter(
+                user=self.request.user
+            ).values_list('reaction_id', flat=True))
+        
+        return context
 
 
 
