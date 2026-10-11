@@ -207,12 +207,14 @@
           <br>
 </div> </center>
     <br>
- {% endif %} 
+  {% endif %} 
  
-</div>
- {# конец колонки с фильтрами #} 
-</div>
-</div>
-</div>
+</div> {# Закрывает <div class="col"> #}
+</div> {# Закрывает <div class="row"> #}
+</div> {# Закрывает <div class="container"> #}
 {% endautoescape %}
+
+{# ПОДКЛЮЧАЕМ СКИПТ BOOTSTRAP 5 НАПРЯМУЮ ДЛЯ ЭТОЙ СТРАНИЦЫ #}
+<script src="https://jsdelivr.net" crossorigin="anonymous"></script>
+
 {% endblock %}
