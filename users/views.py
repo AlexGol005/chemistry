@@ -93,7 +93,7 @@ def HeadEmployeereg(request):
 
 
 
-
+            user = User.objects.get(pk=u_f.pk)
             password = get_random_string(length=12) 
             user.set_password(password)
             user.save(update_fields=['password'])
