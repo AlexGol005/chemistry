@@ -11,6 +11,7 @@ from django.contrib.auth.models import Group
 from .forms import UserRegisterForm, UserUdateForm, ProfileUdateForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils.crypto import get_random_string
 from .models import *
 from .forms import *
 from equipment.models import *
@@ -90,8 +91,10 @@ def HeadEmployeereg(request):
             g.user_set.add(u_f)
             username = form.cleaned_data.get('username')
 
-            user = User.objects.get(pk=u_f.pk)
-            password = User.objects.make_random_password()
+
+
+
+            password = get_random_string(length=12) 
             user.set_password(password)
             user.save(update_fields=['password'])
                    
