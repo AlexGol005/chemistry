@@ -111,7 +111,7 @@ def HeadEmployeereg(request):
                                 f"https://www.journallabeq.ru/login/\n" \
                                 f"Данные для входа на сайт:\n" \
                                 f"логин: {username};\n"\
-                                f"пароль: {word}\n"\
+                                f"пароль: {password}\n"\
                                  f"Вы создали новую организацию. Войдите в Вашу учетную запись и отредактируйте её данные\n"\
                                  f"По всем вопросам обращайтесь к администрации сайта по email sandra.005@mail.ru или по телефону +79500484071 (включая WhatsApp и Viber)"
                
