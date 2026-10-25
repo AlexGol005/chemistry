@@ -5,13 +5,13 @@
 {% endblock %}
 
 {% block content %}
-<!-- === СТРАНИЦА ОТВЕТА: ГЕОМЕТРИЯ ОДИН В ОДИН КАК В ВОПРОСЕ (ЧАСТЬ 1) === -->
+<!-- === СТРАНИЦА ОТВЕТА: ИСПРАВЛЕННАЯ АДАПТИВНАЯ ГЕОМЕТРИЯ === -->
 <div class="col-12 d-flex align-items-center justify-content-center" style="min-height: 80vh; padding: 15px 0; box-sizing: border-box;">
     <div class="card shadow-sm w-100 mx-auto trait-test-card" style="max-width: 720px; border-radius: 24px; border: 1px solid rgba(0, 0, 0, 0.04); background: #ffffff;">
-        <div class="card-body p-4 text-center d-flex flex-column justify-content-between" style="height: 100%; box-sizing: border-box;">
+        <div class="card-body text-center d-flex flex-column justify-content-between trait-test-body" style="box-sizing: border-box;">
             
             <!-- Блок статуса ответа -->
-            <div class="flex-shrink-0">
+            <div class="flex-shrink-0 w-100 mb-3">
                 {% if is_correct %}
                     <div class="alert alert-success text-center p-2 mb-0" style="border-radius: 12px; border-left: 5px solid #28a745; background-color: #f4fbf6; border-color: #e2f6e7;">
                         <h4 class="mb-0" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700; color: #1e7e34; font-size: 13pt;">🎉 Правильно!</h4>
@@ -24,22 +24,22 @@
             </div>
 
             <!-- Главный информационный блок -->
-            <div class="text-center d-flex flex-column justify-content-center my-auto py-2">
-                <h2 style="font-family: Georgia, serif; font-weight: bold; color: #1e293b; font-size: 26pt; margin-bottom: 2px; line-height: 1.2;">
+            <div class="text-center d-flex flex-column justify-content-center mb-3">
+                <h2 class="trait-object-title" style="font-family: Georgia, serif; font-weight: bold; color: #1e293b; line-height: 1.2; margin-bottom: 6px;">
                     {{ trait.object_name }}
                 </h2>
-                <div class="text-muted font-weight-bold text-uppercase mb-2" style="font-size: 10pt; letter-spacing: 1.5px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                <div class="text-muted font-weight-bold text-uppercase mb-2" style="font-size: 9pt; letter-spacing: 1.5px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                     {{ trait.get_question_category_display }}
                 </div>
                 <div class="mt-1">
-                    <span class="badge px-4 py-1.5" style="font-size: 13pt; border-radius: 50px; background-color: #eef2f6; color: #334155; border: 1px solid rgba(0, 0, 0, 0.06); font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                    <span class="badge px-4 py-1.5" style="font-size: 12pt; border-radius: 50px; background-color: #eef2f6; color: #334155; border: 1px solid rgba(0, 0, 0, 0.06); font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                         {{ correct_label }}
                     </span>
                 </div>
             </div>
 
             <!-- Контейнер для картинки -->
-            <div class="d-flex align-items-center justify-content-center flex-shrink-0 my-2" style="height: 160px; min-height: 160px;">
+            <div class="d-flex align-items-center justify-content-center mb-4 trait-image-container" style="width: 100%;">
                 {% if trait.image %}
                     <img class="bd-placeholder-img rounded img-fluid" 
                          style="max-width: 100%; max-height: 100%; object-fit: contain; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 6px 20px rgba(167, 223, 225, 0.25);" 
@@ -47,23 +47,22 @@
                          loading="lazy" 
                          decoding="async">
                 {% else %}
-                    <div class="text-muted" style="font-size: 11pt; font-style: italic;">Иллюстрация отсутствует</div>
+                    <div class="text-muted py-3" style="font-size: 11pt; font-style: italic;">Иллюстрация отсутствует</div>
                 {% endif %}
             </div>
-<!-- === КОНЕЦ БЛОКА СТРАНИЦЫ РЕЗУЛЬТАТА ОТВЕТА (ЧАСТЬ 1) === -->
-<!-- === СТАРТ БЛОКА СТРАНИЦЫ РЕЗУЛЬТАТА ОТВЕТА (ЧАСТЬ 2) === -->
-            <!-- Кнопки управления в стиле Premium Glassmorphism -->
-            <div class="text-center mt-auto flex-shrink-0" style="display: flex; align-items: center; justify-content-center;">
+
+            <!-- Кнопки управления -->
+            <div class="text-center w-100 mt-2">
                 {% if next_index < total_questions %}
                     <a href="{% url 'traitstest_question' next_index %}" 
-                       class="btn alive-btn-base btn-premium-glass-nav btn-glass-next py-2.5 px-5"
-                       style="max-width: 70%; display: inline-block;">
+                       class="btn alive-btn-base btn-premium-glass-nav btn-glass-next py-2.5 px-4 w-100"
+                       style="max-width: 320px; display: inline-block;">
                         ➡️ Следующий вопрос
                     </a>
                 {% else %}
                     <a href="{% url 'traitstest_finished' %}" 
-                       class="btn alive-btn-base btn-premium-glass-nav btn-glass-finish py-2.5 px-5"
-                       style="max-width: 70%; display: inline-block;">
+                       class="btn alive-btn-base btn-premium-glass-nav btn-glass-finish py-2.5 px-4 w-100"
+                       style="max-width: 320px; display: inline-block;">
                         📊 Посмотреть итоги теста
                     </a>
                 {% endif %}
@@ -74,12 +73,21 @@
 </div>
 
 <style>
-    /* Синхронизация высоты карточки с вопросом для предотвращения скачков */
+    /* Адаптивная геометрия карточки */
     @media (min-width: 768px) {
-        .trait-test-card { height: 500px; }
+        .trait-test-card { height: 530px; }
+        .trait-test-body { padding: 1.5rem !important; height: 100%; }
+        .trait-image-container { height: 180px; }
+        .trait-object-title { font-size: 26pt; }
     }
+    
     @media (max-width: 767px) {
-        .trait-test-card { min-height: 520px; }
+        /* На мобилках убираем фиксированную высоту во избежание накладывания */
+        .trait-test-card { height: auto; min-height: 450px; }
+        .trait-test-body { padding: 1rem !important; }
+        /* Ограничиваем картинку аккуратнее, чтобы текст не страдал */
+        .trait-image-container { height: auto; max-height: 140px; }
+        .trait-object-title { font-size: 20pt; }
     }
 
     /* Базовая геометрия кнопок навигации */
@@ -135,5 +143,4 @@
         box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05) !important;
     }
 </style>
-<!-- === КОНЕЦ БЛОКА СТРАНИЦЫ РЕЗУЛЬТАТА ОТВЕТА (ЧАСТЬ 2) === -->
 {% endblock %}
