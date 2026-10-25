@@ -5,16 +5,16 @@
 {% endblock %}
 
 {% block content %}
-<!-- === СТРАНИЦА ОТВЕТА: СВЕРХБЕЗОПАСНАЯ БЛОЧНАЯ ГЕОМЕТРИЯ === -->
-<div class="col-12 d-flex align-items-center justify-content-center" style="min-height: 80vh; padding: 20px 10px; box-sizing: border-box;">
+<!-- === СТРАНИЦА ОТВЕТА: СУПЕР-КОМПАКТНАЯ КАРТИНКА ДЛЯ МОБИЛЬНЫХ === -->
+<div class="col-12 d-flex align-items-center justify-content-center" style="min-height: 80vh; padding: 15px 10px; box-sizing: border-box;">
     <div class="card shadow-sm w-100 mx-auto trait-test-card" style="max-width: 680px; border-radius: 24px; border: 1px solid rgba(0, 0, 0, 0.04); background: #ffffff;">
         <div class="card-body text-center trait-test-body" style="box-sizing: border-box;">
             
             <!-- 1. Блок статуса ответа -->
-            <div class="w-100 mb-4">
+            <div class="w-100 mb-3">
                 {% if is_correct %}
                     <div class="alert alert-success text-center p-2 mb-0" style="border-radius: 12px; border-left: 5px solid #28a745; background-color: #f4fbf6; border-color: #e2f6e7;">
-                        <h4 class="mb-0" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700; color: #1e7e34; font-size: 13pt;">🎉 Правильно!</h4>
+                        <h4 class="mb-0" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700; color: #1e7e34; font-size: 12pt;">🎉 Правильно!</h4>
                     </div>
                 {% else %}
                     <div class="alert alert-danger text-center p-2 mb-0" style="border-radius: 12px; border-left: 5px solid #dc3545; background-color: #fdf5f5; border-color: #fce8e8;">
@@ -24,30 +24,30 @@
             </div>
 
             <!-- 2. Главный информационный блок (Текст) -->
-            <div class="w-100 mb-4">
-                <h2 class="trait-object-title" style="font-family: Georgia, serif; font-weight: bold; color: #1e293b; line-height: 1.2; margin: 0 0 8px 0;">
+            <div class="w-100 mb-3">
+                <h2 class="trait-object-title" style="font-family: Georgia, serif; font-weight: bold; color: #1e293b; line-height: 1.2; margin: 0 0 6px 0;">
                     {{ trait.object_name }}
                 </h2>
-                <div class="text-muted font-weight-bold text-uppercase mb-3" style="font-size: 9pt; letter-spacing: 1.5px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                <div class="text-muted font-weight-bold text-uppercase mb-2" style="font-size: 9pt; letter-spacing: 1.5px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                     {{ trait.get_question_category_display }}
                 </div>
                 <div>
-                    <span class="badge px-4 py-1.5" style="font-size: 12pt; border-radius: 50px; background-color: #eef2f6; color: #334155; border: 1px solid rgba(0, 0, 0, 0.06); font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: inline-block; white-space: normal;">
+                    <span class="badge px-3 py-1" style="font-size: 11pt; border-radius: 50px; background-color: #eef2f6; color: #334155; border: 1px solid rgba(0, 0, 0, 0.06); font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: inline-block; white-space: normal;">
                         {{ correct_label }}
                     </span>
                 </div>
             </div>
 
-            <!-- 3. Контейнер для картинки -->
-            <div class="d-flex align-items-center justify-content-center mb-4 trait-image-container" style="width: 100%;">
+            <!-- 3. Контейнер для картинки (Уменьшен в 2 раза для мобильных) -->
+            <div class="d-flex align-items-center justify-content-center mb-3 trait-image-container" style="width: 100%;">
                 {% if trait.image %}
                     <img class="bd-placeholder-img rounded img-fluid" 
-                         style="max-width: 100%; max-height: 100%; object-fit: contain; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 6px 20px rgba(167, 223, 225, 0.25);" 
+                         style="max-width: 100%; max-height: 100%; object-fit: contain; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 4px 12px rgba(167, 223, 225, 0.2);" 
                          src="{{ trait.image.url }}" 
                          loading="lazy" 
                          decoding="async">
                 {% else %}
-                    <div class="text-muted py-3" style="font-size: 11pt; font-style: italic;">Иллюстрация отсутствует</div>
+                    <div class="text-muted py-2" style="font-size: 10pt; font-style: italic;">Иллюстрация отсутствует</div>
                 {% endif %}
             </div>
 
@@ -55,14 +55,14 @@
             <div class="w-100 mt-2">
                 {% if next_index < total_questions %}
                     <a href="{% url 'traitstest_question' next_index %}" 
-                       class="btn alive-btn-base btn-premium-glass-nav btn-glass-next py-2.5 px-4 w-100"
-                       style="max-width: 340px; display: inline-block;">
+                       class="btn alive-btn-base btn-premium-glass-nav btn-glass-next py-2 px-4 w-100"
+                       style="max-width: 300px; display: inline-block;">
                         ➡️ Следующий вопрос
                     </a>
                 {% else %}
                     <a href="{% url 'traitstest_finished' %}" 
-                       class="btn alive-btn-base btn-premium-glass-nav btn-glass-finish py-2.5 px-4 w-100"
-                       style="max-width: 340px; display: inline-block;">
+                       class="btn alive-btn-base btn-premium-glass-nav btn-glass-finish py-2 px-4 w-100"
+                       style="max-width: 300px; display: inline-block;">
                         📊 Посмотреть итоги теста
                     </a>
                 {% endif %}
@@ -73,7 +73,7 @@
 </div>
 
 <style>
-    /* Настольные мониторы и планшеты */
+    /* Десктопы и планшеты */
     @media (min-width: 768px) {
         .trait-test-card { min-height: 520px; }
         .trait-test-body { padding: 2.5rem !important; }
@@ -81,19 +81,19 @@
         .trait-object-title { font-size: 26pt; }
     }
     
-    /* Мобильные телефоны */
+    /* Мобильные телефоны (Изолированные блоки + маленькая картинка) */
     @media (max-width: 767px) {
-        /* Полностью изолируем блоки друг от друга на мобилках */
         .trait-test-card { height: auto !important; }
-        .trait-test-body { padding: 1.2rem !important; display: block !important; }
-        .trait-image-container { height: auto !important; max-height: 150px; min-height: 100px; }
+        .trait-test-body { padding: 1rem !important; display: block !important; }
+        /* Уменьшили высоту контейнера в 2 раза */
+        .trait-image-container { height: 70px !important; max-height: 70px !important; min-height: 70px !important; }
         .trait-object-title { font-size: 18pt; }
     }
 
-    /* Стили кнопок (без изменений) */
+    /* Стили кнопок */
     .alive-btn-base {
         border: none; 
-        font-size: 12pt; 
+        font-size: 11pt; 
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         cursor: pointer;
