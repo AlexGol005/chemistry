@@ -22,12 +22,7 @@ class RouteFeature(models.Model):
 
 
 class Hike(models.Model):
-   features = models.ManyToManyField(
-        RouteFeature, 
-        blank=True, 
-        verbose_name='Особенности маршрута',
-        related_name='hikes'
-    )
+    features = models.ManyToManyField(RouteFeature, blank=True, verbose_name='Особенности маршрута',related_name='hikes')
     how_long = models.IntegerField('Сколько дней',  blank=True, null=True, default='1')
     season = models.CharField('Сезон', max_length=10000, blank=True, choices=SEASONS, null=True, default='теплое время года')
     country = models.CharField('Страна', max_length=10000, blank=True, null=True, default='Россия')
