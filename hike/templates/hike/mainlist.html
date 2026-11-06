@@ -2,219 +2,183 @@
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 
-{#название страницы#}
-{#стандартная#}
+{# Название страницы #}
 {% block title %}
-{{title}} 
+{{ title }} 
 {% endblock %}
-{#конец названия страницы#}
 
-
-    
 {% block content %}
 {% autoescape off %}
 <div class="container">
-        <center>  <h3><a href="/personal/"> Персональный раздел </a></h3>     </center>
-     <br>
-<div class="row">
+    <center>
+        <h3><a href="/personal/"> Персональный раздел </a></h3>
+    </center>
+    <br>
+    
+    <div class="row">
+        <!-- Левая колонка: Список маршрутов и Пагинация -->
         <div class="col-7">
-            
-   <center>  <h3><a href="/hike/"> Маршруты походов </a></h3>     </center>
-{#основная таблица#}
+            <center>
+                <h3><a href="/hike/"> Маршруты походов </a></h3>
+            </center>
 
-{% for obj in objects %}
-   
-    <table class="table table-bordered flexy">
-    <tbody>
-    <tr>
-        <td > 
-           <h4>{{ obj.title }}</h4>
-            <h6>{{ obj.aim_station }}  -&nbsp;   {{ obj.back_station }}</h6>
-            <b>дней:&nbsp </b> {{ obj.how_long }}  &nbsp&nbsp&nbsp&nbsp&nbsp <b>км:&nbsp  </b> {{ obj.kilometers }}
-            <br>         
+            {# Основная таблица со списком маршрутов #}
+            {% for obj in objects %}
+            <table class="table table-bordered flexy">
+                <tbody>
+                    <tr>
+                        <td> 
+                            <h4>{{ obj.title }}</h4>
+                            <h6>{{ obj.aim_station }} - &nbsp; {{ obj.back_station }}</h6>
+                            <b>дней:&nbsp </b> {{ obj.how_long }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                            <b>км:&nbsp </b> {{ obj.kilometers }}
+                            <br>         
 
-            <b>Отправление&nbspс:</b>&nbsp{{ obj.start_station }}
-            <br>
-            <b>Группа VK: </b> 
-                {% if obj.vk %}
-                <a href="{{ obj.vk}}"  target="blank" >
-                 ссылка
-                </a>
-                {% else  %}
-                отсутствует
+                            <b>Отправление&nbsp;с:</b>&nbsp;{{ obj.start_station }}
+                            <br>
+                            
+                            <b>Особенности:</b> 
+                            {% for feature_obj in obj.features.all %}
+                                <span class="badge bg-secondary">{{ feature_obj.feature }}</span>{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                <span class="text-muted">не указаны</span>
+                            {% endfor %}
+                            <br>
+
+                            <b>Группа VK: </b> 
+                            {% if obj.vk %}
+                                <a href="{{ obj.vk }}" target="_blank">ссылка</a>
+                            {% else %}
+                                отсутствует
+                            {% endif %}
+                            <br>
+
+                            <a href="{% url 'hikestr' obj.pk %}" target="_blank" class="btn btn-outline-primary mt-3" style="width: 180px">читать далее</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            {% empty %}
+            <div class="alert alert-info text-center mt-3">
+                Маршруты с выбранными параметрами не найдены.
+            </div>
+            {% endfor %}
+
+            {# Блок Пагинации (сохраняет выбранные фильтры при переходе) #}
+            {% if is_paginated %}
+            <div class="mt-3">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{{ current_filters_url }}" class="btn btn-outline-primary mt-1">Начало</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{{ current_filters_url }}" class="btn btn-outline-primary mt-1">Предыдущая</a>
                 {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{{ current_filters_url }}" class="btn btn-outline-primary mt-1">Следующая</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{{ current_filters_url }}" class="btn btn-outline-primary mt-1">Последняя</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Правая колонка: Сайдбар с комбинированными фильтрами -->
+        <div class="col">
+            <center> <h3>Фильтры</h3> </center>
+            
+            {# Фильтр 1: Поисковая строка #}
+            <center> <h6> Поиск </h6></center>
+            <form action="" method="GET">
+                <input type="hidden" name="pk" value="{{ pk }}">
+                <input type="hidden" name="qk" value="{{ qk }}">
+                <input type="hidden" name="rk" value="{{ rk }}">
+                <input type="hidden" name="fk" value="{{ fk }}">
+                {% crispy form %}
+            </form>
+            <br>
+ 
+            {# Фильтр 2: Пройдено в этом году #}
+            <center> <h6> Пройдено в этом году? </h6></center>
+            <center>
+                <div class="btn-group">          
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if pk == 0 %} Найти {% elif pk == 1 %} пройдено {% elif pk == 2 %} не пройдено {% endif %}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?searchword={{ request.GET.searchword }}&pk=0&qk={{ qk }}&rk={{ rk }}&fk={{ fk }}">Все маршруты</a></li>
+                        <li><a class="dropdown-item" href="?searchword={{ request.GET.searchword }}&pk=1&qk={{ qk }}&rk={{ rk }}&fk={{ fk }}">пройдено</a></li>
+                        <li><a class="dropdown-item" href="?searchword={{ request.GET.searchword }}&pk=2&qk={{ qk }}&rk={{ rk }}&fk={{ fk }}">не пройдено</a></li>
+                    </ul>
+                </div> 
+            </center>
             <br>
 
-        <a href="{% url 'hikestr' obj.pk %}" target="blank" class="btn btn btn-outline-primary  mt-3" style="width: 180px">читать далее</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
- {% endfor %}
-{#конец основной таблицы#}
-{#пагинация#}
-{# стандартная #}
-{% if is_paginated %}
-    {% if page_obj.has_previous %}
-       <a href="?page=1" class="btn btn-outline-primary mt-1">Начало</a>
-       <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary mt-1">Предыдущая</a>
-  {% endif %}
-    {% if page_obj.has_next %}
-       <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary mt-1">Следующая</a>
-       <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-primary mt-1">Последняя</a>
-  {% endif %}
-  {% endif %}
-{#конец пагинации#}
-</div>
- {# колонка с фильтрами #}   
-<div class="col">
- <center> <h3>Фильтры</h3> </center>
-    {#фильтр 1 форма для поиска по нужным полям #}
- <center> <h6>  Поиск </h6></center>
-        <form action="/hike/hike/searchresult/" method="GET">
-         {% csrf_token %}
-         {% crispy form %}
-         </form>
-<br>
- 
-{#фильтр 2 поиск пройденных и непройденных маршрутов в этом году #}
-    <center> <h6>  Пройдено в этом году?  </h6></center>
-     {% if pk == 0 %}    
-     <center><div class="btn-group">          
-<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    Найти
-  </button>
-  <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="{% url 'hikefilteryear' pk=0 %}">Все маршруты</a></li>
-    <li><a class="dropdown-item" href="{% url 'hikefilteryear' pk=1 %}">пройдено</a></li>
-    <li><a class="dropdown-item" href="{% url 'hikefilteryear' pk=2 %}">не пройдено</a></li>
-  </ul>
-</div> </center>
-<br>
-   {% elif pk == 1 %} 
-     <center><div class="btn-group">   
-    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    пройдено
-  </button>
-  <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="{% url 'hikefilteryear' pk=0 %}">Все маршруты</a></li>
-    <li><a class="dropdown-item" href="{% url 'hikefilteryear' pk=1 %}">пройдено</a></li>
-    <li><a class="dropdown-item" href="{% url 'hikefilteryear' pk=2 %}">не пройдено</a></li>
-  </ul>   
-</div> </center>
-    <br>
-    {% elif pk == 2 %}      
-      <center>  <div class="btn-group">   
-          <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    не пройдено
-  </button>
-  <ul class="dropdown-menu">
-     <li><a class="dropdown-item" href="{% url 'hikefilteryear' pk=0 %}">Все маршруты</a></li>
-    <li><a class="dropdown-item" href="{% url 'hikefilteryear' pk=1 %}">пройдено</a></li>
-    <li><a class="dropdown-item" href="{% url 'hikefilteryear' pk=2 %}">не пройдено</a></li>
-  </ul>
-        <br>
-</div> </center>
-     <br>
-    {% endif %} 
+            {# Фильтр 3: Пройдено когда-то вообще #}
+            <center> <h6> Пройдено когда-то </h6></center>
+            <center>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if qk == 0 %} Найти {% elif qk == 1 %} пройдено {% elif qk == 2 %} не пройдено {% endif %}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?searchword={{ request.GET.searchword }}&pk={{ pk }}&qk=0&rk={{ rk }}&fk={{ fk }}">Все маршруты</a></li>
+                        <li><a class="dropdown-item" href="?searchword={{ request.GET.searchword }}&pk={{ pk }}&qk=1&rk={{ rk }}&fk={{ fk }}">пройдено</a></li>
+                        <li><a class="dropdown-item" href="?searchword={{ request.GET.searchword }}&pk={{ pk }}&qk=2&rk={{ rk }}&fk={{ fk }}">не пройдено</a></li>
+                    </ul>
+                </div> 
+            </center>
+            <br>
 
-    {#фильтр 3 поиск пройденных и непройденных маршрутов вообще #}
-    <center> <h6>  Пройдено когда-то  </h6></center>
-     {% if qk == 0 %}
-    
-     <center><div class="btn-group">
-          
-<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    Найти
-  </button>
-  <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="{% url 'donehikefilteryear' qk=0 %}">Все маршруты</a></li>
-    <li><a class="dropdown-item" href="{% url 'donehikefilteryear' qk=1 %}">пройдено</a></li>
-    <li><a class="dropdown-item" href="{% url 'donehikefilteryear' qk=2 %}">не пройдено</a></li>
-  </ul>
-</div> </center>
-     <br>
-   {% elif qk == 1 %} 
-   <center>  <div class="btn-group"> 
-       <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    пройдено
-  </button>
-  <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="{% url 'donehikefilteryear' qk=0 %}">Все маршруты</a></li>
-    <li><a class="dropdown-item" href="{% url 'donehikefilteryear' qk=1 %}">пройдено</a></li>
-    <li><a class="dropdown-item" href="{% url 'donehikefilteryear' qk=2 %}">не пройдено</a></li>
-  </ul>
-   
-</div> </center>
- <br>
-    {% elif qk == 2 %} 
-     
-      <center>   <div class="btn-group">
-          <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    не пройдено
-  </button>
-  <ul class="dropdown-menu">
-     <li><a class="dropdown-item" href="{% url 'donehikefilteryear' qk=0 %}">Все маршруты</a></li>
-    <li><a class="dropdown-item" href="{% url 'donehikefilteryear' qk=1 %}">пройдено</a></li>
-    <li><a class="dropdown-item" href="{% url 'donehikefilteryear' qk=2 %}">не пройдено</a></li>
-  </ul>
-   
-         
-</div> </center>
-    <br>
- {% endif %} 
-    {#фильтр 4 поиск готовых маршрутов  #}
-    <center> <h6>  Готов маршрут?  </h6></center>
-     {% if rk == 0 %}
-    
-     <center><div class="btn-group">
-          
-<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    Найти
-  </button>
-  <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="{% url 'readyhikefilteryear' rk=0 %}">Все маршруты</a></li>
-    <li><a class="dropdown-item" href="{% url 'readyhikefilteryear' rk=1 %}">готов</a></li>
-    <li><a class="dropdown-item" href="{% url 'readyhikefilteryear' rk=2 %}">не готов</a></li>
-  </ul>
-</div> </center>
-     <br>
-   {% elif rk == 1 %} 
-   <center>  <div class="btn-group">
-       <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    готов
-  </button>
-  <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="{% url 'readyhikefilteryear' rk=0 %}">Все маршруты</a></li>
-    <li><a class="dropdown-item" href="{% url 'readyhikefilteryear' rk=1 %}">готов</a></li>
-    <li><a class="dropdown-item" href="{% url 'readyhikefilteryear' rk=2 %}">не готов</a></li>
-  </ul>
-   
-</div> </center>
- <br>
-    {% elif rk == 2 %} 
-     
-      <center>   <div class="btn-group">
-          <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    не готов
-  </button>
-  <ul class="dropdown-menu">
-     <li><a class="dropdown-item" href="{% url 'readyhikefilteryear' rk=0 %}">Все маршруты</a></li>
-    <li><a class="dropdown-item" href="{% url 'readyhikefilteryear' rk=1 %}">готов</a></li>
-    <li><a class="dropdown-item" href="{% url 'readyhikefilteryear' rk=2 %}">не готов</a></li>
-  </ul>
-   
-          <br>
-</div> </center>
-    <br>
-  {% endif %} 
- 
-</div> {# Закрывает <div class="col"> #}
-</div> {# Закрывает <div class="row"> #}
+            {# Фильтр 4: Готовность маршрута #}
+            <center> <h6> Готов маршрут? </h6></center>
+            <center>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if rk == 0 %} Найти {% elif rk == 1 %} готов {% elif rk == 2 %} не готов {% endif %}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?searchword={{ request.GET.searchword }}&pk={{ pk }}&qk={{ qk }}&rk=0&fk={{ fk }}">Все маршруты</a></li>
+                        <li><a class="dropdown-item" href="?searchword={{ request.GET.searchword }}&pk={{ pk }}&qk={{ qk }}&rk=1&fk={{ fk }}">готов</a></li>
+                        <li><a class="dropdown-item" href="?searchword={{ request.GET.searchword }}&pk={{ pk }}&qk={{ qk }}&rk=2&fk={{ fk }}">не готов</a></li>
+                    </ul>
+                </div> 
+            </center>
+            <br>
+
+            {# Фильтр 5: Динамические особенности маршрута #}
+            <center> <h6> Особенности маршрута </h6></center>
+            <center>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if fk == 0 %}
+                            Найти
+                        {% else %}
+                            {% for feat in all_features %}
+                                {% if feat.pk == fk %}{{ feat.feature }}{% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?searchword={{ request.GET.searchword }}&pk={{ pk }}&qk={{ qk }}&rk={{ rk }}&fk=0">Все особенности</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% for feat in all_features %}
+                            <li><a class="dropdown-item" href="?searchword={{ request.GET.searchword }}&pk={{ pk }}&qk={{ qk }}&rk={{ rk }}&fk={{ feat.pk }}">{{ feat.feature }}</a></li>
+                        {% empty %}
+                            <li><a class="dropdown-item disabled" href="#">Особенностей нет</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </center>
+            <br>
+            
+            {# Кнопка полного сброса всех фильтров в один клик #}
+            <center>
+                <a href="?" class="btn btn-sm btn-outline-danger w-70">Сбросить все фильтры</a>
+            </center>
+            <br>
+
+        </div> {# Закрывает <div class="col"> #}
+    </div> {# Закрывает <div class="row"> #}
 </div> {# Закрывает <div class="container"> #}
 {% endautoescape %}
 
-{# ПОДКЛЮЧАЕМ СКИПТ BOOTSTRAP 5 НАПРЯМУЮ ДЛЯ ЭТОЙ СТРАНИЦЫ #}
+{# Подключение скриптов Bootstrap 5 #}
 <script src="https://jsdelivr.net" crossorigin="anonymous"></script>
-
 {% endblock %}
