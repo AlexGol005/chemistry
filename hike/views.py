@@ -45,6 +45,10 @@ class ExampleTemplateView(TemplateView):
         context["table_data"] = {'11', '22', '33', '44',}
         return context
 
+from django.shortcuts import render
+from .models import Hike, RouteFeature  # Убедитесь, что модель импортирована
+
+# Добавьте получение особенностей в ListView
 class HikeAllListView(ListView):
     """ Выводит список всех маршрутов """
     model = Hike
@@ -52,13 +56,43 @@ class HikeAllListView(ListView):
     context_object_name = 'objects'
     ordering = ['-pk']
     paginate_by = 6
-    def get_context_data(self,**kwargs):
-        context = super(HikeAllListView,self).get_context_data(**kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super(HikeAllListView, self).get_context_data(**kwargs)
         context['form'] = SearchForm() 
         context['pk'] = 0
         context['qk'] = 0
         context['rk'] = 0
+        context['fk'] = 0  # 0 означает, что фильтр по особенностям выключен
+        context['all_features'] = RouteFeature.objects.all()  # Передаем список всех особенностей
         return context
+
+
+# Новая функция фильтра по особенностям маршрута
+def featurehikefilterview(request, fk):
+    """ Фильтр маршрутов по конкретной особенности """
+    if fk == 0:
+        objects = Hike.objects.all().order_by('-pk')
+    else:
+        # Фильтруем походы, у которых есть связь с особенностью по ее первичному ключу (id)
+        objects = Hike.objects.filter(features__pk=fk).order_by('-pk')
+        
+    form = SearchForm() 
+    pk = 0
+    qk = 0
+    rk = 0
+    all_features = RouteFeature.objects.all()  # Снова подгружаем для отображения в списке
+    
+    return render(request, "hike/mainlist.html", {
+        'objects': objects, 
+        'form': form, 
+        'pk': pk, 
+        'qk': qk, 
+        'rk': rk, 
+        'fk': fk,  # Передаем ID выбранной особенности
+        'all_features': all_features
+    })
+
 
 
 
@@ -176,34 +210,7 @@ class HikeStrView(CreateView):
         return super().form_valid(form)
 
 
-class SearchResultView(TemplateView):
-    """ Представление, которое выводит результаты поиска по слову/фразе в списке маршрутов """
 
-    template_name = 'hike/mainlist.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(SearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET.get('searchword', '')
-
-        if searchword:
-            searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
-        if searchword:
-            objects = Hike.objects.\
-            filter(Q(title__icontains=searchword)|Q(title__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(country__icontains=searchword)|Q(country__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(region__icontains=searchword)|Q(region__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(start_station__icontains=searchword)|Q(start_station__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(aim_station__icontains=searchword)|Q(aim_station__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(home_station__icontains=searchword)|Q(home_station__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(back_station__icontains=searchword)|Q(back_station__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(travel_details__icontains=searchword)|Q(travel_details__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(attractions__icontains=searchword)|Q(attractions=searchword1)).order_by('pk')
-            context['objects'] = objects
-            context['form'] = SearchForm(initial={'searchword': searchword})
-            context['pk'] = 0
-            context['qk'] = 0
-            context['rk'] = 0
-        return context
         
 
 class ITSearchResultView(TemplateView):
@@ -239,46 +246,7 @@ def filterview(request, pk):
     return render(request,  "hike/bm.html", {'objects': objects, 'form':form, 'sform':sform})
 
 
-def hikefilterview(request, pk):
-    """ Фильтр пройденных и непройденных маршрутов в этом году """
-    ar = str(now.year)[2:]
-    arr = f'{ar};'
-    if pk == 0:   
-        objects = Hike.objects.all()
-    if pk == 1:
-        objects = Hike.objects.filter(dates_try__iendswith=ar).order_by('-pk') | Hike.objects.filter(dates_try__iendswith=arr).order_by('-pk')
-    if pk == 2:   
-        objects = Hike.objects.exclude(dates_try__iendswith=ar).order_by('-pk') & Hike.objects.exclude(dates_try__iendswith=arr).order_by('-pk')
-    form = SearchForm() 
-    qk = 0
-    rk = 0
-    return render(request,  "hike/mainlist.html", {'objects': objects, 'form':form, 'pk': pk , 'qk': qk, 'rk': rk})
 
-def donehikefilterview(request, qk):
-    """ Фильтр пройденных и непройденных маршрутов вообще"""
-    if qk == 0:   
-        objects = Hike.objects.all()
-    if qk == 1:
-        objects = Hike.objects.filter(reality=True).order_by('-pk') 
-    if qk == 2:   
-        objects = Hike.objects.filter(reality=False).order_by('-pk')  
-    form = SearchForm() 
-    pk = 0
-    rk = 0
-    return render(request,  "hike/mainlist.html", {'objects': objects, 'form':form, 'pk': pk , 'qk': qk, 'rk': rk})
-
-def readyhikefilterview(request, rk):
-    """ Фильтр готовых и не готовых маршрутов"""
-    if rk == 0:   
-        objects = Hike.objects.all()
-    if rk == 1:
-        objects = Hike.objects.filter(maturity=True).order_by('-pk') 
-    if rk == 2:   
-        objects = Hike.objects.filter(maturity=False).order_by('-pk')  
-    form = SearchForm() 
-    pk = 0
-    qk = 0
-    return render(request,  "hike/mainlist.html", {'objects': objects, 'form':form, 'pk': pk , 'qk': qk, 'rk': rk})
 
 
 
@@ -555,5 +523,169 @@ class HistoryStrView(TemplateView):
         context['obj'] = obj
 
         return context
+
+from django.shortcuts import render
+from django.views.generic import ListView
+from django.utils import timezone
+from .models import Hike, RouteFeature  # Убедитесь, что модели импортированы
+from .forms import SearchForm           # Убедитесь, что форма импортирована
+
+class HikeAllListView(ListView):
+    """ Выводит список всех маршрутов """
+    model = Hike
+    template_name = 'hike/mainlist.html'
+    context_object_name = 'objects'
+    ordering = ['-pk']
+    paginate_by = 6
+
+    def get_context_data(self, **kwargs):
+        context = super(HikeAllListView, self).get_context_data(**kwargs)
+        context['form'] = SearchForm() 
+        context['pk'] = 0
+        context['qk'] = 0
+        context['rk'] = 0
+        context['fk'] = 0  # Выключенный фильтр особенностей
+        context['all_features'] = RouteFeature.objects.all()  # Все особенности для выпадающего списка
+        return context
+
+
+def hikefilterview(request, pk):
+    """ Фильтр пройденных и непройденных маршрутов в этом году """
+    now = timezone.now()
+    ar = str(now.year)[2:]
+    arr = f'{ar};'
+    
+    if pk == 0:   
+        objects = Hike.objects.all()
+    if pk == 1:
+        objects = Hike.objects.filter(dates_try__iendswith=ar).order_by('-pk') | Hike.objects.filter(dates_try__iendswith=arr).order_by('-pk')
+    if pk == 2:   
+        objects = Hike.objects.exclude(dates_try__iendswith=ar).order_by('-pk') & Hike.objects.exclude(dates_try__iendswith=arr).order_by('-pk')
+    
+    form = SearchForm() 
+    qk = 0
+    rk = 0
+    fk = 0
+    
+    return render(request, "hike/mainlist.html", {
+        'objects': objects, 
+        'form': form, 
+        'pk': pk, 
+        'qk': qk, 
+        'rk': rk,
+        'fk': fk,
+        'all_features': RouteFeature.objects.all()  # Передаем список особенностей
+    })
+
+
+def donehikefilterview(request, qk):
+    """ Фильтр пройденных и непройденных маршрутов вообще """
+    if qk == 0:   
+        objects = Hike.objects.all()
+    if qk == 1:
+        objects = Hike.objects.filter(reality=True).order_by('-pk') 
+    if qk == 2:   
+        objects = Hike.objects.filter(reality=False).order_by('-pk')  
+        
+    form = SearchForm() 
+    pk = 0
+    rk = 0
+    fk = 0
+    
+    return render(request, "hike/mainlist.html", {
+        'objects': objects, 
+        'form': form, 
+        'pk': pk, 
+        'qk': qk, 
+        'rk': rk,
+        'fk': fk,
+        'all_features': RouteFeature.objects.all()  # Передаем список особенностей
+    })
+
+
+def readyhikefilterview(request, rk):
+    """ Фильтр готовых и не готовых маршрутов """
+    if rk == 0:   
+        objects = Hike.objects.all()
+    if rk == 1:
+        objects = Hike.objects.filter(maturity=True).order_by('-pk') 
+    if rk == 2:   
+        objects = Hike.objects.filter(maturity=False).order_by('-pk')  
+        
+    form = SearchForm() 
+    pk = 0
+    qk = 0
+    fk = 0
+    
+    return render(request, "hike/mainlist.html", {
+        'objects': objects, 
+        'form': form, 
+        'pk': pk, 
+        'qk': qk, 
+        'rk': rk,
+        'fk': fk,
+        'all_features': RouteFeature.objects.all()  # Передаем список особенностей
+    })
+
+
+def featurehikefilterview(request, fk):
+    """ Фильтр маршрутов по конкретной особенности """
+    if fk == 0:
+        objects = Hike.objects.all().order_by('-pk')
+    else:
+        # Ищем походы, содержащие выбранную особенность
+        objects = Hike.objects.filter(features__pk=fk).order_by('-pk')
+        
+    form = SearchForm() 
+    pk = 0
+    qk = 0
+    rk = 0
+    
+    return render(request, "hike/mainlist.html", {
+        'objects': objects, 
+        'form': form, 
+        'pk': pk, 
+        'qk': qk, 
+        'rk': rk, 
+        'fk': fk, 
+        'all_features': RouteFeature.objects.all()  # Передаем список особенностей
+    })
+
+class SearchResultView(TemplateView):
+    """ Представление, которое выводит результаты поиска по слову/фразе в списке маршрутов """
+
+    template_name = 'hike/mainlist.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchResultView, self).get_context_data(**kwargs)
+        searchword = self.request.GET.get('searchword', '')
+
+        # Задаем дефолтные значения для фильтров, чтобы не ломался шаблон
+        context['pk'] = 0
+        context['qk'] = 0
+        context['rk'] = 0
+        context['fk'] = 0  # Сбрасываем фильтр особенностей при поиске
+        context['all_features'] = RouteFeature.objects.all()  # Передаем все особенности в выпадающий список
+        context['form'] = SearchForm(initial={'searchword': searchword})
+
+        if searchword:
+            searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
+            
+            objects = Hike.objects.\
+            filter(Q(title__icontains=searchword)|Q(title__icontains=searchword1)).order_by('pk') | Hike.objects.\
+            filter(Q(country__icontains=searchword)|Q(country__icontains=searchword1)).order_by('pk') | Hike.objects.\
+            filter(Q(region__icontains=searchword)|Q(region__icontains=searchword1)).order_by('pk') | Hike.objects.\
+            filter(Q(start_station__icontains=searchword)|Q(start_station__icontains=searchword1)).order_by('pk') | Hike.objects.\
+            filter(Q(aim_station__icontains=searchword)|Q(aim_station__icontains=searchword1)).order_by('pk') | Hike.objects.\
+            filter(Q(home_station__icontains=searchword)|Q(home_station__icontains=searchword1)).order_by('pk') | Hike.objects.\
+            filter(Q(back_station__icontains=searchword)|Q(back_station__icontains=searchword1)).order_by('pk') | Hike.objects.\
+            filter(Q(travel_details__icontains=searchword)|Q(travel_details__icontains=searchword1)).order_by('pk') | Hike.objects.\
+            filter(Q(attractions__icontains=searchword)|Q(attractions=searchword1)).order_by('pk')
+            
+            context['objects'] = objects
+            
+        return context
+
+
 
 
