@@ -10,11 +10,7 @@ import tablib
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
-@admin.register(RouteFeature)
-class RouteFeatureAdmin(admin.ModelAdmin):
-    """Настройка отображения особенностей маршрута в админке"""
-    list_display = ('id', 'feature')
-    search_fields = ['feature']
+
 
 # история Карелии классы для отображения в админке
 
@@ -67,26 +63,58 @@ admin.site.register(Itbookmarks, ITAdmin)
 
 # закладки по айти классы для отображения в админке
 
-# класс для загрузки/выгрузки хайкинг
+# 1. Настройка отображения особенностей маршрута в админке
+@admin.register(RouteFeature)
+class RouteFeatureAdmin(admin.ModelAdmin):
+    """Настройка отображения особенностей маршрута в админке"""
+    list_display = ('id', 'feature')
+    search_fields = ['feature']
+
+
+# 2. Класс для управления ManyToMany через выпадающие списки с плюсиком
+class RouteFeatureInline(admin.TabularInline):
+    model = Hike.features.through  # Связующая таблица ManyToMany
+    extra = 1                      # Количество пустых выпадающих списков по умолчанию
+    verbose_name = "Особенность"
+    verbose_name_plural = "Особенности этого маршрута"
+
+
+# 3. Класс для загрузки/выгрузки хайкинг
 class HikeResource(resources.ModelResource):
     class Meta:
         model = Hike
 
-# класс добавления стилей к окну текст хайкинг
+
+# 4. Класс добавления стилей к окну текст хайкинг
 class HikeAdminForm(forms.ModelForm):
     travel_details = forms.CharField(label="Подробности", widget=CKEditorUploadingWidget())
+    
     class Meta:
         model = Hike
         fields = '__all__'
+        # Исключаем features из стандартного вывода формы, 
+        # так как мы выводим его через Inline ниже
+        exclude = ('features',)
 
-# класс подробностей хайкинг   
+
+# 5. Класс подробностей хайкинг   
 class HikeAdmin(ImportExportActionModelAdmin):
     resource_class = HikeResource
-    list_display = ('pk', 'title', )
-    search_fields = ['pk', 'title', 'attractions']
+    # Добавил display_features в список отображения, чтобы видеть особенности в таблице
+    list_display = ('pk', 'title', 'display_features')
+    search_fields = ['pk', 'title', 'region', 'country']
     form = HikeAdminForm
+    
+    # Подключаем выпадающие списки особенностей в самый вниз карточки
+    inlines = [RouteFeatureInline]
 
-# фиксация формы в админке хайкинг
+    # Метод для красивого отображения особенностей через запятую в общем списке
+    def display_features(self, obj):
+        return ", ".join([f.feature for f in obj.features.all()])
+    display_features.short_description = 'Особенности'
+
+
+# 6. Фиксация формы в админке хайкинг
 admin.site.register(Hike, HikeAdmin)
 
 # закладки по темам классы для отображения в админке
