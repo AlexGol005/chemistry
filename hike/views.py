@@ -524,166 +524,112 @@ class HistoryStrView(TemplateView):
 
         return context
 
-from django.shortcuts import render
 from django.views.generic import ListView
+from django.db.models import Q
 from django.utils import timezone
-from .models import Hike, RouteFeature  # Убедитесь, что модели импортированы
-from .forms import SearchForm           # Убедитесь, что форма импортирована
+from .models import Hike, RouteFeature
+from .forms import SearchForm
 
 class HikeAllListView(ListView):
-    """ Выводит список всех маршрутов """
+    """
+    Класс выводит список всех маршрутов походов,
+    обрабатывает текстовый поиск и поддерживает любую 
+    комбинацию пяти фильтров одновременно без сброса состояния.
+    """
     model = Hike
     template_name = 'hike/mainlist.html'
     context_object_name = 'objects'
     ordering = ['-pk']
     paginate_by = 6
 
-    def get_context_data(self, **kwargs):
-        context = super(HikeAllListView, self).get_context_data(**kwargs)
-        context['form'] = SearchForm() 
-        context['pk'] = 0
-        context['qk'] = 0
-        context['rk'] = 0
-        context['fk'] = 0  # Выключенный фильтр особенностей
-        context['all_features'] = RouteFeature.objects.all()  # Все особенности для выпадающего списка
-        return context
+    def get_queryset(self):
+        # Базовый QuerySet со всеми маршрутами
+        queryset = super().get_queryset()
 
-
-def hikefilterview(request, pk):
-    """ Фильтр пройденных и непройденных маршрутов в этом году """
-    now = timezone.now()
-    ar = str(now.year)[2:]
-    arr = f'{ar};'
-    
-    if pk == 0:   
-        objects = Hike.objects.all()
-    if pk == 1:
-        objects = Hike.objects.filter(dates_try__iendswith=ar).order_by('-pk') | Hike.objects.filter(dates_try__iendswith=arr).order_by('-pk')
-    if pk == 2:   
-        objects = Hike.objects.exclude(dates_try__iendswith=ar).order_by('-pk') & Hike.objects.exclude(dates_try__iendswith=arr).order_by('-pk')
-    
-    form = SearchForm() 
-    qk = 0
-    rk = 0
-    fk = 0
-    
-    return render(request, "hike/mainlist.html", {
-        'objects': objects, 
-        'form': form, 
-        'pk': pk, 
-        'qk': qk, 
-        'rk': rk,
-        'fk': fk,
-        'all_features': RouteFeature.objects.all()  # Передаем список особенностей
-    })
-
-
-def donehikefilterview(request, qk):
-    """ Фильтр пройденных и непройденных маршрутов вообще """
-    if qk == 0:   
-        objects = Hike.objects.all()
-    if qk == 1:
-        objects = Hike.objects.filter(reality=True).order_by('-pk') 
-    if qk == 2:   
-        objects = Hike.objects.filter(reality=False).order_by('-pk')  
-        
-    form = SearchForm() 
-    pk = 0
-    rk = 0
-    fk = 0
-    
-    return render(request, "hike/mainlist.html", {
-        'objects': objects, 
-        'form': form, 
-        'pk': pk, 
-        'qk': qk, 
-        'rk': rk,
-        'fk': fk,
-        'all_features': RouteFeature.objects.all()  # Передаем список особенностей
-    })
-
-
-def readyhikefilterview(request, rk):
-    """ Фильтр готовых и не готовых маршрутов """
-    if rk == 0:   
-        objects = Hike.objects.all()
-    if rk == 1:
-        objects = Hike.objects.filter(maturity=True).order_by('-pk') 
-    if rk == 2:   
-        objects = Hike.objects.filter(maturity=False).order_by('-pk')  
-        
-    form = SearchForm() 
-    pk = 0
-    qk = 0
-    fk = 0
-    
-    return render(request, "hike/mainlist.html", {
-        'objects': objects, 
-        'form': form, 
-        'pk': pk, 
-        'qk': qk, 
-        'rk': rk,
-        'fk': fk,
-        'all_features': RouteFeature.objects.all()  # Передаем список особенностей
-    })
-
-
-def featurehikefilterview(request, fk):
-    """ Фильтр маршрутов по конкретной особенности """
-    if fk == 0:
-        objects = Hike.objects.all().order_by('-pk')
-    else:
-        # Ищем походы, содержащие выбранную особенность
-        objects = Hike.objects.filter(features__pk=fk).order_by('-pk')
-        
-    form = SearchForm() 
-    pk = 0
-    qk = 0
-    rk = 0
-    
-    return render(request, "hike/mainlist.html", {
-        'objects': objects, 
-        'form': form, 
-        'pk': pk, 
-        'qk': qk, 
-        'rk': rk, 
-        'fk': fk, 
-        'all_features': RouteFeature.objects.all()  # Передаем список особенностей
-    })
-
-class SearchResultView(TemplateView):
-    """ Представление, которое выводит результаты поиска по слову/фразе в списке маршрутов """
-
-    template_name = 'hike/mainlist.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(SearchResultView, self).get_context_data(**kwargs)
-        searchword = self.request.GET.get('searchword', '')
-
-        # Задаем дефолтные значения для фильтров, чтобы не ломался шаблон
-        context['pk'] = 0
-        context['qk'] = 0
-        context['rk'] = 0
-        context['fk'] = 0  # Сбрасываем фильтр особенностей при поиске
-        context['all_features'] = RouteFeature.objects.all()  # Передаем все особенности в выпадающий список
-        context['form'] = SearchForm(initial={'searchword': searchword})
-
+        # 1. Текстовый поиск (Searchword)
+        searchword = self.request.GET.get('searchword', '').strip()
         if searchword:
-            searchword1 = self.request.GET['searchword'][0].upper() + self.request.GET['searchword'][1:]
-            
-            objects = Hike.objects.\
-            filter(Q(title__icontains=searchword)|Q(title__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(country__icontains=searchword)|Q(country__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(region__icontains=searchword)|Q(region__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(start_station__icontains=searchword)|Q(start_station__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(aim_station__icontains=searchword)|Q(aim_station__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(home_station__icontains=searchword)|Q(home_station__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(back_station__icontains=searchword)|Q(back_station__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(travel_details__icontains=searchword)|Q(travel_details__icontains=searchword1)).order_by('pk') | Hike.objects.\
-            filter(Q(attractions__icontains=searchword)|Q(attractions=searchword1)).order_by('pk')
-            
-            context['objects'] = objects
-            
+            # Делаем первую букву заглавной для поддержки вашего алгоритма
+            searchword1 = searchword[0].upper() + searchword[1:] if len(searchword) > 0 else searchword
+            queryset = queryset.filter(
+                Q(title__icontains=searchword) | Q(title__icontains=searchword1) |
+                Q(country__icontains=searchword) | Q(country__icontains=searchword1) |
+                Q(region__icontains=searchword) | Q(region__icontains=searchword1) |
+                Q(start_station__icontains=searchword) | Q(start_station__icontains=searchword1) |
+                Q(aim_station__icontains=searchword) | Q(aim_station__icontains=searchword1) |
+                Q(home_station__icontains=searchword) | Q(home_station__icontains=searchword1) |
+                Q(back_station__icontains=searchword) | Q(back_station__icontains=searchword1) |
+                Q(travel_details__icontains=searchword) | Q(travel_details__icontains=searchword1) |
+                Q(attractions__icontains=searchword) | Q(attractions__icontains=searchword1)
+            ).distinct()
+
+        # 2. Фильтр: Пройдено в этом году (pk)
+        pk = self.request.GET.get('pk', '0')
+        if pk.isdigit():
+            pk = int(pk)
+            if pk == 1:
+                ar = str(timezone.now().year)[2:]
+                arr = f'{ar};'
+                queryset = queryset.filter(Q(dates_try__iendswith=ar) | Q(dates_try__iendswith=arr))
+            elif pk == 2:
+                ar = str(timezone.now().year)[2:]
+                arr = f'{ar};'
+                queryset = queryset.exclude(Q(dates_try__iendswith=ar) | Q(dates_try__iendswith=arr))
+
+        # 3. Фильтр: Пройдено когда-то вообще (qk)
+        qk = self.request.GET.get('qk', '0')
+        if qk.isdigit():
+            qk = int(qk)
+            if qk == 1:
+                queryset = queryset.filter(reality=True)
+            elif qk == 2:
+                queryset = queryset.filter(reality=False)
+
+        # 4. Фильтр: Готовность маршрута (rk)
+        rk = self.request.GET.get('rk', '0')
+        if rk.isdigit():
+            rk = int(rk)
+            if rk == 1:
+                queryset = queryset.filter(maturity=True)
+            elif rk == 2:
+                queryset = queryset.filter(maturity=False)
+
+        # 5. Фильтр: Особенности маршрута (fk)
+        fk = self.request.GET.get('fk', '0')
+        if fk.isdigit():
+            fk = int(fk)
+            if fk > 0:
+                queryset = queryset.filter(features__pk=fk)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Безопасно получаем и сохраняем текущие значения фильтров в контекст шаблона
+        def get_int_param(param_name):
+            val = self.request.GET.get(param_name, '0')
+            return int(val) if val.isdigit() else 0
+
+        context['pk'] = get_int_param('pk')
+        context['qk'] = get_int_param('qk')
+        context['rk'] = get_int_param('rk')
+        context['fk'] = get_int_param('fk')
+        
+        # Возвращаем поисковую фразу обратно в форму для красивого отображения
+        searchword = self.request.GET.get('searchword', '')
+        context['form'] = SearchForm(initial={'searchword': searchword})
+        
+        # Передаем полный список динамических особенностей для выпадающего меню
+        context['all_features'] = RouteFeature.objects.all()
+        
+        # Формируем и сохраняем строку активных GET-фильтров.
+        # Это нужно, чтобы при клике на пагинацию (следующая страница) фильтры не сбрасывались.
+        current_params = self.request.GET.copy()
+        if 'page' in current_params:
+            del current_params['page']
+        context['current_filters_url'] = f"&{current_params.urlencode()}" if current_params else ""
+        
         return context
 
 
