@@ -13,8 +13,8 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 @admin.register(RouteFeature)
 class RouteFeatureAdmin(admin.ModelAdmin):
     """Настройка отображения особенностей маршрута в админке"""
-    list_display = ('id', 'name')
-    search_fields = ['name']
+    list_display = ('id', 'feature')
+    search_fields = ['feature']
 
 # история Карелии классы для отображения в админке
 
