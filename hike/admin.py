@@ -10,6 +10,12 @@ import tablib
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
+@admin.register(RouteFeature)
+class RouteFeatureAdmin(admin.ModelAdmin):
+    """Настройка отображения особенностей маршрута в админке"""
+    list_display = ('id', 'name')
+    search_fields = ['name']
+
 # история Карелии классы для отображения в админке
 
 # класс для загрузки/выгрузки Карелия
