@@ -7,8 +7,27 @@ SEASONS = [('теплое время года', 'теплое время год�
 TYPE = [('путешествия', 'путешествия'),('книги','книги'), ('фильмы','фильмы'), ('музеи','музеи'), ('учебные курсы','учебные курсы'), ('рецепты','рецепты'), ('покупки','покупки'), 
         ('фотоальбом','фотоальбом'), ('прогулка','прогулка'), ('поездка на выходные','поездка на выходные'), ('аудио','аудио'), ('работа','работа'),] 
 
+class RouteFeature(models.Model):
+    feature = models.CharField(
+        max_length=255, 
+        verbose_name="Особенность маршрута"
+    )
+
+    def __str__(self):
+        return self.feature
+
+    class Meta:
+        verbose_name = "Особенность маршрута"
+        verbose_name_plural = "Особенности маршрутов"
+
 
 class Hike(models.Model):
+   features = models.ManyToManyField(
+        RouteFeature, 
+        blank=True, 
+        verbose_name='Особенности маршрута',
+        related_name='hikes'
+    )
     how_long = models.IntegerField('Сколько дней',  blank=True, null=True, default='1')
     season = models.CharField('Сезон', max_length=10000, blank=True, choices=SEASONS, null=True, default='теплое время года')
     country = models.CharField('Страна', max_length=10000, blank=True, null=True, default='Россия')
